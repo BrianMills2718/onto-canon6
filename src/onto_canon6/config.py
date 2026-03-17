@@ -1,0 +1,167 @@
+"""Typed repository configuration for onto-canon6.
+
+This module keeps the bootstrap repo aligned with the workspace design rules:
+configuration is loaded from `config/config.yaml`, validated eagerly, and used
+as the single source of truth for repository-relative paths.
+"""
+
+from __future__ import annotations
+
+from functools import lru_cache
+from pathlib import Path
+from typing import Literal
+
+import yaml
+from pydantic import BaseModel, ConfigDict, Field
+
+AcceptancePolicyValue = Literal["record_only", "apply_to_overlay"]
+
+
+class ConfigError(RuntimeError):
+    """Raised when the repository configuration file is missing or invalid."""
+
+
+class ProjectConfig(BaseModel):
+    """Project metadata used by packaging and repo-local tooling."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    name: str = Field(min_length=1)
+    package_name: str = Field(min_length=1)
+    version: str = Field(min_length=1)
+
+
+class PathsConfig(BaseModel):
+    """Repository-relative paths used during the bootstrap phase."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    adr_root: str = Field(min_length=1)
+    notebooks_root: str = Field(min_length=1)
+    donor_profiles_root: str = Field(min_length=1)
+    donor_ontology_packs_root: str = Field(min_length=1)
+    review_db_path: str = Field(min_length=1)
+    overlay_root: str = Field(min_length=1)
+
+
+class PipelineConfig(BaseModel):
+    """Pipeline defaults for the current proving slice."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    default_acceptance_policy: AcceptancePolicyValue
+
+
+class OntologyRuntimeConfig(BaseModel):
+    """Ontology-runtime defaults that control local overlay behavior."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    overlay_pack_suffix: str = Field(min_length=1)
+
+
+class ExtractionConfig(BaseModel):
+    """Text-extraction defaults for the first llm_client-backed Phase 4 path."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    selection_task: str = Field(min_length=1)
+    prompt_template: str = Field(min_length=1)
+    timeout_seconds: int = Field(ge=1)
+    num_retries: int = Field(ge=0)
+    max_budget_usd: float = Field(gt=0)
+
+
+class AppConfig(BaseModel):
+    """Validated application configuration for onto-canon6."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    project: ProjectConfig
+    paths: PathsConfig
+    pipeline: PipelineConfig
+    ontology_runtime: OntologyRuntimeConfig
+    extraction: ExtractionConfig
+
+    def resolve_repo_path(self, relative_path: str) -> Path:
+        """Resolve a repository-relative path declared in config."""
+        return (repo_root() / relative_path).resolve()
+
+    def adr_dir(self) -> Path:
+        """Return the configured ADR directory."""
+        return self.resolve_repo_path(self.paths.adr_root)
+
+    def notebooks_dir(self) -> Path:
+        """Return the configured notebooks directory."""
+        return self.resolve_repo_path(self.paths.notebooks_root)
+
+    def donor_profiles_dir(self) -> Path:
+        """Return the configured donor profiles directory."""
+
+        return self.resolve_repo_path(self.paths.donor_profiles_root)
+
+    def donor_ontology_packs_dir(self) -> Path:
+        """Return the configured donor ontology-pack directory."""
+
+        return self.resolve_repo_path(self.paths.donor_ontology_packs_root)
+
+    def review_db_path(self) -> Path:
+        """Return the configured review-state SQLite database path."""
+
+        return self.resolve_repo_path(self.paths.review_db_path)
+
+    def overlay_root(self) -> Path:
+        """Return the configured local ontology-overlay root directory."""
+
+        return self.resolve_repo_path(self.paths.overlay_root)
+
+    def extraction_prompt_template(self) -> Path:
+        """Return the configured text-extraction prompt template path."""
+
+        return self.resolve_repo_path(self.extraction.prompt_template)
+
+
+def repo_root() -> Path:
+    """Return the repository root for onto-canon6."""
+    return Path(__file__).resolve().parents[2]
+
+
+def default_config_path() -> Path:
+    """Return the required repository configuration path."""
+    return repo_root() / "config" / "config.yaml"
+
+
+@lru_cache(maxsize=1)
+def get_config() -> AppConfig:
+    """Load and cache the repository configuration.
+
+    This fails loudly on missing files, non-object YAML, or schema violations so
+    configuration drift cannot masquerade as defaults.
+    """
+
+    path = default_config_path()
+    if not path.exists():
+        raise ConfigError(f"configuration file not found: {path}")
+
+    raw = yaml.safe_load(path.read_text(encoding="utf-8"))
+    if not isinstance(raw, dict):
+        raise ConfigError(f"configuration file must decode to an object: {path}")
+
+    return AppConfig.model_validate(raw)
+
+
+def clear_config_cache() -> None:
+    """Clear the cached config for tests that mutate repository files."""
+
+    get_config.cache_clear()
+
+
+__all__ = [
+    "AcceptancePolicyValue",
+    "AppConfig",
+    "ConfigError",
+    "clear_config_cache",
+    "default_config_path",
+    "get_config",
+    "repo_root",
+]

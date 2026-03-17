@@ -1,0 +1,25 @@
+project:
+  name: "onto-canon6"
+  package_name: "onto_canon6"
+  version: "0.1.0"
+
+paths:
+  adr_root: "docs/adr"
+  notebooks_root: "notebooks"
+  donor_profiles_root: "../onto-canon5/profiles"
+  donor_ontology_packs_root: "../onto-canon5/ontology_packs"
+  review_db_path: "var/review_state.sqlite3"
+  overlay_root: "var/ontology_overlays"
+
+pipeline:
+  default_acceptance_policy: "record_only"
+
+ontology_runtime:
+  overlay_pack_suffix: "__overlay"
+
+extraction:
+  selection_task: "extraction"
+  prompt_template: "prompts/extraction/text_to_candidate_assertions.yaml"
+  timeout_seconds: 60
+  num_retries: 2
+  max_budget_usd: 0.25

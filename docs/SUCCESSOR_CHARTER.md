@@ -1,0 +1,308 @@
+# onto-canon6 Successor Charter
+
+Updated: 2026-03-17
+
+## Purpose
+
+This document is the local strategic anchor for `onto-canon6`.
+
+It exists to keep the project from repeating the drift that happened across
+`onto-canon` through `onto-canon5`. It consolidates, in one place:
+
+1. why `onto-canon6` exists;
+2. why the project is not continuing any previous repo directly;
+3. what each prior repo should donate;
+4. what the long-term plan is;
+5. what now counts as drift.
+
+This charter summarizes the accepted ADR direction. The detailed supporting ADR
+record still exists in `onto-canon5/docs/adr/` and the active implementation
+plan lives in this repo's roadmap.
+
+## The Successor Goal
+
+`onto-canon6` is a capability-preserving refactor of the `onto-canon` lineage.
+
+That means the project is trying to recover and extend the useful capabilities
+proven in earlier repos while enforcing clear subsystem boundaries that earlier
+iterations did not hold.
+
+The intended architecture is:
+
+1. `core`
+2. `ontology_runtime`
+3. `pipeline`
+4. `extensions`
+5. `domain_packs`
+6. `surfaces`
+
+The project is not trying to become:
+
+1. one dominant workflow service with many concerns braided together;
+2. a kernel-only library with no credible path back to user-visible leverage;
+3. a runtime centered on one ontology, one domain, or one hardcoded policy;
+4. a generic plugin platform before real consumers prove the need.
+
+Variation in the system should default to one of two forms:
+
+1. configuration when the mechanism stays the same and policy changes;
+2. narrow typed extension seams when different implementations are needed.
+
+That distinction is formalized in `docs/adr/0003-prefer-configurable-policies-and-narrow-extension-seams-over-a-general-plugin-framework.md`.
+
+## Candidate Assertions and Source Text
+
+`onto-canon6` treats candidate assertions as reviewable ontology-shaped
+proposals, not as replacements for the source text that justified them.
+
+For text-derived flows, this means:
+
+1. raw text or another source artifact remains the primary input and reference;
+2. candidate assertions should carry first-class evidence spans grounding them
+   in the source;
+3. candidate assertions may also carry an optional natural-language gloss for
+   review ergonomics;
+4. candidate assertions remain reviewable and are not auto-approved merely
+   because an extractor produced them.
+
+If an LLM is used in that flow:
+
+1. it must route through `llm_client`;
+2. prompts should follow the "goals over rules" principle;
+3. prompt templates should live in `prompts/`;
+4. the structured output schema remains part of the contract and is not the
+   kind of worked example forbidden by the "no examples without approval" rule.
+
+This design decision is formalized in
+`docs/adr/0004-keep-text-derived-candidate-assertions-grounded-in-source-evidence-and-route-llm-work-through-llm_client.md`.
+
+## Why onto-canon6 Exists Instead of Continuing an Older Repo
+
+The restart is justified because no prior repo achieved all three of these at
+once:
+
+1. preserved user-visible leverage;
+2. clean subsystem boundaries;
+3. extensible multi-pack and multi-policy runtime behavior.
+
+Each earlier repo got part of the picture right and part wrong.
+
+### Why Not Continue `onto-canon` Directly
+
+`onto-canon` has the richest product leverage in the lineage:
+
+1. extraction;
+2. epistemic operations;
+3. artifact lineage;
+4. adapters;
+5. MCP surfaces.
+
+But it is not the right structural base for the successor because too much is
+fused together. Product ideas and leaf subsystems should be borrowed, but the
+repo shape should not be preserved.
+
+### Why Not Continue `onto-canon2` Directly
+
+`onto-canon2` improved architecture thinking and subsystem boundaries, but it
+leaned too far toward architecture-first delivery. It is a donor for
+boundaries, contracts, and split thinking, not the direct successor base.
+
+### Why Not Continue `onto-canon3` Directly
+
+`onto-canon3` recovered runtime simplicity and a smaller, more readable style,
+but still recenters too much behavior around a small number of strong runtime
+objects. It is a donor for ergonomics and simplicity, not the final shape.
+
+### Why Not Continue `onto-canon4` Directly
+
+`onto-canon4` improved contract discipline, profiles, registries, and interop
+thinking, but it again drifted toward a central workflow object and let domain
+concerns leak inward. It is a donor for contracts and registries, not the repo
+to keep extending.
+
+### Why Not Continue `onto-canon5` Directly
+
+`onto-canon5` clarified ontology packs, profiles, and `open|closed|mixed`, but
+it also narrowed too far toward a kernel-first restart. Continuing there would
+mean unbraiding a repo that is already centered on the wrong strategic thesis
+for the successor.
+
+## What We Borrow From Each Prior Repo
+
+Borrowing is by subsystem, not by wholesale port.
+
+### `onto-canon`
+
+Primary donors:
+
+1. user-visible leverage;
+2. artifact lineage concepts and registry patterns;
+3. epistemic operator ideas;
+4. ontology and extraction donor material;
+5. MCP and adapter use cases.
+
+Do not inherit:
+
+1. monolithic runtime shape;
+2. fused storage, workflow, and tool-handler logic;
+3. autonomous governance behavior where human review is actually required.
+
+### `onto-canon2`
+
+Primary donors:
+
+1. subsystem boundaries;
+2. kernel versus extension split;
+3. migration and contract discipline;
+4. traversal and projection thinking.
+
+Do not inherit:
+
+1. architecture-heavy delivery before thin proof;
+2. unnecessary day-one module weight;
+3. a runtime centered on heavyweight standards before the simpler slice is
+   proven.
+
+### `onto-canon3`
+
+Primary donors:
+
+1. runtime simplicity;
+2. readable storage and service ergonomics;
+3. understandable test style;
+4. thin surface patterns.
+
+Do not inherit:
+
+1. one dominant database or service object;
+2. blurred ownership between core and extension concerns.
+
+### `onto-canon4`
+
+Primary donors:
+
+1. contract discipline;
+2. profile-driven validation posture;
+3. extractor registry ideas;
+4. deterministic interop contracts;
+5. early DoDAF seed material.
+
+Do not inherit:
+
+1. expanding central workflow service;
+2. domain logic in core workflow code;
+3. speculative plugin/process weight.
+
+### `onto-canon5`
+
+Primary donors:
+
+1. ontology packs;
+2. profiles;
+3. `open|closed|mixed` semantics;
+4. proposal routing and governance ideas;
+5. validation and pack-loading donor material.
+
+Do not inherit:
+
+1. kernel-only strategic narrowing;
+2. central workflow and ingestion shape;
+3. benchmark interpretation that confuses extraction quality with
+   canonicalization fidelity.
+
+## Long-Term Plan
+
+The long-term plan is phased and thin-slice driven.
+
+The roadmap in `docs/plans/0001_successor_roadmap.md` is the authoritative
+phase document for:
+
+1. build items;
+2. success criteria;
+3. required acceptance evidence;
+4. explicit unresolved questions.
+
+### Phase 0
+
+Prove ontology runtime contracts, donor loading, policy semantics, and local
+validation.
+
+Status: complete
+
+### Phase 1
+
+Persist reviewable candidate and proposal workflow state with configurable
+mixed-mode acceptance behavior.
+
+Status: complete
+
+### Phase 2
+
+Recover the first user-visible capability:
+
+1. ingest candidate assertions;
+2. attach stronger provenance;
+3. support candidate review state transitions;
+4. expose a small query and report surface.
+
+Status: complete
+
+### Phase 3
+
+Make accepted governance decisions operational:
+
+1. apply accepted ontology additions into explicit local overlays;
+2. keep overlay writeback separate from review actions;
+3. make validation and reporting overlay-aware.
+
+Status: complete
+
+### Phase 4
+
+Prove one text-grounded producer integration through `llm_client`:
+
+1. keep raw text primary;
+2. extract reviewable candidate assertions;
+3. ground them in first-class evidence spans;
+4. route them through the same review workflow rather than a side path.
+
+Status: complete
+
+### Later Phases
+
+1. additional domain packs such as DoDAF;
+2. extensions such as epistemic reasoning;
+3. richer surfaces such as MCP or UI.
+
+The active implementation detail for these phases lives in
+`docs/plans/0001_successor_roadmap.md`.
+
+## Drift Conditions
+
+The following now count as drift and should not happen casually:
+
+1. rebuilding one dominant workflow or service object as the center of the
+   system;
+2. recentering the project as kernel-only infrastructure with no path back to
+   product leverage;
+3. moving domain-specific logic into core;
+4. collapsing packs, profiles, and policy into one hidden config surface;
+5. importing older repos wholesale because they are convenient;
+6. treating notebook-free architectural speculation as proof.
+
+## Authoritative Local Reading Order
+
+If someone needs the local strategic picture in `onto-canon6`, start with:
+
+1. this document;
+2. `docs/adr/README.md`;
+3. `docs/STATUS.md`;
+4. `docs/plans/0001_successor_roadmap.md`.
+
+If someone needs the deeper donor rationale behind this charter, then read the
+supporting donor record in `onto-canon5`:
+
+1. `docs/adr/0001-restart-successor-repo-instead-of-continuing-onto-canon5.md`
+2. `docs/adr/0009-borrow-from-the-lineage-by-subsystem-not-by-version.md`
+3. `docs/adr/0010-realign-the-successor-with-the-original-refactor-intent.md`
+4. `docs/plans/015_lineage_final_synthesis.md`
