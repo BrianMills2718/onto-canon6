@@ -149,10 +149,34 @@ def donor_profiles_root() -> Path:
     return get_config().donor_profiles_dir()
 
 
+def local_profiles_root() -> Path:
+    """Return the configured repo-local profiles directory."""
+
+    return get_config().local_profiles_dir()
+
+
 def donor_ontology_packs_root() -> Path:
     """Return the configured donor ontology-packs directory."""
 
     return get_config().donor_ontology_packs_dir()
+
+
+def local_ontology_packs_root() -> Path:
+    """Return the configured repo-local ontology-pack directory."""
+
+    return get_config().local_ontology_packs_dir()
+
+
+def profile_search_roots() -> tuple[Path, ...]:
+    """Return the configured profile search order for the successor runtime."""
+
+    return get_config().profile_search_roots()
+
+
+def ontology_pack_search_roots() -> tuple[Path, ...]:
+    """Return the configured ontology-pack search order for the successor runtime."""
+
+    return get_config().ontology_pack_search_roots()
 
 
 def clear_loader_caches() -> None:
@@ -179,8 +203,12 @@ def load_ontology_pack(
         raise OntologyPackLoadError(f"invalid pack_id: {pack_id!r}")
     if not _PACK_VERSION_RE.match(pack_version):
         raise OntologyPackLoadError(f"invalid pack_version: {pack_version!r}")
-    root = (packs_root or donor_ontology_packs_root()).resolve()
-    return _load_pack_cached(str(root), pack_id, pack_version)
+    roots = (
+        ((packs_root or donor_ontology_packs_root()).resolve(),)
+        if packs_root is not None
+        else ontology_pack_search_roots()
+    )
+    return _load_pack_cached(tuple(str(root.resolve()) for root in roots), pack_id, pack_version)
 
 
 def load_profile(
@@ -198,11 +226,19 @@ def load_profile(
         "profile_version",
         error_cls=ProfileLoadError,
     )
-    profile_root = (profiles_root or donor_profiles_root()).resolve()
-    pack_root = (packs_root or donor_ontology_packs_root()).resolve()
+    profile_roots = (
+        ((profiles_root or donor_profiles_root()).resolve(),)
+        if profiles_root is not None
+        else profile_search_roots()
+    )
+    pack_roots = (
+        ((packs_root or donor_ontology_packs_root()).resolve(),)
+        if packs_root is not None
+        else ontology_pack_search_roots()
+    )
     return _load_profile_cached(
-        str(profile_root),
-        str(pack_root),
+        tuple(str(root.resolve()) for root in profile_roots),
+        tuple(str(root.resolve()) for root in pack_roots),
         normalized_profile_id,
         normalized_profile_version,
     )
@@ -266,8 +302,12 @@ def load_effective_profile(
 
 
 @lru_cache(maxsize=32)
-def _load_pack_cached(root: str, pack_id: str, pack_version: str) -> LoadedOntologyPack:
-    pack_dir = Path(root) / pack_id / pack_version
+def _load_pack_cached(
+    roots: tuple[str, ...],
+    pack_id: str,
+    pack_version: str,
+) -> LoadedOntologyPack:
+    pack_dir = _resolve_pack_dir(roots, pack_id, pack_version)
     manifest_path = pack_dir / "manifest.yaml"
     if not manifest_path.exists():
         raise OntologyPackLoadError(f"ontology pack manifest missing: {manifest_path}")
@@ -327,12 +367,12 @@ def _load_pack_cached(root: str, pack_id: str, pack_version: str) -> LoadedOntol
 
 @lru_cache(maxsize=64)
 def _load_profile_cached(
-    profiles_root: str,
-    packs_root: str,
+    profiles_roots: tuple[str, ...],
+    packs_roots: tuple[str, ...],
     profile_id: str,
     profile_version: str,
 ) -> LoadedProfile:
-    profile_dir = Path(profiles_root) / profile_id / profile_version
+    profile_dir = _resolve_profile_dir(profiles_roots, profile_id, profile_version)
     manifest_path = profile_dir / "manifest.yaml"
     severity_path = profile_dir / "severity.yaml"
     if not manifest_path.exists():
@@ -385,7 +425,7 @@ def _load_profile_cached(
         load_ontology_pack(
             pack_ref.pack_id,
             pack_ref.pack_version,
-            packs_root=Path(packs_root),
+            packs_root=Path(packs_roots[0]) if len(packs_roots) == 1 else None,
         )
         if pack_ref is not None
         else None
@@ -705,6 +745,36 @@ def _validate_loaded_profile_consistency(
         raise ProfileLoadError("mixed mode requires oc:profile_unknown_predicate severity=soft")
     if type_adapter == "ontology_pack" and pack_ref is None:
         raise ProfileLoadError("validation.type_adapter=ontology_pack requires a referenced pack")
+
+
+def _resolve_pack_dir(roots: tuple[str, ...], pack_id: str, pack_version: str) -> Path:
+    """Resolve one ontology-pack directory across the configured search roots."""
+
+    for root in roots:
+        candidate = Path(root) / pack_id / pack_version
+        if (candidate / "manifest.yaml").exists():
+            return candidate
+    searched = ", ".join(roots)
+    raise OntologyPackLoadError(
+        f"ontology pack {pack_id}@{pack_version} not found in search roots: {searched}"
+    )
+
+
+def _resolve_profile_dir(
+    roots: tuple[str, ...],
+    profile_id: str,
+    profile_version: str,
+) -> Path:
+    """Resolve one profile directory across the configured search roots."""
+
+    for root in roots:
+        candidate = Path(root) / profile_id / profile_version
+        if (candidate / "manifest.yaml").exists():
+            return candidate
+    searched = ", ".join(roots)
+    raise ProfileLoadError(
+        f"profile {profile_id}@{profile_version} not found in search roots: {searched}"
+    )
 
 
 def _resolve_content_paths(

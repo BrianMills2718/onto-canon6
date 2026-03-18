@@ -7,6 +7,8 @@ paths:
   adr_root: "docs/adr"
   notebooks_root: "notebooks"
   notebook_registry_path: "notebooks/notebook_registry.yaml"
+  local_profiles_root: "profiles"
+  local_ontology_packs_root: "ontology_packs"
   donor_profiles_root: "../onto-canon5/profiles"
   donor_ontology_packs_root: "../onto-canon5/ontology_packs"
   review_db_path: "var/review_state.sqlite3"

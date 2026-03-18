@@ -1,0 +1,3 @@
+{"edge_type":"subtype_of","child_id":"dm2:Performer","parent_id":"dm2:Entity"}
+{"edge_type":"subtype_of","child_id":"dm2:OperationalNode","parent_id":"dm2:Performer"}
+{"edge_type":"subtype_of","child_id":"dm2:InformationElement","parent_id":"dm2:Entity"}

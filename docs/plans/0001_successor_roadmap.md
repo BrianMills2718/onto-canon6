@@ -359,7 +359,7 @@ Proved:
    `notebooks/12_cli_surface.ipynb` and
    `docs/adr/0006-prefer-cli-as-the-first-operational-surface-before-mcp-or-ui.md`.
 
-## Phase 7: Domain Pack Generalization [planned]
+## Phase 7: Domain Pack Generalization [completed]
 
 Goal:
 
@@ -417,6 +417,21 @@ Explicit uncertainties:
    locally from a reduced subset;
 3. whether a shared base vocabulary layer is needed before the second pack can
    stay clean.
+
+Proved:
+
+1. `onto-canon6` now has a local `dodaf_minimal` ontology pack plus two
+   profiles over the same starting vocabulary:
+   `dodaf_minimal_strict` and `dodaf_minimal_mixed`;
+2. the local loader/runtime can discover repo-local profiles and ontology
+   packs without changing the external pack/profile format;
+3. strict and mixed remain profile/policy differences over the same pack,
+   rather than separate ontology definitions;
+4. the same validation, proposal, overlay, and CLI surfaces work for the
+   second pack without core branching;
+5. the deep-dive proof and canonical journey phase are now live in
+   `notebooks/13_dodaf_minimal_second_pack.ipynb` and
+   `notebooks/00_master_governed_text_to_reviewed_assertions.ipynb`.
 
 ## Phase 8: Artifact Lineage Recovery [planned]
 
@@ -596,7 +611,6 @@ relevant phase begins:
    be treated as stronger quality evidence;
 2. whether the first operational surface after CLI should be MCP, UI, or
    something else;
-3. which exact DoDAF subset is the right second-pack proof target;
-4. how much artifact lineage should be recovered in Phase 8 before Phase 10
+3. how much artifact lineage should be recovered in Phase 8 before Phase 10
    begins;
-5. which single workflow should be the first product-facing integration slice.
+4. which single workflow should be the first product-facing integration slice.

@@ -1,0 +1,4 @@
+{"type_id":"dm2:Entity","label":"Entity","status":"active"}
+{"type_id":"dm2:Performer","label":"Performer","status":"active"}
+{"type_id":"dm2:OperationalNode","label":"Operational Node","status":"active"}
+{"type_id":"dm2:InformationElement","label":"Information Element","status":"active"}

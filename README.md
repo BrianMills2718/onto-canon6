@@ -25,6 +25,7 @@ entire prior runtime. The current scope is intentionally narrow:
   actions
 - one canonical end-to-end journey notebook plus a machine-readable notebook
   registry and validator
+- one local second-pack proof with `dodaf_minimal` strict and mixed profiles
 
 The governing architectural rationale lives in the local successor charter and
 the adopted ADR set.
@@ -40,6 +41,7 @@ Repo-local strategic and planning docs now live in:
 - `notebooks/09_successor_long_term_plan.ipynb`
 - `notebooks/11_future_phase_breakdown.ipynb`
 - `notebooks/12_cli_surface.ipynb`
+- `notebooks/13_dodaf_minimal_second_pack.ipynb`
 
 ## Current Scope
 
@@ -63,6 +65,8 @@ Today this repo proves only one thin slice:
     calls
 13. keep the main user-visible workflow represented by one canonical journey
     notebook with explicit phase contracts outside the notebook
+14. prove a second local ontology pack can use the same runtime, review,
+    overlay, and CLI surfaces without core branching
 
 Not in scope yet:
 

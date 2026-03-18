@@ -1,0 +1,21 @@
+profile:
+  id: dodaf_minimal_mixed
+  version: "0.1.0"
+  name: "DoDAF Minimal Mixed"
+  ontology_version: "dodaf_minimal@0.1.0"
+  rule_version: "dodaf_minimal_rules@0.1.0"
+
+ontology:
+  source: custom
+  mode: mixed
+  normalization_policy: conservative
+  proposal_policy: allow
+  pack_id: dodaf_minimal
+  pack_version: "0.1.0"
+
+validation:
+  type_adapter: ontology_pack
+  type_check_policy: exact
+
+ingestion:
+  allow_heuristic_default: false

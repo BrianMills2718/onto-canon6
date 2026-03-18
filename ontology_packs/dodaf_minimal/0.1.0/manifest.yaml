@@ -1,0 +1,24 @@
+pack:
+  id: dodaf_minimal
+  version: "0.1.0"
+  name: "DoDAF Minimal Exchange Slice"
+  description: "Minimal local DoDAF-like pack used to prove second-pack support in onto-canon6."
+
+build:
+  compiler_version: "0.1.0"
+  built_at: "2026-03-18T00:00:00Z"
+  source_inputs:
+    - system: "local_authoring"
+      version: "0.1.0"
+      path: "ontology_packs/dodaf_minimal/0.1.0"
+
+content:
+  entity_types: entity_types.jsonl
+  predicate_types: predicate_types.jsonl
+  role_types: role_types.jsonl
+  value_types: value_types.jsonl
+  hierarchy_edges: hierarchy_edges.jsonl
+  predicate_role_edges: predicate_role_edges.jsonl
+  source_mappings: source_mappings.jsonl
+  aliases: aliases.jsonl
+  constraints: constraints.jsonl

@@ -39,7 +39,11 @@ typed ontology runtime:
 24. one canonical journey notebook for the current user-visible workflow;
 25. a machine-readable notebook registry that keeps phase contracts outside the
     notebook;
-26. a local notebook-process validator plus notebook execution proof.
+26. a local notebook-process validator plus notebook execution proof;
+27. one local second-pack proof with `dodaf_minimal` strict and mixed profiles
+    over the same pack vocabulary;
+28. proof that the second pack uses the same runtime, review, overlay, and CLI
+    surfaces without core branching.
 
 Concrete assets:
 
@@ -56,21 +60,26 @@ Concrete assets:
 11. `notebooks/00_master_governed_text_to_reviewed_assertions.ipynb`
 12. `notebooks/notebook_registry.yaml`
 13. `notebooks/README.md`
-14. `prompts/extraction/text_to_candidate_assertions.yaml`
-15. `prompts/evaluation/judge_candidate_reasonableness.yaml`
-16. `src/onto_canon6/pipeline/text_extraction.py`
-17. `src/onto_canon6/evaluation/`
-18. `src/onto_canon6/cli.py`
-19. `src/onto_canon6/__main__.py`
-20. `src/onto_canon6/notebook_process.py`
-21. tests in `tests/ontology_runtime/`
-22. tests in `tests/pipeline/`
-23. tests in `tests/evaluation/`
-24. `tests/integration/test_cli_flow.py`
-25. `tests/integration/test_notebook_process.py`
-26. `src/onto_canon6/surfaces/review_report.py`
-27. `src/onto_canon6/pipeline/overlay_service.py`
-28. `src/onto_canon6/ontology_runtime/overlays.py`
+14. `notebooks/13_dodaf_minimal_second_pack.ipynb`
+15. `prompts/extraction/text_to_candidate_assertions.yaml`
+16. `prompts/evaluation/judge_candidate_reasonableness.yaml`
+17. `src/onto_canon6/pipeline/text_extraction.py`
+18. `src/onto_canon6/evaluation/`
+19. `src/onto_canon6/cli.py`
+20. `src/onto_canon6/__main__.py`
+21. `src/onto_canon6/notebook_process.py`
+22. `ontology_packs/dodaf_minimal/0.1.0/manifest.yaml`
+23. `profiles/dodaf_minimal_strict/0.1.0/manifest.yaml`
+24. `profiles/dodaf_minimal_mixed/0.1.0/manifest.yaml`
+25. tests in `tests/ontology_runtime/`
+26. tests in `tests/pipeline/`
+27. tests in `tests/evaluation/`
+28. `tests/integration/test_cli_flow.py`
+29. `tests/integration/test_notebook_process.py`
+30. `tests/integration/test_dodaf_minimal_cli.py`
+31. `src/onto_canon6/surfaces/review_report.py`
+32. `src/onto_canon6/pipeline/overlay_service.py`
+33. `src/onto_canon6/ontology_runtime/overlays.py`
 
 Planning companion:
 
@@ -82,10 +91,9 @@ Planning companion:
 Still missing:
 
 1. broader benchmark coverage and calibration beyond the first local live slice;
-2. second-pack generalization beyond the current donor packs;
-3. artifact-lineage recovery;
-4. epistemic extension;
-5. product-facing end-to-end workflow beyond CLI, notebooks, and Python API
+2. artifact-lineage recovery;
+3. epistemic extension;
+4. product-facing end-to-end workflow beyond CLI, notebooks, and Python API
    use.
 
 ## Current Donor Dependencies
@@ -125,7 +133,8 @@ The current locked strategic decisions are:
    and may also carry an optional natural-language gloss;
 4. any LLM-backed extraction path must route through `llm_client` with
    goal-oriented prompts and schema-enforced structured output;
-5. DoDAF is deferred and treated as a later exemplar domain pack;
+5. the second-pack proof uses a reduced local `dodaf_minimal` pack rather than
+   a large donor import;
 6. mixed-mode routing and proposal acceptance policy must stay configurable.
 
 The authoritative phase exit criteria and remaining explicit unknowns now live
@@ -141,14 +150,15 @@ in `docs/plans/0001_successor_roadmap.md`.
    benchmark corpus is still small and not yet calibrated for broader claims.
 4. Notebook process validation is local to `onto-canon6`; it is not yet wired
    into the wider workspace hook and graph system.
+5. The second-pack proof is intentionally small and does not yet answer how
+   broad a future DoDAF vocabulary should become.
 
 ## Immediate Next Step
 
-Start Phase 7 with one narrow second-pack proof that exercises the same
-workflow without changing core boundaries:
+Start Phase 8 with one narrow artifact-lineage proof that recovers one of the
+strongest v1 donor capabilities without rebuilding a fused runtime:
 
-1. choose the smallest useful second-pack scope before importing donor
-   material;
-2. define one strict profile and one mixed profile for that pack;
-3. prove validation, proposal routing, overlays, and the existing CLI/report
-   surfaces against that pack.
+1. define the minimal typed artifact reference model and persistence boundary;
+2. link artifacts to candidate assertions and review records first;
+3. prove one workflow where a claim is supported by an analysis artifact rather
+   than only raw text.

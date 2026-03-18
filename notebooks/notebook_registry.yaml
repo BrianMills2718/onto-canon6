@@ -182,19 +182,29 @@ journeys:
           - "notebooks/12_cli_surface.ipynb"
       - phase_id: "domain_pack_generalization"
         title: "Domain Pack Generalization"
-        purpose: "Plan the second-pack proof without inventing domain-specific logic in the core runtime."
+        purpose: "Prove the second-pack workflow using one local DoDAF minimal pack with strict and mixed profiles over the same vocabulary."
         input_artifact: "overlay_aware_report"
-        output_artifact: "second_pack_plan"
+        output_artifact: "second_pack_proof"
         acceptance_criteria:
-          - "The notebook emits a contract-shaped plan artifact for the second pack."
-          - "The output names the strict and mixed profile intent."
-          - "The phase remains explicitly provisional."
-        status: "planned"
-        execution_mode: "stub"
-        promotion_path: "Promote this phase when the minimal DoDAF subset and profile pair are implemented and verified."
+          - "One local second pack loads through the same pack/profile machinery as the donor packs."
+          - "A strict profile and a mixed profile share the same starting pack vocabulary."
+          - "The same review and overlay workflow works for the second pack without core branching."
+        status: "proven"
+        execution_mode: "live"
+        proof_critical: true
+        related_code:
+          - "src/onto_canon6/ontology_runtime/loaders.py"
+          - "src/onto_canon6/pipeline/service.py"
+          - "ontology_packs/dodaf_minimal/0.1.0/manifest.yaml"
+          - "profiles/dodaf_minimal_strict/0.1.0/manifest.yaml"
+          - "profiles/dodaf_minimal_mixed/0.1.0/manifest.yaml"
+        related_tests:
+          - "tests/ontology_runtime/test_dodaf_minimal.py"
+          - "tests/integration/test_dodaf_minimal_cli.py"
         related_docs:
           - "docs/plans/0001_successor_roadmap.md"
-          - "notebooks/11_future_phase_breakdown.ipynb"
+        related_evidence:
+          - "notebooks/13_dodaf_minimal_second_pack.ipynb"
       - phase_id: "artifact_lineage_recovery"
         title: "Artifact Lineage Recovery"
         purpose: "Plan the recovery of artifact-backed provenance without rebuilding a fused runtime."
@@ -376,3 +386,16 @@ auxiliary_notebooks:
       - "overlay_aware_reporting"
     related_evidence:
       - "notebooks/12_cli_surface.ipynb"
+  - notebook_id: "dodaf_minimal_second_pack_proof"
+    title: "DoDAF Minimal Second Pack Proof"
+    purpose: "Deep dive proof that a local second pack with strict and mixed profiles works through the existing runtime and CLI surfaces."
+    kind: "deep_dive"
+    notebook: "notebooks/13_dodaf_minimal_second_pack.ipynb"
+    journey_id: "governed_text_to_reviewed_assertions"
+    related_phase_ids:
+      - "domain_pack_generalization"
+    related_tests:
+      - "tests/ontology_runtime/test_dodaf_minimal.py"
+      - "tests/integration/test_dodaf_minimal_cli.py"
+    related_evidence:
+      - "notebooks/13_dodaf_minimal_second_pack.ipynb"

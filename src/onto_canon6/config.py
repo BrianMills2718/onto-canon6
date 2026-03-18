@@ -40,6 +40,8 @@ class PathsConfig(BaseModel):
     adr_root: str = Field(min_length=1)
     notebooks_root: str = Field(min_length=1)
     notebook_registry_path: str = Field(min_length=1)
+    local_profiles_root: str = Field(min_length=1)
+    local_ontology_packs_root: str = Field(min_length=1)
     donor_profiles_root: str = Field(min_length=1)
     donor_ontology_packs_root: str = Field(min_length=1)
     review_db_path: str = Field(min_length=1)
@@ -133,6 +135,11 @@ class AppConfig(BaseModel):
 
         return self.resolve_repo_path(self.paths.donor_profiles_root)
 
+    def local_profiles_dir(self) -> Path:
+        """Return the configured repo-local profiles directory."""
+
+        return self.resolve_repo_path(self.paths.local_profiles_root)
+
     def notebook_registry_path(self) -> Path:
         """Return the configured notebook-registry path."""
 
@@ -142,6 +149,27 @@ class AppConfig(BaseModel):
         """Return the configured donor ontology-pack directory."""
 
         return self.resolve_repo_path(self.paths.donor_ontology_packs_root)
+
+    def local_ontology_packs_dir(self) -> Path:
+        """Return the configured repo-local ontology-pack directory."""
+
+        return self.resolve_repo_path(self.paths.local_ontology_packs_root)
+
+    def profile_search_roots(self) -> tuple[Path, ...]:
+        """Return the search order for profiles: local first, donor second."""
+
+        return (
+            self.local_profiles_dir(),
+            self.donor_profiles_dir(),
+        )
+
+    def ontology_pack_search_roots(self) -> tuple[Path, ...]:
+        """Return the search order for ontology packs: local first, donor second."""
+
+        return (
+            self.local_ontology_packs_dir(),
+            self.donor_ontology_packs_dir(),
+        )
 
     def review_db_path(self) -> Path:
         """Return the configured review-state SQLite database path."""

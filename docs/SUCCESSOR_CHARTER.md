@@ -296,12 +296,23 @@ Expose the proved workflow through a thin operational CLI:
 
 Status: complete
 
+### Phase 7
+
+Prove a second real pack without changing the core boundaries:
+
+1. keep the ontology pack separate from the profile/policy choice;
+2. use one reduced local `dodaf_minimal` pack plus strict and mixed profiles
+   over the same vocabulary;
+3. prove that the same validation, review, overlay, and CLI surfaces still
+   work.
+
+Status: complete
+
 ### Later Phases
 
-1. additional domain packs such as DoDAF;
-2. artifact-lineage recovery;
-3. extensions such as epistemic reasoning;
-4. one product-facing integration slice.
+1. artifact-lineage recovery;
+2. extensions such as epistemic reasoning;
+3. one product-facing integration slice.
 
 The active implementation detail for these phases lives in
 `docs/plans/0001_successor_roadmap.md`.
