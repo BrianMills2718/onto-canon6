@@ -110,6 +110,16 @@ typed ontology runtime:
     keep imported provenance visible through governed bundles;
 61. integration proof that the MCP surface can import WhyGame facts, review
     candidates, promote candidates, and export a governed bundle.
+62. one broadened extension-local promoted-assertion epistemic slice with
+    explicit `active`, `weakened`, and `retracted` disposition events;
+63. derived promoted-assertion `superseded` state that still stays grounded in
+    candidate-level supersession rather than a second manual path;
+64. deterministic corroboration groups and deterministic role-filler tension
+    pairs over promoted graph state;
+65. thin CLI commands for promoted-assertion disposition recording and
+    assertion-level epistemic report export;
+66. one live notebook proof for the Phase 15 promoted-assertion epistemic
+    slice.
 
 Concrete assets:
 
@@ -134,47 +144,49 @@ Concrete assets:
 19. `notebooks/18_stable_identity_slice.ipynb`
 20. `notebooks/19_semantic_canonicalization_slice.ipynb`
 21. `notebooks/20_whygame_mcp_slice.ipynb`
-22. `prompts/extraction/text_to_candidate_assertions.yaml`
-23. `prompts/evaluation/judge_candidate_reasonableness.yaml`
-24. `src/onto_canon6/pipeline/text_extraction.py`
-25. `src/onto_canon6/evaluation/`
-26. `src/onto_canon6/cli.py`
-27. `src/onto_canon6/__main__.py`
-28. `src/onto_canon6/notebook_process.py`
-29. `src/onto_canon6/artifacts/`
-30. `src/onto_canon6/core/`
-31. `src/onto_canon6/extensions/epistemic/`
-32. `src/onto_canon6/surfaces/lineage_report.py`
-33. `src/onto_canon6/surfaces/epistemic_report.py`
-34. `src/onto_canon6/surfaces/governed_bundle.py`
-35. `src/onto_canon6/surfaces/graph_report.py`
-36. `src/onto_canon6/surfaces/identity_report.py`
-37. `src/onto_canon6/surfaces/semantic_report.py`
-38. `src/onto_canon6/mcp_server.py`
-39. `src/onto_canon6/adapters/`
-40. `ontology_packs/dodaf_minimal/0.1.0/manifest.yaml`
-41. `profiles/dodaf_minimal_strict/0.1.0/manifest.yaml`
-42. `profiles/dodaf_minimal_mixed/0.1.0/manifest.yaml`
-43. `ontology_packs/whygame_minimal/0.1.0/manifest.yaml`
-44. `profiles/whygame_minimal_strict/0.1.0/manifest.yaml`
-45. tests in `tests/ontology_runtime/`
-46. tests in `tests/pipeline/`
-47. tests in `tests/evaluation/`
-48. tests in `tests/artifacts/`
-49. tests in `tests/core/`
-50. tests in `tests/extensions/`
-51. tests in `tests/surfaces/`
-52. tests in `tests/adapters/`
-53. `tests/integration/test_cli_flow.py`
-54. `tests/integration/test_graph_cli.py`
-55. `tests/integration/test_identity_cli.py`
-56. `tests/integration/test_semantic_cli.py`
-57. `tests/integration/test_notebook_process.py`
-58. `tests/integration/test_dodaf_minimal_cli.py`
-59. `tests/integration/test_mcp_server.py`
-60. `src/onto_canon6/surfaces/review_report.py`
-61. `src/onto_canon6/pipeline/overlay_service.py`
-62. `src/onto_canon6/ontology_runtime/overlays.py`
+22. `notebooks/21_phase15_epistemic_corroboration_slice.ipynb`
+23. `prompts/extraction/text_to_candidate_assertions.yaml`
+24. `prompts/evaluation/judge_candidate_reasonableness.yaml`
+25. `src/onto_canon6/pipeline/text_extraction.py`
+26. `src/onto_canon6/evaluation/`
+27. `src/onto_canon6/cli.py`
+28. `src/onto_canon6/__main__.py`
+29. `src/onto_canon6/notebook_process.py`
+30. `src/onto_canon6/artifacts/`
+31. `src/onto_canon6/core/`
+32. `src/onto_canon6/extensions/epistemic/`
+33. `src/onto_canon6/surfaces/lineage_report.py`
+34. `src/onto_canon6/surfaces/epistemic_report.py`
+35. `src/onto_canon6/surfaces/governed_bundle.py`
+36. `src/onto_canon6/surfaces/graph_report.py`
+37. `src/onto_canon6/surfaces/identity_report.py`
+38. `src/onto_canon6/surfaces/semantic_report.py`
+39. `src/onto_canon6/mcp_server.py`
+40. `src/onto_canon6/adapters/`
+41. `ontology_packs/dodaf_minimal/0.1.0/manifest.yaml`
+42. `profiles/dodaf_minimal_strict/0.1.0/manifest.yaml`
+43. `profiles/dodaf_minimal_mixed/0.1.0/manifest.yaml`
+44. `ontology_packs/whygame_minimal/0.1.0/manifest.yaml`
+45. `profiles/whygame_minimal_strict/0.1.0/manifest.yaml`
+46. tests in `tests/ontology_runtime/`
+47. tests in `tests/pipeline/`
+48. tests in `tests/evaluation/`
+49. tests in `tests/artifacts/`
+50. tests in `tests/core/`
+51. tests in `tests/extensions/`
+52. tests in `tests/surfaces/`
+53. tests in `tests/adapters/`
+54. `tests/integration/test_cli_flow.py`
+55. `tests/integration/test_graph_cli.py`
+56. `tests/integration/test_identity_cli.py`
+57. `tests/integration/test_semantic_cli.py`
+58. `tests/integration/test_epistemic_cli.py`
+59. `tests/integration/test_notebook_process.py`
+60. `tests/integration/test_dodaf_minimal_cli.py`
+61. `tests/integration/test_mcp_server.py`
+62. `src/onto_canon6/surfaces/review_report.py`
+63. `src/onto_canon6/pipeline/overlay_service.py`
+64. `src/onto_canon6/ontology_runtime/overlays.py`
 
 Planning companion:
 
@@ -194,8 +206,8 @@ Still missing:
 5. any richer interactive surface beyond the new thin MCP slice, such as a UI
    or a broader MCP tool set;
 6. any recovered DIGIMON adapter path;
-7. broader corroboration, temporal/inference, and graph-wide epistemic
-   behavior.
+7. temporal/inference recovery and any broader truth-maintenance behavior
+   beyond the explicit Phase 15 slice.
 
 ## Current Donor Dependencies
 
@@ -239,8 +251,9 @@ The current locked strategic decisions are:
 6. mixed-mode routing and proposal acceptance policy must stay configurable;
 7. artifact lineage starts with a narrow three-kind model and
    candidate-centered links before broader registry ergonomics are added;
-8. the first epistemic slice stays extension-local and starts with confidence
-   plus supersession over accepted candidates only;
+8. epistemic behavior stays extension-local: candidate confidence/supersession
+   remain separate from promoted-assertion dispositions and derived
+   corroboration/tension reporting;
 9. the first product-facing workflow is still the governed-bundle export, and
    the first richer agent boundary is now a thin FastMCP wrapper over proved
    services rather than a second runtime.
@@ -274,32 +287,32 @@ The authoritative parity ledger for the broader successor now lives in
    become.
 6. The second-pack proof is intentionally small and does not yet answer how
    broad a future DoDAF vocabulary should become.
-7. The epistemic slice is intentionally narrow and does not yet answer how
-   broader contradiction, tension, or graph-wide truth-maintenance behavior
-   should be modeled.
+7. The epistemic slice is now broader over promoted assertions, but it still
+   intentionally defers temporal/inference recovery and broader
+   truth-maintenance machinery.
 8. Phase 10 completed the bootstrap roadmap, but the successor still has
    explicit parity gaps against `onto-canon`.
-9. Phase 12 recovered the first stable-identity slice, but broader identity,
-   richer surfaces/adapters, and broader epistemics are still not implemented.
+9. Phase 12 recovered the first stable-identity slice, but broader identity
+   and DIGIMON-style adapter recovery are still not implemented.
 10. Phase 13 replaced the first semantic-stack slice, but broader producer-side
    semantic adapters and richer pack metadata are still not implemented.
+11. Phase 15 recovered promoted-assertion corroboration/tension and broader
+   disposition state, but temporal/inference are still explicitly deferred.
 
 ## Immediate Next Step
 
-The immediate strategic next step is no longer “start Phase 13.”
+The current roadmap is now proved through Phase 15.
 
-The repo should now treat Phase 10 as bootstrap completion and drive next work
-from the parity gaps:
+There is no automatic “Phase 16” until a new roadmap extension is justified.
+The repo should now:
 
 1. use `docs/plans/0005_v1_capability_parity_matrix.md` as the feature ledger;
-2. treat Phase 11 as the first durable graph recovery slice rather than full
-   parity with the v1 concept/belief layer;
-3. treat Phase 12 as the first stable-identity slice rather than full v1
-   identity and Q-code parity;
-4. treat Phase 13 as the first semantic-stack replacement slice rather than
-   full v1 semantic-stack parity;
-5. continue to require explicit pressure before adding a richer surface than the
-   current CLI, but do not confuse that rule with “the successor is done”.
+2. treat the current roadmap as the proved bounded successor core, not as full
+   v1 parity;
+3. require explicit workflow pressure before reopening temporal/inference work
+   or another broad parity-recovery phase;
+4. prefer the smallest next product-facing or parity-closing slice if a new
+   roadmap extension is needed.
 
 The locked decisions for the latest slices are already explicit
 in:
@@ -318,3 +331,5 @@ in:
 12. `docs/plans/0007_phase12_identity_shape.md`
 13. `docs/adr/0014-replace-the-v1-semantic-stack-with-pack-driven-canonicalization-and-explicit-recanonicalization.md`
 14. `docs/plans/0008_phase13_semantic_canonicalization_shape.md`
+15. `docs/adr/0016-recover-phase-15-through-extension-local-promoted-assertion-dispositions-and-derived-corroboration.md`
+16. `docs/plans/0010_phase15_epistemic_corroboration_shape.md`

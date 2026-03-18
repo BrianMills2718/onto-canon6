@@ -35,6 +35,12 @@ from .core import (
     SemanticCanonicalizationResult,
     SemanticCanonicalizationService,
 )
+from .extensions.epistemic import (
+    AssertionDispositionRecord,
+    EpistemicService,
+    EpistemicStoreError,
+    PromotedAssertionEpistemicCollectionReport,
+)
 from .pipeline import (
     CandidateAssertionRecord,
     CandidateSubmissionResult,
@@ -46,6 +52,7 @@ from .pipeline import (
     TextExtractionService,
 )
 from .surfaces import (
+    EpistemicReportService,
     GovernedWorkflowBundle,
     GovernedWorkflowBundleService,
     IdentityReport,
@@ -73,6 +80,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     except (
         CanonicalGraphPromotionError,
         ConfigError,
+        EpistemicStoreError,
         IdentityError,
         ReviewStoreError,
         SemanticCanonicalizationError,
@@ -308,6 +316,45 @@ def _build_parser() -> argparse.ArgumentParser:
         default_output=config.cli.default_output_format,
     )
     export_semantic_report_parser.set_defaults(handler=_handle_export_semantic_canonicalization_report)
+
+    disposition_parser = subparsers.add_parser(
+        "record-assertion-disposition",
+        help="Record one explicit epistemic disposition over a promoted assertion.",
+    )
+    _add_store_args(disposition_parser, include_overlay_root=False)
+    disposition_parser.add_argument(
+        "--assertion-id",
+        required=True,
+        help="Promoted assertion identifier.",
+    )
+    disposition_parser.add_argument(
+        "--target-status",
+        required=True,
+        choices=("active", "weakened", "retracted"),
+        help="Explicit promoted-assertion target status.",
+    )
+    disposition_parser.add_argument(
+        "--actor-id",
+        required=True,
+        help="Actor id recorded for the disposition event.",
+    )
+    disposition_parser.add_argument(
+        "--reason",
+        help="Optional rationale recorded on the disposition event.",
+    )
+    _add_output_arg(disposition_parser, default_output=config.cli.default_output_format)
+    disposition_parser.set_defaults(handler=_handle_record_assertion_disposition)
+
+    export_epistemic_report_parser = subparsers.add_parser(
+        "export-assertion-epistemic-report",
+        help="Export promoted assertions with assertion-level epistemic, corroboration, and tension state.",
+    )
+    _add_store_args(export_epistemic_report_parser, include_overlay_root=False)
+    _add_output_arg(
+        export_epistemic_report_parser,
+        default_output=config.cli.default_output_format,
+    )
+    export_epistemic_report_parser.set_defaults(handler=_handle_export_assertion_epistemic_report)
 
     create_identity_parser = subparsers.add_parser(
         "create-identity-for-entity",
@@ -562,6 +609,29 @@ def _handle_export_semantic_canonicalization_report(args: argparse.Namespace) ->
     return 0
 
 
+def _handle_record_assertion_disposition(args: argparse.Namespace) -> int:
+    """Record one explicit epistemic disposition over a promoted assertion."""
+
+    epistemic_service = _build_epistemic_service(args)
+    record = epistemic_service.record_assertion_disposition(
+        assertion_id=args.assertion_id,
+        target_status=args.target_status,
+        actor_id=args.actor_id,
+        rationale=args.reason,
+    )
+    _emit_output(record, output_format=args.output)
+    return 0
+
+
+def _handle_export_assertion_epistemic_report(args: argparse.Namespace) -> int:
+    """Export the promoted-assertion epistemic report for the current graph state."""
+
+    epistemic_service = _build_epistemic_service(args)
+    report = EpistemicReportService(epistemic_service=epistemic_service).build_promoted_assertion_collection_report()
+    _emit_output(report, output_format=args.output)
+    return 0
+
+
 def _handle_create_identity_for_entity(args: argparse.Namespace) -> int:
     """Create or reuse the stable identity for one promoted entity."""
 
@@ -658,6 +728,13 @@ def _build_graph_service(args: argparse.Namespace) -> CanonicalGraphService:
     return CanonicalGraphService(db_path=db_path)
 
 
+def _build_epistemic_service(args: argparse.Namespace) -> EpistemicService:
+    """Create an epistemic service from config-backed defaults plus overrides."""
+
+    db_path = Path(args.review_db_path) if getattr(args, "review_db_path", None) else None
+    return EpistemicService(db_path=db_path)
+
+
 def _build_identity_service(args: argparse.Namespace) -> IdentityService:
     """Create an identity service from config-backed defaults plus overrides."""
 
@@ -723,6 +800,7 @@ def _to_jsonable(value: object) -> Any:
     if isinstance(
         value,
         (
+            AssertionDispositionRecord,
             CandidateAssertionRecord,
             CandidateSubmissionResult,
             CanonicalGraphPromotionResult,
@@ -731,6 +809,7 @@ def _to_jsonable(value: object) -> Any:
             GovernedWorkflowBundle,
             IdentityBundleRecord,
             IdentityReport,
+            PromotedAssertionEpistemicCollectionReport,
             ProposalRecord,
             PromotedGraphAssertionRecord,
             PromotedGraphReport,
@@ -816,6 +895,27 @@ def _to_text(value: object) -> str:
             f"promoted_entities={value.summary.total_entities} "
             f"assertions_with_artifacts={value.summary.total_assertions_with_artifacts} "
             f"assertions_with_confidence={value.summary.total_assertions_with_confidence} "
+            f"assertion_ids={assertion_ids}"
+        )
+    if isinstance(value, AssertionDispositionRecord):
+        return (
+            f"disposition_id={value.disposition_id} "
+            f"assertion_id={value.assertion_id} "
+            f"prior_status={value.prior_status} "
+            f"target_status={value.target_status}"
+        )
+    if isinstance(value, PromotedAssertionEpistemicCollectionReport):
+        assertion_ids = ",".join(
+            report.assertion.assertion_id for report in value.assertion_reports
+        ) or "none"
+        return (
+            f"promoted_assertions={value.summary.total_assertions} "
+            f"active={value.summary.total_active} "
+            f"weakened={value.summary.total_weakened} "
+            f"superseded={value.summary.total_superseded} "
+            f"retracted={value.summary.total_retracted} "
+            f"corroboration_groups={value.summary.total_corroboration_groups} "
+            f"tension_pairs={value.summary.total_tension_pairs} "
             f"assertion_ids={assertion_ids}"
         )
     if isinstance(value, SemanticCanonicalizationResult):

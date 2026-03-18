@@ -20,6 +20,7 @@ during the restart review and planning phase.
 13. [0013 - Start stable identity with promoted-entity identities, alias membership, and explicit external reference state](0013-start-stable-identity-with-promoted-entity-identities-alias-membership-and-explicit-external-reference-state.md)
 14. [0014 - Replace the v1 semantic stack with pack-driven canonicalization and explicit recanonicalization](0014-replace-the-v1-semantic-stack-with-pack-driven-canonicalization-and-explicit-recanonicalization.md)
 15. [0015 - Recover Phase 14 through a thin MCP surface and a WhyGame relationship adapter](0015-recover-phase-14-through-a-thin-mcp-surface-and-a-whygame-relationship-adapter.md)
+16. [0016 - Recover Phase 15 through extension-local promoted-assertion dispositions and derived corroboration](0016-recover-phase-15-through-extension-local-promoted-assertion-dispositions-and-derived-corroboration.md)
 
 ## Notes
 

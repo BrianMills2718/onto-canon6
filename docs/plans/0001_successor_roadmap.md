@@ -918,7 +918,7 @@ Proved:
    and `docs/plans/0009_phase14_agent_surface_and_adapter_shape.md`;
 8. the live proof artifact is `notebooks/20_whygame_mcp_slice.ipynb`.
 
-## Phase 15: Broader Epistemics, Corroboration, And Temporal/Inference Recovery [planned]
+## Phase 15: Broader Epistemics, Corroboration, And Temporal/Inference Recovery [complete]
 
 Goal:
 
@@ -959,11 +959,29 @@ Non-goals:
 1. a full truth-maintenance platform in one phase;
 2. speculative inference features without a real workflow.
 
-Explicit uncertainties:
+Proved:
 
-1. whether broader epistemic state should attach only to promoted assertions or
-   also to pre-promotion candidates;
-2. whether temporal behavior still belongs in the successor at all.
+1. the broadened successor epistemic slice now stays extension-local under
+   `src/onto_canon6/extensions/epistemic/` instead of relocating epistemic
+   policy into the graph store or a new workflow runtime;
+2. promoted assertions can now carry explicit `active`, `weakened`, and
+   `retracted` disposition history, while `superseded` remains derived from
+   the existing candidate-level supersession seam;
+3. corroboration groups are now derived deterministically from non-terminal
+   promoted assertions that share the same canonical normalized assertion body;
+4. tension pairs are now derived deterministically from non-terminal promoted
+   assertions that share entity-role anchors but differ in one or more role
+   fillers;
+5. the new assertion-level epistemic report is exposed through
+   `src/onto_canon6/surfaces/epistemic_report.py` and the CLI commands
+   `record-assertion-disposition` and `export-assertion-epistemic-report`;
+6. the slice is covered by `tests/extensions/test_epistemic_service.py`,
+   `tests/integration/test_epistemic_cli.py`, and the live proof notebook
+   `notebooks/21_phase15_epistemic_corroboration_slice.ipynb`;
+7. temporal/inference recovery is now explicitly deferred rather than left
+   ambiguous, with the local rationale locked in
+   `docs/adr/0016-recover-phase-15-through-extension-local-promoted-assertion-dispositions-and-derived-corroboration.md`
+   and `docs/plans/0010_phase15_epistemic_corroboration_shape.md`.
 
 ## Standing Priorities
 
@@ -988,6 +1006,7 @@ These are the remaining open questions for the successor beyond the bootstrap:
 3. how much of the v1 semantic stack should be retained versus intentionally
    replaced;
 4. which richer surface or adapter should recover first after the CLI;
-5. which broadened epistemic behaviors still deserve recovery in the successor;
+5. whether temporal or inference behavior ever deserves re-entry into the
+   successor after the explicit Phase 15 deferral;
 6. how much broader benchmark coverage is needed before Phase 5 results should
    be treated as stronger quality evidence.

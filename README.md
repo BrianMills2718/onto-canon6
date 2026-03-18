@@ -31,8 +31,9 @@ entire prior runtime. The current scope is intentionally narrow:
 - one local second-pack proof with `dodaf_minimal` strict and mixed profiles
 - one narrow artifact-lineage recovery slice with candidate-centered support
   links and a typed lineage report
-- one narrow extension-local epistemic slice with confidence, supersession,
-  and a typed epistemic report over accepted candidates
+- one extension-local epistemic subsystem with candidate confidence /
+  supersession plus promoted-assertion `weakened` / `retracted` dispositions
+  and derived corroboration / tension reporting
 - one first product-facing workflow that exports a CLI-driven governed bundle
   over accepted reviewed assertions
 - one first canonical-graph recovery slice with explicit promotion from
@@ -69,6 +70,7 @@ Repo-local strategic and planning docs now live in:
 - `notebooks/18_stable_identity_slice.ipynb`
 - `notebooks/19_semantic_canonicalization_slice.ipynb`
 - `notebooks/20_whygame_mcp_slice.ipynb`
+- `notebooks/21_phase15_epistemic_corroboration_slice.ipynb`
 
 ## Current Scope
 
@@ -107,6 +109,10 @@ Today this repo proves only one thin slice:
 20. canonicalize promoted assertion predicates and roles through pack-declared
     aliases and explicit recanonicalization events instead of a hidden runtime
     mapping layer
+21. broaden epistemics over promoted assertions through explicit weakened /
+    retracted dispositions plus derived corroboration and tension reporting
+22. keep temporal/inference recovery explicitly deferred rather than silently
+    implying it already exists
 
 Not in scope yet:
 
@@ -119,7 +125,8 @@ Not in scope yet:
 - domain-specific query helpers
 - richer external producer integrations
 - broader MCP surface expansion
-- DIGIMON, corroboration, and temporal/inference recovery
+- DIGIMON recovery
+- temporal/inference recovery beyond the explicit Phase 15 deferral
 
 ## Layout
 

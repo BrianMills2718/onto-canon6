@@ -1,8 +1,9 @@
-"""SQLite persistence for the first epistemic extension slice.
+"""SQLite persistence for the epistemic extension slices.
 
 This store keeps epistemic records out of the base review schema. It references
 accepted candidate assertions through foreign keys, but it owns its own tables,
-its own conflict rules, and its own derived report state.
+its own conflict rules, and its own derived report state over both accepted
+candidates and promoted graph assertions.
 """
 
 from __future__ import annotations
@@ -15,7 +16,14 @@ import sqlite3
 from typing import Iterator
 import uuid
 
-from .models import ConfidenceAssessmentRecord, ConfidenceSourceKind, SupersessionRecord
+from .models import (
+    AssertionDispositionRecord,
+    AssertionDispositionTargetStatus,
+    ConfidenceAssessmentRecord,
+    ConfidenceSourceKind,
+    PromotedAssertionEpistemicStatus,
+    SupersessionRecord,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -29,7 +37,7 @@ class EpistemicStoreConflictError(EpistemicStoreError):
 
 
 class EpistemicStore:
-    """Persist confidence assessments and supersession relations in SQLite."""
+    """Persist epistemic records in SQLite without mutating base graph tables."""
 
     def __init__(self, db_path: Path) -> None:
         """Initialize the epistemic store and ensure its schema exists."""
@@ -326,8 +334,116 @@ class EpistemicStore:
             for row in rows
         )
 
+    def insert_assertion_disposition(
+        self,
+        conn: sqlite3.Connection,
+        *,
+        assertion_id: str,
+        prior_status: PromotedAssertionEpistemicStatus,
+        target_status: AssertionDispositionTargetStatus,
+        actor_id: str,
+        rationale: str | None,
+    ) -> AssertionDispositionRecord:
+        """Persist one explicit promoted-assertion disposition event."""
+
+        disposition_id = f"edisp_{uuid.uuid4().hex[:24]}"
+        created_at = _now_iso()
+        conn.execute(
+            """
+            INSERT INTO epistemic_assertion_dispositions(
+                disposition_id,
+                assertion_id,
+                prior_status,
+                target_status,
+                actor_id,
+                rationale,
+                created_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                disposition_id,
+                assertion_id,
+                prior_status,
+                target_status,
+                actor_id,
+                rationale,
+                created_at,
+            ),
+        )
+        logger.info(
+            "epistemic assertion disposition persisted assertion_id=%s prior_status=%s target_status=%s actor_id=%s",
+            assertion_id,
+            prior_status,
+            target_status,
+            actor_id,
+        )
+        return AssertionDispositionRecord(
+            disposition_id=disposition_id,
+            assertion_id=assertion_id,
+            prior_status=prior_status,
+            target_status=target_status,
+            actor_id=actor_id,
+            rationale=rationale,
+            created_at=created_at,
+        )
+
+    def get_latest_assertion_disposition(
+        self,
+        conn: sqlite3.Connection,
+        *,
+        assertion_id: str,
+    ) -> AssertionDispositionRecord | None:
+        """Return the latest disposition event for one promoted assertion."""
+
+        row = conn.execute(
+            """
+            SELECT
+                disposition_id,
+                assertion_id,
+                prior_status,
+                target_status,
+                actor_id,
+                rationale,
+                created_at
+            FROM epistemic_assertion_dispositions
+            WHERE assertion_id = ?
+            ORDER BY created_at DESC, disposition_id DESC
+            LIMIT 1
+            """,
+            (assertion_id,),
+        ).fetchone()
+        if row is None:
+            return None
+        return _hydrate_assertion_disposition(row)
+
+    def list_assertion_dispositions(
+        self,
+        conn: sqlite3.Connection,
+        *,
+        assertion_id: str,
+    ) -> tuple[AssertionDispositionRecord, ...]:
+        """Return all disposition events for one promoted assertion in order."""
+
+        rows = conn.execute(
+            """
+            SELECT
+                disposition_id,
+                assertion_id,
+                prior_status,
+                target_status,
+                actor_id,
+                rationale,
+                created_at
+            FROM epistemic_assertion_dispositions
+            WHERE assertion_id = ?
+            ORDER BY created_at, disposition_id
+            """,
+            (assertion_id,),
+        ).fetchall()
+        return tuple(_hydrate_assertion_disposition(row) for row in rows)
+
     def _initialize(self) -> None:
-        """Create the SQLite schema for the first epistemic extension slice."""
+        """Create the SQLite schema for the epistemic extension slices."""
 
         with self._connect() as conn:
             conn.executescript(
@@ -351,10 +467,22 @@ class EpistemicStore:
                     created_at TEXT NOT NULL
                 );
 
+                CREATE TABLE IF NOT EXISTS epistemic_assertion_dispositions(
+                    disposition_id TEXT PRIMARY KEY,
+                    assertion_id TEXT NOT NULL REFERENCES promoted_graph_assertions(assertion_id) ON DELETE CASCADE,
+                    prior_status TEXT NOT NULL,
+                    target_status TEXT NOT NULL,
+                    actor_id TEXT NOT NULL,
+                    rationale TEXT,
+                    created_at TEXT NOT NULL
+                );
+
                 CREATE INDEX IF NOT EXISTS idx_epistemic_confidence_candidate
                     ON epistemic_confidence_assessments(candidate_id, created_at, assessment_id);
                 CREATE INDEX IF NOT EXISTS idx_epistemic_supersession_replacement
                     ON epistemic_supersessions(replacement_candidate_id, created_at, supersession_id);
+                CREATE INDEX IF NOT EXISTS idx_epistemic_assertion_disposition_assertion
+                    ON epistemic_assertion_dispositions(assertion_id, created_at, disposition_id);
                 """
             )
         logger.info("epistemic store initialized db_path=%s", self._db_path)
@@ -382,3 +510,43 @@ def _parse_confidence_source_kind(value: str) -> ConfidenceSourceKind:
     if value == "model":
         return "model"
     raise EpistemicStoreError(f"unsupported confidence source kind: {value}")
+
+
+def _parse_assertion_target_status(value: str) -> AssertionDispositionTargetStatus:
+    """Parse one persisted assertion target status and fail loudly on bad values."""
+
+    if value == "active":
+        return "active"
+    if value == "weakened":
+        return "weakened"
+    if value == "retracted":
+        return "retracted"
+    raise EpistemicStoreError(f"unsupported assertion target status: {value}")
+
+
+def _parse_assertion_epistemic_status(value: str) -> PromotedAssertionEpistemicStatus:
+    """Parse one persisted assertion epistemic status and fail loudly on bad values."""
+
+    if value == "active":
+        return "active"
+    if value == "weakened":
+        return "weakened"
+    if value == "superseded":
+        return "superseded"
+    if value == "retracted":
+        return "retracted"
+    raise EpistemicStoreError(f"unsupported assertion epistemic status: {value}")
+
+
+def _hydrate_assertion_disposition(row: sqlite3.Row) -> AssertionDispositionRecord:
+    """Hydrate one persisted promoted-assertion disposition event."""
+
+    return AssertionDispositionRecord(
+        disposition_id=str(row["disposition_id"]),
+        assertion_id=str(row["assertion_id"]),
+        prior_status=_parse_assertion_epistemic_status(str(row["prior_status"])),
+        target_status=_parse_assertion_target_status(str(row["target_status"])),
+        actor_id=str(row["actor_id"]),
+        rationale=str(row["rationale"]) if row["rationale"] is not None else None,
+        created_at=str(row["created_at"]),
+    )

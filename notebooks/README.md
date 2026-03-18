@@ -10,13 +10,13 @@ The main end-to-end user journey is:
 - [00_master_governed_text_to_reviewed_assertions.ipynb](00_master_governed_text_to_reviewed_assertions.ipynb)
 
 That notebook is the primary notebook entry point for the current workflow and
-now ends in a live governed-bundle export artifact plus explicit canonical
-graph promotion, stable-identity state, and semantic recanonicalization rather
-than a provisional workflow plan.
+now ends in live governed-bundle export, canonical graph promotion, stable
+identity, semantic recanonicalization, and broadened promoted-assertion
+epistemic reporting rather than a provisional workflow plan.
 
-The current Phase 14 auxiliary proof is:
+The current Phase 15 auxiliary proof is:
 
-- [20_whygame_mcp_slice.ipynb](20_whygame_mcp_slice.ipynb)
+- [21_phase15_epistemic_corroboration_slice.ipynb](21_phase15_epistemic_corroboration_slice.ipynb)
 
 ## Registry
 

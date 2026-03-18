@@ -418,7 +418,19 @@ Recover the broader v1 belief-management behaviors:
 3. recover temporal/inference behavior only if it still serves the successor
    thesis.
 
-Status: planned
+Status: complete
+
+Phase 15 now means:
+
+1. promoted assertions can carry explicit `active`, `weakened`, and
+   `retracted` disposition history through the extension-local epistemic
+   package;
+2. promoted-assertion `superseded` state remains derived from the already
+   proved candidate-level supersession seam;
+3. corroboration and tension are now inspectable as deterministic reports over
+   promoted graph state rather than hidden judgment calls;
+4. temporal/inference recovery is explicitly deferred from the current
+   successor scope rather than left ambiguous.
 
 ### Bootstrap Completion vs Successor Completion
 

@@ -19,12 +19,14 @@ journeys:
       - "docs/adr/0013-start-stable-identity-with-promoted-entity-identities-alias-membership-and-explicit-external-reference-state.md"
       - "docs/adr/0014-replace-the-v1-semantic-stack-with-pack-driven-canonicalization-and-explicit-recanonicalization.md"
       - "docs/adr/0015-recover-phase-14-through-a-thin-mcp-surface-and-a-whygame-relationship-adapter.md"
+      - "docs/adr/0016-recover-phase-15-through-extension-local-promoted-assertion-dispositions-and-derived-corroboration.md"
       - "notebooks/README.md"
     related_tests:
       - "tests/integration/test_cli_flow.py"
       - "tests/integration/test_graph_cli.py"
       - "tests/integration/test_identity_cli.py"
       - "tests/integration/test_mcp_server.py"
+      - "tests/integration/test_epistemic_cli.py"
       - "tests/integration/test_semantic_cli.py"
       - "tests/integration/test_notebook_process.py"
     related_evidence:
@@ -33,6 +35,7 @@ journeys:
       - "notebooks/18_stable_identity_slice.ipynb"
       - "notebooks/19_semantic_canonicalization_slice.ipynb"
       - "notebooks/20_whygame_mcp_slice.ipynb"
+      - "notebooks/21_phase15_epistemic_corroboration_slice.ipynb"
     phases:
       - phase_id: "source_artifact_preparation"
         title: "Source Artifact Preparation"
@@ -382,6 +385,34 @@ journeys:
           - "docs/adr/0014-replace-the-v1-semantic-stack-with-pack-driven-canonicalization-and-explicit-recanonicalization.md"
         related_evidence:
           - "notebooks/19_semantic_canonicalization_slice.ipynb"
+      - phase_id: "promoted_assertion_epistemics"
+        title: "Promoted Assertion Epistemics"
+        purpose: "Apply promoted-assertion dispositions and inspect derived corroboration and tension reports without relocating epistemic policy into core."
+        input_artifact: "semantic_canonicalization_proof"
+        output_artifact: "promoted_assertion_epistemic_proof"
+        acceptance_criteria:
+          - "Promoted assertions can move through explicit extension-local disposition history beyond supersession alone."
+          - "Corroboration and tension are inspectable through a typed report surface over promoted graph state."
+          - "The phase runs live in the canonical journey notebook."
+        status: "proven"
+        execution_mode: "live"
+        proof_critical: true
+        related_code:
+          - "src/onto_canon6/extensions/epistemic/models.py"
+          - "src/onto_canon6/extensions/epistemic/store.py"
+          - "src/onto_canon6/extensions/epistemic/service.py"
+          - "src/onto_canon6/surfaces/epistemic_report.py"
+          - "src/onto_canon6/cli.py"
+        related_tests:
+          - "tests/extensions/test_epistemic_service.py"
+          - "tests/integration/test_epistemic_cli.py"
+          - "tests/integration/test_notebook_process.py"
+        related_docs:
+          - "docs/plans/0001_successor_roadmap.md"
+          - "docs/plans/0010_phase15_epistemic_corroboration_shape.md"
+          - "docs/adr/0016-recover-phase-15-through-extension-local-promoted-assertion-dispositions-and-derived-corroboration.md"
+        related_evidence:
+          - "notebooks/21_phase15_epistemic_corroboration_slice.ipynb"
 
 auxiliary_notebooks:
   - notebook_id: "policy_contracts_probe"
@@ -614,3 +645,16 @@ auxiliary_notebooks:
       - "tests/ontology_runtime/test_whygame_minimal.py"
     related_evidence:
       - "notebooks/20_whygame_mcp_slice.ipynb"
+  - notebook_id: "phase15_promoted_assertion_epistemics"
+    title: "Phase 15 Promoted Assertion Epistemics"
+    purpose: "Deep dive proof for promoted-assertion dispositions plus derived corroboration and tension reporting."
+    kind: "deep_dive"
+    notebook: "notebooks/21_phase15_epistemic_corroboration_slice.ipynb"
+    journey_id: "governed_text_to_reviewed_assertions"
+    related_phase_ids:
+      - "promoted_assertion_epistemics"
+    related_tests:
+      - "tests/extensions/test_epistemic_service.py"
+      - "tests/integration/test_epistemic_cli.py"
+    related_evidence:
+      - "notebooks/21_phase15_epistemic_corroboration_slice.ipynb"
