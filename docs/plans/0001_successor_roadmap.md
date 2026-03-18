@@ -635,6 +635,258 @@ Proved:
    `docs/adr/0010-choose-cli-driven-governed-bundle-export-as-the-first-product-facing-workflow.md`
    and `docs/plans/0004_phase10_governed_bundle_shape.md`.
 
+## Bootstrap Completion Rule
+
+Phase 10 completes the initial successor bootstrap roadmap.
+
+It does not, by itself, complete the broader successor goal. The strategic
+completion rule from this point forward is:
+
+1. every major `onto-canon` capability must have an explicit disposition in
+   `docs/plans/0005_v1_capability_parity_matrix.md`;
+2. any capability still marked `deferred` must map to an explicit later phase
+   or be intentionally abandoned with rationale;
+3. the successor is not considered complete until every retained or replaced
+   capability has real proof evidence.
+
+## Phase 11: Canonical Graph Recovery [planned]
+
+Goal:
+
+1. recover the durable graph layer that made `onto-canon` more than a review
+   inbox.
+
+Build:
+
+1. define a canonical promotion target for accepted candidate assertions;
+2. recover first-class concept/entity and assertion/belief records;
+3. preserve explicit links from promoted graph state back to accepted
+   candidates, evidence spans, proposals, overlays, artifacts, and extension
+   state;
+4. keep promotion explicit and auditable rather than hidden inside review
+   actions.
+
+Acceptance criteria:
+
+1. accepted candidates can be promoted into deterministic durable graph records;
+2. promoted records preserve provenance back to the review workflow and source
+   evidence;
+3. users can inspect or query promoted graph state without reading candidate
+   tables directly;
+4. the implementation does not introduce a new fused workflow runtime.
+
+Acceptance evidence:
+
+1. one design note for the promotion target and failure semantics;
+2. unit and integration tests over promotion and provenance links;
+3. one notebook proof over the smallest real promoted graph slice.
+
+Build order:
+
+1. lock the graph record shape first;
+2. implement explicit promotion from accepted candidates second;
+3. expose one thin report or query path over promoted state third.
+
+Non-goals:
+
+1. full external identity resolution;
+2. broad semantic-stack recovery in the same phase;
+3. all v1 graph ergonomics at once.
+
+Explicit uncertainties:
+
+1. whether promoted system facts remain separate beliefs or become typed
+   attributes with explicit provenance;
+2. whether promotion is one-to-one from candidate to assertion or may split one
+   candidate into multiple graph records.
+
+## Phase 12: Stable Identity and External References [planned]
+
+Goal:
+
+1. recover cross-ingestion identity and explicit external references.
+
+Build:
+
+1. define successor-local stable identities for promoted entities/concepts;
+2. add explicit alias, merge, and unresolved-state handling;
+3. define whether v1-style Wikidata/Q-code behavior is retained directly or
+   replaced by a broader external-reference model with Wikidata as one provider.
+
+Acceptance criteria:
+
+1. promoted identities remain stable across repeated ingestions;
+2. external references are explicit attachments or explicit unresolved state,
+   not hidden strings;
+3. merge and alias decisions are reviewable and auditable;
+4. the repo states clearly whether Q-code behavior is retained, optional, or
+   replaced.
+
+Acceptance evidence:
+
+1. one identity-model design note;
+2. unit and integration tests over identity attachment and merge behavior;
+3. one notebook proof over repeated-ingestion identity stability.
+
+Build order:
+
+1. lock the identity model;
+2. wire one reviewed merge/alias path;
+3. add one external-reference provider or explicit unresolved-state path.
+
+Non-goals:
+
+1. broad web enrichment;
+2. large-scale entity linking optimization;
+3. support for many external sources at once.
+
+Explicit uncertainties:
+
+1. whether Wikidata stays the default first provider;
+2. whether local stable ids should be concept-centric, entity-centric, or both.
+
+## Phase 13: Semantic Canonicalization Stack Recovery Or Replacement [planned]
+
+Goal:
+
+1. recover or explicitly replace the major semantic layers that made v1 useful
+   beyond generic extraction.
+
+Build:
+
+1. write one explicit semantic-stack decision record covering AMR, PropBank,
+   SUMO, FrameNet, and related validation layers;
+2. implement one credible canonicalization path over promoted assertions;
+3. recover explicit repair or recanonicalization behavior for bad promoted graph
+   state.
+
+Acceptance criteria:
+
+1. every major v1 semantic layer is explicitly marked retained, replaced, or
+   abandoned with rationale;
+2. one production path canonicalizes predicates and roles with measurable
+   quality evidence;
+3. structurally invalid or rejected promoted assertions can be revalidated or
+   repaired through explicit tools;
+4. the replacement thesis, if chosen, is benchmarked against real corpus
+   slices.
+
+Acceptance evidence:
+
+1. one semantic-stack ADR or design note;
+2. tests over canonicalization and repair flows;
+3. one benchmark or notebook slice comparing the retained/replacement path to
+   the predecessor expectations.
+
+Build order:
+
+1. lock the stack disposition first;
+2. implement the minimal canonicalization path second;
+3. add repair and recanonicalization third.
+
+Non-goals:
+
+1. importing the whole v1 ontology stack mechanically;
+2. supporting every ontology pack equally in the first semantic slice.
+
+Explicit uncertainties:
+
+1. whether AMR/PropBank remains the main predicate path or becomes one adapter
+   among several;
+2. how much of SUMO/FrameNet should remain hard dependencies.
+
+## Phase 14: Agent Surface And Adapter Recovery [planned]
+
+Goal:
+
+1. recover one richer surface and one real adapter without recreating the v1
+   monolith.
+
+Build:
+
+1. choose the next outward-facing boundary based on real consumer need;
+2. if MCP is chosen, wrap the proved services thinly rather than reintroducing a
+   new tool runtime;
+3. define an explicit adapter contract and recover one real adapter such as
+   WhyGame or DIGIMON.
+
+Acceptance criteria:
+
+1. the richer surface stays thin and service-backed;
+2. one real adapter imports or exports through an explicit contract;
+3. adapter provenance remains visible through the existing governance and bundle
+   surfaces;
+4. the new surface provides user-visible leverage beyond CLI-only export.
+
+Acceptance evidence:
+
+1. one design note for the chosen surface and adapter contract;
+2. integration tests over the richer surface or adapter path;
+3. one notebook or scripted operator proof using the new boundary.
+
+Build order:
+
+1. choose the next surface and adapter explicitly;
+2. add the adapter contract second;
+3. implement one adapter and one surface proof third.
+
+Non-goals:
+
+1. all v1 adapters at once;
+2. a large new MCP surface just because v1 had one.
+
+Explicit uncertainties:
+
+1. whether the first recovered adapter should be WhyGame or DIGIMON;
+2. whether MCP is justified immediately or after adapter recovery proves demand.
+
+## Phase 15: Broader Epistemics, Corroboration, And Temporal/Inference Recovery [planned]
+
+Goal:
+
+1. recover the remaining v1 belief-management capabilities that the narrow
+   Phase 9 slice intentionally deferred.
+
+Build:
+
+1. extend epistemics beyond confidence and supersession where justified;
+2. add explicit corroboration and tension signals over promoted graph state;
+3. recover temporal or inference behavior only if it still serves the current
+   successor thesis.
+
+Acceptance criteria:
+
+1. promoted assertions can carry broader state transitions than supersession
+   alone;
+2. the system can surface corroborations or tensions over graph state through
+   explicit reports or tools;
+3. temporal/inference behavior is either proved or explicitly abandoned with
+   rationale;
+4. epistemic behavior remains extension-local where possible.
+
+Acceptance evidence:
+
+1. one design note over the broadened epistemic model;
+2. tests over state transitions, corroboration, and tension behavior;
+3. one notebook proof over a small but real conflict/corroboration slice.
+
+Build order:
+
+1. lock the broadened epistemic contract first;
+2. wire corroboration and tension signals second;
+3. add temporal or inference work only if the earlier slices justify it.
+
+Non-goals:
+
+1. a full truth-maintenance platform in one phase;
+2. speculative inference features without a real workflow.
+
+Explicit uncertainties:
+
+1. whether broader epistemic state should attach only to promoted assertions or
+   also to pre-promotion candidates;
+2. whether temporal behavior still belongs in the successor at all.
+
 ## Standing Priorities
 
 Always prefer:
@@ -650,11 +902,14 @@ Always prefer:
 
 ## Current Explicit Unknowns
 
-These are the remaining open questions after the current phased roadmap:
+These are the remaining open questions for the successor beyond the bootstrap:
 
-1. how much broader benchmark coverage is needed before Phase 5 results should
-   be treated as stronger quality evidence;
-2. when, if ever, real consumer pressure justifies adding MCP or another richer
-   boundary over the governed-bundle surface;
-3. which concrete next workflow or consumer should justify a roadmap extension
-   beyond Phase 10.
+1. what exact promotion target should define the recovered canonical graph;
+2. whether external identity should remain Wikidata-first or become a broader
+   external-reference model;
+3. how much of the v1 semantic stack should be retained versus intentionally
+   replaced;
+4. which richer surface or adapter should recover first after the CLI;
+5. which broadened epistemic behaviors still deserve recovery in the successor;
+6. how much broader benchmark coverage is needed before Phase 5 results should
+   be treated as stronger quality evidence.

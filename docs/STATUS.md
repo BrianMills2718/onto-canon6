@@ -125,8 +125,16 @@ Planning companion:
 Still missing:
 
 1. broader benchmark coverage and calibration beyond the first local live slice;
-2. any post-Phase-10 outward-facing boundary beyond the governed-bundle CLI
-   export, such as MCP or a richer UI.
+2. the canonical concept/belief graph and system-belief layer that existed in
+   `onto-canon`;
+3. successor-local stable identity plus external-reference recovery;
+4. a recovered or explicitly replaced semantic canonicalization stack covering
+   the main v1 ontology layers;
+5. any post-Phase-10 outward-facing boundary beyond the governed-bundle CLI
+   export, such as MCP or a richer UI;
+6. any recovered WhyGame or DIGIMON adapter path;
+7. broader corroboration, temporal/inference, and graph-wide epistemic
+   behavior.
 
 ## Current Donor Dependencies
 
@@ -178,6 +186,9 @@ The current locked strategic decisions are:
 The authoritative phase exit criteria and remaining explicit unknowns now live
 in `docs/plans/0001_successor_roadmap.md`.
 
+The authoritative parity ledger for the broader successor now lives in
+`docs/plans/0005_v1_capability_parity_matrix.md`.
+
 ## Current Risks
 
 1. Detailed donor evidence still lives partly in `onto-canon5`.
@@ -196,20 +207,24 @@ in `docs/plans/0001_successor_roadmap.md`.
 7. The epistemic slice is intentionally narrow and does not yet answer how
    broader contradiction, tension, or graph-wide truth-maintenance behavior
    should be modeled.
-8. The roadmap is complete through Phase 10, so any next expansion now needs
-   explicit new consumer pressure instead of momentum alone.
+8. Phase 10 completed the bootstrap roadmap, but the successor still has
+   explicit parity gaps against `onto-canon`.
+9. The next phases are strategically clear, but they are not yet implemented:
+   canonical graph recovery, stable identity, semantic-stack recovery or
+   replacement, richer surfaces/adapters, and broader epistemics.
 
 ## Immediate Next Step
 
-Hold the line after Phase 10 unless a real next consumer or boundary justifies
-expanding the roadmap:
+The immediate strategic next step is no longer “hold after Phase 10.”
 
-1. expand benchmark coverage only if it changes real confidence in the current
-   workflow;
-2. add MCP only if a concrete consumer needs it over the governed-bundle
-   export;
-3. extend the roadmap only when a new workflow or integration pressure is
-   explicit.
+The repo should now treat Phase 10 as bootstrap completion and drive next work
+from the parity gaps:
+
+1. use `docs/plans/0005_v1_capability_parity_matrix.md` as the feature ledger;
+2. start Phase 11 when the canonical graph promotion shape is locked with
+   explicit acceptance criteria;
+3. continue to require explicit pressure before adding a richer surface than the
+   current CLI, but do not confuse that rule with “the successor is done”.
 
 The locked decisions for the latest slices are already explicit
 in:
@@ -220,3 +235,5 @@ in:
 4. `docs/plans/0003_phase9_epistemic_shape.md`
 5. `docs/adr/0010-choose-cli-driven-governed-bundle-export-as-the-first-product-facing-workflow.md`
 6. `docs/plans/0004_phase10_governed_bundle_shape.md`
+7. `docs/adr/0011-treat-phase-10-as-bootstrap-completion-and-track-v1-capability-parity-explicitly.md`
+8. `docs/plans/0005_v1_capability_parity_matrix.md`

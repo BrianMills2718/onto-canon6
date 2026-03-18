@@ -2,6 +2,9 @@
 
 `onto-canon6` is the successor bootstrap for the `onto-canon` lineage.
 
+Phase 10 completed the bootstrap roadmap, not the full successor-parity goal.
+The explicit parity ledger now lives in `docs/plans/0005_v1_capability_parity_matrix.md`.
+
 This repo starts from the first proved slice instead of trying to port an
 entire prior runtime. The current scope is intentionally narrow:
 
@@ -41,6 +44,7 @@ Repo-local strategic and planning docs now live in:
 - `docs/SUCCESSOR_CHARTER.md`
 - `docs/STATUS.md`
 - `docs/plans/0001_successor_roadmap.md`
+- `docs/plans/0005_v1_capability_parity_matrix.md`
 - `notebooks/README.md`
 - `notebooks/notebook_registry.yaml`
 - `notebooks/00_master_governed_text_to_reviewed_assertions.ipynb`
@@ -86,9 +90,13 @@ Today this repo proves only one thin slice:
 Not in scope yet:
 
 - broader live benchmark coverage and calibration beyond the first local slice
+- the canonical concept/belief graph and system-belief layer from v1
+- stable identity plus external-reference recovery
+- the broader semantic canonicalization stack from v1
 - domain-specific query helpers
 - richer external producer integrations
 - UI or MCP surfaces
+- WhyGame, DIGIMON, corroboration, and temporal/inference recovery
 
 ## Layout
 

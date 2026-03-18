@@ -17,7 +17,8 @@ It exists to keep the project from repeating the drift that happened across
 
 This charter summarizes the accepted ADR direction. The detailed supporting ADR
 record still exists in `onto-canon5/docs/adr/` and the active implementation
-plan lives in this repo's roadmap.
+plan lives in this repo's roadmap plus the explicit v1 capability parity
+matrix.
 
 ## The Successor Goal
 
@@ -26,6 +27,10 @@ plan lives in this repo's roadmap.
 That means the project is trying to recover and extend the useful capabilities
 proven in earlier repos while enforcing clear subsystem boundaries that earlier
 iterations did not hold.
+
+Phase 10 completed the initial bootstrap roadmap for that goal. It did not, by
+itself, finish the broader successor-parity work. The explicit parity ledger now
+lives in `docs/plans/0005_v1_capability_parity_matrix.md`.
 
 The intended architecture is:
 
@@ -229,6 +234,13 @@ phase document for:
 3. required acceptance evidence;
 4. explicit unresolved questions.
 
+The parity matrix in `docs/plans/0005_v1_capability_parity_matrix.md` is the
+authoritative companion for:
+
+1. which major `onto-canon` capabilities are already recovered;
+2. which are intentionally narrowed or replaced;
+3. which are still deferred.
+
 ### Phase 0
 
 Prove ontology runtime contracts, donor loading, policy semantics, and local
@@ -344,12 +356,70 @@ Deliver the first real product-facing workflow without adding a second runtime:
 
 Status: complete
 
-### After The Current Roadmap
+### Phase 11
 
-The current phased roadmap is now complete through Phase 10.
+Recover the canonical graph layer that existed in v1, but without rebuilding
+the old fused runtime:
 
-Any further expansion should start from a new ADR or roadmap extension driven
-by explicit benchmark pressure, a real consumer, or a specific next workflow.
+1. promote accepted candidate assertions into durable graph records;
+2. recover first-class concept/entity and assertion/belief records;
+3. preserve traceability from promoted graph state back to candidates,
+   evidence, proposals, overlays, artifacts, and extension state.
+
+Status: planned
+
+### Phase 12
+
+Recover stable identity and external reference handling:
+
+1. define successor-local stable identity records;
+2. add explicit alias, merge, and unresolved-state handling;
+3. decide whether v1-style Q-code linkage is retained directly or replaced by a
+   broader external-reference model with Wikidata as one provider.
+
+Status: planned
+
+### Phase 13
+
+Recover or explicitly replace the semantic canonicalization stack:
+
+1. make the v1 AMR/PropBank/SUMO/FrameNet/Wikidata stack explicit as retained,
+   replaced, or abandoned by layer;
+2. implement one credible canonicalization path over promoted assertions;
+3. recover explicit repair and recanonicalization behavior for bad graph state.
+
+Status: planned
+
+### Phase 14
+
+Recover one richer external surface and one real adapter:
+
+1. add an agent-facing boundary only if it stays thin and service-backed;
+2. recover one real adapter such as WhyGame or DIGIMON through an explicit
+   contract;
+3. prove user-visible leverage beyond CLI-only governed-bundle export.
+
+Status: planned
+
+### Phase 15
+
+Recover the broader v1 belief-management behaviors:
+
+1. extend epistemics beyond confidence and supersession where justified;
+2. add corroboration, tension, and related graph-wide review signals;
+3. recover temporal/inference behavior only if it still serves the successor
+   thesis.
+
+Status: planned
+
+### Bootstrap Completion vs Successor Completion
+
+The bootstrap roadmap is complete through Phase 10.
+
+The broader successor is not complete until every major v1 capability is
+explicitly marked as retained, expanded, replaced, deferred, or abandoned in
+`docs/plans/0005_v1_capability_parity_matrix.md`, and every retained/replaced
+capability has real proof artifacts.
 
 ## Drift Conditions
 
@@ -374,7 +444,8 @@ If someone needs the local strategic picture in `onto-canon6`, start with:
 2. `docs/adr/README.md`;
 3. `docs/STATUS.md`;
 4. `docs/plans/0001_successor_roadmap.md`;
-5. `notebooks/README.md`.
+5. `docs/plans/0005_v1_capability_parity_matrix.md`;
+6. `notebooks/README.md`.
 
 If someone needs the deeper donor rationale behind this charter, then read the
 supporting donor record in `onto-canon5`:

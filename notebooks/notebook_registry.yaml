@@ -369,7 +369,7 @@ auxiliary_notebooks:
       - "notebooks/08_text_extraction_slice.ipynb"
   - notebook_id: "long_term_phase_planning"
     title: "Long-Term Phase Planning"
-    purpose: "Planning companion for the later successor phases beyond the currently proved workflow."
+    purpose: "Planning companion for the completed bootstrap plus the planned post-bootstrap parity phases."
     kind: "planning_companion"
     notebook: "notebooks/09_successor_long_term_plan.ipynb"
     journey_id: "governed_text_to_reviewed_assertions"
@@ -391,16 +391,12 @@ auxiliary_notebooks:
     related_evidence:
       - "notebooks/10_live_extraction_evaluation.ipynb"
   - notebook_id: "future_phase_breakdown"
-    title: "Future Phase Breakdown"
-    purpose: "Planning companion that expands the later successor phases into concrete build order and uncertainties."
+    title: "Post-Bootstrap Phase Breakdown"
+    purpose: "Planning companion that expands the planned Phase 11-15 successor recovery work into concrete acceptance targets and uncertainties."
     kind: "planning_companion"
     notebook: "notebooks/11_future_phase_breakdown.ipynb"
     journey_id: "governed_text_to_reviewed_assertions"
-    related_phase_ids:
-      - "domain_pack_generalization"
-      - "artifact_lineage_recovery"
-      - "epistemic_extension"
-      - "product_facing_workflow_integration"
+    related_phase_ids: []
     related_evidence:
       - "notebooks/11_future_phase_breakdown.ipynb"
   - notebook_id: "cli_surface_proof"

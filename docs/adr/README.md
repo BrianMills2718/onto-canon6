@@ -15,6 +15,7 @@ during the restart review and planning phase.
 8. [0008 - Start artifact lineage with a narrow three-kind model and candidate-centered links](0008-start-artifact-lineage-with-a-narrow-three-kind-model-and-candidate-centered-links.md)
 9. [0009 - Start epistemic extension with confidence and supersession over accepted candidates](0009-start-epistemic-extension-with-confidence-and-supersession-over-accepted-candidates.md)
 10. [0010 - Choose CLI-driven governed bundle export as the first product-facing workflow](0010-choose-cli-driven-governed-bundle-export-as-the-first-product-facing-workflow.md)
+11. [0011 - Treat Phase 10 as bootstrap completion and track v1 capability parity explicitly](0011-treat-phase-10-as-bootstrap-completion-and-track-v1-capability-parity-explicitly.md)
 
 ## Notes
 
@@ -24,3 +25,6 @@ during the restart review and planning phase.
 3. `../SUCCESSOR_CHARTER.md` is the local strategic summary that explains why
    this repo exists, what it borrows from the lineage, and how to read the
    current plan.
+4. `../plans/0005_v1_capability_parity_matrix.md` is the explicit ledger for
+   what happened to each major `onto-canon` capability after the Phase 10
+   bootstrap.
