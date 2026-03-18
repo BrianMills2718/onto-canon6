@@ -308,20 +308,25 @@ Prove a second real pack without changing the core boundaries:
 
 Status: complete
 
+### Phase 8
+
+Recover artifact-backed provenance through a narrow bounded subsystem:
+
+1. start with `source`, `derived_dataset`, and `analysis_result` artifacts;
+2. keep artifact links candidate-centered first;
+3. expose accepted-assertion lineage by traversal/reporting rather than copied
+   storage;
+4. keep the path to a broader registry model explicit.
+
+Status: complete
+
 ### Later Phases
 
-1. artifact-lineage recovery;
-2. extensions such as epistemic reasoning;
-3. one product-facing integration slice.
+1. extensions such as epistemic reasoning;
+2. one product-facing integration slice.
 
 The active implementation detail for these phases lives in
 `docs/plans/0001_successor_roadmap.md`.
-
-The current artifact-lineage direction is intentionally narrow first:
-
-1. start with `source`, `derived_dataset`, and `analysis_result` artifacts;
-2. attach lineage to candidate assertions first;
-3. keep the path to the broader registry model explicit rather than implicit.
 
 ## Drift Conditions
 

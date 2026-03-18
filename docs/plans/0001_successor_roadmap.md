@@ -433,7 +433,7 @@ Proved:
    `notebooks/13_dodaf_minimal_second_pack.ipynb` and
    `notebooks/00_master_governed_text_to_reviewed_assertions.ipynb`.
 
-## Phase 8: Artifact Lineage Recovery [planned]
+## Phase 8: Artifact Lineage Recovery [completed]
 
 Goal:
 
@@ -491,6 +491,20 @@ Path to the fuller version:
    queries become awkward through traversal alone;
 3. add stronger exact deduplication and registry ergonomics only after repeated
    duplicate registration becomes a demonstrated problem.
+
+Proved:
+
+1. `onto-canon6` now has a bounded `artifacts` subsystem with typed artifact
+   records, lineage edges, and candidate-centered support links;
+2. the first slice persists `source`, `derived_dataset`, and
+   `analysis_result` artifacts without moving artifact logic into `core`;
+3. accepted-assertion lineage remains derived by traversal/reporting rather
+   than copied into a second storage path;
+4. the typed lineage report surface now exposes direct links and ancestor
+   artifacts explicitly;
+5. the deep-dive proof and canonical journey phase are now live in
+   `notebooks/14_artifact_lineage_slice.ipynb` and
+   `notebooks/00_master_governed_text_to_reviewed_assertions.ipynb`.
 
 ## Phase 9: Epistemic Extension [planned]
 
@@ -620,6 +634,4 @@ relevant phase begins:
    be treated as stronger quality evidence;
 2. whether the first operational surface after CLI should be MCP, UI, or
    something else;
-3. how much artifact lineage should be recovered in Phase 8 before Phase 10
-   begins;
-4. which single workflow should be the first product-facing integration slice.
+3. which single workflow should be the first product-facing integration slice.

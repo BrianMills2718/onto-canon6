@@ -26,6 +26,8 @@ entire prior runtime. The current scope is intentionally narrow:
 - one canonical end-to-end journey notebook plus a machine-readable notebook
   registry and validator
 - one local second-pack proof with `dodaf_minimal` strict and mixed profiles
+- one narrow artifact-lineage recovery slice with candidate-centered support
+  links and a typed lineage report
 
 The governing architectural rationale lives in the local successor charter and
 the adopted ADR set.
@@ -42,6 +44,7 @@ Repo-local strategic and planning docs now live in:
 - `notebooks/11_future_phase_breakdown.ipynb`
 - `notebooks/12_cli_surface.ipynb`
 - `notebooks/13_dodaf_minimal_second_pack.ipynb`
+- `notebooks/14_artifact_lineage_slice.ipynb`
 
 ## Current Scope
 
@@ -67,6 +70,8 @@ Today this repo proves only one thin slice:
     notebook with explicit phase contracts outside the notebook
 14. prove a second local ontology pack can use the same runtime, review,
     overlay, and CLI surfaces without core branching
+15. recover a narrow artifact-lineage slice with explicit source, derived, and
+    analysis artifacts linked to candidate assertions
 
 Not in scope yet:
 
@@ -80,6 +85,7 @@ Not in scope yet:
 
 ```text
 src/onto_canon6/
+  artifacts/
   core/
   ontology_runtime/
   pipeline/

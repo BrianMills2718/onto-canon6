@@ -43,7 +43,14 @@ typed ontology runtime:
 27. one local second-pack proof with `dodaf_minimal` strict and mixed profiles
     over the same pack vocabulary;
 28. proof that the second pack uses the same runtime, review, overlay, and CLI
-    surfaces without core branching.
+    surfaces without core branching;
+29. one bounded artifact subsystem with typed `source`, `derived_dataset`, and
+    `analysis_result` records;
+30. candidate-centered artifact support links plus recursive lineage edges over
+    persisted artifacts;
+31. one typed lineage report surface that exposes direct links and ancestor
+    artifacts without hidden metadata blobs;
+32. live notebook proof for the narrow Phase 8 artifact-lineage slice.
 
 Concrete assets:
 
@@ -61,25 +68,29 @@ Concrete assets:
 12. `notebooks/notebook_registry.yaml`
 13. `notebooks/README.md`
 14. `notebooks/13_dodaf_minimal_second_pack.ipynb`
-15. `prompts/extraction/text_to_candidate_assertions.yaml`
-16. `prompts/evaluation/judge_candidate_reasonableness.yaml`
-17. `src/onto_canon6/pipeline/text_extraction.py`
-18. `src/onto_canon6/evaluation/`
-19. `src/onto_canon6/cli.py`
-20. `src/onto_canon6/__main__.py`
-21. `src/onto_canon6/notebook_process.py`
-22. `ontology_packs/dodaf_minimal/0.1.0/manifest.yaml`
-23. `profiles/dodaf_minimal_strict/0.1.0/manifest.yaml`
-24. `profiles/dodaf_minimal_mixed/0.1.0/manifest.yaml`
-25. tests in `tests/ontology_runtime/`
-26. tests in `tests/pipeline/`
-27. tests in `tests/evaluation/`
-28. `tests/integration/test_cli_flow.py`
-29. `tests/integration/test_notebook_process.py`
-30. `tests/integration/test_dodaf_minimal_cli.py`
-31. `src/onto_canon6/surfaces/review_report.py`
-32. `src/onto_canon6/pipeline/overlay_service.py`
-33. `src/onto_canon6/ontology_runtime/overlays.py`
+15. `notebooks/14_artifact_lineage_slice.ipynb`
+16. `prompts/extraction/text_to_candidate_assertions.yaml`
+17. `prompts/evaluation/judge_candidate_reasonableness.yaml`
+18. `src/onto_canon6/pipeline/text_extraction.py`
+19. `src/onto_canon6/evaluation/`
+20. `src/onto_canon6/cli.py`
+21. `src/onto_canon6/__main__.py`
+22. `src/onto_canon6/notebook_process.py`
+23. `src/onto_canon6/artifacts/`
+24. `src/onto_canon6/surfaces/lineage_report.py`
+25. `ontology_packs/dodaf_minimal/0.1.0/manifest.yaml`
+26. `profiles/dodaf_minimal_strict/0.1.0/manifest.yaml`
+27. `profiles/dodaf_minimal_mixed/0.1.0/manifest.yaml`
+28. tests in `tests/ontology_runtime/`
+29. tests in `tests/pipeline/`
+30. tests in `tests/evaluation/`
+31. tests in `tests/artifacts/`
+32. `tests/integration/test_cli_flow.py`
+33. `tests/integration/test_notebook_process.py`
+34. `tests/integration/test_dodaf_minimal_cli.py`
+35. `src/onto_canon6/surfaces/review_report.py`
+36. `src/onto_canon6/pipeline/overlay_service.py`
+37. `src/onto_canon6/ontology_runtime/overlays.py`
 
 Planning companion:
 
@@ -91,9 +102,8 @@ Planning companion:
 Still missing:
 
 1. broader benchmark coverage and calibration beyond the first local live slice;
-2. artifact-lineage recovery;
-3. epistemic extension;
-4. product-facing end-to-end workflow beyond CLI, notebooks, and Python API
+2. epistemic extension;
+3. product-facing end-to-end workflow beyond CLI, notebooks, and Python API
    use.
 
 ## Current Donor Dependencies
@@ -135,7 +145,9 @@ The current locked strategic decisions are:
    goal-oriented prompts and schema-enforced structured output;
 5. the second-pack proof uses a reduced local `dodaf_minimal` pack rather than
    a large donor import;
-6. mixed-mode routing and proposal acceptance policy must stay configurable.
+6. mixed-mode routing and proposal acceptance policy must stay configurable;
+7. artifact lineage starts with a narrow three-kind model and
+   candidate-centered links before broader registry ergonomics are added.
 
 The authoritative phase exit criteria and remaining explicit unknowns now live
 in `docs/plans/0001_successor_roadmap.md`.
@@ -150,22 +162,26 @@ in `docs/plans/0001_successor_roadmap.md`.
    benchmark corpus is still small and not yet calibrated for broader claims.
 4. Notebook process validation is local to `onto-canon6`; it is not yet wired
    into the wider workspace hook and graph system.
-5. The second-pack proof is intentionally small and does not yet answer how
+5. The artifact-lineage slice is intentionally narrow and does not yet answer
+   how broad the later artifact taxonomy or deduplication ergonomics should
+   become.
+6. The second-pack proof is intentionally small and does not yet answer how
    broad a future DoDAF vocabulary should become.
 
 ## Immediate Next Step
 
-Start Phase 8 with one narrow artifact-lineage proof that recovers one of the
-strongest v1 donor capabilities without rebuilding a fused runtime:
+Start Phase 9 by choosing the smallest useful epistemic operator set before any
+extension storage or report surface is added:
 
-1. define the minimal typed artifact reference model and persistence boundary;
-2. start with `source`, `derived_dataset`, and `analysis_result` artifact kinds;
-3. link artifacts to candidate assertions first and derive accepted-assertion
-   lineage by traversal/reporting rather than copied storage;
-4. prove one workflow where a claim is supported by an analysis artifact rather
-   than only raw text.
+1. choose whether the first slice starts with confidence, tension,
+   supersession, or contradiction;
+2. decide whether epistemic state should attach only to accepted assertions or
+   also candidate assertions under review;
+3. keep the extension outside `core`, `ontology_runtime`, and the base review
+   pipeline.
 
-The path to a broader lineage model is now explicit in:
+The artifact-lineage shape and path to the broader model are already explicit
+in:
 
 1. `docs/adr/0008-start-artifact-lineage-with-a-narrow-three-kind-model-and-candidate-centered-links.md`
 2. `docs/plans/0002_phase8_artifact_lineage_shape.md`

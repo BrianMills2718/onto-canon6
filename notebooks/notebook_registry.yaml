@@ -13,6 +13,7 @@ journeys:
       - "docs/adr/0004-keep-text-derived-candidate-assertions-grounded-in-source-evidence-and-route-llm-work-through-llm_client.md"
       - "docs/adr/0006-prefer-cli-as-the-first-operational-surface-before-mcp-or-ui.md"
       - "docs/adr/0007-adopt-canonical-journey-notebooks-with-an-explicit-registry.md"
+      - "docs/adr/0008-start-artifact-lineage-with-a-narrow-three-kind-model-and-candidate-centered-links.md"
       - "notebooks/README.md"
     related_tests:
       - "tests/integration/test_cli_flow.py"
@@ -207,23 +208,34 @@ journeys:
           - "notebooks/13_dodaf_minimal_second_pack.ipynb"
       - phase_id: "artifact_lineage_recovery"
         title: "Artifact Lineage Recovery"
-        purpose: "Plan the recovery of artifact-backed provenance without rebuilding a fused runtime."
-        input_artifact: "second_pack_plan"
-        output_artifact: "artifact_lineage_contract"
+        purpose: "Recover artifact-backed provenance through a narrow three-kind model without rebuilding a fused runtime."
+        input_artifact: "second_pack_proof"
+        output_artifact: "artifact_lineage_proof"
         acceptance_criteria:
-          - "The notebook emits an explicit provisional artifact-lineage contract."
-          - "Downstream phases consume that contract rather than inventing lineage state."
-          - "The phase remains explicitly provisional."
-        status: "planned"
-        execution_mode: "stub"
-        promotion_path: "Promote this phase when typed artifact references, storage, and lineage reporting exist with tests."
+          - "Typed artifact records with explicit kinds are persisted."
+          - "Candidate-centered artifact links and lineage edges are inspectable through a live report."
+          - "The phase runs live in the canonical journey notebook."
+        status: "proven"
+        execution_mode: "live"
+        proof_critical: true
+        related_code:
+          - "src/onto_canon6/artifacts/models.py"
+          - "src/onto_canon6/artifacts/store.py"
+          - "src/onto_canon6/artifacts/service.py"
+          - "src/onto_canon6/surfaces/lineage_report.py"
+        related_tests:
+          - "tests/artifacts/test_artifact_service.py"
+          - "tests/integration/test_notebook_process.py"
         related_docs:
           - "docs/plans/0001_successor_roadmap.md"
-          - "notebooks/11_future_phase_breakdown.ipynb"
+          - "docs/plans/0002_phase8_artifact_lineage_shape.md"
+          - "docs/adr/0008-start-artifact-lineage-with-a-narrow-three-kind-model-and-candidate-centered-links.md"
+        related_evidence:
+          - "notebooks/14_artifact_lineage_slice.ipynb"
       - phase_id: "epistemic_extension"
         title: "Epistemic Extension"
         purpose: "Plan the first optional epistemic slice without moving epistemic policy into the core workflow."
-        input_artifact: "artifact_lineage_contract"
+        input_artifact: "artifact_lineage_proof"
         output_artifact: "epistemic_extension_contract"
         acceptance_criteria:
           - "The notebook emits an explicit provisional epistemic contract artifact."
@@ -399,3 +411,15 @@ auxiliary_notebooks:
       - "tests/integration/test_dodaf_minimal_cli.py"
     related_evidence:
       - "notebooks/13_dodaf_minimal_second_pack.ipynb"
+  - notebook_id: "artifact_lineage_slice"
+    title: "Artifact Lineage Slice"
+    purpose: "Deep dive proof for the narrow candidate-centered artifact-lineage slice."
+    kind: "deep_dive"
+    notebook: "notebooks/14_artifact_lineage_slice.ipynb"
+    journey_id: "governed_text_to_reviewed_assertions"
+    related_phase_ids:
+      - "artifact_lineage_recovery"
+    related_tests:
+      - "tests/artifacts/test_artifact_service.py"
+    related_evidence:
+      - "notebooks/14_artifact_lineage_slice.ipynb"
