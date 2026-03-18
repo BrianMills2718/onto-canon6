@@ -33,3 +33,7 @@ evaluation:
   judge_num_retries: 2
   judge_max_budget_usd: 0.25
   judge_max_output_tokens: 1500
+
+cli:
+  default_output_format: "json"
+  file_source_kind: "text_file"

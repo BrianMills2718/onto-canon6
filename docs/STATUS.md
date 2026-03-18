@@ -30,7 +30,12 @@ typed ontology runtime:
 18. notebook probes that make the current behavior inspectable;
 19. a typed live extraction-evaluation harness that separates reasonableness,
     structural validation, and exact canonicalization fidelity;
-20. a first real-model benchmark proof over the local PSYOP evaluation slice.
+20. a first real-model benchmark proof over the local PSYOP evaluation slice;
+21. a thin operational CLI over extraction, review, proposal, and overlay
+    actions;
+22. JSON-first CLI output suitable for scripting and notebook inspection;
+23. loud end-to-end CLI proof for both the happy path and a review-transition
+    failure path.
 
 Concrete assets:
 
@@ -43,16 +48,20 @@ Concrete assets:
 7. `notebooks/07_text_grounded_import_contract.ipynb`
 8. `notebooks/08_text_extraction_slice.ipynb`
 9. `notebooks/10_live_extraction_evaluation.ipynb`
-10. `prompts/extraction/text_to_candidate_assertions.yaml`
-11. `prompts/evaluation/judge_candidate_reasonableness.yaml`
-12. `src/onto_canon6/pipeline/text_extraction.py`
-13. `src/onto_canon6/evaluation/`
-14. tests in `tests/ontology_runtime/`
-15. tests in `tests/pipeline/`
-16. tests in `tests/evaluation/`
-17. `src/onto_canon6/surfaces/review_report.py`
-18. `src/onto_canon6/pipeline/overlay_service.py`
-19. `src/onto_canon6/ontology_runtime/overlays.py`
+10. `notebooks/12_cli_surface.ipynb`
+11. `prompts/extraction/text_to_candidate_assertions.yaml`
+12. `prompts/evaluation/judge_candidate_reasonableness.yaml`
+13. `src/onto_canon6/pipeline/text_extraction.py`
+14. `src/onto_canon6/evaluation/`
+15. `src/onto_canon6/cli.py`
+16. `src/onto_canon6/__main__.py`
+17. tests in `tests/ontology_runtime/`
+18. tests in `tests/pipeline/`
+19. tests in `tests/evaluation/`
+20. tests in `tests/integration/test_cli_flow.py`
+21. `src/onto_canon6/surfaces/review_report.py`
+22. `src/onto_canon6/pipeline/overlay_service.py`
+23. `src/onto_canon6/ontology_runtime/overlays.py`
 
 Planning companion:
 
@@ -64,11 +73,11 @@ Planning companion:
 Still missing:
 
 1. broader benchmark coverage and calibration beyond the first local live slice;
-2. a first operational surface outside notebooks and direct Python calls;
-3. second-pack generalization beyond the current donor packs;
-4. artifact-lineage recovery;
-5. epistemic extension;
-6. product-facing end-to-end workflow beyond notebook and Python API use.
+2. second-pack generalization beyond the current donor packs;
+3. artifact-lineage recovery;
+4. epistemic extension;
+5. product-facing end-to-end workflow beyond CLI, notebooks, and Python API
+   use.
 
 ## Current Donor Dependencies
 
@@ -99,8 +108,8 @@ The current locked strategic decisions are:
 
 1. the first regained user-visible capability is governed review of candidate
    assertions;
-2. live extraction evaluation is now explicit and the next phase is the first
-   operational surface;
+2. live extraction evaluation is now explicit and the first operational
+   surface is a thin CLI;
 3. text-derived candidate assertions should carry first-class evidence spans
    and may also carry an optional natural-language gloss;
 4. any LLM-backed extraction path must route through `llm_client` with
@@ -115,16 +124,18 @@ in `docs/plans/0001_successor_roadmap.md`.
 
 1. Detailed donor evidence still lives partly in `onto-canon5`.
 2. `onto-canon6` now proves a text-grounded import workflow structurally, but
-   it still exposes that workflow mainly through notebooks and Python APIs.
+   it still exposes that workflow only through notebooks, Python APIs, and the
+   narrow first CLI.
 3. The extraction boundary now has a real live benchmark slice, but the
    benchmark corpus is still small and not yet calibrated for broader claims.
 
 ## Immediate Next Step
 
-Start Phase 6 with one narrow operational proof that makes the existing
-workflow usable without direct Python calls:
+Start Phase 7 with one narrow second-pack proof that exercises the same
+workflow without changing core boundaries:
 
-1. add a thin CLI over extraction, review, proposal, and overlay actions;
-2. keep business logic in the existing services rather than in CLI handlers;
-3. prove the end-to-end workflow through CLI tests plus one notebook or shell
-   transcript.
+1. choose the smallest useful second-pack scope before importing donor
+   material;
+2. define one strict profile and one mixed profile for that pack;
+3. prove validation, proposal routing, overlays, and the existing CLI/report
+   surfaces against that pack.

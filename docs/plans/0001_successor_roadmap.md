@@ -284,7 +284,7 @@ Proved:
 5. the local rationale is now recorded in
    `docs/adr/0005-separate-live-extraction-reasonableness-from-structural-validation-and-canonicalization-fidelity.md`.
 
-## Phase 6: First Operational Surface [planned]
+## Phase 6: First Operational Surface [completed]
 
 Goal:
 
@@ -340,6 +340,20 @@ Explicit uncertainties:
 2. whether human-readable output should be table-first or JSON-first;
 3. whether the first review commands should stay separate by object type
    (`candidate`, `proposal`) or share one higher-level command group.
+
+Proved:
+
+1. `onto-canon6` now exposes a thin operational CLI through
+   `src/onto_canon6/cli.py` and `python -m onto_canon6`;
+2. the first command surface covers extract, list, review, and overlay actions
+   without moving business logic into CLI handlers;
+3. JSON-first output is stable enough for scripted notebook and shell use,
+   while a lighter text view reuses the same underlying data;
+4. the end-to-end happy path plus a loud invalid-review failure are covered by
+   `tests/integration/test_cli_flow.py`;
+5. the local proof and rationale now live in
+   `notebooks/12_cli_surface.ipynb` and
+   `docs/adr/0006-prefer-cli-as-the-first-operational-surface-before-mcp-or-ui.md`.
 
 ## Phase 7: Domain Pack Generalization [planned]
 

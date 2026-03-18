@@ -15,6 +15,7 @@ import yaml
 from pydantic import BaseModel, ConfigDict, Field
 
 AcceptancePolicyValue = Literal["record_only", "apply_to_overlay"]
+CLIOutputFormatValue = Literal["json", "text"]
 
 
 class ConfigError(RuntimeError):
@@ -87,6 +88,20 @@ class EvaluationConfig(BaseModel):
     judge_max_output_tokens: int = Field(ge=1)
 
 
+class CLIConfig(BaseModel):
+    """CLI defaults for the first operational surface.
+
+    The CLI still allows explicit user overrides at the command line, but the
+    default output style and source-kind labeling should remain repo-configured
+    rather than hidden in parser code.
+    """
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    default_output_format: CLIOutputFormatValue
+    file_source_kind: str = Field(min_length=1)
+
+
 class AppConfig(BaseModel):
     """Validated application configuration for onto-canon6."""
 
@@ -98,6 +113,7 @@ class AppConfig(BaseModel):
     ontology_runtime: OntologyRuntimeConfig
     extraction: ExtractionConfig
     evaluation: EvaluationConfig
+    cli: CLIConfig
 
     def resolve_repo_path(self, relative_path: str) -> Path:
         """Resolve a repository-relative path declared in config."""
@@ -185,6 +201,7 @@ def clear_config_cache() -> None:
 __all__ = [
     "AcceptancePolicyValue",
     "AppConfig",
+    "CLIOutputFormatValue",
     "ConfigError",
     "clear_config_cache",
     "default_config_path",

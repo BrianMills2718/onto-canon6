@@ -279,13 +279,22 @@ Measure live extraction quality without conflating support and canonical form:
 
 Status: complete
 
+### Phase 6
+
+Expose the proved workflow through a thin operational CLI:
+
+1. keep handlers narrow and service-backed;
+2. prefer JSON-first output for scripting and notebook inspection;
+3. prove the happy path and one loud failure path end to end.
+
+Status: complete
+
 ### Later Phases
 
-1. a first operational surface, with CLI preferred before MCP/UI;
-2. additional domain packs such as DoDAF;
-3. artifact-lineage recovery;
-4. extensions such as epistemic reasoning;
-5. one product-facing integration slice.
+1. additional domain packs such as DoDAF;
+2. artifact-lineage recovery;
+3. extensions such as epistemic reasoning;
+4. one product-facing integration slice.
 
 The active implementation detail for these phases lives in
 `docs/plans/0001_successor_roadmap.md`.

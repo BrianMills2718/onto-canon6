@@ -10,6 +10,7 @@ during the restart review and planning phase.
 3. [0003 - Prefer configurable policies and narrow extension seams over a general plugin framework](0003-prefer-configurable-policies-and-narrow-extension-seams-over-a-general-plugin-framework.md)
 4. [0004 - Keep text-derived candidate assertions grounded in source evidence and route LLM work through llm_client](0004-keep-text-derived-candidate-assertions-grounded-in-source-evidence-and-route-llm-work-through-llm_client.md)
 5. [0005 - Separate live extraction reasonableness from structural validation and canonicalization fidelity](0005-separate-live-extraction-reasonableness-from-structural-validation-and-canonicalization-fidelity.md)
+6. [0006 - Prefer CLI as the first operational surface before MCP or UI](0006-prefer-cli-as-the-first-operational-surface-before-mcp-or-ui.md)
 
 ## Notes
 

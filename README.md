@@ -21,6 +21,8 @@ entire prior runtime. The current scope is intentionally narrow:
 - explicit overlay application for accepted ontology proposals
 - overlay-aware validation against local additions
 - minimal report surface over persisted review and overlay state
+- a thin operational CLI over extract, list, review, proposal, and overlay
+  actions
 
 The governing architectural rationale lives in the local successor charter and
 the adopted ADR set.
@@ -32,6 +34,7 @@ Repo-local strategic and planning docs now live in:
 - `docs/plans/0001_successor_roadmap.md`
 - `notebooks/09_successor_long_term_plan.ipynb`
 - `notebooks/11_future_phase_breakdown.ipynb`
+- `notebooks/12_cli_surface.ipynb`
 
 ## Current Scope
 
@@ -51,6 +54,8 @@ Today this repo proves only one thin slice:
     bypassing the review, proposal, or overlay workflow
 11. evaluate live extraction quality without collapsing support,
     structural validity, and exact preferred-form agreement into one score
+12. operate the proved workflow through a thin CLI instead of direct Python
+    calls
 
 Not in scope yet:
 
