@@ -1,6 +1,12 @@
 """Surface exports for inspectable report-oriented views."""
 
 from .epistemic_report import EpistemicReportService
+from .graph_report import (
+    PromotedGraphAssertionBundle,
+    PromotedGraphReport,
+    PromotedGraphReportService,
+    PromotedGraphReportSummary,
+)
 from .governed_bundle import (
     GovernedBundleScope,
     GovernedCandidateBundle,
@@ -19,6 +25,10 @@ __all__ = [
     "GovernedWorkflowBundleService",
     "GovernedWorkflowBundleSummary",
     "LineageReportService",
+    "PromotedGraphAssertionBundle",
+    "PromotedGraphReport",
+    "PromotedGraphReportService",
+    "PromotedGraphReportSummary",
     "ReviewReport",
     "ReviewReportService",
     "ReviewReportSummary",

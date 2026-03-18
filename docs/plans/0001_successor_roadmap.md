@@ -649,7 +649,7 @@ completion rule from this point forward is:
 3. the successor is not considered complete until every retained or replaced
    capability has real proof evidence.
 
-## Phase 11: Canonical Graph Recovery [planned]
+## Phase 11: Canonical Graph Recovery [completed]
 
 Goal:
 
@@ -659,7 +659,7 @@ Goal:
 Build:
 
 1. define a canonical promotion target for accepted candidate assertions;
-2. recover first-class concept/entity and assertion/belief records;
+2. recover the first durable entity/assertion graph records;
 3. preserve explicit links from promoted graph state back to accepted
    candidates, evidence spans, proposals, overlays, artifacts, and extension
    state;
@@ -699,6 +699,25 @@ Explicit uncertainties:
    attributes with explicit provenance;
 2. whether promotion is one-to-one from candidate to assertion or may split one
    candidate into multiple graph records.
+
+Proved:
+
+1. accepted candidates now promote explicitly into durable graph assertions and
+   materialized graph entities through `src/onto_canon6/core/graph_service.py`
+   and `src/onto_canon6/core/graph_store.py`;
+2. the graph slice remains candidate-backed: proposal, overlay, artifact, and
+   epistemic context are traversed through `source_candidate_id` rather than
+   duplicated into graph tables;
+3. the promoted graph state is inspectable through a thin CLI-backed surface in
+   `src/onto_canon6/cli.py` and `src/onto_canon6/surfaces/graph_report.py`;
+4. the slice is covered by `tests/core/test_graph_service.py`,
+   `tests/integration/test_graph_cli.py`, and
+   `notebooks/17_canonical_graph_recovery_slice.ipynb`;
+5. the canonical journey notebook now includes a live graph-promotion phase in
+   `notebooks/00_master_governed_text_to_reviewed_assertions.ipynb`;
+6. the local rationale is now recorded in
+   `docs/adr/0012-start-canonical-graph-recovery-with-explicit-promotion-from-accepted-candidates.md`
+   and `docs/plans/0006_phase11_graph_promotion_shape.md`.
 
 ## Phase 12: Stable Identity and External References [planned]
 

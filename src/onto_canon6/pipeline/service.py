@@ -266,6 +266,16 @@ class ReviewService:
                 proposal_status_filter=proposal_status_filter,
             )
 
+    def get_candidate_assertion(self, *, candidate_id: str) -> CandidateAssertionRecord:
+        """Return one persisted candidate assertion by identifier."""
+
+        normalized_candidate_id = _require_non_empty(candidate_id, field_name="candidate_id")
+        with self._store.transaction() as conn:
+            return self._store.get_candidate_assertion(
+                conn,
+                candidate_id=normalized_candidate_id,
+            )
+
     def list_proposals(
         self,
         *,

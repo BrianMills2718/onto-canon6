@@ -67,6 +67,18 @@ typed ontology runtime:
     workflow;
 40. one canonical journey notebook that now ends in a real governed export
     artifact rather than a provisional workflow plan.
+41. one narrow canonical-graph subsystem with durable promoted assertion,
+    promoted entity, and promoted role-filler tables;
+42. explicit promotion from accepted candidates into deterministic durable
+    graph records;
+43. one typed promoted-graph report surface that traverses candidate-backed
+    proposal, overlay, artifact, and epistemic context without duplicating it
+    into the graph tables;
+44. thin CLI commands for promotion, promoted-assertion listing, and promoted
+    graph report export;
+45. one live notebook proof for the first canonical-graph recovery slice;
+46. one canonical journey notebook phase that now continues from governed
+    bundle export into explicit graph promotion.
 
 Concrete assets:
 
@@ -87,33 +99,38 @@ Concrete assets:
 15. `notebooks/14_artifact_lineage_slice.ipynb`
 16. `notebooks/15_epistemic_extension_slice.ipynb`
 17. `notebooks/16_governed_bundle_workflow.ipynb`
-18. `prompts/extraction/text_to_candidate_assertions.yaml`
-19. `prompts/evaluation/judge_candidate_reasonableness.yaml`
-20. `src/onto_canon6/pipeline/text_extraction.py`
-21. `src/onto_canon6/evaluation/`
-22. `src/onto_canon6/cli.py`
-23. `src/onto_canon6/__main__.py`
-24. `src/onto_canon6/notebook_process.py`
-25. `src/onto_canon6/artifacts/`
-26. `src/onto_canon6/extensions/epistemic/`
-27. `src/onto_canon6/surfaces/lineage_report.py`
-28. `src/onto_canon6/surfaces/epistemic_report.py`
-29. `src/onto_canon6/surfaces/governed_bundle.py`
-30. `ontology_packs/dodaf_minimal/0.1.0/manifest.yaml`
-31. `profiles/dodaf_minimal_strict/0.1.0/manifest.yaml`
-32. `profiles/dodaf_minimal_mixed/0.1.0/manifest.yaml`
-33. tests in `tests/ontology_runtime/`
-34. tests in `tests/pipeline/`
-35. tests in `tests/evaluation/`
-36. tests in `tests/artifacts/`
-37. tests in `tests/extensions/`
-38. tests in `tests/surfaces/`
-39. `tests/integration/test_cli_flow.py`
-40. `tests/integration/test_notebook_process.py`
-41. `tests/integration/test_dodaf_minimal_cli.py`
-42. `src/onto_canon6/surfaces/review_report.py`
-43. `src/onto_canon6/pipeline/overlay_service.py`
-44. `src/onto_canon6/ontology_runtime/overlays.py`
+18. `notebooks/17_canonical_graph_recovery_slice.ipynb`
+19. `prompts/extraction/text_to_candidate_assertions.yaml`
+20. `prompts/evaluation/judge_candidate_reasonableness.yaml`
+21. `src/onto_canon6/pipeline/text_extraction.py`
+22. `src/onto_canon6/evaluation/`
+23. `src/onto_canon6/cli.py`
+24. `src/onto_canon6/__main__.py`
+25. `src/onto_canon6/notebook_process.py`
+26. `src/onto_canon6/artifacts/`
+27. `src/onto_canon6/core/`
+28. `src/onto_canon6/extensions/epistemic/`
+29. `src/onto_canon6/surfaces/lineage_report.py`
+30. `src/onto_canon6/surfaces/epistemic_report.py`
+31. `src/onto_canon6/surfaces/governed_bundle.py`
+32. `src/onto_canon6/surfaces/graph_report.py`
+33. `ontology_packs/dodaf_minimal/0.1.0/manifest.yaml`
+34. `profiles/dodaf_minimal_strict/0.1.0/manifest.yaml`
+35. `profiles/dodaf_minimal_mixed/0.1.0/manifest.yaml`
+36. tests in `tests/ontology_runtime/`
+37. tests in `tests/pipeline/`
+38. tests in `tests/evaluation/`
+39. tests in `tests/artifacts/`
+40. tests in `tests/core/`
+41. tests in `tests/extensions/`
+42. tests in `tests/surfaces/`
+43. `tests/integration/test_cli_flow.py`
+44. `tests/integration/test_graph_cli.py`
+45. `tests/integration/test_notebook_process.py`
+46. `tests/integration/test_dodaf_minimal_cli.py`
+47. `src/onto_canon6/surfaces/review_report.py`
+48. `src/onto_canon6/pipeline/overlay_service.py`
+49. `src/onto_canon6/ontology_runtime/overlays.py`
 
 Planning companion:
 
@@ -125,8 +142,8 @@ Planning companion:
 Still missing:
 
 1. broader benchmark coverage and calibration beyond the first local live slice;
-2. the canonical concept/belief graph and system-belief layer that existed in
-   `onto-canon`;
+2. the broader v1 concept/belief graph and system-belief layer beyond the
+   first promoted-assertion/entity slice;
 3. successor-local stable identity plus external-reference recovery;
 4. a recovered or explicitly replaced semantic canonicalization stack covering
    the main v1 ontology layers;
@@ -182,6 +199,9 @@ The current locked strategic decisions are:
    plus supersession over accepted candidates only;
 9. the first product-facing workflow is a CLI-driven governed-bundle export,
    with MCP deferred until real consumer pressure exists.
+10. canonical graph recovery stays explicit and bounded: accepted candidates
+    promote into durable graph records, while governance and provenance
+    context is traversed through the source candidate rather than duplicated.
 
 The authoritative phase exit criteria and remaining explicit unknowns now live
 in `docs/plans/0001_successor_roadmap.md`.
@@ -209,21 +229,23 @@ The authoritative parity ledger for the broader successor now lives in
    should be modeled.
 8. Phase 10 completed the bootstrap roadmap, but the successor still has
    explicit parity gaps against `onto-canon`.
-9. The next phases are strategically clear, but they are not yet implemented:
-   canonical graph recovery, stable identity, semantic-stack recovery or
-   replacement, richer surfaces/adapters, and broader epistemics.
+9. Phase 11 recovered the first canonical-graph slice, but stable identity,
+   semantic-stack recovery or replacement, richer surfaces/adapters, and
+   broader epistemics are still not implemented.
 
 ## Immediate Next Step
 
-The immediate strategic next step is no longer “hold after Phase 10.”
+The immediate strategic next step is no longer “start Phase 11.”
 
 The repo should now treat Phase 10 as bootstrap completion and drive next work
 from the parity gaps:
 
 1. use `docs/plans/0005_v1_capability_parity_matrix.md` as the feature ledger;
-2. start Phase 11 when the canonical graph promotion shape is locked with
-   explicit acceptance criteria;
-3. continue to require explicit pressure before adding a richer surface than the
+2. treat Phase 11 as the first durable graph recovery slice rather than full
+   parity with the v1 concept/belief layer;
+3. start Phase 12 when the stable-identity shape is locked with explicit
+   acceptance criteria;
+4. continue to require explicit pressure before adding a richer surface than the
    current CLI, but do not confuse that rule with “the successor is done”.
 
 The locked decisions for the latest slices are already explicit
@@ -237,3 +259,5 @@ in:
 6. `docs/plans/0004_phase10_governed_bundle_shape.md`
 7. `docs/adr/0011-treat-phase-10-as-bootstrap-completion-and-track-v1-capability-parity-explicitly.md`
 8. `docs/plans/0005_v1_capability_parity_matrix.md`
+9. `docs/adr/0012-start-canonical-graph-recovery-with-explicit-promotion-from-accepted-candidates.md`
+10. `docs/plans/0006_phase11_graph_promotion_shape.md`

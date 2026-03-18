@@ -10,8 +10,8 @@ The main end-to-end user journey is:
 - [00_master_governed_text_to_reviewed_assertions.ipynb](00_master_governed_text_to_reviewed_assertions.ipynb)
 
 That notebook is the primary notebook entry point for the current workflow and
-now ends in a live governed-bundle export artifact rather than a provisional
-workflow plan.
+now ends in a live governed-bundle export artifact plus explicit canonical
+graph promotion rather than a provisional workflow plan.
 
 ## Registry
 

@@ -362,11 +362,12 @@ Recover the canonical graph layer that existed in v1, but without rebuilding
 the old fused runtime:
 
 1. promote accepted candidate assertions into durable graph records;
-2. recover first-class concept/entity and assertion/belief records;
+2. recover the first durable entity/assertion graph records without attempting
+   the full v1 concept/system-belief layer in the same slice;
 3. preserve traceability from promoted graph state back to candidates,
    evidence, proposals, overlays, artifacts, and extension state.
 
-Status: planned
+Status: complete
 
 ### Phase 12
 

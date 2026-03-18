@@ -20,6 +20,7 @@ import sys
 from typing import Any, Sequence
 
 from .config import CLIOutputFormatValue, ConfigError, get_config
+from .core import CanonicalGraphPromotionResult, CanonicalGraphService, PromotedGraphAssertionRecord
 from .pipeline import (
     CandidateAssertionRecord,
     CandidateSubmissionResult,
@@ -30,7 +31,12 @@ from .pipeline import (
     ReviewStoreError,
     TextExtractionService,
 )
-from .surfaces import GovernedWorkflowBundle, GovernedWorkflowBundleService
+from .surfaces import (
+    GovernedWorkflowBundle,
+    GovernedWorkflowBundleService,
+    PromotedGraphReport,
+    PromotedGraphReportService,
+)
 
 
 def main(argv: Sequence[str] | None = None) -> int:
@@ -192,6 +198,43 @@ def _build_parser() -> argparse.ArgumentParser:
     _add_output_arg(export_bundle_parser, default_output=config.cli.default_output_format)
     export_bundle_parser.set_defaults(handler=_handle_export_governed_bundle)
 
+    promote_candidate_parser = subparsers.add_parser(
+        "promote-candidate",
+        help="Promote one accepted candidate into the durable graph slice.",
+    )
+    _add_store_args(promote_candidate_parser, include_overlay_root=False)
+    promote_candidate_parser.add_argument(
+        "--candidate-id",
+        required=True,
+        help="Accepted candidate identifier to promote.",
+    )
+    promote_candidate_parser.add_argument(
+        "--actor-id",
+        required=True,
+        help="Actor id recorded for the promotion.",
+    )
+    _add_output_arg(promote_candidate_parser, default_output=config.cli.default_output_format)
+    promote_candidate_parser.set_defaults(handler=_handle_promote_candidate)
+
+    list_promoted_parser = subparsers.add_parser(
+        "list-promoted-assertions",
+        help="List promoted graph assertions.",
+    )
+    _add_store_args(list_promoted_parser, include_overlay_root=False)
+    _add_output_arg(list_promoted_parser, default_output=config.cli.default_output_format)
+    list_promoted_parser.set_defaults(handler=_handle_list_promoted_assertions)
+
+    export_promoted_report_parser = subparsers.add_parser(
+        "export-promoted-graph-report",
+        help="Export promoted graph assertions with candidate-backed governance context.",
+    )
+    _add_store_args(export_promoted_report_parser, include_overlay_root=False)
+    _add_output_arg(
+        export_promoted_report_parser,
+        default_output=config.cli.default_output_format,
+    )
+    export_promoted_report_parser.set_defaults(handler=_handle_export_promoted_graph_report)
+
     return parser
 
 
@@ -304,6 +347,40 @@ def _handle_export_governed_bundle(args: argparse.Namespace) -> int:
     return 0
 
 
+def _handle_promote_candidate(args: argparse.Namespace) -> int:
+    """Promote one accepted candidate and print the resulting graph bundle."""
+
+    graph_service = _build_graph_service(args)
+    promotion = graph_service.promote_candidate(
+        candidate_id=args.candidate_id,
+        promoted_by=args.actor_id,
+    )
+    _emit_output(promotion, output_format=args.output)
+    return 0
+
+
+def _handle_list_promoted_assertions(args: argparse.Namespace) -> int:
+    """List promoted graph assertions in deterministic order."""
+
+    graph_service = _build_graph_service(args)
+    assertions = tuple(graph_service.list_promoted_assertions())
+    _emit_output(assertions, output_format=args.output)
+    return 0
+
+
+def _handle_export_promoted_graph_report(args: argparse.Namespace) -> int:
+    """Export the promoted-graph report over the current graph slice."""
+
+    graph_service = _build_graph_service(args)
+    review_service = _build_review_service(args)
+    report = PromotedGraphReportService(
+        graph_service=graph_service,
+        review_service=review_service,
+    ).build_report()
+    _emit_output(report, output_format=args.output)
+    return 0
+
+
 def _build_review_service(args: argparse.Namespace) -> ReviewService:
     """Create a review service from config-backed defaults plus explicit overrides."""
 
@@ -318,6 +395,13 @@ def _build_overlay_service(args: argparse.Namespace) -> OverlayApplicationServic
     db_path = Path(args.review_db_path) if getattr(args, "review_db_path", None) else None
     overlay_root = Path(args.overlay_root) if getattr(args, "overlay_root", None) else None
     return OverlayApplicationService(db_path=db_path, overlay_root=overlay_root)
+
+
+def _build_graph_service(args: argparse.Namespace) -> CanonicalGraphService:
+    """Create a graph service from config-backed defaults plus explicit overrides."""
+
+    db_path = Path(args.review_db_path) if getattr(args, "review_db_path", None) else None
+    return CanonicalGraphService(db_path=db_path)
 
 
 def _add_store_args(parser: argparse.ArgumentParser, *, include_overlay_root: bool) -> None:
@@ -372,8 +456,11 @@ def _to_jsonable(value: object) -> Any:
         (
             CandidateAssertionRecord,
             CandidateSubmissionResult,
+            CanonicalGraphPromotionResult,
             GovernedWorkflowBundle,
             ProposalRecord,
+            PromotedGraphAssertionRecord,
+            PromotedGraphReport,
             OverlayApplicationRecord,
         ),
     ):
@@ -429,6 +516,31 @@ def _to_text(value: object) -> str:
             f"overlay_applications={value.summary.total_overlay_applications} "
             f"candidates_with_confidence={value.summary.total_candidates_with_confidence} "
             f"candidate_ids={candidate_ids}"
+        )
+    if isinstance(value, CanonicalGraphPromotionResult):
+        entity_ids = ",".join(entity.entity_id for entity in value.entities) or "none"
+        return (
+            f"assertion_id={value.assertion.assertion_id} "
+            f"source_candidate_id={value.assertion.source_candidate_id} "
+            f"predicate={value.assertion.predicate} "
+            f"entity_ids={entity_ids}"
+        )
+    if isinstance(value, PromotedGraphAssertionRecord):
+        return (
+            f"assertion_id={value.assertion_id} "
+            f"source_candidate_id={value.source_candidate_id} "
+            f"predicate={value.predicate}"
+        )
+    if isinstance(value, PromotedGraphReport):
+        assertion_ids = ",".join(
+            bundle.assertion.assertion_id for bundle in value.assertion_bundles
+        ) or "none"
+        return (
+            f"promoted_assertions={value.summary.total_assertions} "
+            f"promoted_entities={value.summary.total_entities} "
+            f"assertions_with_artifacts={value.summary.total_assertions_with_artifacts} "
+            f"assertions_with_confidence={value.summary.total_assertions_with_confidence} "
+            f"assertion_ids={assertion_ids}"
         )
     if isinstance(value, tuple):
         return "\n".join(_to_text(item) for item in value)

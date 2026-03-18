@@ -16,6 +16,7 @@ during the restart review and planning phase.
 9. [0009 - Start epistemic extension with confidence and supersession over accepted candidates](0009-start-epistemic-extension-with-confidence-and-supersession-over-accepted-candidates.md)
 10. [0010 - Choose CLI-driven governed bundle export as the first product-facing workflow](0010-choose-cli-driven-governed-bundle-export-as-the-first-product-facing-workflow.md)
 11. [0011 - Treat Phase 10 as bootstrap completion and track v1 capability parity explicitly](0011-treat-phase-10-as-bootstrap-completion-and-track-v1-capability-parity-explicitly.md)
+12. [0012 - Start canonical graph recovery with explicit promotion from accepted candidates](0012-start-canonical-graph-recovery-with-explicit-promotion-from-accepted-candidates.md)
 
 ## Notes
 

@@ -35,6 +35,8 @@ entire prior runtime. The current scope is intentionally narrow:
   and a typed epistemic report over accepted candidates
 - one first product-facing workflow that exports a CLI-driven governed bundle
   over accepted reviewed assertions
+- one first canonical-graph recovery slice with explicit promotion from
+  accepted candidates into durable promoted assertions and graph reports
 
 The governing architectural rationale lives in the local successor charter and
 the adopted ADR set.
@@ -55,6 +57,7 @@ Repo-local strategic and planning docs now live in:
 - `notebooks/14_artifact_lineage_slice.ipynb`
 - `notebooks/15_epistemic_extension_slice.ipynb`
 - `notebooks/16_governed_bundle_workflow.ipynb`
+- `notebooks/17_canonical_graph_recovery_slice.ipynb`
 
 ## Current Scope
 
@@ -86,11 +89,14 @@ Today this repo proves only one thin slice:
     supersession over accepted candidate assertions
 17. export one governed bundle through the CLI-backed workflow so the
     successor ends in a real downstream artifact
+18. promote accepted candidates into deterministic durable graph assertions
+    and inspect promoted graph state through a thin CLI-backed report surface
 
 Not in scope yet:
 
 - broader live benchmark coverage and calibration beyond the first local slice
-- the canonical concept/belief graph and system-belief layer from v1
+- the broader v1 concept/belief graph and system-belief layer beyond the first
+  promoted-assertion slice
 - stable identity plus external-reference recovery
 - the broader semantic canonicalization stack from v1
 - domain-specific query helpers
