@@ -159,6 +159,13 @@ Start Phase 8 with one narrow artifact-lineage proof that recovers one of the
 strongest v1 donor capabilities without rebuilding a fused runtime:
 
 1. define the minimal typed artifact reference model and persistence boundary;
-2. link artifacts to candidate assertions and review records first;
-3. prove one workflow where a claim is supported by an analysis artifact rather
+2. start with `source`, `derived_dataset`, and `analysis_result` artifact kinds;
+3. link artifacts to candidate assertions first and derive accepted-assertion
+   lineage by traversal/reporting rather than copied storage;
+4. prove one workflow where a claim is supported by an analysis artifact rather
    than only raw text.
+
+The path to a broader lineage model is now explicit in:
+
+1. `docs/adr/0008-start-artifact-lineage-with-a-narrow-three-kind-model-and-candidate-centered-links.md`
+2. `docs/plans/0002_phase8_artifact_lineage_shape.md`

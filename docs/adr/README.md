@@ -12,6 +12,7 @@ during the restart review and planning phase.
 5. [0005 - Separate live extraction reasonableness from structural validation and canonicalization fidelity](0005-separate-live-extraction-reasonableness-from-structural-validation-and-canonicalization-fidelity.md)
 6. [0006 - Prefer CLI as the first operational surface before MCP or UI](0006-prefer-cli-as-the-first-operational-surface-before-mcp-or-ui.md)
 7. [0007 - Adopt canonical journey notebooks with an explicit registry](0007-adopt-canonical-journey-notebooks-with-an-explicit-registry.md)
+8. [0008 - Start artifact lineage with a narrow three-kind model and candidate-centered links](0008-start-artifact-lineage-with-a-narrow-three-kind-model-and-candidate-centered-links.md)
 
 ## Notes
 

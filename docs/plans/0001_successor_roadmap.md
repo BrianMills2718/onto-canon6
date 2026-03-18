@@ -442,9 +442,10 @@ Goal:
 
 Build:
 
-1. one typed artifact reference model for raw, derived, and analysis artifacts;
-2. links from candidate assertions, review decisions, or accepted assertions to
-   artifacts where appropriate;
+1. one typed artifact reference model for `source`, `derived_dataset`, and
+   `analysis_result` artifacts;
+2. links from candidate assertions to artifacts first, with accepted-assertion
+   lineage exposed by traversal/reporting rather than copied storage;
 3. one small lineage report surface that makes those links inspectable.
 
 Acceptance criteria:
@@ -465,7 +466,7 @@ Acceptance evidence:
 Build order:
 
 1. define the minimal typed artifact model and persistence boundary;
-2. link artifacts to candidate assertions and review records first;
+2. link artifacts to candidate assertions first;
 3. add derived-artifact support and lineage reporting second;
 4. prove one small workflow where a claim is supported by an analysis artifact
    rather than only raw text.
@@ -476,12 +477,20 @@ Non-goals:
 2. workflow scheduling or orchestration;
 3. a generalized research-platform artifact system.
 
-Explicit uncertainties:
+Chosen first-slice shape:
 
-1. which artifact categories are essential for the first slice;
-2. whether artifact links should terminate at candidate assertions only or
-   also at future accepted-assertion projections;
-3. how much artifact deduplication is worth doing before real pressure exists.
+1. artifact kinds: `source`, `derived_dataset`, `analysis_result`;
+2. link target: `candidate_assertion` first;
+3. accepted-assertion lineage: derived by traversal/reporting, not copied;
+4. deduplication: none or exact-only through an optional fingerprint field.
+
+Path to the fuller version:
+
+1. add more artifact kinds only when real workflows need them;
+2. add additional link subjects only if accepted-assertion or extension-local
+   queries become awkward through traversal alone;
+3. add stronger exact deduplication and registry ergonomics only after repeated
+   duplicate registration becomes a demonstrated problem.
 
 ## Phase 9: Epistemic Extension [planned]
 

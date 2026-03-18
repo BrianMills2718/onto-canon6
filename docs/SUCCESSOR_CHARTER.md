@@ -317,6 +317,12 @@ Status: complete
 The active implementation detail for these phases lives in
 `docs/plans/0001_successor_roadmap.md`.
 
+The current artifact-lineage direction is intentionally narrow first:
+
+1. start with `source`, `derived_dataset`, and `analysis_result` artifacts;
+2. attach lineage to candidate assertions first;
+3. keep the path to the broader registry model explicit rather than implicit.
+
 ## Drift Conditions
 
 The following now count as drift and should not happen casually:
