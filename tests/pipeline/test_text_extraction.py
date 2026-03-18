@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from importlib import import_module
+import json
 from pathlib import Path
 from types import SimpleNamespace
 import sys
@@ -71,34 +72,34 @@ def test_extract_candidate_imports_uses_llm_client_boundary(tmp_path: Path, monk
         calls["messages"] = messages
         calls["kwargs"] = kwargs
         response = response_model(
-            candidates=(
+            candidates=[
                 ExtractedCandidate(
                     predicate="oc:uses_system_demo",
                     roles={
-                        "subject": (
+                        "subject": [
                             ExtractedFiller(
                                 kind="entity",
                                 entity_id="ent:activity:mission_planning",
                                 entity_type="oc:activity",
                                 name="Mission planning",
                             ),
-                        ),
-                        "object": (
+                        ],
+                        "object": [
                             ExtractedFiller(
                                 kind="entity",
                                 entity_id="ent:system:radar_system",
                                 entity_type="oc:system",
                                 name="radar system",
                             ),
-                        ),
+                        ],
                     },
-                    evidence_spans=(
+                    evidence_spans=[
                         EvidenceSpan(start_char=0, end_char=16, text="Mission planning"),
                         EvidenceSpan(start_char=26, end_char=38, text="radar system"),
-                    ),
+                    ],
                     claim_text="Mission planning uses the radar system.",
                 ),
-            )
+            ]
         )
         return response, SimpleNamespace(resolved_model="fake-structured-model")
 
@@ -157,23 +158,23 @@ def test_extract_and_submit_persists_extracted_candidates(
     ) -> tuple[TextExtractionResponse, object]:
         return (
             response_model(
-                candidates=(
+                candidates=[
                     ExtractedCandidate(
                         predicate="oc:uses_system_demo",
                         roles={
-                            "subject": (
+                            "subject": [
                                 ExtractedFiller(
                                     kind="entity",
                                     entity_id="ent:activity:mission_planning",
                                 ),
-                            ),
+                            ],
                         },
-                        evidence_spans=(
+                        evidence_spans=[
                             EvidenceSpan(start_char=0, end_char=16, text="Mission planning"),
-                        ),
+                        ],
                         claim_text="Mission planning is the subject.",
                     ),
-                )
+                ]
             ),
             SimpleNamespace(resolved_model=model),
         )
@@ -224,22 +225,22 @@ def test_extract_and_submit_fails_loud_on_bad_evidence_span(
     ) -> tuple[TextExtractionResponse, object]:
         return (
             response_model(
-                candidates=(
+                candidates=[
                     ExtractedCandidate(
                         predicate="oc:uses_system_demo",
                         roles={
-                            "subject": (
+                            "subject": [
                                 ExtractedFiller(
                                     kind="entity",
                                     entity_id="ent:activity:mission_planning",
                                 ),
-                            ),
+                            ],
                         },
-                        evidence_spans=(
+                        evidence_spans=[
                             EvidenceSpan(start_char=0, end_char=5, text="Wrong"),
-                        ),
+                        ],
                     ),
-                )
+                ]
             ),
             SimpleNamespace(resolved_model=model),
         )
@@ -262,3 +263,91 @@ def test_extract_and_submit_fails_loud_on_bad_evidence_span(
             submitted_by="analyst:text-extract",
             source_ref="text://phase4/bad-span",
         )
+
+
+def test_extraction_response_normalizes_live_provider_shape() -> None:
+    """The extractor boundary should normalize known live provider drift.
+
+    The current live provider may:
+
+    - encode the whole assertion envelope as JSON in the `predicate` field;
+    - collapse singleton role fillers into objects instead of one-item arrays;
+    - emit JSON arrays for evidence spans.
+
+    This test keeps that boundary explicit so downstream layers can stay typed
+    against the stable candidate-import contract.
+    """
+
+    response = TextExtractionResponse.model_validate(
+        {
+            "candidates": [
+                {
+                    "predicate": json.dumps(
+                        {
+                            "predicate_id": "oc:hold_command_role",
+                            "roles": {
+                                "commander": {
+                                    "kind": "entity",
+                                    "entity_id": "ent:person:admiral_eric_olson",
+                                    "entity_type": "oc:person",
+                                    "name": "Admiral Eric Olson",
+                                },
+                                "role_title": {
+                                    "kind": "value",
+                                    "value_kind": "string",
+                                    "normalized": "commander",
+                                    "raw": "commander",
+                                },
+                            },
+                        }
+                    ),
+                    "evidence_spans": [
+                        {
+                            "start_char": 0,
+                            "end_char": 18,
+                            "text": "Admiral Eric Olson",
+                        }
+                    ],
+                }
+            ]
+        }
+    )
+
+    assert len(response.candidates) == 1
+    candidate = response.candidates[0]
+    assert candidate.predicate == "oc:hold_command_role"
+    assert candidate.roles["commander"][0].entity_id == "ent:person:admiral_eric_olson"
+    assert candidate.roles["role_title"][0].normalized == "commander"
+    assert candidate.evidence_spans[0].text == "Admiral Eric Olson"
+
+
+def test_extraction_response_normalizes_pipe_delimited_predicate_envelope() -> None:
+    """The extractor boundary should normalize `predicate | roles={...}` drift."""
+
+    response = TextExtractionResponse.model_validate(
+        {
+            "candidates": [
+                {
+                    "predicate": (
+                        'oc:hold_command_role | roles={"commander":{"kind":"entity",'
+                        '"entity_id":"ent:person:admiral_eric_olson"},'
+                        '"role_title":{"kind":"value","value_kind":"string",'
+                        '"normalized":"commander","raw":"commander"}}'
+                    ),
+                    "evidence_spans": [
+                        {
+                            "start_char": 0,
+                            "end_char": 18,
+                            "text": "Admiral Eric Olson",
+                        }
+                    ],
+                }
+            ]
+        }
+    )
+
+    assert len(response.candidates) == 1
+    candidate = response.candidates[0]
+    assert candidate.predicate == "oc:hold_command_role"
+    assert candidate.roles["commander"][0].entity_id == "ent:person:admiral_eric_olson"
+    assert candidate.roles["role_title"][0].normalized == "commander"

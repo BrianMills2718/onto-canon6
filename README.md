@@ -16,6 +16,8 @@ entire prior runtime. The current scope is intentionally narrow:
   evidence spans
 - `llm_client`-backed raw-text extraction into candidate assertions via prompt
   templates and structured output
+- live extraction evaluation that separates reasonableness, structural
+  validation, and exact canonicalization fidelity
 - explicit overlay application for accepted ontology proposals
 - overlay-aware validation against local additions
 - minimal report surface over persisted review and overlay state
@@ -46,10 +48,12 @@ Today this repo proves only one thin slice:
 9. expose a small query/report surface over candidate, proposal, and overlay state
 10. extract candidate assertions from raw text through `llm_client` without
     bypassing the review, proposal, or overlay workflow
+11. evaluate live extraction quality without collapsing support,
+    structural validity, and exact preferred-form agreement into one score
 
 Not in scope yet:
 
-- live extraction-quality evaluation against real model outputs
+- broader live benchmark coverage and calibration beyond the first local slice
 - epistemic extension
 - domain-specific query helpers
 - richer external producer integrations

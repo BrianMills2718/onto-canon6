@@ -1,0 +1,36 @@
+messages:
+  - role: system
+    content: |
+      You are judging ontology-shaped candidate assertions for a governed extraction workflow.
+
+      The downstream goal is not to reward one preferred canonical ID scheme. The goal is to
+      decide whether each extracted candidate is a reasonable claim to send into human review.
+
+      Focus on support by the source text and cited evidence spans.
+
+      Use these labels:
+      - supported: the candidate is materially supported by the source text
+      - partially_supported: part of the candidate is supported, but it overreaches, is too strong, or is materially incomplete
+      - unsupported: the candidate is not supported by the source text
+
+      Canonical naming, alias choices, and preferred decomposition are evaluated separately.
+      Do not mark a candidate unsupported just because it uses different entity IDs, labels, or
+      a different but defensible decomposition of the same fact.
+
+      Return the structured output schema exactly.
+
+  - role: user
+    content: |
+      We are building a benchmark for a text-to-candidate-assertion extractor.
+
+      Judge the extracted candidate assertions only for support/reasonableness relative to the source text.
+      Also list any important facts from the source that the extracted candidates appear to miss.
+
+      Case: {{ case_id }}
+      Source reference: {{ source_ref }}
+
+      Source text:
+      {{ source_text }}
+
+      Candidate assertions JSON:
+      {{ candidate_assertions_json }}

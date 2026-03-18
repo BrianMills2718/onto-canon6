@@ -268,14 +268,24 @@ Prove one text-grounded producer integration through `llm_client`:
 
 Status: complete
 
+### Phase 5
+
+Measure live extraction quality without conflating support and canonical form:
+
+1. run the text extractor against a small local benchmark slice;
+2. judge candidate-assertion reasonableness separately from structural
+   validation and exact preferred-form agreement;
+3. keep the resulting evidence inspectable through a local notebook proof.
+
+Status: complete
+
 ### Later Phases
 
-1. live extraction evaluation and quality measurement;
-2. a first operational surface, with CLI preferred before MCP/UI;
-3. additional domain packs such as DoDAF;
-4. artifact-lineage recovery;
-5. extensions such as epistemic reasoning;
-6. one product-facing integration slice.
+1. a first operational surface, with CLI preferred before MCP/UI;
+2. additional domain packs such as DoDAF;
+3. artifact-lineage recovery;
+4. extensions such as epistemic reasoning;
+5. one product-facing integration slice.
 
 The active implementation detail for these phases lives in
 `docs/plans/0001_successor_roadmap.md`.

@@ -28,6 +28,7 @@ from .text_extraction import (
     ExtractedCandidate,
     ExtractedFiller,
     ExtractionError,
+    TextExtractionRun,
     TextExtractionResponse,
     TextExtractionService,
 )
@@ -61,6 +62,7 @@ __all__ = [
     "ReviewStoreError",
     "ReviewStoreNotFoundError",
     "SourceArtifactRef",
+    "TextExtractionRun",
     "TextExtractionResponse",
     "TextExtractionService",
 ]

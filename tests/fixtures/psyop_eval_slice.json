@@ -1,0 +1,245 @@
+{
+  "fixture_id": "psyop_eval_slice_v1",
+  "cases": [
+    {
+      "case_id": "psyop_001_designation_change",
+      "profile": {
+        "profile_id": "psyop_seed",
+        "profile_version": "0.1.0"
+      },
+      "source_artifact": {
+        "source_kind": "benchmark_fixture_text",
+        "source_ref": "onto-canon://data/stage1/evidence.csv#id=1",
+        "source_label": "stage1_psyop_seed:evidence_001",
+        "source_metadata": {
+          "doc_id": "stage1_psyop_seed",
+          "chunk_id": "evidence_001"
+        },
+        "content_text": "In 2011, under the direction of Admiral Eric Olson, commander of the United States Special Operations Command, the term PSYOP was officially replaced with 'Military Information Support Operations' (MISO)."
+      },
+      "expected_candidates": [
+        {
+          "candidate_id": "cand_psyop_001_replace_designation",
+          "payload": {
+            "predicate": "oc:replace_designation",
+            "roles": {
+              "actor": [
+                {
+                  "entity_id": "ent:person:eric_olson",
+                  "name": "Admiral Eric Olson",
+                  "entity_type": "oc:person"
+                }
+              ],
+              "subject": [
+                {
+                  "entity_id": "ent:operation:psychological_operations",
+                  "name": "Psychological Operations",
+                  "entity_type": "oc:psychological_operation"
+                }
+              ],
+              "old_designation": [
+                {
+                  "kind": "value",
+                  "value_kind": "string",
+                  "raw": "PSYOP",
+                  "normalized": {
+                    "value": "PSYOP"
+                  }
+                }
+              ],
+              "new_designation": [
+                {
+                  "kind": "value",
+                  "value_kind": "string",
+                  "raw": "Military Information Support Operations",
+                  "normalized": {
+                    "value": "Military Information Support Operations"
+                  }
+                }
+              ],
+              "time": [
+                {
+                  "kind": "value",
+                  "value_kind": "time",
+                  "raw": "2011",
+                  "normalized": {
+                    "instant": "2011",
+                    "precision": "year"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "candidate_id": "cand_psyop_001_old_label",
+          "payload": {
+            "predicate": "oc:uses_designation_label",
+            "roles": {
+              "subject": [
+                {
+                  "entity_id": "ent:operation:psychological_operations",
+                  "name": "Psychological Operations",
+                  "entity_type": "oc:psychological_operation"
+                }
+              ],
+              "label": [
+                {
+                  "kind": "value",
+                  "value_kind": "string",
+                  "raw": "PSYOP",
+                  "normalized": {
+                    "value": "PSYOP"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "candidate_id": "cand_psyop_001_new_label",
+          "payload": {
+            "predicate": "oc:uses_designation_label",
+            "roles": {
+              "subject": [
+                {
+                  "entity_id": "ent:operation:psychological_operations",
+                  "name": "Psychological Operations",
+                  "entity_type": "oc:psychological_operation"
+                }
+              ],
+              "label": [
+                {
+                  "kind": "value",
+                  "value_kind": "string",
+                  "raw": "Military Information Support Operations",
+                  "normalized": {
+                    "value": "Military Information Support Operations"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "candidate_id": "cand_psyop_001_hold_command_role",
+          "payload": {
+            "predicate": "oc:hold_command_role",
+            "roles": {
+              "commander": [
+                {
+                  "entity_id": "ent:person:eric_olson",
+                  "name": "Admiral Eric Olson",
+                  "entity_type": "oc:person"
+                }
+              ],
+              "organization": [
+                {
+                  "entity_id": "ent:org:ussocom",
+                  "name": "United States Special Operations Command",
+                  "entity_type": "oc:military_organization"
+                }
+              ],
+              "role_title": [
+                {
+                  "kind": "value",
+                  "value_kind": "string",
+                  "raw": "commander",
+                  "normalized": {
+                    "value": "commander"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "psyop_002_concerns_about_truth_based_shift",
+      "profile": {
+        "profile_id": "psyop_seed",
+        "profile_version": "0.1.0"
+      },
+      "source_artifact": {
+        "source_kind": "benchmark_fixture_text",
+        "source_ref": "onto-canon://data/stage1/evidence.csv#id=2",
+        "source_label": "stage1_psyop_seed:evidence_002",
+        "source_metadata": {
+          "doc_id": "stage1_psyop_seed",
+          "chunk_id": "evidence_002"
+        },
+        "content_text": "Critics within the PSYOP/MISO community expressed concerns that the shift to a 'truth-based' approach neutered the discipline, limiting its ability to employ deception"
+      },
+      "expected_candidates": [
+        {
+          "candidate_id": "cand_psyop_002_express_concern",
+          "payload": {
+            "predicate": "oc:express_concern",
+            "roles": {
+              "speaker": [
+                {
+                  "entity_id": "ent:community:psyop_miso_critics",
+                  "name": "Critics within the PSYOP/MISO community",
+                  "entity_type": "oc:community"
+                }
+              ],
+              "topic": [
+                {
+                  "kind": "value",
+                  "value_kind": "string",
+                  "raw": "shift to a truth-based approach",
+                  "normalized": {
+                    "value": "shift to a truth-based approach"
+                  }
+                }
+              ],
+              "subject": [
+                {
+                  "entity_id": "ent:operation:psychological_operations",
+                  "name": "Psychological Operations",
+                  "entity_type": "oc:psychological_operation"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "candidate_id": "cand_psyop_002_limit_capability",
+          "payload": {
+            "predicate": "oc:limit_capability",
+            "roles": {
+              "topic": [
+                {
+                  "kind": "value",
+                  "value_kind": "string",
+                  "raw": "shift to a truth-based approach",
+                  "normalized": {
+                    "value": "shift to a truth-based approach"
+                  }
+                }
+              ],
+              "subject": [
+                {
+                  "entity_id": "ent:operation:psychological_operations",
+                  "name": "Psychological Operations",
+                  "entity_type": "oc:psychological_operation"
+                }
+              ],
+              "capability": [
+                {
+                  "kind": "value",
+                  "value_kind": "string",
+                  "raw": "employ deception",
+                  "normalized": {
+                    "value": "employ deception"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

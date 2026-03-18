@@ -16,9 +16,10 @@ from __future__ import annotations
 from dataclasses import dataclass
 import hashlib
 from importlib import import_module
+import json
 import logging
 from pathlib import Path
-from typing import Any, Protocol, cast
+from typing import Any, Mapping, Protocol, cast
 
 from pydantic import BaseModel, ConfigDict, Field, JsonValue, model_validator
 
@@ -55,9 +56,9 @@ class ExtractedFiller(BaseModel):
     entity_id: str | None = None
     entity_type: str | None = None
     name: str | None = None
-    alias_ids: tuple[str, ...] = ()
+    alias_ids: list[str] = Field(default_factory=list)
     value_kind: str | None = None
-    normalized: dict[str, JsonValue] | None = None
+    normalized: JsonValue | None = None
     raw: str | None = None
 
     @model_validator(mode="after")
@@ -88,9 +89,62 @@ class ExtractedCandidate(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
     predicate: str = Field(min_length=1)
-    roles: dict[str, tuple[ExtractedFiller, ...]] = Field(default_factory=dict)
-    evidence_spans: tuple[EvidenceSpan, ...] = Field(min_length=1)
+    roles: dict[str, list[ExtractedFiller]] = Field(default_factory=dict)
+    evidence_spans: list[EvidenceSpan] = Field(min_length=1)
     claim_text: str | None = None
+
+    @model_validator(mode="before")
+    @classmethod
+    def _normalize_serialized_assertion_envelope(cls, data: object) -> object:
+        """Unwrap provider responses that serialize the assertion into `predicate`.
+
+        Some live structured-output responses place a JSON-encoded object in the
+        `predicate` field and omit the sibling `roles` field entirely, or pack
+        the roles into a `predicate_id | roles={...}` string. The persisted
+        pipeline contract still wants `predicate` and `roles` split apart, so
+        this boundary unwraps the serialized envelope explicitly and logs that
+        provider drift was observed.
+        """
+
+        if not isinstance(data, Mapping):
+            return data
+        predicate_obj = data.get("predicate")
+        if not isinstance(predicate_obj, str):
+            return data
+        unwrapped = _unwrap_predicate_envelope(predicate_obj)
+        if unwrapped is None:
+            return data
+        predicate_id, roles_obj = unwrapped
+        normalized = dict(data)
+        normalized["predicate"] = predicate_id
+        if "roles" not in normalized or not normalized["roles"]:
+            normalized["roles"] = _normalize_role_fillers_object(roles_obj)
+        logger.warning(
+            "normalized serialized assertion envelope from predicate field predicate=%s",
+            predicate_id,
+        )
+        return normalized
+
+    @model_validator(mode="before")
+    @classmethod
+    def _normalize_singleton_role_fillers(cls, data: object) -> object:
+        """Wrap singleton role fillers into one-element arrays.
+
+        Live structured-output providers sometimes collapse one-filler role
+        arrays into a single object even when the schema implies arrays. The
+        extractor runtime still requires every role to normalize into a tuple of
+        fillers, so this boundary normalizes the known singleton shape instead
+        of forcing downstream layers to care about provider-specific variance.
+        """
+
+        if not isinstance(data, Mapping):
+            return data
+        roles_obj = data.get("roles")
+        if not isinstance(roles_obj, Mapping):
+            return data
+        normalized = dict(data)
+        normalized["roles"] = _normalize_role_fillers_object(roles_obj)
+        return normalized
 
     @model_validator(mode="after")
     def _validate_roles(self) -> "ExtractedCandidate":
@@ -111,7 +165,25 @@ class TextExtractionResponse(BaseModel):
 
     model_config = ConfigDict(extra="forbid", frozen=True)
 
-    candidates: tuple[ExtractedCandidate, ...] = ()
+    candidates: list[ExtractedCandidate] = Field(default_factory=list)
+
+
+class TextExtractionRun(BaseModel):
+    """One extraction run plus the resolved model context used to produce it.
+
+    Phase 4 originally only needed the extracted candidate imports. Phase 5
+    needs the surrounding execution context as well so benchmark reports can
+    say which task and model produced a given extraction run.
+    """
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    selection_task: str = Field(min_length=1)
+    prompt_template: str = Field(min_length=1)
+    selected_model: str = Field(min_length=1)
+    resolved_model: str = Field(min_length=1)
+    trace_id: str = Field(min_length=1)
+    candidate_imports: tuple[CandidateAssertionImport, ...] = ()
 
 
 class _GetModel(Protocol):
@@ -171,6 +243,7 @@ class TextExtractionService:
         self._timeout_seconds = config.extraction.timeout_seconds
         self._num_retries = config.extraction.num_retries
         self._max_budget_usd = config.extraction.max_budget_usd
+        self._max_output_tokens = config.extraction.max_output_tokens
 
     @property
     def review_service(self) -> ReviewService:
@@ -204,6 +277,31 @@ class TextExtractionService:
     ) -> tuple[CandidateAssertionImport, ...]:
         """Extract typed candidate-import records from one raw-text source."""
 
+        return self.extract_candidate_run(
+            source_text=source_text,
+            profile_id=profile_id,
+            profile_version=profile_version,
+            submitted_by=submitted_by,
+            source_ref=source_ref,
+            source_kind=source_kind,
+            source_label=source_label,
+            source_metadata=source_metadata,
+        ).candidate_imports
+
+    def extract_candidate_run(
+        self,
+        *,
+        source_text: str,
+        profile_id: str,
+        profile_version: str,
+        submitted_by: str,
+        source_ref: str,
+        source_kind: str = "raw_text",
+        source_label: str | None = None,
+        source_metadata: dict[str, JsonValue] | None = None,
+    ) -> TextExtractionRun:
+        """Extract candidate imports and return the resolved run context."""
+
         normalized_text = source_text.strip()
         if not normalized_text:
             raise ValueError("source_text must be a non-empty string")
@@ -224,7 +322,7 @@ class TextExtractionService:
             normalized_profile.profile_version,
             overlay_root=self._review_service.overlay_root,
         )
-        model = llm_client_api.get_model(self._selection_task)
+        selected_model = llm_client_api.get_model(self._selection_task)
         messages = llm_client_api.render_prompt(
             self._prompt_template,
             profile_id=normalized_profile.profile_id,
@@ -236,21 +334,23 @@ class TextExtractionService:
             source_label=source_artifact.source_label,
             source_text=normalized_text,
         )
+        trace_id = _trace_id_for_source(source_ref=source_artifact.source_ref, text=normalized_text)
         try:
             response, meta = llm_client_api.call_llm_structured(
-                model,
+                selected_model,
                 messages,
                 response_model=TextExtractionResponse,
                 timeout=self._timeout_seconds,
                 num_retries=self._num_retries,
                 task=self._selection_task,
-                trace_id=_trace_id_for_source(source_ref=source_artifact.source_ref, text=normalized_text),
+                trace_id=trace_id,
                 max_budget=self._max_budget_usd,
+                max_tokens=self._max_output_tokens,
             )
         except Exception as exc:
             raise ExtractionError(f"llm_client text extraction failed: {exc}") from exc
 
-        imports = tuple(
+        candidate_imports = tuple(
             _candidate_import_from_extracted(
                 candidate=candidate,
                 profile=normalized_profile,
@@ -259,16 +359,24 @@ class TextExtractionService:
             )
             for candidate in response.candidates
         )
+        resolved_model = str(getattr(meta, "resolved_model", selected_model))
         logger.info(
             "text extraction produced candidate_count=%d profile=%s/%s source_ref=%s model=%s resolved_model=%s",
-            len(imports),
+            len(candidate_imports),
             normalized_profile.profile_id,
             normalized_profile.profile_version,
             source_artifact.source_ref,
-            model,
-            getattr(meta, "resolved_model", model),
+            selected_model,
+            resolved_model,
         )
-        return imports
+        return TextExtractionRun(
+            selection_task=self._selection_task,
+            prompt_template=str(self._prompt_template),
+            selected_model=selected_model,
+            resolved_model=resolved_model,
+            trace_id=trace_id,
+            candidate_imports=candidate_imports,
+        )
 
     def extract_and_submit(
         self,
@@ -284,7 +392,7 @@ class TextExtractionService:
     ) -> tuple[CandidateSubmissionResult, ...]:
         """Extract candidate imports and submit them through the review pipeline."""
 
-        candidate_imports = self.extract_candidate_imports(
+        extraction_run = self.extract_candidate_run(
             source_text=source_text,
             profile_id=profile_id,
             profile_version=profile_version,
@@ -296,7 +404,7 @@ class TextExtractionService:
         )
         return tuple(
             self._review_service.submit_candidate_import(candidate_import=candidate_import)
-            for candidate_import in candidate_imports
+            for candidate_import in extraction_run.candidate_imports
         )
 
 
@@ -328,7 +436,7 @@ def _candidate_import_from_extracted(
         payload=payload,
         submitted_by=submitted_by,
         source_artifact=source_artifact,
-        evidence_spans=candidate.evidence_spans,
+        evidence_spans=tuple(candidate.evidence_spans),
         claim_text=claim_text if claim_text else None,
     )
 
@@ -364,6 +472,53 @@ def _render_entity_type_catalog(profile: LoadedProfile) -> str:
     return "\n".join(f"- {type_name}" for type_name in sorted(type_names))
 
 
+def _normalize_role_fillers_object(roles_obj: Mapping[object, object]) -> dict[str, object]:
+    """Normalize mapping-valued singleton role fillers into one-item arrays."""
+
+    normalized_roles: dict[str, object] = {}
+    for role_name, fillers in roles_obj.items():
+        if isinstance(fillers, Mapping):
+            normalized_roles[str(role_name)] = [dict(fillers)]
+        else:
+            normalized_roles[str(role_name)] = fillers
+    return normalized_roles
+
+
+def _unwrap_predicate_envelope(predicate_value: str) -> tuple[str, Mapping[object, object]] | None:
+    """Parse known provider drift variants that serialize roles into `predicate`."""
+
+    stripped = predicate_value.strip()
+    if stripped.startswith("{"):
+        try:
+            envelope = json.loads(stripped)
+        except json.JSONDecodeError as exc:
+            raise ValueError("serialized predicate envelope is not valid JSON") from exc
+        if not isinstance(envelope, Mapping):
+            raise ValueError("serialized predicate envelope must decode to an object")
+        predicate_id = envelope.get("predicate_id")
+        roles_obj = envelope.get("roles")
+        if not isinstance(predicate_id, str) or not predicate_id.strip():
+            raise ValueError("serialized predicate envelope must include predicate_id")
+        if not isinstance(roles_obj, Mapping):
+            raise ValueError("serialized predicate envelope must include roles")
+        return predicate_id, roles_obj
+
+    role_marker = "| roles="
+    if role_marker not in stripped:
+        return None
+    predicate_id, roles_blob = stripped.split(role_marker, 1)
+    normalized_predicate_id = predicate_id.strip()
+    if not normalized_predicate_id:
+        raise ValueError("serialized predicate envelope must include predicate_id")
+    try:
+        roles_obj = json.loads(roles_blob.strip())
+    except json.JSONDecodeError as exc:
+        raise ValueError("serialized predicate role payload is not valid JSON") from exc
+    if not isinstance(roles_obj, Mapping):
+        raise ValueError("serialized predicate role payload must decode to an object")
+    return normalized_predicate_id, roles_obj
+
+
 def _load_llm_client_api() -> _LLMClientAPI:
     """Import the required llm_client APIs lazily and fail loudly if missing."""
 
@@ -385,6 +540,7 @@ __all__ = [
     "ExtractedCandidate",
     "ExtractedFiller",
     "ExtractionError",
+    "TextExtractionRun",
     "TextExtractionResponse",
     "TextExtractionService",
 ]

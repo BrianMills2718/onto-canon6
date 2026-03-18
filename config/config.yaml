@@ -23,3 +23,13 @@ extraction:
   timeout_seconds: 60
   num_retries: 2
   max_budget_usd: 0.25
+  max_output_tokens: 2500
+
+evaluation:
+  benchmark_fixture: "tests/fixtures/psyop_eval_slice.json"
+  judge_selection_task: "judging"
+  judge_prompt_template: "prompts/evaluation/judge_candidate_reasonableness.yaml"
+  judge_timeout_seconds: 60
+  judge_num_retries: 2
+  judge_max_budget_usd: 0.25
+  judge_max_output_tokens: 1500

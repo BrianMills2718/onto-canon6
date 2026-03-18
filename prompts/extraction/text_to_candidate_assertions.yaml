@@ -25,6 +25,8 @@ messages:
       For each candidate:
 
       - give the ontology-shaped assertion as `predicate` plus `roles`
+      - keep `predicate` to the predicate ID only; put filler data only in the
+        sibling `roles` object
       - include one or more exact `evidence_spans` whose text matches the
         source character-for-character
       - optionally include a short `claim_text` gloss that helps a reviewer

@@ -70,6 +70,21 @@ class ExtractionConfig(BaseModel):
     timeout_seconds: int = Field(ge=1)
     num_retries: int = Field(ge=0)
     max_budget_usd: float = Field(gt=0)
+    max_output_tokens: int = Field(ge=1)
+
+
+class EvaluationConfig(BaseModel):
+    """Live-evaluation defaults for the Phase 5 benchmark slice."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    benchmark_fixture: str = Field(min_length=1)
+    judge_selection_task: str = Field(min_length=1)
+    judge_prompt_template: str = Field(min_length=1)
+    judge_timeout_seconds: int = Field(ge=1)
+    judge_num_retries: int = Field(ge=0)
+    judge_max_budget_usd: float = Field(gt=0)
+    judge_max_output_tokens: int = Field(ge=1)
 
 
 class AppConfig(BaseModel):
@@ -82,6 +97,7 @@ class AppConfig(BaseModel):
     pipeline: PipelineConfig
     ontology_runtime: OntologyRuntimeConfig
     extraction: ExtractionConfig
+    evaluation: EvaluationConfig
 
     def resolve_repo_path(self, relative_path: str) -> Path:
         """Resolve a repository-relative path declared in config."""
@@ -119,6 +135,16 @@ class AppConfig(BaseModel):
         """Return the configured text-extraction prompt template path."""
 
         return self.resolve_repo_path(self.extraction.prompt_template)
+
+    def evaluation_benchmark_fixture(self) -> Path:
+        """Return the configured benchmark fixture path for live evaluation."""
+
+        return self.resolve_repo_path(self.evaluation.benchmark_fixture)
+
+    def evaluation_judge_prompt_template(self) -> Path:
+        """Return the configured reasonableness-judge prompt template path."""
+
+        return self.resolve_repo_path(self.evaluation.judge_prompt_template)
 
 
 def repo_root() -> Path:

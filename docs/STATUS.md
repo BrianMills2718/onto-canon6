@@ -27,7 +27,10 @@ typed ontology runtime:
     asset plus structured output to produce candidate assertions;
 17. deterministic end-to-end extraction into the existing review workflow
     without bypassing proposal or overlay logic;
-18. notebook probes that make the current behavior inspectable.
+18. notebook probes that make the current behavior inspectable;
+19. a typed live extraction-evaluation harness that separates reasonableness,
+    structural validation, and exact canonicalization fidelity;
+20. a first real-model benchmark proof over the local PSYOP evaluation slice.
 
 Concrete assets:
 
@@ -39,13 +42,17 @@ Concrete assets:
 6. `notebooks/06_overlay_application_slice.ipynb`
 7. `notebooks/07_text_grounded_import_contract.ipynb`
 8. `notebooks/08_text_extraction_slice.ipynb`
-9. `prompts/extraction/text_to_candidate_assertions.yaml`
-10. `src/onto_canon6/pipeline/text_extraction.py`
-11. tests in `tests/ontology_runtime/`
-12. tests in `tests/pipeline/`
-13. `src/onto_canon6/surfaces/review_report.py`
-14. `src/onto_canon6/pipeline/overlay_service.py`
-15. `src/onto_canon6/ontology_runtime/overlays.py`
+9. `notebooks/10_live_extraction_evaluation.ipynb`
+10. `prompts/extraction/text_to_candidate_assertions.yaml`
+11. `prompts/evaluation/judge_candidate_reasonableness.yaml`
+12. `src/onto_canon6/pipeline/text_extraction.py`
+13. `src/onto_canon6/evaluation/`
+14. tests in `tests/ontology_runtime/`
+15. tests in `tests/pipeline/`
+16. tests in `tests/evaluation/`
+17. `src/onto_canon6/surfaces/review_report.py`
+18. `src/onto_canon6/pipeline/overlay_service.py`
+19. `src/onto_canon6/ontology_runtime/overlays.py`
 
 Planning companion:
 
@@ -55,7 +62,7 @@ Planning companion:
 
 Still missing:
 
-1. live extraction-quality evaluation against real model outputs;
+1. broader benchmark coverage and calibration beyond the first local live slice;
 2. a first operational surface outside notebooks and direct Python calls;
 3. second-pack generalization beyond the current donor packs;
 4. artifact-lineage recovery;
@@ -91,8 +98,8 @@ The current locked strategic decisions are:
 
 1. the first regained user-visible capability is governed review of candidate
    assertions;
-2. the current next phase is live extraction evaluation, not more extraction
-   feature expansion;
+2. live extraction evaluation is now explicit and the next phase is the first
+   operational surface;
 3. text-derived candidate assertions should carry first-class evidence spans
    and may also carry an optional natural-language gloss;
 4. any LLM-backed extraction path must route through `llm_client` with
@@ -108,15 +115,15 @@ in `docs/plans/0001_successor_roadmap.md`.
 1. Detailed donor evidence still lives partly in `onto-canon5`.
 2. `onto-canon6` now proves a text-grounded import workflow structurally, but
    it still exposes that workflow mainly through notebooks and Python APIs.
-3. The extraction boundary is structurally proved, but live extraction quality
-   against real model outputs is not yet benchmarked.
+3. The extraction boundary now has a real live benchmark slice, but the
+   benchmark corpus is still small and not yet calibrated for broader claims.
 
 ## Immediate Next Step
 
-Start Phase 5 with one narrow proof that measures the extraction path before
-the system grows around it:
+Start Phase 6 with one narrow operational proof that makes the existing
+workflow usable without direct Python calls:
 
-1. define the typed evaluation record and split rubric;
-2. run at least one real-model extraction path through `llm_client`;
-3. keep canonicalization fidelity explicit but secondary to extraction
-   reasonableness.
+1. add a thin CLI over extraction, review, proposal, and overlay actions;
+2. keep business logic in the existing services rather than in CLI handlers;
+3. prove the end-to-end workflow through CLI tests plus one notebook or shell
+   transcript.

@@ -227,7 +227,7 @@ Proved:
 5. producer-specific logic remains in the pipeline boundary rather than
    leaking into `core` or `ontology_runtime`.
 
-## Phase 5: Live Extraction Evaluation and Quality Harness [planned]
+## Phase 5: Live Extraction Evaluation and Quality Harness [complete]
 
 Goal:
 
@@ -269,6 +269,20 @@ Acceptance evidence:
 1. tests for evaluation models and aggregate result computation;
 2. one notebook showing a live or recorded extraction-evaluation run;
 3. one short design note documenting the evaluation rubric and why it is split.
+
+Proved:
+
+1. `onto-canon6` now has typed evaluation models and a live evaluation service
+   under `src/onto_canon6/evaluation/`;
+2. the benchmark fixture, judge prompt, and aggregate scoring keep
+   reasonableness, structural validation, and canonicalization fidelity
+   separate;
+3. at least one real model can run end to end through the extraction and judge
+   path on the local PSYOP slice;
+4. the live proof is inspectable through
+   `notebooks/10_live_extraction_evaluation.ipynb`;
+5. the local rationale is now recorded in
+   `docs/adr/0005-separate-live-extraction-reasonableness-from-structural-validation-and-canonicalization-fidelity.md`.
 
 ## Phase 6: First Operational Surface [planned]
 
