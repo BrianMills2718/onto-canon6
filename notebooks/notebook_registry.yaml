@@ -14,6 +14,7 @@ journeys:
       - "docs/adr/0006-prefer-cli-as-the-first-operational-surface-before-mcp-or-ui.md"
       - "docs/adr/0007-adopt-canonical-journey-notebooks-with-an-explicit-registry.md"
       - "docs/adr/0008-start-artifact-lineage-with-a-narrow-three-kind-model-and-candidate-centered-links.md"
+      - "docs/adr/0009-start-epistemic-extension-with-confidence-and-supersession-over-accepted-candidates.md"
       - "notebooks/README.md"
     related_tests:
       - "tests/integration/test_cli_flow.py"
@@ -234,23 +235,34 @@ journeys:
           - "notebooks/14_artifact_lineage_slice.ipynb"
       - phase_id: "epistemic_extension"
         title: "Epistemic Extension"
-        purpose: "Plan the first optional epistemic slice without moving epistemic policy into the core workflow."
+        purpose: "Recover the first optional epistemic slice without moving epistemic policy into the core workflow."
         input_artifact: "artifact_lineage_proof"
-        output_artifact: "epistemic_extension_contract"
+        output_artifact: "epistemic_extension_proof"
         acceptance_criteria:
-          - "The notebook emits an explicit provisional epistemic contract artifact."
-          - "The contract names the smallest intended operator set."
-          - "The phase remains explicitly provisional."
-        status: "planned"
-        execution_mode: "stub"
-        promotion_path: "Promote this phase when the extension-local models and operators exist with tests and one notebook proof."
+          - "Confidence and supersession are persisted through an extension-local package."
+          - "Epistemic state attaches only to accepted candidates and remains outside the base review schema."
+          - "The phase runs live in the canonical journey notebook."
+        status: "proven"
+        execution_mode: "live"
+        proof_critical: true
+        related_code:
+          - "src/onto_canon6/extensions/epistemic/models.py"
+          - "src/onto_canon6/extensions/epistemic/store.py"
+          - "src/onto_canon6/extensions/epistemic/service.py"
+          - "src/onto_canon6/surfaces/epistemic_report.py"
+        related_tests:
+          - "tests/extensions/test_epistemic_service.py"
+          - "tests/integration/test_notebook_process.py"
         related_docs:
           - "docs/plans/0001_successor_roadmap.md"
-          - "notebooks/11_future_phase_breakdown.ipynb"
+          - "docs/plans/0003_phase9_epistemic_shape.md"
+          - "docs/adr/0009-start-epistemic-extension-with-confidence-and-supersession-over-accepted-candidates.md"
+        related_evidence:
+          - "notebooks/15_epistemic_extension_slice.ipynb"
       - phase_id: "product_facing_workflow_integration"
         title: "Product-Facing Workflow Integration"
         purpose: "Plan the single outward-facing workflow that will justify the successor as a real product slice."
-        input_artifact: "epistemic_extension_contract"
+        input_artifact: "epistemic_extension_proof"
         output_artifact: "product_workflow_plan"
         acceptance_criteria:
           - "The notebook emits an explicit provisional workflow plan artifact."
@@ -423,3 +435,15 @@ auxiliary_notebooks:
       - "tests/artifacts/test_artifact_service.py"
     related_evidence:
       - "notebooks/14_artifact_lineage_slice.ipynb"
+  - notebook_id: "epistemic_extension_slice"
+    title: "Epistemic Extension Slice"
+    purpose: "Deep dive proof for the first extension-local confidence and supersession slice."
+    kind: "deep_dive"
+    notebook: "notebooks/15_epistemic_extension_slice.ipynb"
+    journey_id: "governed_text_to_reviewed_assertions"
+    related_phase_ids:
+      - "epistemic_extension"
+    related_tests:
+      - "tests/extensions/test_epistemic_service.py"
+    related_evidence:
+      - "notebooks/15_epistemic_extension_slice.ipynb"

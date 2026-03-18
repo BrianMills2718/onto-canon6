@@ -506,7 +506,7 @@ Proved:
    `notebooks/14_artifact_lineage_slice.ipynb` and
    `notebooks/00_master_governed_text_to_reviewed_assertions.ipynb`.
 
-## Phase 9: Epistemic Extension [planned]
+## Phase 9: Epistemic Extension [completed]
 
 Goal:
 
@@ -515,11 +515,11 @@ Goal:
 
 Build:
 
-1. one extension package for confidence, tension, supersession, or related
-   epistemic operations;
+1. one extension package for confidence and supersession over accepted
+   candidate assertions;
 2. typed storage and operators owned by the extension rather than by the core
    review pipeline;
-3. one inspectable report or notebook showing the extension in use.
+3. one inspectable report and notebook showing the extension in use.
 
 Acceptance criteria:
 
@@ -549,13 +549,24 @@ Non-goals:
 2. automatic contradiction resolution across the whole graph;
 3. recentering the runtime around an epistemic controller.
 
-Explicit uncertainties:
+Proved:
 
-1. whether the first extension slice should start with confidence, tension,
-   supersession, or contradiction;
-2. whether epistemic state should attach only to accepted assertions or also to
-   candidate assertions under review;
-3. whether confidence values are user-entered, model-derived, or both.
+1. `onto-canon6` now has an extension-local epistemic package under
+   `src/onto_canon6/extensions/epistemic/` with typed confidence assessments
+   and supersession records;
+2. the first epistemic slice attaches only to accepted candidate assertions
+   and fails loudly if used on pending or rejected candidates;
+3. the epistemic slice depends on the existing review store through explicit
+   seams rather than mutating the base review schema;
+4. the typed epistemic report surface now exposes current confidence,
+   supersession state, and derived status without introducing a new central
+   workflow object;
+5. the deep-dive proof and canonical journey phase are now live in
+   `notebooks/15_epistemic_extension_slice.ipynb` and
+   `notebooks/00_master_governed_text_to_reviewed_assertions.ipynb`;
+6. the local rationale is now recorded in
+   `docs/adr/0009-start-epistemic-extension-with-confidence-and-supersession-over-accepted-candidates.md`
+   and `docs/plans/0003_phase9_epistemic_shape.md`.
 
 ## Phase 10: Product-Facing Workflow Integration [planned]
 

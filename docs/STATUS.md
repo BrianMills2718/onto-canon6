@@ -50,7 +50,14 @@ typed ontology runtime:
     persisted artifacts;
 31. one typed lineage report surface that exposes direct links and ancestor
     artifacts without hidden metadata blobs;
-32. live notebook proof for the narrow Phase 8 artifact-lineage slice.
+32. live notebook proof for the narrow Phase 8 artifact-lineage slice;
+33. one extension-local epistemic subsystem with typed confidence and
+    supersession records over accepted candidate assertions;
+34. one typed epistemic report surface that derives current candidate status
+    without mutating the base review schema;
+35. loud failures when epistemic state is attempted on candidates that are not
+    accepted;
+36. live notebook proof for the narrow Phase 9 epistemic-extension slice.
 
 Concrete assets:
 
@@ -69,28 +76,32 @@ Concrete assets:
 13. `notebooks/README.md`
 14. `notebooks/13_dodaf_minimal_second_pack.ipynb`
 15. `notebooks/14_artifact_lineage_slice.ipynb`
-16. `prompts/extraction/text_to_candidate_assertions.yaml`
-17. `prompts/evaluation/judge_candidate_reasonableness.yaml`
-18. `src/onto_canon6/pipeline/text_extraction.py`
-19. `src/onto_canon6/evaluation/`
-20. `src/onto_canon6/cli.py`
-21. `src/onto_canon6/__main__.py`
-22. `src/onto_canon6/notebook_process.py`
-23. `src/onto_canon6/artifacts/`
-24. `src/onto_canon6/surfaces/lineage_report.py`
-25. `ontology_packs/dodaf_minimal/0.1.0/manifest.yaml`
-26. `profiles/dodaf_minimal_strict/0.1.0/manifest.yaml`
-27. `profiles/dodaf_minimal_mixed/0.1.0/manifest.yaml`
-28. tests in `tests/ontology_runtime/`
-29. tests in `tests/pipeline/`
-30. tests in `tests/evaluation/`
-31. tests in `tests/artifacts/`
-32. `tests/integration/test_cli_flow.py`
-33. `tests/integration/test_notebook_process.py`
-34. `tests/integration/test_dodaf_minimal_cli.py`
-35. `src/onto_canon6/surfaces/review_report.py`
-36. `src/onto_canon6/pipeline/overlay_service.py`
-37. `src/onto_canon6/ontology_runtime/overlays.py`
+16. `notebooks/15_epistemic_extension_slice.ipynb`
+17. `prompts/extraction/text_to_candidate_assertions.yaml`
+18. `prompts/evaluation/judge_candidate_reasonableness.yaml`
+19. `src/onto_canon6/pipeline/text_extraction.py`
+20. `src/onto_canon6/evaluation/`
+21. `src/onto_canon6/cli.py`
+22. `src/onto_canon6/__main__.py`
+23. `src/onto_canon6/notebook_process.py`
+24. `src/onto_canon6/artifacts/`
+25. `src/onto_canon6/extensions/epistemic/`
+26. `src/onto_canon6/surfaces/lineage_report.py`
+27. `src/onto_canon6/surfaces/epistemic_report.py`
+28. `ontology_packs/dodaf_minimal/0.1.0/manifest.yaml`
+29. `profiles/dodaf_minimal_strict/0.1.0/manifest.yaml`
+30. `profiles/dodaf_minimal_mixed/0.1.0/manifest.yaml`
+31. tests in `tests/ontology_runtime/`
+32. tests in `tests/pipeline/`
+33. tests in `tests/evaluation/`
+34. tests in `tests/artifacts/`
+35. tests in `tests/extensions/`
+36. `tests/integration/test_cli_flow.py`
+37. `tests/integration/test_notebook_process.py`
+38. `tests/integration/test_dodaf_minimal_cli.py`
+39. `src/onto_canon6/surfaces/review_report.py`
+40. `src/onto_canon6/pipeline/overlay_service.py`
+41. `src/onto_canon6/ontology_runtime/overlays.py`
 
 Planning companion:
 
@@ -102,8 +113,7 @@ Planning companion:
 Still missing:
 
 1. broader benchmark coverage and calibration beyond the first local live slice;
-2. epistemic extension;
-3. product-facing end-to-end workflow beyond CLI, notebooks, and Python API
+2. product-facing end-to-end workflow beyond CLI, notebooks, and Python API
    use.
 
 ## Current Donor Dependencies
@@ -147,7 +157,9 @@ The current locked strategic decisions are:
    a large donor import;
 6. mixed-mode routing and proposal acceptance policy must stay configurable;
 7. artifact lineage starts with a narrow three-kind model and
-   candidate-centered links before broader registry ergonomics are added.
+   candidate-centered links before broader registry ergonomics are added;
+8. the first epistemic slice stays extension-local and starts with confidence
+   plus supersession over accepted candidates only.
 
 The authoritative phase exit criteria and remaining explicit unknowns now live
 in `docs/plans/0001_successor_roadmap.md`.
@@ -167,21 +179,24 @@ in `docs/plans/0001_successor_roadmap.md`.
    become.
 6. The second-pack proof is intentionally small and does not yet answer how
    broad a future DoDAF vocabulary should become.
+7. The epistemic slice is intentionally narrow and does not yet answer how
+   broader contradiction, tension, or graph-wide truth-maintenance behavior
+   should be modeled.
 
 ## Immediate Next Step
 
-Start Phase 9 by choosing the smallest useful epistemic operator set before any
-extension storage or report surface is added:
+Lock Phase 10 around one real product-facing workflow before adding any new
+outward-facing surface:
 
-1. choose whether the first slice starts with confidence, tension,
-   supersession, or contradiction;
-2. decide whether epistemic state should attach only to accepted assertions or
-   also candidate assertions under review;
-3. keep the extension outside `core`, `ontology_runtime`, and the base review
-   pipeline.
+1. choose the single workflow that best demonstrates user-visible leverage;
+2. choose the narrowest outward-facing boundary that serves that workflow;
+3. reuse the proved extraction, review, overlay, artifact, and epistemic
+   slices instead of creating a new workflow runtime.
 
-The artifact-lineage shape and path to the broader model are already explicit
+The locked decisions for the Phase 8 and Phase 9 shapes are already explicit
 in:
 
 1. `docs/adr/0008-start-artifact-lineage-with-a-narrow-three-kind-model-and-candidate-centered-links.md`
 2. `docs/plans/0002_phase8_artifact_lineage_shape.md`
+3. `docs/adr/0009-start-epistemic-extension-with-confidence-and-supersession-over-accepted-candidates.md`
+4. `docs/plans/0003_phase9_epistemic_shape.md`

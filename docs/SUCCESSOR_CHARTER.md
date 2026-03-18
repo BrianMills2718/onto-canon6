@@ -320,10 +320,21 @@ Recover artifact-backed provenance through a narrow bounded subsystem:
 
 Status: complete
 
+### Phase 9
+
+Recover the first optional epistemic slice without moving epistemic policy into
+the base review runtime:
+
+1. keep epistemic state in an extension-local package;
+2. start with confidence and supersession over accepted candidate assertions;
+3. expose current epistemic status through a typed report surface;
+4. keep the path to broader contradiction and tension handling explicit.
+
+Status: complete
+
 ### Later Phases
 
-1. extensions such as epistemic reasoning;
-2. one product-facing integration slice.
+1. one product-facing integration slice.
 
 The active implementation detail for these phases lives in
 `docs/plans/0001_successor_roadmap.md`.

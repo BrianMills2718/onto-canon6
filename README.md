@@ -28,6 +28,8 @@ entire prior runtime. The current scope is intentionally narrow:
 - one local second-pack proof with `dodaf_minimal` strict and mixed profiles
 - one narrow artifact-lineage recovery slice with candidate-centered support
   links and a typed lineage report
+- one narrow extension-local epistemic slice with confidence, supersession,
+  and a typed epistemic report over accepted candidates
 
 The governing architectural rationale lives in the local successor charter and
 the adopted ADR set.
@@ -45,6 +47,7 @@ Repo-local strategic and planning docs now live in:
 - `notebooks/12_cli_surface.ipynb`
 - `notebooks/13_dodaf_minimal_second_pack.ipynb`
 - `notebooks/14_artifact_lineage_slice.ipynb`
+- `notebooks/15_epistemic_extension_slice.ipynb`
 
 ## Current Scope
 
@@ -72,11 +75,12 @@ Today this repo proves only one thin slice:
     overlay, and CLI surfaces without core branching
 15. recover a narrow artifact-lineage slice with explicit source, derived, and
     analysis artifacts linked to candidate assertions
+16. recover a narrow extension-local epistemic slice with confidence and
+    supersession over accepted candidate assertions
 
 Not in scope yet:
 
 - broader live benchmark coverage and calibration beyond the first local slice
-- epistemic extension
 - domain-specific query helpers
 - richer external producer integrations
 - UI or MCP surfaces
@@ -87,6 +91,7 @@ Not in scope yet:
 src/onto_canon6/
   artifacts/
   core/
+  extensions/
   ontology_runtime/
   pipeline/
   domain_packs/
