@@ -14,6 +14,7 @@ during the restart review and planning phase.
 7. [0007 - Adopt canonical journey notebooks with an explicit registry](0007-adopt-canonical-journey-notebooks-with-an-explicit-registry.md)
 8. [0008 - Start artifact lineage with a narrow three-kind model and candidate-centered links](0008-start-artifact-lineage-with-a-narrow-three-kind-model-and-candidate-centered-links.md)
 9. [0009 - Start epistemic extension with confidence and supersession over accepted candidates](0009-start-epistemic-extension-with-confidence-and-supersession-over-accepted-candidates.md)
+10. [0010 - Choose CLI-driven governed bundle export as the first product-facing workflow](0010-choose-cli-driven-governed-bundle-export-as-the-first-product-facing-workflow.md)
 
 ## Notes
 

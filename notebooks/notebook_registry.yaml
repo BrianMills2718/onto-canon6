@@ -4,7 +4,7 @@ journeys:
     purpose: "Turn raw source text into reviewable candidate assertions, accepted ontology proposals, and overlay-aware report state through the current successor workflow."
     notebook: "notebooks/00_master_governed_text_to_reviewed_assertions.ipynb"
     notebook_mode: "mixed"
-    status: "partial"
+    status: "proven"
     related_docs:
       - "README.md"
       - "docs/SUCCESSOR_CHARTER.md"
@@ -261,20 +261,29 @@ journeys:
           - "notebooks/15_epistemic_extension_slice.ipynb"
       - phase_id: "product_facing_workflow_integration"
         title: "Product-Facing Workflow Integration"
-        purpose: "Plan the single outward-facing workflow that will justify the successor as a real product slice."
+        purpose: "Export one governed bundle through the CLI-backed product workflow."
         input_artifact: "epistemic_extension_proof"
-        output_artifact: "product_workflow_plan"
+        output_artifact: "governed_bundle_proof"
         acceptance_criteria:
-          - "The notebook emits an explicit provisional workflow plan artifact."
-          - "The plan names the chosen outward-facing boundary and success test."
-          - "The phase remains explicitly provisional."
-        status: "planned"
-        execution_mode: "stub"
-        promotion_path: "Promote this phase when one real workflow can be run end to end without ad hoc Python editing."
+          - "The workflow runs end to end without direct module-level Python calls."
+          - "The exported bundle includes accepted candidates, governance state, and provenance."
+          - "The phase runs live in the canonical journey notebook."
+        status: "proven"
+        execution_mode: "live"
+        proof_critical: true
+        related_code:
+          - "src/onto_canon6/cli.py"
+          - "src/onto_canon6/surfaces/governed_bundle.py"
+        related_tests:
+          - "tests/surfaces/test_governed_bundle.py"
+          - "tests/integration/test_cli_flow.py"
+          - "tests/integration/test_notebook_process.py"
         related_docs:
           - "docs/plans/0001_successor_roadmap.md"
-          - "notebooks/09_successor_long_term_plan.ipynb"
-          - "notebooks/11_future_phase_breakdown.ipynb"
+          - "docs/plans/0004_phase10_governed_bundle_shape.md"
+          - "docs/adr/0010-choose-cli-driven-governed-bundle-export-as-the-first-product-facing-workflow.md"
+        related_evidence:
+          - "notebooks/16_governed_bundle_workflow.ipynb"
 
 auxiliary_notebooks:
   - notebook_id: "policy_contracts_probe"
@@ -447,3 +456,16 @@ auxiliary_notebooks:
       - "tests/extensions/test_epistemic_service.py"
     related_evidence:
       - "notebooks/15_epistemic_extension_slice.ipynb"
+  - notebook_id: "governed_bundle_workflow"
+    title: "Governed Bundle Workflow"
+    purpose: "Deep dive proof for the first product-facing CLI-backed governed bundle export."
+    kind: "deep_dive"
+    notebook: "notebooks/16_governed_bundle_workflow.ipynb"
+    journey_id: "governed_text_to_reviewed_assertions"
+    related_phase_ids:
+      - "product_facing_workflow_integration"
+    related_tests:
+      - "tests/surfaces/test_governed_bundle.py"
+      - "tests/integration/test_cli_flow.py"
+    related_evidence:
+      - "notebooks/16_governed_bundle_workflow.ipynb"

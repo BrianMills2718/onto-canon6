@@ -30,6 +30,8 @@ entire prior runtime. The current scope is intentionally narrow:
   links and a typed lineage report
 - one narrow extension-local epistemic slice with confidence, supersession,
   and a typed epistemic report over accepted candidates
+- one first product-facing workflow that exports a CLI-driven governed bundle
+  over accepted reviewed assertions
 
 The governing architectural rationale lives in the local successor charter and
 the adopted ADR set.
@@ -48,6 +50,7 @@ Repo-local strategic and planning docs now live in:
 - `notebooks/13_dodaf_minimal_second_pack.ipynb`
 - `notebooks/14_artifact_lineage_slice.ipynb`
 - `notebooks/15_epistemic_extension_slice.ipynb`
+- `notebooks/16_governed_bundle_workflow.ipynb`
 
 ## Current Scope
 
@@ -77,6 +80,8 @@ Today this repo proves only one thin slice:
     analysis artifacts linked to candidate assertions
 16. recover a narrow extension-local epistemic slice with confidence and
     supersession over accepted candidate assertions
+17. export one governed bundle through the CLI-backed workflow so the
+    successor ends in a real downstream artifact
 
 Not in scope yet:
 

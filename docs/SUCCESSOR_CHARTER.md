@@ -332,12 +332,24 @@ the base review runtime:
 
 Status: complete
 
-### Later Phases
+### Phase 10
 
-1. one product-facing integration slice.
+Deliver the first real product-facing workflow without adding a second runtime:
 
-The active implementation detail for these phases lives in
-`docs/plans/0001_successor_roadmap.md`.
+1. keep the outward-facing boundary CLI-backed for the first proof;
+2. export one governed JSON bundle over accepted reviewed assertions;
+3. include provenance, ontology-governance state, and optional artifact and
+   epistemic state in that bundle;
+4. keep MCP deferred until a concrete consumer pressures it.
+
+Status: complete
+
+### After The Current Roadmap
+
+The current phased roadmap is now complete through Phase 10.
+
+Any further expansion should start from a new ADR or roadmap extension driven
+by explicit benchmark pressure, a real consumer, or a specific next workflow.
 
 ## Drift Conditions
 

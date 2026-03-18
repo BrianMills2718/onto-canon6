@@ -568,7 +568,7 @@ Proved:
    `docs/adr/0009-start-epistemic-extension-with-confidence-and-supersession-over-accepted-candidates.md`
    and `docs/plans/0003_phase9_epistemic_shape.md`.
 
-## Phase 10: Product-Facing Workflow Integration [planned]
+## Phase 10: Product-Facing Workflow Integration [completed]
 
 Goal:
 
@@ -577,12 +577,13 @@ Goal:
 
 Build:
 
-1. one end-to-end flow that starts from real source material and ends in
-   reviewed, queryable, or exportable governed assertions;
-2. one outward-facing integration surface, such as MCP or another research
-   workflow boundary, built on the already-proven services;
-3. enough artifact/provenance support to explain where the resulting assertions
-   came from.
+1. one end-to-end flow that starts from real source material and ends in an
+   exportable governed bundle over accepted reviewed assertions;
+2. one outward-facing integration surface in the form of a thin CLI export
+   command built on the already-proven services;
+3. enough provenance, ontology-governance state, and optional
+   artifact/epistemic state to explain where the resulting assertions came
+   from.
 
 Acceptance criteria:
 
@@ -604,8 +605,8 @@ Build order:
 
 1. choose one workflow and one integration boundary explicitly before building
    anything around it;
-2. reuse the proved CLI/review/extraction/overlay/artifact services rather
-   than creating a new workflow runtime;
+2. reuse the proved CLI/review/extraction/overlay/artifact/epistemic services
+   rather than creating a new workflow runtime;
 3. add only the minimal outward-facing adapter needed for that workflow;
 4. prove the workflow with real inputs and explicit provenance traces.
 
@@ -615,13 +616,24 @@ Non-goals:
 2. a generalized platform or multi-tenant service;
 3. new architecture layers that exist only for hypothetical later products.
 
-Explicit uncertainties:
+Proved:
 
-1. which single workflow best demonstrates real user-visible leverage;
-2. whether the first outward-facing boundary after CLI should be MCP or
-   something narrower;
-3. what minimum level of artifact/provenance depth is required before the
-   workflow feels credibly useful.
+1. the first product-facing workflow is now a CLI-driven governed-bundle
+   export over accepted reviewed assertions;
+2. the outward-facing boundary stays thin and service-backed through
+   `src/onto_canon6/cli.py` and `src/onto_canon6/surfaces/governed_bundle.py`;
+3. the exported bundle includes accepted candidates, linked proposal and
+   overlay state, source provenance/evidence, candidate artifact lineage when
+   present, and extension-local epistemic state when present;
+4. the product-facing slice is covered by
+   `tests/surfaces/test_governed_bundle.py`,
+   `tests/integration/test_cli_flow.py`, and
+   `notebooks/16_governed_bundle_workflow.ipynb`;
+5. the canonical journey now ends in a live governed export artifact rather
+   than a provisional workflow plan;
+6. the local rationale is now recorded in
+   `docs/adr/0010-choose-cli-driven-governed-bundle-export-as-the-first-product-facing-workflow.md`
+   and `docs/plans/0004_phase10_governed_bundle_shape.md`.
 
 ## Standing Priorities
 
@@ -638,11 +650,11 @@ Always prefer:
 
 ## Current Explicit Unknowns
 
-These are unresolved on purpose and should be resolved explicitly before the
-relevant phase begins:
+These are the remaining open questions after the current phased roadmap:
 
 1. how much broader benchmark coverage is needed before Phase 5 results should
    be treated as stronger quality evidence;
-2. whether the first operational surface after CLI should be MCP, UI, or
-   something else;
-3. which single workflow should be the first product-facing integration slice.
+2. when, if ever, real consumer pressure justifies adding MCP or another richer
+   boundary over the governed-bundle surface;
+3. which concrete next workflow or consumer should justify a roadmap extension
+   beyond Phase 10.

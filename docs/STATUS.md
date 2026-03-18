@@ -57,7 +57,16 @@ typed ontology runtime:
     without mutating the base review schema;
 35. loud failures when epistemic state is attempted on candidates that are not
     accepted;
-36. live notebook proof for the narrow Phase 9 epistemic-extension slice.
+36. live notebook proof for the narrow Phase 9 epistemic-extension slice;
+37. one typed governed-bundle export surface that composes accepted candidate
+    assertions, linked governance state, candidate provenance, artifact
+    lineage, and extension-local epistemic state;
+38. one CLI command that exports the governed bundle without direct
+    module-level Python calls;
+39. one live notebook proof for the first product-facing governed-bundle
+    workflow;
+40. one canonical journey notebook that now ends in a real governed export
+    artifact rather than a provisional workflow plan.
 
 Concrete assets:
 
@@ -77,31 +86,34 @@ Concrete assets:
 14. `notebooks/13_dodaf_minimal_second_pack.ipynb`
 15. `notebooks/14_artifact_lineage_slice.ipynb`
 16. `notebooks/15_epistemic_extension_slice.ipynb`
-17. `prompts/extraction/text_to_candidate_assertions.yaml`
-18. `prompts/evaluation/judge_candidate_reasonableness.yaml`
-19. `src/onto_canon6/pipeline/text_extraction.py`
-20. `src/onto_canon6/evaluation/`
-21. `src/onto_canon6/cli.py`
-22. `src/onto_canon6/__main__.py`
-23. `src/onto_canon6/notebook_process.py`
-24. `src/onto_canon6/artifacts/`
-25. `src/onto_canon6/extensions/epistemic/`
-26. `src/onto_canon6/surfaces/lineage_report.py`
-27. `src/onto_canon6/surfaces/epistemic_report.py`
-28. `ontology_packs/dodaf_minimal/0.1.0/manifest.yaml`
-29. `profiles/dodaf_minimal_strict/0.1.0/manifest.yaml`
-30. `profiles/dodaf_minimal_mixed/0.1.0/manifest.yaml`
-31. tests in `tests/ontology_runtime/`
-32. tests in `tests/pipeline/`
-33. tests in `tests/evaluation/`
-34. tests in `tests/artifacts/`
-35. tests in `tests/extensions/`
-36. `tests/integration/test_cli_flow.py`
-37. `tests/integration/test_notebook_process.py`
-38. `tests/integration/test_dodaf_minimal_cli.py`
-39. `src/onto_canon6/surfaces/review_report.py`
-40. `src/onto_canon6/pipeline/overlay_service.py`
-41. `src/onto_canon6/ontology_runtime/overlays.py`
+17. `notebooks/16_governed_bundle_workflow.ipynb`
+18. `prompts/extraction/text_to_candidate_assertions.yaml`
+19. `prompts/evaluation/judge_candidate_reasonableness.yaml`
+20. `src/onto_canon6/pipeline/text_extraction.py`
+21. `src/onto_canon6/evaluation/`
+22. `src/onto_canon6/cli.py`
+23. `src/onto_canon6/__main__.py`
+24. `src/onto_canon6/notebook_process.py`
+25. `src/onto_canon6/artifacts/`
+26. `src/onto_canon6/extensions/epistemic/`
+27. `src/onto_canon6/surfaces/lineage_report.py`
+28. `src/onto_canon6/surfaces/epistemic_report.py`
+29. `src/onto_canon6/surfaces/governed_bundle.py`
+30. `ontology_packs/dodaf_minimal/0.1.0/manifest.yaml`
+31. `profiles/dodaf_minimal_strict/0.1.0/manifest.yaml`
+32. `profiles/dodaf_minimal_mixed/0.1.0/manifest.yaml`
+33. tests in `tests/ontology_runtime/`
+34. tests in `tests/pipeline/`
+35. tests in `tests/evaluation/`
+36. tests in `tests/artifacts/`
+37. tests in `tests/extensions/`
+38. tests in `tests/surfaces/`
+39. `tests/integration/test_cli_flow.py`
+40. `tests/integration/test_notebook_process.py`
+41. `tests/integration/test_dodaf_minimal_cli.py`
+42. `src/onto_canon6/surfaces/review_report.py`
+43. `src/onto_canon6/pipeline/overlay_service.py`
+44. `src/onto_canon6/ontology_runtime/overlays.py`
 
 Planning companion:
 
@@ -113,8 +125,8 @@ Planning companion:
 Still missing:
 
 1. broader benchmark coverage and calibration beyond the first local live slice;
-2. product-facing end-to-end workflow beyond CLI, notebooks, and Python API
-   use.
+2. any post-Phase-10 outward-facing boundary beyond the governed-bundle CLI
+   export, such as MCP or a richer UI.
 
 ## Current Donor Dependencies
 
@@ -159,7 +171,9 @@ The current locked strategic decisions are:
 7. artifact lineage starts with a narrow three-kind model and
    candidate-centered links before broader registry ergonomics are added;
 8. the first epistemic slice stays extension-local and starts with confidence
-   plus supersession over accepted candidates only.
+   plus supersession over accepted candidates only;
+9. the first product-facing workflow is a CLI-driven governed-bundle export,
+   with MCP deferred until real consumer pressure exists.
 
 The authoritative phase exit criteria and remaining explicit unknowns now live
 in `docs/plans/0001_successor_roadmap.md`.
@@ -167,9 +181,9 @@ in `docs/plans/0001_successor_roadmap.md`.
 ## Current Risks
 
 1. Detailed donor evidence still lives partly in `onto-canon5`.
-2. `onto-canon6` now proves a text-grounded import workflow structurally, but
-   it still exposes that workflow only through notebooks, Python APIs, and the
-   narrow first CLI.
+2. `onto-canon6` now has a real product-facing export workflow, but it still
+   exposes that workflow through a bounded CLI artifact rather than a richer
+   interactive surface.
 3. The extraction boundary now has a real live benchmark slice, but the
    benchmark corpus is still small and not yet calibrated for broader claims.
 4. Notebook process validation is local to `onto-canon6`; it is not yet wired
@@ -182,21 +196,27 @@ in `docs/plans/0001_successor_roadmap.md`.
 7. The epistemic slice is intentionally narrow and does not yet answer how
    broader contradiction, tension, or graph-wide truth-maintenance behavior
    should be modeled.
+8. The roadmap is complete through Phase 10, so any next expansion now needs
+   explicit new consumer pressure instead of momentum alone.
 
 ## Immediate Next Step
 
-Lock Phase 10 around one real product-facing workflow before adding any new
-outward-facing surface:
+Hold the line after Phase 10 unless a real next consumer or boundary justifies
+expanding the roadmap:
 
-1. choose the single workflow that best demonstrates user-visible leverage;
-2. choose the narrowest outward-facing boundary that serves that workflow;
-3. reuse the proved extraction, review, overlay, artifact, and epistemic
-   slices instead of creating a new workflow runtime.
+1. expand benchmark coverage only if it changes real confidence in the current
+   workflow;
+2. add MCP only if a concrete consumer needs it over the governed-bundle
+   export;
+3. extend the roadmap only when a new workflow or integration pressure is
+   explicit.
 
-The locked decisions for the Phase 8 and Phase 9 shapes are already explicit
+The locked decisions for the latest slices are already explicit
 in:
 
 1. `docs/adr/0008-start-artifact-lineage-with-a-narrow-three-kind-model-and-candidate-centered-links.md`
 2. `docs/plans/0002_phase8_artifact_lineage_shape.md`
 3. `docs/adr/0009-start-epistemic-extension-with-confidence-and-supersession-over-accepted-candidates.md`
 4. `docs/plans/0003_phase9_epistemic_shape.md`
+5. `docs/adr/0010-choose-cli-driven-governed-bundle-export-as-the-first-product-facing-workflow.md`
+6. `docs/plans/0004_phase10_governed_bundle_shape.md`

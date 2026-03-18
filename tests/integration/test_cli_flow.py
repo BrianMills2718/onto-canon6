@@ -99,6 +99,7 @@ def test_cli_help_works_through_module_entrypoint() -> None:
     assert result.returncode == 0
     assert "extract-text" in result.stdout
     assert "review-candidate" in result.stdout
+    assert "export-governed-bundle" in result.stdout
 
 
 def test_cli_extract_review_and_apply_flow_json_output(
@@ -240,6 +241,27 @@ def test_cli_extract_review_and_apply_flow_json_output(
     assert len(proposals_output) == 1
     assert proposals_output[0]["proposal_id"] == proposal_id
     assert proposals_output[0]["overlay_application"] is not None
+
+    exit_code = cli_module.main(
+        [
+            "export-governed-bundle",
+            "--review-db-path",
+            str(review_db_path),
+            "--output",
+            "json",
+        ]
+    )
+    assert exit_code == 0
+    bundle_output = json.loads(capsys.readouterr().out)
+    assert bundle_output["summary"]["total_candidates"] == 1
+    assert bundle_output["summary"]["total_linked_proposals"] == 1
+    assert bundle_output["candidate_bundles"][0]["candidate"]["candidate_id"] == candidate_id
+    assert bundle_output["candidate_bundles"][0]["linked_proposals"][0]["proposal_id"] == proposal_id
+    assert (
+        bundle_output["candidate_bundles"][0]["linked_overlay_applications"][0]["proposal_id"]
+        == proposal_id
+    )
+    assert bundle_output["candidate_bundles"][0]["epistemic_status"] == "active"
 
 
 def test_cli_fails_loud_on_invalid_candidate_acceptance(

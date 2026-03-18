@@ -30,6 +30,7 @@ from .pipeline import (
     ReviewStoreError,
     TextExtractionService,
 )
+from .surfaces import GovernedWorkflowBundle, GovernedWorkflowBundleService
 
 
 def main(argv: Sequence[str] | None = None) -> int:
@@ -169,6 +170,28 @@ def _build_parser() -> argparse.ArgumentParser:
     _add_output_arg(apply_overlay_parser, default_output=config.cli.default_output_format)
     apply_overlay_parser.set_defaults(handler=_handle_apply_overlay)
 
+    export_bundle_parser = subparsers.add_parser(
+        "export-governed-bundle",
+        help="Export accepted governed assertions with provenance, governance, and optional extension state.",
+    )
+    _add_store_args(export_bundle_parser, include_overlay_root=False)
+    export_bundle_parser.add_argument(
+        "--profile-id",
+        help="Optional profile-id filter over accepted candidates.",
+    )
+    export_bundle_parser.add_argument(
+        "--profile-version",
+        help="Optional profile-version filter. Requires --profile-id.",
+    )
+    export_bundle_parser.add_argument(
+        "--candidate-id",
+        action="append",
+        default=[],
+        help="Optional accepted candidate-id filter. Can be repeated.",
+    )
+    _add_output_arg(export_bundle_parser, default_output=config.cli.default_output_format)
+    export_bundle_parser.set_defaults(handler=_handle_export_governed_bundle)
+
     return parser
 
 
@@ -268,6 +291,19 @@ def _handle_apply_overlay(args: argparse.Namespace) -> int:
     return 0
 
 
+def _handle_export_governed_bundle(args: argparse.Namespace) -> int:
+    """Export one product-facing bundle over accepted governed assertions."""
+
+    review_service = _build_review_service(args)
+    bundle = GovernedWorkflowBundleService(review_service=review_service).build_bundle(
+        profile_id=args.profile_id,
+        profile_version=args.profile_version,
+        candidate_ids=tuple(args.candidate_id),
+    )
+    _emit_output(bundle, output_format=args.output)
+    return 0
+
+
 def _build_review_service(args: argparse.Namespace) -> ReviewService:
     """Create a review service from config-backed defaults plus explicit overrides."""
 
@@ -331,7 +367,16 @@ def _coerce_exit_code(code: object) -> int:
 def _to_jsonable(value: object) -> Any:
     """Normalize Pydantic-rich command results into JSON-serializable data."""
 
-    if isinstance(value, (CandidateAssertionRecord, CandidateSubmissionResult, ProposalRecord, OverlayApplicationRecord)):
+    if isinstance(
+        value,
+        (
+            CandidateAssertionRecord,
+            CandidateSubmissionResult,
+            GovernedWorkflowBundle,
+            ProposalRecord,
+            OverlayApplicationRecord,
+        ),
+    ):
         return value.model_dump(mode="json")
     if isinstance(value, tuple):
         return [_to_jsonable(item) for item in value]
@@ -373,6 +418,17 @@ def _to_text(value: object) -> str:
             f"proposal_id={value.proposal_id} "
             f"overlay_pack={value.overlay_pack.pack_id}@{value.overlay_pack.pack_version} "
             f"content_path={value.content_path}"
+        )
+    if isinstance(value, GovernedWorkflowBundle):
+        candidate_ids = ",".join(
+            candidate_bundle.candidate.candidate_id for candidate_bundle in value.candidate_bundles
+        ) or "none"
+        return (
+            f"accepted_candidates={value.summary.total_candidates} "
+            f"linked_proposals={value.summary.total_linked_proposals} "
+            f"overlay_applications={value.summary.total_overlay_applications} "
+            f"candidates_with_confidence={value.summary.total_candidates_with_confidence} "
+            f"candidate_ids={candidate_ids}"
         )
     if isinstance(value, tuple):
         return "\n".join(_to_text(item) for item in value)
