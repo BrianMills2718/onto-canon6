@@ -57,6 +57,7 @@ Concrete assets:
 Planning companion:
 
 1. `notebooks/09_successor_long_term_plan.ipynb`
+2. `notebooks/11_future_phase_breakdown.ipynb`
 
 ## What Is Not Proven Yet
 

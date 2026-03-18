@@ -320,6 +320,27 @@ Acceptance evidence:
    CLI;
 3. one brief design note explaining why CLI came before MCP/UI.
 
+Build order:
+
+1. define the CLI command surface and argument contract before wiring handlers;
+2. implement thin handlers for extract, list, review, and apply actions;
+3. add JSON output first, then human-readable output on top of the same data;
+4. add integration tests and one notebook or shell transcript last.
+
+Non-goals:
+
+1. MCP or UI surfaces;
+2. background jobs, daemons, or remote service deployment;
+3. direct database manipulation from CLI handlers.
+
+Explicit uncertainties:
+
+1. whether the first extract command should accept file input only, or also
+   raw stdin/text literals;
+2. whether human-readable output should be table-first or JSON-first;
+3. whether the first review commands should stay separate by object type
+   (`candidate`, `proposal`) or share one higher-level command group.
+
 ## Phase 7: Domain Pack Generalization [planned]
 
 Goal:
@@ -356,6 +377,29 @@ Acceptance evidence:
 2. one notebook showing second-pack review and overlay behavior;
 3. one short design note describing what had to vary and what stayed shared.
 
+Build order:
+
+1. choose the minimal second-pack scope before importing or rewriting any
+   ontology material;
+2. define one strict profile and one mixed profile for that pack;
+3. prove validation, proposal routing, and overlay behavior locally;
+4. add pack-specific extraction context only if the existing extraction
+   prompts are insufficient.
+
+Non-goals:
+
+1. full DoDAF coverage;
+2. cross-pack inference or ontology merging as a separate subsystem;
+3. domain-specific branches in `core` or `ontology_runtime`.
+
+Explicit uncertainties:
+
+1. which exact DoDAF subset is the right first proof surface;
+2. whether the second pack should be imported from donor material or authored
+   locally from a reduced subset;
+3. whether a shared base vocabulary layer is needed before the second pack can
+   stay clean.
+
 ## Phase 8: Artifact Lineage Recovery [planned]
 
 Goal:
@@ -385,6 +429,27 @@ Acceptance evidence:
 3. one brief design note mapping the recovered lineage model back to the donor
    idea from `onto-canon` v1.
 
+Build order:
+
+1. define the minimal typed artifact model and persistence boundary;
+2. link artifacts to candidate assertions and review records first;
+3. add derived-artifact support and lineage reporting second;
+4. prove one small workflow where a claim is supported by an analysis artifact
+   rather than only raw text.
+
+Non-goals:
+
+1. a full artifact warehouse or blob store;
+2. workflow scheduling or orchestration;
+3. a generalized research-platform artifact system.
+
+Explicit uncertainties:
+
+1. which artifact categories are essential for the first slice;
+2. whether artifact links should terminate at candidate assertions only or
+   also at future accepted-assertion projections;
+3. how much artifact deduplication is worth doing before real pressure exists.
+
 ## Phase 9: Epistemic Extension [planned]
 
 Goal:
@@ -412,6 +477,29 @@ Acceptance evidence:
 1. tests for the extension's storage and operators;
 2. one notebook demonstrating the extension against accepted assertions;
 3. one short design note showing why the extension stayed out of core.
+
+Build order:
+
+1. choose the smallest useful epistemic operator set before defining storage;
+2. implement extension-local models and operators;
+3. wire them through explicit seams from the existing review/provenance
+   records;
+4. prove that the base workflow still functions unchanged when the extension is
+   disabled.
+
+Non-goals:
+
+1. a full truth-maintenance system;
+2. automatic contradiction resolution across the whole graph;
+3. recentering the runtime around an epistemic controller.
+
+Explicit uncertainties:
+
+1. whether the first extension slice should start with confidence, tension,
+   supersession, or contradiction;
+2. whether epistemic state should attach only to accepted assertions or also to
+   candidate assertions under review;
+3. whether confidence values are user-entered, model-derived, or both.
 
 ## Phase 10: Product-Facing Workflow Integration [planned]
 
@@ -445,6 +533,29 @@ Acceptance evidence:
 3. one short design note explaining why this is the first credible
    product-facing slice.
 
+Build order:
+
+1. choose one workflow and one integration boundary explicitly before building
+   anything around it;
+2. reuse the proved CLI/review/extraction/overlay/artifact services rather
+   than creating a new workflow runtime;
+3. add only the minimal outward-facing adapter needed for that workflow;
+4. prove the workflow with real inputs and explicit provenance traces.
+
+Non-goals:
+
+1. multiple product workflows at once;
+2. a generalized platform or multi-tenant service;
+3. new architecture layers that exist only for hypothetical later products.
+
+Explicit uncertainties:
+
+1. which single workflow best demonstrates real user-visible leverage;
+2. whether the first outward-facing boundary after CLI should be MCP or
+   something narrower;
+3. what minimum level of artifact/provenance depth is required before the
+   workflow feels credibly useful.
+
 ## Standing Priorities
 
 Always prefer:
@@ -463,9 +574,11 @@ Always prefer:
 These are unresolved on purpose and should be resolved explicitly before the
 relevant phase begins:
 
-1. how live extraction quality should be evaluated once real model outputs are
-   enabled beyond deterministic notebook proofs;
+1. how much broader benchmark coverage is needed before Phase 5 results should
+   be treated as stronger quality evidence;
 2. whether the first operational surface after CLI should be MCP, UI, or
    something else;
-3. how much artifact lineage should be recovered in Phase 8 before Phase 10
-   begins.
+3. which exact DoDAF subset is the right second-pack proof target;
+4. how much artifact lineage should be recovered in Phase 8 before Phase 10
+   begins;
+5. which single workflow should be the first product-facing integration slice.
