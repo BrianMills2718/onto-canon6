@@ -39,6 +39,7 @@ class PathsConfig(BaseModel):
 
     adr_root: str = Field(min_length=1)
     notebooks_root: str = Field(min_length=1)
+    notebook_registry_path: str = Field(min_length=1)
     donor_profiles_root: str = Field(min_length=1)
     donor_ontology_packs_root: str = Field(min_length=1)
     review_db_path: str = Field(min_length=1)
@@ -131,6 +132,11 @@ class AppConfig(BaseModel):
         """Return the configured donor profiles directory."""
 
         return self.resolve_repo_path(self.paths.donor_profiles_root)
+
+    def notebook_registry_path(self) -> Path:
+        """Return the configured notebook-registry path."""
+
+        return self.resolve_repo_path(self.paths.notebook_registry_path)
 
     def donor_ontology_packs_dir(self) -> Path:
         """Return the configured donor ontology-pack directory."""

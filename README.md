@@ -23,6 +23,8 @@ entire prior runtime. The current scope is intentionally narrow:
 - minimal report surface over persisted review and overlay state
 - a thin operational CLI over extract, list, review, proposal, and overlay
   actions
+- one canonical end-to-end journey notebook plus a machine-readable notebook
+  registry and validator
 
 The governing architectural rationale lives in the local successor charter and
 the adopted ADR set.
@@ -32,6 +34,9 @@ Repo-local strategic and planning docs now live in:
 - `docs/SUCCESSOR_CHARTER.md`
 - `docs/STATUS.md`
 - `docs/plans/0001_successor_roadmap.md`
+- `notebooks/README.md`
+- `notebooks/notebook_registry.yaml`
+- `notebooks/00_master_governed_text_to_reviewed_assertions.ipynb`
 - `notebooks/09_successor_long_term_plan.ipynb`
 - `notebooks/11_future_phase_breakdown.ipynb`
 - `notebooks/12_cli_surface.ipynb`
@@ -56,6 +61,8 @@ Today this repo proves only one thin slice:
     structural validity, and exact preferred-form agreement into one score
 12. operate the proved workflow through a thin CLI instead of direct Python
     calls
+13. keep the main user-visible workflow represented by one canonical journey
+    notebook with explicit phase contracts outside the notebook
 
 Not in scope yet:
 

@@ -1,6 +1,6 @@
 # onto-canon6 Status
 
-Updated: 2026-03-17
+Updated: 2026-03-18
 
 ## What Is Proven
 
@@ -35,7 +35,11 @@ typed ontology runtime:
     actions;
 22. JSON-first CLI output suitable for scripting and notebook inspection;
 23. loud end-to-end CLI proof for both the happy path and a review-transition
-    failure path.
+    failure path;
+24. one canonical journey notebook for the current user-visible workflow;
+25. a machine-readable notebook registry that keeps phase contracts outside the
+    notebook;
+26. a local notebook-process validator plus notebook execution proof.
 
 Concrete assets:
 
@@ -49,19 +53,24 @@ Concrete assets:
 8. `notebooks/08_text_extraction_slice.ipynb`
 9. `notebooks/10_live_extraction_evaluation.ipynb`
 10. `notebooks/12_cli_surface.ipynb`
-11. `prompts/extraction/text_to_candidate_assertions.yaml`
-12. `prompts/evaluation/judge_candidate_reasonableness.yaml`
-13. `src/onto_canon6/pipeline/text_extraction.py`
-14. `src/onto_canon6/evaluation/`
-15. `src/onto_canon6/cli.py`
-16. `src/onto_canon6/__main__.py`
-17. tests in `tests/ontology_runtime/`
-18. tests in `tests/pipeline/`
-19. tests in `tests/evaluation/`
-20. tests in `tests/integration/test_cli_flow.py`
-21. `src/onto_canon6/surfaces/review_report.py`
-22. `src/onto_canon6/pipeline/overlay_service.py`
-23. `src/onto_canon6/ontology_runtime/overlays.py`
+11. `notebooks/00_master_governed_text_to_reviewed_assertions.ipynb`
+12. `notebooks/notebook_registry.yaml`
+13. `notebooks/README.md`
+14. `prompts/extraction/text_to_candidate_assertions.yaml`
+15. `prompts/evaluation/judge_candidate_reasonableness.yaml`
+16. `src/onto_canon6/pipeline/text_extraction.py`
+17. `src/onto_canon6/evaluation/`
+18. `src/onto_canon6/cli.py`
+19. `src/onto_canon6/__main__.py`
+20. `src/onto_canon6/notebook_process.py`
+21. tests in `tests/ontology_runtime/`
+22. tests in `tests/pipeline/`
+23. tests in `tests/evaluation/`
+24. `tests/integration/test_cli_flow.py`
+25. `tests/integration/test_notebook_process.py`
+26. `src/onto_canon6/surfaces/review_report.py`
+27. `src/onto_canon6/pipeline/overlay_service.py`
+28. `src/onto_canon6/ontology_runtime/overlays.py`
 
 Planning companion:
 
@@ -103,6 +112,8 @@ The current direction is:
 3. packs separate from profiles;
 4. domain packages outside core;
 5. thin-slice proof before broader expansion.
+6. one canonical journey notebook per end-to-end workflow, with auxiliary
+   notebooks explicitly classified rather than treated as peer journeys.
 
 The current locked strategic decisions are:
 
@@ -128,6 +139,8 @@ in `docs/plans/0001_successor_roadmap.md`.
    narrow first CLI.
 3. The extraction boundary now has a real live benchmark slice, but the
    benchmark corpus is still small and not yet calibrated for broader claims.
+4. Notebook process validation is local to `onto-canon6`; it is not yet wired
+   into the wider workspace hook and graph system.
 
 ## Immediate Next Step
 

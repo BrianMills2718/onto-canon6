@@ -1,7 +1,7 @@
 # onto-canon6 Successor Roadmap
 
 Status: Active  
-Updated: 2026-03-17
+Updated: 2026-03-18
 
 ## Purpose
 
@@ -14,6 +14,10 @@ before the next phase expands the system.
 The notebook companion at `notebooks/09_successor_long_term_plan.ipynb`
 renders the same phase sequence as executable planning output with design
 sketches for later phases.
+
+The canonical end-to-end workflow notebook now lives in
+`notebooks/00_master_governed_text_to_reviewed_assertions.ipynb`, with phase
+contracts kept in `notebooks/notebook_registry.yaml`.
 
 ## Phase Exit Rule
 

@@ -1,6 +1,6 @@
 # onto-canon6 Successor Charter
 
-Updated: 2026-03-17
+Updated: 2026-03-18
 
 ## Purpose
 
@@ -42,6 +42,13 @@ The project is not trying to become:
 2. a kernel-only library with no credible path back to user-visible leverage;
 3. a runtime centered on one ontology, one domain, or one hardcoded policy;
 4. a generic plugin platform before real consumers prove the need.
+
+The local notebook process follows the same discipline:
+
+1. one canonical notebook per end-to-end journey;
+2. auxiliary notebooks explicitly classified as deep dives or planning
+   companions;
+3. phase contracts kept outside the notebook in a machine-readable registry.
 
 Variation in the system should default to one of two forms:
 
@@ -310,7 +317,9 @@ The following now count as drift and should not happen casually:
 3. moving domain-specific logic into core;
 4. collapsing packs, profiles, and policy into one hidden config surface;
 5. importing older repos wholesale because they are convenient;
-6. treating notebook-free architectural speculation as proof.
+6. treating notebook-free architectural speculation as proof;
+7. using notebooks as unstructured scratchpads instead of the canonical
+   journey notebook plus explicit registry.
 
 ## Authoritative Local Reading Order
 
@@ -319,7 +328,8 @@ If someone needs the local strategic picture in `onto-canon6`, start with:
 1. this document;
 2. `docs/adr/README.md`;
 3. `docs/STATUS.md`;
-4. `docs/plans/0001_successor_roadmap.md`.
+4. `docs/plans/0001_successor_roadmap.md`;
+5. `notebooks/README.md`.
 
 If someone needs the deeper donor rationale behind this charter, then read the
 supporting donor record in `onto-canon5`:

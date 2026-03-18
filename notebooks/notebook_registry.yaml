@@ -1,0 +1,378 @@
+journeys:
+  - journey_id: "governed_text_to_reviewed_assertions"
+    title: "Governed Text To Reviewed Assertions"
+    purpose: "Turn raw source text into reviewable candidate assertions, accepted ontology proposals, and overlay-aware report state through the current successor workflow."
+    notebook: "notebooks/00_master_governed_text_to_reviewed_assertions.ipynb"
+    notebook_mode: "mixed"
+    status: "partial"
+    related_docs:
+      - "README.md"
+      - "docs/SUCCESSOR_CHARTER.md"
+      - "docs/STATUS.md"
+      - "docs/plans/0001_successor_roadmap.md"
+      - "docs/adr/0004-keep-text-derived-candidate-assertions-grounded-in-source-evidence-and-route-llm-work-through-llm_client.md"
+      - "docs/adr/0006-prefer-cli-as-the-first-operational-surface-before-mcp-or-ui.md"
+      - "docs/adr/0007-adopt-canonical-journey-notebooks-with-an-explicit-registry.md"
+      - "notebooks/README.md"
+    related_tests:
+      - "tests/integration/test_cli_flow.py"
+      - "tests/integration/test_notebook_process.py"
+    related_evidence:
+      - "notebooks/12_cli_surface.ipynb"
+    phases:
+      - phase_id: "source_artifact_preparation"
+        title: "Source Artifact Preparation"
+        purpose: "Load one real source file and expose it as the explicit source artifact for the rest of the journey."
+        input_artifact: "raw_text_file"
+        output_artifact: "source_artifact"
+        acceptance_criteria:
+          - "A concrete source file exists and is loaded explicitly."
+          - "The downstream workflow receives a named source artifact rather than hidden notebook state."
+          - "The phase can run live in the canonical journey notebook."
+        status: "proven"
+        execution_mode: "live"
+        proof_critical: true
+        related_code:
+          - "src/onto_canon6/cli.py"
+          - "src/onto_canon6/pipeline/models.py"
+        related_tests:
+          - "tests/integration/test_cli_flow.py"
+        related_docs:
+          - "docs/adr/0006-prefer-cli-as-the-first-operational-surface-before-mcp-or-ui.md"
+        related_evidence:
+          - "notebooks/12_cli_surface.ipynb"
+      - phase_id: "candidate_assertion_extraction"
+        title: "Candidate Assertion Extraction"
+        purpose: "Produce candidate assertions from raw text while keeping source grounding explicit."
+        input_artifact: "source_artifact"
+        output_artifact: "candidate_assertion_batch"
+        acceptance_criteria:
+          - "The phase emits candidate assertions with source grounding."
+          - "The canonical journey notebook uses an explicit fixture-shaped extractor stand-in rather than hidden invention."
+          - "Real extraction code, tests, and benchmark evidence remain linked separately."
+        status: "proven"
+        execution_mode: "fixture"
+        related_code:
+          - "src/onto_canon6/pipeline/text_extraction.py"
+          - "src/onto_canon6/pipeline/service.py"
+          - "prompts/extraction/text_to_candidate_assertions.yaml"
+        related_tests:
+          - "tests/pipeline/test_text_extraction.py"
+          - "tests/integration/test_cli_flow.py"
+        related_docs:
+          - "docs/adr/0004-keep-text-derived-candidate-assertions-grounded-in-source-evidence-and-route-llm-work-through-llm_client.md"
+        related_evidence:
+          - "notebooks/08_text_extraction_slice.ipynb"
+          - "notebooks/10_live_extraction_evaluation.ipynb"
+          - "notebooks/12_cli_surface.ipynb"
+      - phase_id: "candidate_listing_and_inspection"
+        title: "Candidate Listing And Inspection"
+        purpose: "Expose pending candidate assertions for explicit inspection through the first operational surface."
+        input_artifact: "candidate_assertion_batch"
+        output_artifact: "candidate_listing"
+        acceptance_criteria:
+          - "A user can inspect persisted candidates without direct Python calls."
+          - "The listing reflects the persisted review store."
+          - "The phase runs live through the CLI."
+        status: "proven"
+        execution_mode: "live"
+        proof_critical: true
+        related_code:
+          - "src/onto_canon6/cli.py"
+          - "src/onto_canon6/surfaces/review_report.py"
+          - "src/onto_canon6/pipeline/service.py"
+        related_tests:
+          - "tests/integration/test_cli_flow.py"
+        related_docs:
+          - "docs/STATUS.md"
+        related_evidence:
+          - "notebooks/05_review_reporting_slice.ipynb"
+          - "notebooks/12_cli_surface.ipynb"
+      - phase_id: "candidate_review"
+        title: "Candidate Review"
+        purpose: "Record an explicit accept or reject decision for the candidate assertion."
+        input_artifact: "candidate_listing"
+        output_artifact: "candidate_review_record"
+        acceptance_criteria:
+          - "Candidate review decisions are explicit and persisted."
+          - "Invalid review transitions fail loudly."
+          - "The phase runs live through the CLI."
+        status: "proven"
+        execution_mode: "live"
+        proof_critical: true
+        related_code:
+          - "src/onto_canon6/cli.py"
+          - "src/onto_canon6/pipeline/service.py"
+          - "src/onto_canon6/pipeline/store.py"
+        related_tests:
+          - "tests/pipeline/test_review_service.py"
+          - "tests/integration/test_cli_flow.py"
+        related_docs:
+          - "docs/plans/0001_successor_roadmap.md"
+        related_evidence:
+          - "notebooks/04_review_slice.ipynb"
+          - "notebooks/12_cli_surface.ipynb"
+      - phase_id: "proposal_review"
+        title: "Proposal Review"
+        purpose: "Accept or reject ontology proposals created by mixed-mode validation."
+        input_artifact: "candidate_review_record"
+        output_artifact: "proposal_review_record"
+        acceptance_criteria:
+          - "Proposal review remains explicit and separate from candidate review."
+          - "Acceptance policy is observable."
+          - "The phase runs live through the CLI."
+        status: "proven"
+        execution_mode: "live"
+        proof_critical: true
+        related_code:
+          - "src/onto_canon6/cli.py"
+          - "src/onto_canon6/pipeline/service.py"
+        related_tests:
+          - "tests/pipeline/test_review_service.py"
+          - "tests/integration/test_cli_flow.py"
+        related_docs:
+          - "docs/adr/0006-prefer-cli-as-the-first-operational-surface-before-mcp-or-ui.md"
+        related_evidence:
+          - "notebooks/06_overlay_application_slice.ipynb"
+          - "notebooks/12_cli_surface.ipynb"
+      - phase_id: "overlay_application"
+        title: "Overlay Application"
+        purpose: "Apply an accepted ontology proposal into the local overlay without hiding writeback inside review."
+        input_artifact: "proposal_review_record"
+        output_artifact: "overlay_application_record"
+        acceptance_criteria:
+          - "Accepted proposals can be applied deterministically and explicitly."
+          - "Overlay content is inspectable."
+          - "The phase runs live through the CLI."
+        status: "proven"
+        execution_mode: "live"
+        proof_critical: true
+        related_code:
+          - "src/onto_canon6/cli.py"
+          - "src/onto_canon6/pipeline/overlay_service.py"
+          - "src/onto_canon6/ontology_runtime/overlays.py"
+        related_tests:
+          - "tests/integration/test_cli_flow.py"
+        related_docs:
+          - "docs/plans/0001_successor_roadmap.md"
+        related_evidence:
+          - "notebooks/06_overlay_application_slice.ipynb"
+          - "notebooks/12_cli_surface.ipynb"
+      - phase_id: "overlay_aware_reporting"
+        title: "Overlay-Aware Reporting"
+        purpose: "Show the resulting accepted proposal and overlay content through a small report-friendly surface."
+        input_artifact: "overlay_application_record"
+        output_artifact: "overlay_aware_report"
+        acceptance_criteria:
+          - "Accepted proposals and applied overlay content are inspectable together."
+          - "The report stays grounded in persisted state."
+          - "The phase runs live in the canonical journey notebook."
+        status: "proven"
+        execution_mode: "live"
+        proof_critical: true
+        related_code:
+          - "src/onto_canon6/cli.py"
+          - "src/onto_canon6/surfaces/review_report.py"
+        related_tests:
+          - "tests/integration/test_cli_flow.py"
+        related_docs:
+          - "docs/STATUS.md"
+        related_evidence:
+          - "notebooks/05_review_reporting_slice.ipynb"
+          - "notebooks/12_cli_surface.ipynb"
+      - phase_id: "domain_pack_generalization"
+        title: "Domain Pack Generalization"
+        purpose: "Plan the second-pack proof without inventing domain-specific logic in the core runtime."
+        input_artifact: "overlay_aware_report"
+        output_artifact: "second_pack_plan"
+        acceptance_criteria:
+          - "The notebook emits a contract-shaped plan artifact for the second pack."
+          - "The output names the strict and mixed profile intent."
+          - "The phase remains explicitly provisional."
+        status: "planned"
+        execution_mode: "stub"
+        promotion_path: "Promote this phase when the minimal DoDAF subset and profile pair are implemented and verified."
+        related_docs:
+          - "docs/plans/0001_successor_roadmap.md"
+          - "notebooks/11_future_phase_breakdown.ipynb"
+      - phase_id: "artifact_lineage_recovery"
+        title: "Artifact Lineage Recovery"
+        purpose: "Plan the recovery of artifact-backed provenance without rebuilding a fused runtime."
+        input_artifact: "second_pack_plan"
+        output_artifact: "artifact_lineage_contract"
+        acceptance_criteria:
+          - "The notebook emits an explicit provisional artifact-lineage contract."
+          - "Downstream phases consume that contract rather than inventing lineage state."
+          - "The phase remains explicitly provisional."
+        status: "planned"
+        execution_mode: "stub"
+        promotion_path: "Promote this phase when typed artifact references, storage, and lineage reporting exist with tests."
+        related_docs:
+          - "docs/plans/0001_successor_roadmap.md"
+          - "notebooks/11_future_phase_breakdown.ipynb"
+      - phase_id: "epistemic_extension"
+        title: "Epistemic Extension"
+        purpose: "Plan the first optional epistemic slice without moving epistemic policy into the core workflow."
+        input_artifact: "artifact_lineage_contract"
+        output_artifact: "epistemic_extension_contract"
+        acceptance_criteria:
+          - "The notebook emits an explicit provisional epistemic contract artifact."
+          - "The contract names the smallest intended operator set."
+          - "The phase remains explicitly provisional."
+        status: "planned"
+        execution_mode: "stub"
+        promotion_path: "Promote this phase when the extension-local models and operators exist with tests and one notebook proof."
+        related_docs:
+          - "docs/plans/0001_successor_roadmap.md"
+          - "notebooks/11_future_phase_breakdown.ipynb"
+      - phase_id: "product_facing_workflow_integration"
+        title: "Product-Facing Workflow Integration"
+        purpose: "Plan the single outward-facing workflow that will justify the successor as a real product slice."
+        input_artifact: "epistemic_extension_contract"
+        output_artifact: "product_workflow_plan"
+        acceptance_criteria:
+          - "The notebook emits an explicit provisional workflow plan artifact."
+          - "The plan names the chosen outward-facing boundary and success test."
+          - "The phase remains explicitly provisional."
+        status: "planned"
+        execution_mode: "stub"
+        promotion_path: "Promote this phase when one real workflow can be run end to end without ad hoc Python editing."
+        related_docs:
+          - "docs/plans/0001_successor_roadmap.md"
+          - "notebooks/09_successor_long_term_plan.ipynb"
+          - "notebooks/11_future_phase_breakdown.ipynb"
+
+auxiliary_notebooks:
+  - notebook_id: "policy_contracts_probe"
+    title: "Policy Contracts Probe"
+    purpose: "Deep dive into ontology-policy semantics and unknown-item routing."
+    kind: "deep_dive"
+    notebook: "notebooks/01_policy_contracts.ipynb"
+    journey_id: "governed_text_to_reviewed_assertions"
+    related_docs:
+      - "docs/plans/0001_successor_roadmap.md"
+    related_evidence:
+      - "notebooks/01_policy_contracts.ipynb"
+  - notebook_id: "donor_profile_loading_probe"
+    title: "Donor Profile Loading Probe"
+    purpose: "Deep dive into donor profile and ontology-pack loading."
+    kind: "deep_dive"
+    notebook: "notebooks/02_donor_profile_loading.ipynb"
+    journey_id: "governed_text_to_reviewed_assertions"
+    related_docs:
+      - "docs/plans/0001_successor_roadmap.md"
+    related_evidence:
+      - "notebooks/02_donor_profile_loading.ipynb"
+  - notebook_id: "validation_slice_probe"
+    title: "Validation Slice Probe"
+    purpose: "Deep dive into local assertion validation against donor profile rules."
+    kind: "deep_dive"
+    notebook: "notebooks/03_validation_slice.ipynb"
+    journey_id: "governed_text_to_reviewed_assertions"
+    related_evidence:
+      - "notebooks/03_validation_slice.ipynb"
+  - notebook_id: "review_slice_probe"
+    title: "Review Slice Probe"
+    purpose: "Deep dive into candidate and proposal persistence before the CLI surface."
+    kind: "deep_dive"
+    notebook: "notebooks/04_review_slice.ipynb"
+    journey_id: "governed_text_to_reviewed_assertions"
+    related_phase_ids:
+      - "candidate_review"
+      - "proposal_review"
+    related_evidence:
+      - "notebooks/04_review_slice.ipynb"
+  - notebook_id: "review_reporting_probe"
+    title: "Review Reporting Probe"
+    purpose: "Deep dive into filtered review reporting before the CLI surface."
+    kind: "deep_dive"
+    notebook: "notebooks/05_review_reporting_slice.ipynb"
+    journey_id: "governed_text_to_reviewed_assertions"
+    related_phase_ids:
+      - "candidate_listing_and_inspection"
+      - "overlay_aware_reporting"
+    related_evidence:
+      - "notebooks/05_review_reporting_slice.ipynb"
+  - notebook_id: "overlay_application_probe"
+    title: "Overlay Application Probe"
+    purpose: "Deep dive into explicit overlay application and overlay-aware loading."
+    kind: "deep_dive"
+    notebook: "notebooks/06_overlay_application_slice.ipynb"
+    journey_id: "governed_text_to_reviewed_assertions"
+    related_phase_ids:
+      - "proposal_review"
+      - "overlay_application"
+    related_evidence:
+      - "notebooks/06_overlay_application_slice.ipynb"
+  - notebook_id: "text_grounded_import_probe"
+    title: "Text Grounded Import Contract Probe"
+    purpose: "Deep dive into the typed import contract for text-grounded candidate assertions."
+    kind: "deep_dive"
+    notebook: "notebooks/07_text_grounded_import_contract.ipynb"
+    journey_id: "governed_text_to_reviewed_assertions"
+    related_phase_ids:
+      - "candidate_assertion_extraction"
+    related_evidence:
+      - "notebooks/07_text_grounded_import_contract.ipynb"
+  - notebook_id: "text_extraction_probe"
+    title: "Text Extraction Slice Probe"
+    purpose: "Deep dive into the real extraction service before the canonical journey notebook uses a fixture-shaped stand-in."
+    kind: "deep_dive"
+    notebook: "notebooks/08_text_extraction_slice.ipynb"
+    journey_id: "governed_text_to_reviewed_assertions"
+    related_phase_ids:
+      - "candidate_assertion_extraction"
+    related_evidence:
+      - "notebooks/08_text_extraction_slice.ipynb"
+  - notebook_id: "long_term_phase_planning"
+    title: "Long-Term Phase Planning"
+    purpose: "Planning companion for the later successor phases beyond the currently proved workflow."
+    kind: "planning_companion"
+    notebook: "notebooks/09_successor_long_term_plan.ipynb"
+    journey_id: "governed_text_to_reviewed_assertions"
+    related_phase_ids:
+      - "domain_pack_generalization"
+      - "artifact_lineage_recovery"
+      - "epistemic_extension"
+      - "product_facing_workflow_integration"
+    related_evidence:
+      - "notebooks/09_successor_long_term_plan.ipynb"
+  - notebook_id: "live_extraction_evaluation_probe"
+    title: "Live Extraction Evaluation Probe"
+    purpose: "Engineering deep dive for extraction-quality evaluation rather than the main user journey."
+    kind: "deep_dive"
+    notebook: "notebooks/10_live_extraction_evaluation.ipynb"
+    journey_id: "governed_text_to_reviewed_assertions"
+    related_phase_ids:
+      - "candidate_assertion_extraction"
+    related_evidence:
+      - "notebooks/10_live_extraction_evaluation.ipynb"
+  - notebook_id: "future_phase_breakdown"
+    title: "Future Phase Breakdown"
+    purpose: "Planning companion that expands the later successor phases into concrete build order and uncertainties."
+    kind: "planning_companion"
+    notebook: "notebooks/11_future_phase_breakdown.ipynb"
+    journey_id: "governed_text_to_reviewed_assertions"
+    related_phase_ids:
+      - "domain_pack_generalization"
+      - "artifact_lineage_recovery"
+      - "epistemic_extension"
+      - "product_facing_workflow_integration"
+    related_evidence:
+      - "notebooks/11_future_phase_breakdown.ipynb"
+  - notebook_id: "cli_surface_proof"
+    title: "CLI Surface Proof"
+    purpose: "Phase 6 deep dive and proof notebook for the first operational CLI surface."
+    kind: "deep_dive"
+    notebook: "notebooks/12_cli_surface.ipynb"
+    journey_id: "governed_text_to_reviewed_assertions"
+    related_phase_ids:
+      - "source_artifact_preparation"
+      - "candidate_assertion_extraction"
+      - "candidate_listing_and_inspection"
+      - "candidate_review"
+      - "proposal_review"
+      - "overlay_application"
+      - "overlay_aware_reporting"
+    related_evidence:
+      - "notebooks/12_cli_surface.ipynb"
