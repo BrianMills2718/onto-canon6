@@ -1,0 +1,21 @@
+profile:
+  id: whygame_minimal_strict
+  version: "0.1.0"
+  name: "WhyGame Minimal Strict"
+  ontology_version: "whygame_minimal@0.1.0"
+  rule_version: "whygame_minimal_rules@0.1.0"
+
+ontology:
+  source: custom
+  mode: closed
+  normalization_policy: conservative
+  proposal_policy: reject
+  pack_id: whygame_minimal
+  pack_version: "0.1.0"
+
+validation:
+  type_adapter: ontology_pack
+  type_check_policy: exact
+
+ingestion:
+  allow_heuristic_default: false

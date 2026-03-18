@@ -42,6 +42,9 @@ entire prior runtime. The current scope is intentionally narrow:
 - one first semantic canonicalization slice that replaces the v1 hard semantic
   stack with pack-driven predicate/role canonicalization plus explicit
   recanonicalization over promoted graph state
+- one thin FastMCP agent surface over the proved successor services
+- one narrow WhyGame relationship adapter plus local `whygame_minimal` pack
+  and strict profile
 
 The governing architectural rationale lives in the local successor charter and
 the adopted ADR set.
@@ -65,6 +68,7 @@ Repo-local strategic and planning docs now live in:
 - `notebooks/17_canonical_graph_recovery_slice.ipynb`
 - `notebooks/18_stable_identity_slice.ipynb`
 - `notebooks/19_semantic_canonicalization_slice.ipynb`
+- `notebooks/20_whygame_mcp_slice.ipynb`
 
 ## Current Scope
 
@@ -114,13 +118,14 @@ Not in scope yet:
   canonicalization replacement slice
 - domain-specific query helpers
 - richer external producer integrations
-- UI or MCP surfaces
-- WhyGame, DIGIMON, corroboration, and temporal/inference recovery
+- broader MCP surface expansion
+- DIGIMON, corroboration, and temporal/inference recovery
 
 ## Layout
 
 ```text
 src/onto_canon6/
+  adapters/
   artifacts/
   core/
   extensions/

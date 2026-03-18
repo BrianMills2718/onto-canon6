@@ -14,6 +14,10 @@ now ends in a live governed-bundle export artifact plus explicit canonical
 graph promotion, stable-identity state, and semantic recanonicalization rather
 than a provisional workflow plan.
 
+The current Phase 14 auxiliary proof is:
+
+- [20_whygame_mcp_slice.ipynb](20_whygame_mcp_slice.ipynb)
+
 ## Registry
 
 The machine-readable notebook contract lives in:

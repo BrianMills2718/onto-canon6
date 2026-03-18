@@ -16,6 +16,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 AcceptancePolicyValue = Literal["record_only", "apply_to_overlay"]
 CLIOutputFormatValue = Literal["json", "text"]
+MCPTransportValue = Literal["stdio"]
 
 
 class ConfigError(RuntimeError):
@@ -105,6 +106,33 @@ class CLIConfig(BaseModel):
     file_source_kind: str = Field(min_length=1)
 
 
+class MCPConfig(BaseModel):
+    """MCP defaults for the first richer agent-facing surface."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    transport: MCPTransportValue
+
+
+class WhyGameAdapterConfig(BaseModel):
+    """Configurable defaults for the narrow WhyGame relationship adapter."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    default_profile_id: str = Field(min_length=1)
+    default_profile_version: str = Field(min_length=1)
+    source_kind: str = Field(min_length=1)
+    register_artifact_by_default: bool
+
+
+class AdaptersConfig(BaseModel):
+    """Adapter defaults for the current successor slice."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    whygame: WhyGameAdapterConfig
+
+
 class AppConfig(BaseModel):
     """Validated application configuration for onto-canon6."""
 
@@ -117,6 +145,8 @@ class AppConfig(BaseModel):
     extraction: ExtractionConfig
     evaluation: EvaluationConfig
     cli: CLIConfig
+    mcp: MCPConfig
+    adapters: AdaptersConfig
 
     def resolve_repo_path(self, relative_path: str) -> Path:
         """Resolve a repository-relative path declared in config."""
@@ -237,6 +267,7 @@ __all__ = [
     "AppConfig",
     "CLIOutputFormatValue",
     "ConfigError",
+    "MCPTransportValue",
     "clear_config_cache",
     "default_config_path",
     "get_config",

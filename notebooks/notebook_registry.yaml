@@ -18,11 +18,13 @@ journeys:
       - "docs/adr/0012-start-canonical-graph-recovery-with-explicit-promotion-from-accepted-candidates.md"
       - "docs/adr/0013-start-stable-identity-with-promoted-entity-identities-alias-membership-and-explicit-external-reference-state.md"
       - "docs/adr/0014-replace-the-v1-semantic-stack-with-pack-driven-canonicalization-and-explicit-recanonicalization.md"
+      - "docs/adr/0015-recover-phase-14-through-a-thin-mcp-surface-and-a-whygame-relationship-adapter.md"
       - "notebooks/README.md"
     related_tests:
       - "tests/integration/test_cli_flow.py"
       - "tests/integration/test_graph_cli.py"
       - "tests/integration/test_identity_cli.py"
+      - "tests/integration/test_mcp_server.py"
       - "tests/integration/test_semantic_cli.py"
       - "tests/integration/test_notebook_process.py"
     related_evidence:
@@ -30,6 +32,7 @@ journeys:
       - "notebooks/17_canonical_graph_recovery_slice.ipynb"
       - "notebooks/18_stable_identity_slice.ipynb"
       - "notebooks/19_semantic_canonicalization_slice.ipynb"
+      - "notebooks/20_whygame_mcp_slice.ipynb"
     phases:
       - phase_id: "source_artifact_preparation"
         title: "Source Artifact Preparation"
@@ -599,3 +602,15 @@ auxiliary_notebooks:
       - "tests/integration/test_semantic_cli.py"
     related_evidence:
       - "notebooks/19_semantic_canonicalization_slice.ipynb"
+  - notebook_id: "whygame_mcp_slice"
+    title: "WhyGame MCP Slice"
+    purpose: "Deep dive proof for the thin MCP surface and successor-local WhyGame relationship adapter."
+    kind: "deep_dive"
+    notebook: "notebooks/20_whygame_mcp_slice.ipynb"
+    journey_id: "governed_text_to_reviewed_assertions"
+    related_tests:
+      - "tests/adapters/test_whygame_service.py"
+      - "tests/integration/test_mcp_server.py"
+      - "tests/ontology_runtime/test_whygame_minimal.py"
+    related_evidence:
+      - "notebooks/20_whygame_mcp_slice.ipynb"

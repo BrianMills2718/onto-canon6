@@ -1,0 +1,36 @@
+[
+  {
+    "id": "wg_fact_001",
+    "fact_type": "RELATIONSHIP",
+    "roles": {
+      "from": "AI integration",
+      "to": "military modernization",
+      "relationship": "supports"
+    },
+    "context": {
+      "source_question": "Why is AI being integrated into the military?"
+    },
+    "confidence": 0.81,
+    "metadata": {
+      "source": "whygame_fixture"
+    },
+    "created_at": "2026-03-18T00:00:00Z"
+  },
+  {
+    "id": "wg_fact_002",
+    "fact_type": "RELATIONSHIP",
+    "roles": {
+      "from": "military modernization",
+      "to": "decision speed",
+      "relationship": "improves"
+    },
+    "context": {
+      "source_question": "Why is AI being integrated into the military?"
+    },
+    "confidence": 0.76,
+    "metadata": {
+      "source": "whygame_fixture"
+    },
+    "created_at": "2026-03-18T00:00:01Z"
+  }
+]

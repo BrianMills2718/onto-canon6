@@ -1,0 +1,3 @@
+{"constraint_type":"role_expected_entity_type","predicate_id":"whygame:relationship","role_id":"whygame_role:source_concept","expected_type":"whygame:Concept"}
+{"constraint_type":"role_expected_entity_type","predicate_id":"whygame:relationship","role_id":"whygame_role:target_concept","expected_type":"whygame:Concept"}
+{"constraint_type":"role_expected_value_kind","predicate_id":"whygame:relationship","role_id":"whygame_role:relationship_label","expected_value_kind":"string"}

@@ -1,0 +1,3 @@
+{"predicate_id":"whygame:relationship","role_id":"whygame_role:source_concept","required":true,"min_count":1,"max_count":1}
+{"predicate_id":"whygame:relationship","role_id":"whygame_role:target_concept","required":true,"min_count":1,"max_count":1}
+{"predicate_id":"whygame:relationship","role_id":"whygame_role:relationship_label","required":true,"min_count":1,"max_count":1}

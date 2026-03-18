@@ -40,3 +40,13 @@ evaluation:
 cli:
   default_output_format: "json"
   file_source_kind: "text_file"
+
+mcp:
+  transport: "stdio"
+
+adapters:
+  whygame:
+    default_profile_id: "whygame_minimal_strict"
+    default_profile_version: "0.1.0"
+    source_kind: "whygame_hypergraph"
+    register_artifact_by_default: true

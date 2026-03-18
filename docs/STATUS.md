@@ -100,6 +100,16 @@ typed ontology runtime:
 56. one live notebook proof for the first semantic canonicalization slice, and
     a canonical journey notebook phase that now continues from stable identity
     into explicit semantic repair.
+57. one thin FastMCP server over the proved successor services rather than a
+    second workflow runtime;
+58. one explicit successor-local WhyGame relationship adapter that imports
+    WhyGame `RELATIONSHIP` facts into candidate assertions;
+59. one local `whygame_minimal` pack and strict profile that give the adapter a
+    typed successor-local ontology target;
+60. optional WhyGame artifact registration and candidate-to-artifact links that
+    keep imported provenance visible through governed bundles;
+61. integration proof that the MCP surface can import WhyGame facts, review
+    candidates, promote candidates, and export a governed bundle.
 
 Concrete assets:
 
@@ -123,41 +133,48 @@ Concrete assets:
 18. `notebooks/17_canonical_graph_recovery_slice.ipynb`
 19. `notebooks/18_stable_identity_slice.ipynb`
 20. `notebooks/19_semantic_canonicalization_slice.ipynb`
-21. `prompts/extraction/text_to_candidate_assertions.yaml`
-22. `prompts/evaluation/judge_candidate_reasonableness.yaml`
-23. `src/onto_canon6/pipeline/text_extraction.py`
-24. `src/onto_canon6/evaluation/`
-25. `src/onto_canon6/cli.py`
-26. `src/onto_canon6/__main__.py`
-27. `src/onto_canon6/notebook_process.py`
-28. `src/onto_canon6/artifacts/`
-29. `src/onto_canon6/core/`
-30. `src/onto_canon6/extensions/epistemic/`
-31. `src/onto_canon6/surfaces/lineage_report.py`
-32. `src/onto_canon6/surfaces/epistemic_report.py`
-33. `src/onto_canon6/surfaces/governed_bundle.py`
-34. `src/onto_canon6/surfaces/graph_report.py`
-35. `src/onto_canon6/surfaces/identity_report.py`
-36. `src/onto_canon6/surfaces/semantic_report.py`
-37. `ontology_packs/dodaf_minimal/0.1.0/manifest.yaml`
-38. `profiles/dodaf_minimal_strict/0.1.0/manifest.yaml`
-39. `profiles/dodaf_minimal_mixed/0.1.0/manifest.yaml`
-40. tests in `tests/ontology_runtime/`
-41. tests in `tests/pipeline/`
-42. tests in `tests/evaluation/`
-43. tests in `tests/artifacts/`
-44. tests in `tests/core/`
-45. tests in `tests/extensions/`
-46. tests in `tests/surfaces/`
-47. `tests/integration/test_cli_flow.py`
-48. `tests/integration/test_graph_cli.py`
-49. `tests/integration/test_identity_cli.py`
-50. `tests/integration/test_semantic_cli.py`
-51. `tests/integration/test_notebook_process.py`
-52. `tests/integration/test_dodaf_minimal_cli.py`
-53. `src/onto_canon6/surfaces/review_report.py`
-54. `src/onto_canon6/pipeline/overlay_service.py`
-55. `src/onto_canon6/ontology_runtime/overlays.py`
+21. `notebooks/20_whygame_mcp_slice.ipynb`
+22. `prompts/extraction/text_to_candidate_assertions.yaml`
+23. `prompts/evaluation/judge_candidate_reasonableness.yaml`
+24. `src/onto_canon6/pipeline/text_extraction.py`
+25. `src/onto_canon6/evaluation/`
+26. `src/onto_canon6/cli.py`
+27. `src/onto_canon6/__main__.py`
+28. `src/onto_canon6/notebook_process.py`
+29. `src/onto_canon6/artifacts/`
+30. `src/onto_canon6/core/`
+31. `src/onto_canon6/extensions/epistemic/`
+32. `src/onto_canon6/surfaces/lineage_report.py`
+33. `src/onto_canon6/surfaces/epistemic_report.py`
+34. `src/onto_canon6/surfaces/governed_bundle.py`
+35. `src/onto_canon6/surfaces/graph_report.py`
+36. `src/onto_canon6/surfaces/identity_report.py`
+37. `src/onto_canon6/surfaces/semantic_report.py`
+38. `src/onto_canon6/mcp_server.py`
+39. `src/onto_canon6/adapters/`
+40. `ontology_packs/dodaf_minimal/0.1.0/manifest.yaml`
+41. `profiles/dodaf_minimal_strict/0.1.0/manifest.yaml`
+42. `profiles/dodaf_minimal_mixed/0.1.0/manifest.yaml`
+43. `ontology_packs/whygame_minimal/0.1.0/manifest.yaml`
+44. `profiles/whygame_minimal_strict/0.1.0/manifest.yaml`
+45. tests in `tests/ontology_runtime/`
+46. tests in `tests/pipeline/`
+47. tests in `tests/evaluation/`
+48. tests in `tests/artifacts/`
+49. tests in `tests/core/`
+50. tests in `tests/extensions/`
+51. tests in `tests/surfaces/`
+52. tests in `tests/adapters/`
+53. `tests/integration/test_cli_flow.py`
+54. `tests/integration/test_graph_cli.py`
+55. `tests/integration/test_identity_cli.py`
+56. `tests/integration/test_semantic_cli.py`
+57. `tests/integration/test_notebook_process.py`
+58. `tests/integration/test_dodaf_minimal_cli.py`
+59. `tests/integration/test_mcp_server.py`
+60. `src/onto_canon6/surfaces/review_report.py`
+61. `src/onto_canon6/pipeline/overlay_service.py`
+62. `src/onto_canon6/ontology_runtime/overlays.py`
 
 Planning companion:
 
@@ -174,9 +191,9 @@ Still missing:
 3. broader identity recovery beyond the first promoted-entity identity slice;
 4. broader producer-side semantic adapters beyond the first pack-driven
    canonicalization replacement slice;
-5. any post-Phase-10 outward-facing boundary beyond the governed-bundle CLI
-   export, such as MCP or a richer UI;
-6. any recovered WhyGame or DIGIMON adapter path;
+5. any richer interactive surface beyond the new thin MCP slice, such as a UI
+   or a broader MCP tool set;
+6. any recovered DIGIMON adapter path;
 7. broader corroboration, temporal/inference, and graph-wide epistemic
    behavior.
 
@@ -224,8 +241,9 @@ The current locked strategic decisions are:
    candidate-centered links before broader registry ergonomics are added;
 8. the first epistemic slice stays extension-local and starts with confidence
    plus supersession over accepted candidates only;
-9. the first product-facing workflow is a CLI-driven governed-bundle export,
-   with MCP deferred until real consumer pressure exists.
+9. the first product-facing workflow is still the governed-bundle export, and
+   the first richer agent boundary is now a thin FastMCP wrapper over proved
+   services rather than a second runtime.
 10. canonical graph recovery stays explicit and bounded: accepted candidates
     promote into durable graph records, while governance and provenance
     context is traversed through the source candidate rather than duplicated.
@@ -244,9 +262,9 @@ The authoritative parity ledger for the broader successor now lives in
 ## Current Risks
 
 1. Detailed donor evidence still lives partly in `onto-canon5`.
-2. `onto-canon6` now has a real product-facing export workflow, but it still
-   exposes that workflow through a bounded CLI artifact rather than a richer
-   interactive surface.
+2. `onto-canon6` now has a thin MCP surface and a recovered WhyGame adapter,
+   but the richer surface is still intentionally much smaller than the v1 MCP
+   server.
 3. The extraction boundary now has a real live benchmark slice, but the
    benchmark corpus is still small and not yet calibrated for broader claims.
 4. Notebook process validation is local to `onto-canon6`; it is not yet wired

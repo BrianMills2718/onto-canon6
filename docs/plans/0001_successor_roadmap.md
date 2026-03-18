@@ -857,7 +857,7 @@ Proved:
 7. the phase shape is locked locally in
    `docs/plans/0008_phase13_semantic_canonicalization_shape.md`.
 
-## Phase 14: Agent Surface And Adapter Recovery [planned]
+## Phase 14: Agent Surface And Adapter Recovery [complete]
 
 Goal:
 
@@ -897,10 +897,26 @@ Non-goals:
 1. all v1 adapters at once;
 2. a large new MCP surface just because v1 had one.
 
-Explicit uncertainties:
+Proved:
 
-1. whether the first recovered adapter should be WhyGame or DIGIMON;
-2. whether MCP is justified immediately or after adapter recovery proves demand.
+1. the richer agent-facing boundary is now a thin FastMCP surface in
+   `src/onto_canon6/mcp_server.py` rather than a second workflow runtime;
+2. the first recovered adapter is now a successor-local WhyGame relationship
+   adapter in `src/onto_canon6/adapters/whygame_service.py`;
+3. the adapter imports WhyGame `RELATIONSHIP` facts through an explicit typed
+   contract in `src/onto_canon6/adapters/whygame_models.py`;
+4. imported WhyGame provenance now remains visible through the existing review,
+   artifact, and governed-bundle surfaces;
+5. the local WhyGame adapter vocabulary is now declared through
+   `ontology_packs/whygame_minimal/0.1.0/manifest.yaml` and
+   `profiles/whygame_minimal_strict/0.1.0/manifest.yaml`;
+6. the slice is covered by `tests/adapters/test_whygame_service.py`,
+   `tests/integration/test_mcp_server.py`, and
+   `tests/ontology_runtime/test_whygame_minimal.py`;
+7. the phase shape is locked locally in
+   `docs/adr/0015-recover-phase-14-through-a-thin-mcp-surface-and-a-whygame-relationship-adapter.md`
+   and `docs/plans/0009_phase14_agent_surface_and_adapter_shape.md`;
+8. the live proof artifact is `notebooks/20_whygame_mcp_slice.ipynb`.
 
 ## Phase 15: Broader Epistemics, Corroboration, And Temporal/Inference Recovery [planned]
 

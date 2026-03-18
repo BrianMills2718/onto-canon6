@@ -1,0 +1,4 @@
+{"canonical_id":"whygame:relationship","alias":"relationship_fact"}
+{"canonical_id":"source_concept","alias":"from"}
+{"canonical_id":"target_concept","alias":"to"}
+{"canonical_id":"relationship_label","alias":"relationship"}

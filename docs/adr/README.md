@@ -19,6 +19,7 @@ during the restart review and planning phase.
 12. [0012 - Start canonical graph recovery with explicit promotion from accepted candidates](0012-start-canonical-graph-recovery-with-explicit-promotion-from-accepted-candidates.md)
 13. [0013 - Start stable identity with promoted-entity identities, alias membership, and explicit external reference state](0013-start-stable-identity-with-promoted-entity-identities-alias-membership-and-explicit-external-reference-state.md)
 14. [0014 - Replace the v1 semantic stack with pack-driven canonicalization and explicit recanonicalization](0014-replace-the-v1-semantic-stack-with-pack-driven-canonicalization-and-explicit-recanonicalization.md)
+15. [0015 - Recover Phase 14 through a thin MCP surface and a WhyGame relationship adapter](0015-recover-phase-14-through-a-thin-mcp-surface-and-a-whygame-relationship-adapter.md)
 
 ## Notes
 

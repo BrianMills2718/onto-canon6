@@ -352,7 +352,7 @@ Deliver the first real product-facing workflow without adding a second runtime:
 2. export one governed JSON bundle over accepted reviewed assertions;
 3. include provenance, ontology-governance state, and optional artifact and
    epistemic state in that bundle;
-4. keep MCP deferred until a concrete consumer pressures it.
+4. keep richer surfaces deferred until the CLI-backed product slice is real.
 
 Status: complete
 
@@ -400,7 +400,14 @@ Recover one richer external surface and one real adapter:
    contract;
 3. prove user-visible leverage beyond CLI-only governed-bundle export.
 
-Status: planned
+Status: complete
+
+Phase 14 now means:
+
+1. a thin FastMCP surface over the proved successor services;
+2. one explicit successor-local WhyGame relationship adapter;
+3. local `whygame_minimal` pack/profile support for that adapter path;
+4. governed-bundle-visible provenance over imported WhyGame facts.
 
 ### Phase 15
 
