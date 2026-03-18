@@ -28,6 +28,7 @@ Repo-local strategic and planning docs now live in:
 - `docs/SUCCESSOR_CHARTER.md`
 - `docs/STATUS.md`
 - `docs/plans/0001_successor_roadmap.md`
+- `notebooks/09_successor_long_term_plan.ipynb`
 
 ## Current Scope
 

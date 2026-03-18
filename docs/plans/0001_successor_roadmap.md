@@ -11,6 +11,10 @@ This roadmap turns the accepted successor direction into a local phased plan for
 It is intentionally narrow. Each phase must produce a real, inspectable slice
 before the next phase expands the system.
 
+The notebook companion at `notebooks/09_successor_long_term_plan.ipynb`
+renders the same phase sequence as executable planning output with design
+sketches for later phases.
+
 ## Phase Exit Rule
 
 A phase is complete only when all three of these are true:
@@ -223,42 +227,209 @@ Proved:
 5. producer-specific logic remains in the pipeline boundary rather than
    leaking into `core` or `ontology_runtime`.
 
-## Phase 5: Additional Domain Packs and Extensions
+## Phase 5: Live Extraction Evaluation and Quality Harness [planned]
 
 Goal:
 
-1. prove the architecture generalizes without collapsing boundaries.
+1. move from structurally proved extraction to measured extraction quality on
+   real model outputs.
 
-Deferred areas:
+Why this phase comes next:
 
-1. DoDAF as exemplar domain pack;
-2. epistemic extension;
-3. richer surfaces such as MCP/UI.
+1. the extraction boundary now exists, but its real-world usefulness is still
+   unmeasured;
+2. more extraction features would be premature before evaluation is explicit;
+3. this phase resolves the known ambiguity between reasonableness and
+   canonicalization fidelity before the workflow expands further.
 
 Build:
 
-1. one additional domain pack integrated without moving domain logic into core;
-2. one extension package integrated through explicit extension seams;
-3. one richer surface only if it can be built on the already-proven query and
-   pipeline contracts.
+1. one typed evaluation record that separates support/reasonableness from
+   canonicalization fidelity;
+2. one small benchmark corpus with source text, evidence expectations, and
+   adjudicated reference outputs;
+3. one `llm_client`-backed live extraction runner that records model
+   selection, trace ID, and budget/cost context;
+4. one notebook or report surface that shows per-sample and aggregate results.
 
 Acceptance criteria:
 
-1. the additional domain pack loads through the same pack/profile machinery as
-   existing packs;
-2. the extension package depends only on explicit extension seams rather than
-   a central workflow object;
-3. no broad plugin framework is introduced without real proven consumers;
-4. adding the new pack or extension does not require domain-specific changes in
-   `core`;
-5. any new surface keeps business logic outside tool handlers.
+1. at least one real model can be run end to end through the live extraction
+   path;
+2. evaluation outputs distinguish extraction reasonableness from
+   canonicalization fidelity;
+3. source text, extracted candidate assertions, evidence spans, and evaluation
+   labels are inspectable together;
+4. benchmark runs are reproducible enough for regression comparison;
+5. the evaluation docs no longer present exact-match agreement as the primary
+   truth metric.
 
 Acceptance evidence:
 
-1. tests proving the new pack and extension load through existing boundaries;
-2. one notebook or integration test showing the exemplar domain pack in use;
-3. one brief design note explaining why the new work did not require boundary
-   violations.
+1. tests for evaluation models and aggregate result computation;
+2. one notebook showing a live or recorded extraction-evaluation run;
+3. one short design note documenting the evaluation rubric and why it is split.
+
+## Phase 6: First Operational Surface [planned]
+
+Goal:
+
+1. make the proved workflow usable without direct Python or notebook editing.
+
+Chosen first surface:
+
+1. CLI first, because it is the simplest operational surface that can exercise
+   the existing service boundaries without dragging in broader tool-runtime
+   concerns.
+
+Build:
+
+1. one thin CLI surface over extraction, review, proposal, and overlay actions;
+2. JSON output mode for scripting and inspection;
+3. minimal command coverage for extract, list, review, and apply actions.
+
+Acceptance criteria:
+
+1. a user can go from raw text to persisted candidate assertions through the
+   CLI;
+2. a user can inspect candidates and proposals, record review decisions, and
+   apply overlays through the CLI;
+3. CLI handlers delegate to existing services rather than owning business
+   logic;
+4. JSON output is stable enough for scripted use in notebooks or shell flows.
+
+Acceptance evidence:
+
+1. CLI integration tests that exercise the end-to-end happy path and one loud
+   failure path;
+2. one notebook or shell transcript showing the workflow entirely through the
+   CLI;
+3. one brief design note explaining why CLI came before MCP/UI.
+
+## Phase 7: Domain Pack Generalization [planned]
+
+Goal:
+
+1. prove that the architecture supports a second real domain pack without core
+   changes.
+
+Chosen exemplar:
+
+1. DoDAF remains the preferred late exemplar for this phase, not an earlier
+   bootstrap dependency.
+
+Build:
+
+1. one second domain pack with at least one strict profile and one mixed
+   profile;
+2. pack-local notebook proof covering validation, proposal routing, and
+   overlays;
+3. any pack-specific extraction context needed to support the second pack,
+   without adding domain branches to core modules.
+
+Acceptance criteria:
+
+1. the second pack loads through the same pack/profile machinery as the donor
+   packs;
+2. the same review and overlay workflow works for the second pack;
+3. mixed-mode proposal routing remains configurable for the second pack;
+4. no domain-specific logic is added to `core` or `ontology_runtime`.
+
+Acceptance evidence:
+
+1. tests proving second-pack loading and validation through existing
+   boundaries;
+2. one notebook showing second-pack review and overlay behavior;
+3. one short design note describing what had to vary and what stayed shared.
+
+## Phase 8: Artifact Lineage Recovery [planned]
+
+Goal:
+
+1. recover artifact-backed provenance from `onto-canon` v1 without rebuilding a
+   fused runtime.
+
+Build:
+
+1. one typed artifact reference model for raw, derived, and analysis artifacts;
+2. links from candidate assertions, review decisions, or accepted assertions to
+   artifacts where appropriate;
+3. one small lineage report surface that makes those links inspectable.
+
+Acceptance criteria:
+
+1. assertions can reference both raw sources and derived analysis artifacts;
+2. lineage queries do not require moving artifact logic into `core`;
+3. provenance remains explicit and inspectable rather than hidden in metadata
+   blobs.
+
+Acceptance evidence:
+
+1. tests for artifact reference persistence and retrieval;
+2. one notebook showing an assertion linked to both a source and a derived
+   artifact;
+3. one brief design note mapping the recovered lineage model back to the donor
+   idea from `onto-canon` v1.
+
+## Phase 9: Epistemic Extension [planned]
+
+Goal:
+
+1. add optional epistemic reasoning without collapsing the current subsystem
+   boundaries.
+
+Build:
+
+1. one extension package for confidence, tension, supersession, or related
+   epistemic operations;
+2. typed storage and operators owned by the extension rather than by the core
+   review pipeline;
+3. one inspectable report or notebook showing the extension in use.
+
+Acceptance criteria:
+
+1. epistemic data stays optional and does not become a hidden requirement for
+   the base workflow;
+2. the extension depends only on explicit seams and existing persisted records;
+3. no central workflow object is reintroduced to host epistemic behavior.
+
+Acceptance evidence:
+
+1. tests for the extension's storage and operators;
+2. one notebook demonstrating the extension against accepted assertions;
+3. one short design note showing why the extension stayed out of core.
+
+## Phase 10: Product-Facing Workflow Integration [planned]
+
+Goal:
+
+1. connect the proved stack into one real end-to-end workflow that is useful
+   beyond notebooks and local probes.
+
+Build:
+
+1. one end-to-end flow that starts from real source material and ends in
+   reviewed, queryable, or exportable governed assertions;
+2. one outward-facing integration surface, such as MCP or another research
+   workflow boundary, built on the already-proven services;
+3. enough artifact/provenance support to explain where the resulting assertions
+   came from.
+
+Acceptance criteria:
+
+1. the workflow is usable without direct module-level Python calls;
+2. the integration surface stays thin and keeps business logic out of handlers;
+3. the system exposes clear provenance from source material through review and
+   any overlay-applied ontology growth;
+4. the workflow demonstrates actual user-visible leverage rather than only
+   infrastructure correctness.
+
+Acceptance evidence:
+
+1. one integration test or scripted demo covering the end-to-end path;
+2. one notebook or operator guide showing the workflow from input to output;
+3. one short design note explaining why this is the first credible
+   product-facing slice.
 
 ## Standing Priorities
 
@@ -280,5 +451,7 @@ relevant phase begins:
 
 1. how live extraction quality should be evaluated once real model outputs are
    enabled beyond deterministic notebook proofs;
-2. whether the first richer surface after the report view should be CLI, MCP,
-   or something else.
+2. whether the first operational surface after CLI should be MCP, UI, or
+   something else;
+3. how much artifact lineage should be recovered in Phase 8 before Phase 10
+   begins.

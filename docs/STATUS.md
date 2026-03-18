@@ -47,14 +47,20 @@ Concrete assets:
 14. `src/onto_canon6/pipeline/overlay_service.py`
 15. `src/onto_canon6/ontology_runtime/overlays.py`
 
+Planning companion:
+
+1. `notebooks/09_successor_long_term_plan.ipynb`
+
 ## What Is Not Proven Yet
 
 Still missing:
 
 1. live extraction-quality evaluation against real model outputs;
-2. epistemic extension;
-3. richer surfaces such as MCP or UI;
-4. product-facing end-to-end workflow beyond notebook and Python API use.
+2. a first operational surface outside notebooks and direct Python calls;
+3. second-pack generalization beyond the current donor packs;
+4. artifact-lineage recovery;
+5. epistemic extension;
+6. product-facing end-to-end workflow beyond notebook and Python API use.
 
 ## Current Donor Dependencies
 
@@ -85,8 +91,8 @@ The current locked strategic decisions are:
 
 1. the first regained user-visible capability is governed review of candidate
    assertions;
-2. the current next phase is a text-grounded producer/import integration from
-   raw text, not a generic consumer hook;
+2. the current next phase is live extraction evaluation, not more extraction
+   feature expansion;
 3. text-derived candidate assertions should carry first-class evidence spans
    and may also carry an optional natural-language gloss;
 4. any LLM-backed extraction path must route through `llm_client` with
@@ -107,10 +113,10 @@ in `docs/plans/0001_successor_roadmap.md`.
 
 ## Immediate Next Step
 
-Start Phase 5 with one narrow proof that expands usefulness without collapsing
-the boundaries that are now in place:
+Start Phase 5 with one narrow proof that measures the extraction path before
+the system grows around it:
 
-1. decide whether the next proof should be a richer surface or one extension;
-2. keep DoDAF deferred unless it directly serves that proof;
-3. avoid widening the extraction runtime until live-quality evaluation is
-   explicitly designed.
+1. define the typed evaluation record and split rubric;
+2. run at least one real-model extraction path through `llm_client`;
+3. keep canonicalization fidelity explicit but secondary to extraction
+   reasonableness.

@@ -270,9 +270,12 @@ Status: complete
 
 ### Later Phases
 
-1. additional domain packs such as DoDAF;
-2. extensions such as epistemic reasoning;
-3. richer surfaces such as MCP or UI.
+1. live extraction evaluation and quality measurement;
+2. a first operational surface, with CLI preferred before MCP/UI;
+3. additional domain packs such as DoDAF;
+4. artifact-lineage recovery;
+5. extensions such as epistemic reasoning;
+6. one product-facing integration slice.
 
 The active implementation detail for these phases lives in
 `docs/plans/0001_successor_roadmap.md`.
