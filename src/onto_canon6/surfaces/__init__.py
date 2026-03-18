@@ -7,6 +7,7 @@ from .graph_report import (
     PromotedGraphReportService,
     PromotedGraphReportSummary,
 )
+from .identity_report import IdentityReport, IdentityReportService, IdentityReportSummary
 from .governed_bundle import (
     GovernedBundleScope,
     GovernedCandidateBundle,
@@ -24,6 +25,9 @@ __all__ = [
     "GovernedWorkflowBundle",
     "GovernedWorkflowBundleService",
     "GovernedWorkflowBundleSummary",
+    "IdentityReport",
+    "IdentityReportService",
+    "IdentityReportSummary",
     "LineageReportService",
     "PromotedGraphAssertionBundle",
     "PromotedGraphReport",

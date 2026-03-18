@@ -16,14 +16,17 @@ journeys:
       - "docs/adr/0008-start-artifact-lineage-with-a-narrow-three-kind-model-and-candidate-centered-links.md"
       - "docs/adr/0009-start-epistemic-extension-with-confidence-and-supersession-over-accepted-candidates.md"
       - "docs/adr/0012-start-canonical-graph-recovery-with-explicit-promotion-from-accepted-candidates.md"
+      - "docs/adr/0013-start-stable-identity-with-promoted-entity-identities-alias-membership-and-explicit-external-reference-state.md"
       - "notebooks/README.md"
     related_tests:
       - "tests/integration/test_cli_flow.py"
       - "tests/integration/test_graph_cli.py"
+      - "tests/integration/test_identity_cli.py"
       - "tests/integration/test_notebook_process.py"
     related_evidence:
       - "notebooks/12_cli_surface.ipynb"
       - "notebooks/17_canonical_graph_recovery_slice.ipynb"
+      - "notebooks/18_stable_identity_slice.ipynb"
     phases:
       - phase_id: "source_artifact_preparation"
         title: "Source Artifact Preparation"
@@ -315,6 +318,34 @@ journeys:
           - "docs/adr/0012-start-canonical-graph-recovery-with-explicit-promotion-from-accepted-candidates.md"
         related_evidence:
           - "notebooks/17_canonical_graph_recovery_slice.ipynb"
+      - phase_id: "stable_identity_and_external_references"
+        title: "Stable Identity And External References"
+        purpose: "Create stable identities over promoted entities, attach alias membership, and record explicit external-reference state."
+        input_artifact: "promoted_graph_proof"
+        output_artifact: "stable_identity_proof"
+        acceptance_criteria:
+          - "Repeated identity creation for the same promoted entity reuses the same local identity."
+          - "Alias membership is explicit and auditable."
+          - "External references are persisted as explicit attached or unresolved records."
+        status: "proven"
+        execution_mode: "live"
+        proof_critical: true
+        related_code:
+          - "src/onto_canon6/core/identity_models.py"
+          - "src/onto_canon6/core/identity_store.py"
+          - "src/onto_canon6/core/identity_service.py"
+          - "src/onto_canon6/surfaces/identity_report.py"
+          - "src/onto_canon6/cli.py"
+        related_tests:
+          - "tests/core/test_identity_service.py"
+          - "tests/integration/test_identity_cli.py"
+          - "tests/integration/test_notebook_process.py"
+        related_docs:
+          - "docs/plans/0001_successor_roadmap.md"
+          - "docs/plans/0007_phase12_identity_shape.md"
+          - "docs/adr/0013-start-stable-identity-with-promoted-entity-identities-alias-membership-and-explicit-external-reference-state.md"
+        related_evidence:
+          - "notebooks/18_stable_identity_slice.ipynb"
 
 auxiliary_notebooks:
   - notebook_id: "policy_contracts_probe"
@@ -509,3 +540,16 @@ auxiliary_notebooks:
       - "tests/integration/test_graph_cli.py"
     related_evidence:
       - "notebooks/17_canonical_graph_recovery_slice.ipynb"
+  - notebook_id: "stable_identity_slice"
+    title: "Stable Identity Slice"
+    purpose: "Deep dive proof for stable identity creation over promoted entities, explicit alias membership, and explicit external-reference state."
+    kind: "deep_dive"
+    notebook: "notebooks/18_stable_identity_slice.ipynb"
+    journey_id: "governed_text_to_reviewed_assertions"
+    related_phase_ids:
+      - "stable_identity_and_external_references"
+    related_tests:
+      - "tests/core/test_identity_service.py"
+      - "tests/integration/test_identity_cli.py"
+    related_evidence:
+      - "notebooks/18_stable_identity_slice.ipynb"

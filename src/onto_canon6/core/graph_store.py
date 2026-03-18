@@ -364,6 +364,30 @@ class CanonicalGraphStore:
             raise CanonicalGraphStoreNotFoundError(f"promoted assertion not found: {assertion_id}")
         return self._hydrate_assertion(row)
 
+    def get_promoted_entity(
+        self,
+        conn: sqlite3.Connection,
+        *,
+        entity_id: str,
+    ) -> PromotedGraphEntityRecord:
+        """Return one materialized promoted entity row by identifier."""
+
+        row = conn.execute(
+            """
+            SELECT
+                entity_id,
+                entity_type,
+                first_candidate_id,
+                created_at
+            FROM promoted_graph_entities
+            WHERE entity_id = ?
+            """,
+            (entity_id,),
+        ).fetchone()
+        if row is None:
+            raise CanonicalGraphStoreNotFoundError(f"promoted entity not found: {entity_id}")
+        return self._hydrate_entity(row)
+
     def get_promoted_assertion_by_candidate(
         self,
         conn: sqlite3.Connection,

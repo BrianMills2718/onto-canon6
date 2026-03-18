@@ -20,7 +20,17 @@ import sys
 from typing import Any, Sequence
 
 from .config import CLIOutputFormatValue, ConfigError, get_config
-from .core import CanonicalGraphPromotionResult, CanonicalGraphService, PromotedGraphAssertionRecord
+from .core import (
+    CanonicalGraphPromotionError,
+    CanonicalGraphPromotionResult,
+    CanonicalGraphService,
+    GraphExternalReferenceRecord,
+    GraphIdentityMembershipRecord,
+    IdentityBundleRecord,
+    IdentityError,
+    IdentityService,
+    PromotedGraphAssertionRecord,
+)
 from .pipeline import (
     CandidateAssertionRecord,
     CandidateSubmissionResult,
@@ -34,6 +44,8 @@ from .pipeline import (
 from .surfaces import (
     GovernedWorkflowBundle,
     GovernedWorkflowBundleService,
+    IdentityReport,
+    IdentityReportService,
     PromotedGraphReport,
     PromotedGraphReportService,
 )
@@ -52,7 +64,14 @@ def main(argv: Sequence[str] | None = None) -> int:
         return int(handler(args))
     except SystemExit as exc:
         return _coerce_exit_code(exc.code)
-    except (ConfigError, ReviewStoreError, ValueError, FileNotFoundError) as exc:
+    except (
+        CanonicalGraphPromotionError,
+        ConfigError,
+        IdentityError,
+        ReviewStoreError,
+        ValueError,
+        FileNotFoundError,
+    ) as exc:
         print(f"ERROR [{type(exc).__name__}] {exc}", file=sys.stderr)
         return 1
 
@@ -235,6 +254,76 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     export_promoted_report_parser.set_defaults(handler=_handle_export_promoted_graph_report)
 
+    create_identity_parser = subparsers.add_parser(
+        "create-identity-for-entity",
+        help="Create or reuse the stable identity for one promoted entity.",
+    )
+    _add_store_args(create_identity_parser, include_overlay_root=False)
+    create_identity_parser.add_argument("--entity-id", required=True, help="Promoted entity identifier.")
+    create_identity_parser.add_argument("--actor-id", required=True, help="Actor id recorded for identity creation.")
+    create_identity_parser.add_argument(
+        "--display-label",
+        help="Optional display label recorded on first identity creation.",
+    )
+    _add_output_arg(create_identity_parser, default_output=config.cli.default_output_format)
+    create_identity_parser.set_defaults(handler=_handle_create_identity_for_entity)
+
+    attach_identity_alias_parser = subparsers.add_parser(
+        "attach-identity-alias",
+        help="Attach another promoted entity id as an explicit alias membership.",
+    )
+    _add_store_args(attach_identity_alias_parser, include_overlay_root=False)
+    attach_identity_alias_parser.add_argument("--identity-id", required=True, help="Stable identity identifier.")
+    attach_identity_alias_parser.add_argument("--entity-id", required=True, help="Promoted entity identifier.")
+    attach_identity_alias_parser.add_argument("--actor-id", required=True, help="Actor id recorded for the alias attachment.")
+    _add_output_arg(attach_identity_alias_parser, default_output=config.cli.default_output_format)
+    attach_identity_alias_parser.set_defaults(handler=_handle_attach_identity_alias)
+
+    attach_external_ref_parser = subparsers.add_parser(
+        "attach-external-ref",
+        help="Attach one explicit external reference to an identity.",
+    )
+    _add_store_args(attach_external_ref_parser, include_overlay_root=False)
+    attach_external_ref_parser.add_argument("--identity-id", required=True, help="Stable identity identifier.")
+    attach_external_ref_parser.add_argument("--provider", required=True, help="External reference provider.")
+    attach_external_ref_parser.add_argument("--external-id", required=True, help="Concrete external identifier.")
+    attach_external_ref_parser.add_argument("--actor-id", required=True, help="Actor id recorded for the attachment.")
+    attach_external_ref_parser.add_argument("--reference-label", help="Optional human-readable external label.")
+    _add_output_arg(attach_external_ref_parser, default_output=config.cli.default_output_format)
+    attach_external_ref_parser.set_defaults(handler=_handle_attach_external_ref)
+
+    unresolved_external_ref_parser = subparsers.add_parser(
+        "record-unresolved-external-ref",
+        help="Persist explicit unresolved external-reference work for an identity.",
+    )
+    _add_store_args(unresolved_external_ref_parser, include_overlay_root=False)
+    unresolved_external_ref_parser.add_argument("--identity-id", required=True, help="Stable identity identifier.")
+    unresolved_external_ref_parser.add_argument("--provider", required=True, help="External reference provider.")
+    unresolved_external_ref_parser.add_argument(
+        "--unresolved-note",
+        required=True,
+        help="Explicit note describing the unresolved reference work.",
+    )
+    unresolved_external_ref_parser.add_argument("--actor-id", required=True, help="Actor id recorded for the unresolved record.")
+    _add_output_arg(unresolved_external_ref_parser, default_output=config.cli.default_output_format)
+    unresolved_external_ref_parser.set_defaults(handler=_handle_record_unresolved_external_ref)
+
+    list_identities_parser = subparsers.add_parser(
+        "list-identities",
+        help="List stable identity bundles.",
+    )
+    _add_store_args(list_identities_parser, include_overlay_root=False)
+    _add_output_arg(list_identities_parser, default_output=config.cli.default_output_format)
+    list_identities_parser.set_defaults(handler=_handle_list_identities)
+
+    export_identity_report_parser = subparsers.add_parser(
+        "export-identity-report",
+        help="Export the stable identity report over the current identity slice.",
+    )
+    _add_store_args(export_identity_report_parser, include_overlay_root=False)
+    _add_output_arg(export_identity_report_parser, default_output=config.cli.default_output_format)
+    export_identity_report_parser.set_defaults(handler=_handle_export_identity_report)
+
     return parser
 
 
@@ -381,6 +470,79 @@ def _handle_export_promoted_graph_report(args: argparse.Namespace) -> int:
     return 0
 
 
+def _handle_create_identity_for_entity(args: argparse.Namespace) -> int:
+    """Create or reuse the stable identity for one promoted entity."""
+
+    identity_service = _build_identity_service(args)
+    bundle = identity_service.create_identity_for_entity(
+        entity_id=args.entity_id,
+        created_by=args.actor_id,
+        display_label=args.display_label,
+    )
+    _emit_output(bundle, output_format=args.output)
+    return 0
+
+
+def _handle_attach_identity_alias(args: argparse.Namespace) -> int:
+    """Attach another promoted entity id as an alias to an identity."""
+
+    identity_service = _build_identity_service(args)
+    membership = identity_service.attach_entity_alias(
+        identity_id=args.identity_id,
+        entity_id=args.entity_id,
+        attached_by=args.actor_id,
+    )
+    _emit_output(membership, output_format=args.output)
+    return 0
+
+
+def _handle_attach_external_ref(args: argparse.Namespace) -> int:
+    """Attach one explicit external reference to an identity."""
+
+    identity_service = _build_identity_service(args)
+    reference = identity_service.attach_external_reference(
+        identity_id=args.identity_id,
+        provider=args.provider,
+        external_id=args.external_id,
+        attached_by=args.actor_id,
+        reference_label=args.reference_label,
+    )
+    _emit_output(reference, output_format=args.output)
+    return 0
+
+
+def _handle_record_unresolved_external_ref(args: argparse.Namespace) -> int:
+    """Persist one explicit unresolved external-reference record."""
+
+    identity_service = _build_identity_service(args)
+    reference = identity_service.record_unresolved_external_reference(
+        identity_id=args.identity_id,
+        provider=args.provider,
+        unresolved_note=args.unresolved_note,
+        attached_by=args.actor_id,
+    )
+    _emit_output(reference, output_format=args.output)
+    return 0
+
+
+def _handle_list_identities(args: argparse.Namespace) -> int:
+    """List stable identity bundles in deterministic order."""
+
+    identity_service = _build_identity_service(args)
+    bundles = tuple(identity_service.list_identities())
+    _emit_output(bundles, output_format=args.output)
+    return 0
+
+
+def _handle_export_identity_report(args: argparse.Namespace) -> int:
+    """Export the stable identity report for the current identity slice."""
+
+    identity_service = _build_identity_service(args)
+    report = IdentityReportService(identity_service=identity_service).build_report()
+    _emit_output(report, output_format=args.output)
+    return 0
+
+
 def _build_review_service(args: argparse.Namespace) -> ReviewService:
     """Create a review service from config-backed defaults plus explicit overrides."""
 
@@ -402,6 +564,13 @@ def _build_graph_service(args: argparse.Namespace) -> CanonicalGraphService:
 
     db_path = Path(args.review_db_path) if getattr(args, "review_db_path", None) else None
     return CanonicalGraphService(db_path=db_path)
+
+
+def _build_identity_service(args: argparse.Namespace) -> IdentityService:
+    """Create an identity service from config-backed defaults plus overrides."""
+
+    db_path = Path(args.review_db_path) if getattr(args, "review_db_path", None) else None
+    return IdentityService(db_path=db_path)
 
 
 def _add_store_args(parser: argparse.ArgumentParser, *, include_overlay_root: bool) -> None:
@@ -457,7 +626,11 @@ def _to_jsonable(value: object) -> Any:
             CandidateAssertionRecord,
             CandidateSubmissionResult,
             CanonicalGraphPromotionResult,
+            GraphExternalReferenceRecord,
+            GraphIdentityMembershipRecord,
             GovernedWorkflowBundle,
+            IdentityBundleRecord,
+            IdentityReport,
             ProposalRecord,
             PromotedGraphAssertionRecord,
             PromotedGraphReport,
@@ -541,6 +714,39 @@ def _to_text(value: object) -> str:
             f"assertions_with_artifacts={value.summary.total_assertions_with_artifacts} "
             f"assertions_with_confidence={value.summary.total_assertions_with_confidence} "
             f"assertion_ids={assertion_ids}"
+        )
+    if isinstance(value, IdentityBundleRecord):
+        entity_ids = ",".join(
+            membership.entity_id for membership in value.memberships
+        ) or "none"
+        return (
+            f"identity_id={value.identity.identity_id} "
+            f"identity_kind={value.identity.identity_kind} "
+            f"entity_ids={entity_ids}"
+        )
+    if isinstance(value, GraphIdentityMembershipRecord):
+        return (
+            f"identity_id={value.identity_id} "
+            f"entity_id={value.entity_id} "
+            f"membership_kind={value.membership_kind}"
+        )
+    if isinstance(value, GraphExternalReferenceRecord):
+        detail = value.external_id if value.external_id is not None else value.unresolved_note
+        return (
+            f"identity_id={value.identity_id} "
+            f"provider={value.provider} "
+            f"reference_status={value.reference_status} "
+            f"detail={detail}"
+        )
+    if isinstance(value, IdentityReport):
+        identity_ids = ",".join(
+            bundle.identity.identity_id for bundle in value.identity_bundles
+        ) or "none"
+        return (
+            f"identities={value.summary.total_identities} "
+            f"memberships={value.summary.total_memberships} "
+            f"external_references={value.summary.total_external_references} "
+            f"identity_ids={identity_ids}"
         )
     if isinstance(value, tuple):
         return "\n".join(_to_text(item) for item in value)

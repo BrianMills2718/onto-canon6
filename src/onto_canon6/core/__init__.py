@@ -13,6 +13,21 @@ from .graph_service import (
     CanonicalGraphPromotionNotFoundError,
     CanonicalGraphService,
 )
+from .identity_models import (
+    ExternalReferenceStatus,
+    GraphExternalReferenceRecord,
+    GraphIdentityMembershipRecord,
+    GraphIdentityRecord,
+    IdentityBundleRecord,
+    IdentityKind,
+    IdentityMembershipKind,
+)
+from .identity_service import (
+    IdentityConflictError,
+    IdentityError,
+    IdentityNotFoundError,
+    IdentityService,
+)
 
 __all__ = [
     "CanonicalGraphPromotionConflictError",
@@ -20,6 +35,17 @@ __all__ = [
     "CanonicalGraphPromotionNotFoundError",
     "CanonicalGraphPromotionResult",
     "CanonicalGraphService",
+    "ExternalReferenceStatus",
+    "GraphExternalReferenceRecord",
+    "GraphIdentityMembershipRecord",
+    "GraphIdentityRecord",
+    "IdentityBundleRecord",
+    "IdentityConflictError",
+    "IdentityError",
+    "IdentityKind",
+    "IdentityMembershipKind",
+    "IdentityNotFoundError",
+    "IdentityService",
     "PromotedGraphAssertionRecord",
     "PromotedGraphEntityRecord",
     "PromotedGraphFillerKind",

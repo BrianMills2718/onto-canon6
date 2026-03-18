@@ -378,7 +378,7 @@ Recover stable identity and external reference handling:
 3. decide whether v1-style Q-code linkage is retained directly or replaced by a
    broader external-reference model with Wikidata as one provider.
 
-Status: planned
+Status: complete
 
 ### Phase 13
 

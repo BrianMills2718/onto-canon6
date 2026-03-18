@@ -37,6 +37,8 @@ entire prior runtime. The current scope is intentionally narrow:
   over accepted reviewed assertions
 - one first canonical-graph recovery slice with explicit promotion from
   accepted candidates into durable promoted assertions and graph reports
+- one first stable-identity slice with explicit alias membership and explicit
+  attached or unresolved external-reference state over promoted entities
 
 The governing architectural rationale lives in the local successor charter and
 the adopted ADR set.
@@ -58,6 +60,7 @@ Repo-local strategic and planning docs now live in:
 - `notebooks/15_epistemic_extension_slice.ipynb`
 - `notebooks/16_governed_bundle_workflow.ipynb`
 - `notebooks/17_canonical_graph_recovery_slice.ipynb`
+- `notebooks/18_stable_identity_slice.ipynb`
 
 ## Current Scope
 
@@ -91,13 +94,15 @@ Today this repo proves only one thin slice:
     successor ends in a real downstream artifact
 18. promote accepted candidates into deterministic durable graph assertions
     and inspect promoted graph state through a thin CLI-backed report surface
+19. create stable identities over promoted entities, attach alias membership,
+    and persist explicit attached or unresolved external-reference state
 
 Not in scope yet:
 
 - broader live benchmark coverage and calibration beyond the first local slice
 - the broader v1 concept/belief graph and system-belief layer beyond the first
   promoted-assertion slice
-- stable identity plus external-reference recovery
+- broader identity recovery beyond the first promoted-entity identity slice
 - the broader semantic canonicalization stack from v1
 - domain-specific query helpers
 - richer external producer integrations

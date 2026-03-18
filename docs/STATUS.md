@@ -79,6 +79,17 @@ typed ontology runtime:
 45. one live notebook proof for the first canonical-graph recovery slice;
 46. one canonical journey notebook phase that now continues from governed
     bundle export into explicit graph promotion.
+47. one bounded stable-identity subsystem with explicit local identity rows,
+    identity memberships, and external-reference records over promoted
+    entities;
+48. deterministic identity reuse for repeated promoted entity ids;
+49. explicit alias membership and explicit attached or unresolved external
+    reference state;
+50. thin CLI commands for identity creation, alias attachment, external
+    reference recording, identity listing, and identity report export;
+51. one live notebook proof for the first stable-identity slice;
+52. one canonical journey notebook phase that now continues from graph
+    promotion into stable identity creation and external-reference state.
 
 Concrete assets:
 
@@ -100,37 +111,40 @@ Concrete assets:
 16. `notebooks/15_epistemic_extension_slice.ipynb`
 17. `notebooks/16_governed_bundle_workflow.ipynb`
 18. `notebooks/17_canonical_graph_recovery_slice.ipynb`
-19. `prompts/extraction/text_to_candidate_assertions.yaml`
-20. `prompts/evaluation/judge_candidate_reasonableness.yaml`
-21. `src/onto_canon6/pipeline/text_extraction.py`
-22. `src/onto_canon6/evaluation/`
-23. `src/onto_canon6/cli.py`
-24. `src/onto_canon6/__main__.py`
-25. `src/onto_canon6/notebook_process.py`
-26. `src/onto_canon6/artifacts/`
-27. `src/onto_canon6/core/`
-28. `src/onto_canon6/extensions/epistemic/`
-29. `src/onto_canon6/surfaces/lineage_report.py`
-30. `src/onto_canon6/surfaces/epistemic_report.py`
-31. `src/onto_canon6/surfaces/governed_bundle.py`
-32. `src/onto_canon6/surfaces/graph_report.py`
-33. `ontology_packs/dodaf_minimal/0.1.0/manifest.yaml`
-34. `profiles/dodaf_minimal_strict/0.1.0/manifest.yaml`
-35. `profiles/dodaf_minimal_mixed/0.1.0/manifest.yaml`
-36. tests in `tests/ontology_runtime/`
-37. tests in `tests/pipeline/`
-38. tests in `tests/evaluation/`
-39. tests in `tests/artifacts/`
-40. tests in `tests/core/`
-41. tests in `tests/extensions/`
-42. tests in `tests/surfaces/`
-43. `tests/integration/test_cli_flow.py`
-44. `tests/integration/test_graph_cli.py`
-45. `tests/integration/test_notebook_process.py`
-46. `tests/integration/test_dodaf_minimal_cli.py`
-47. `src/onto_canon6/surfaces/review_report.py`
-48. `src/onto_canon6/pipeline/overlay_service.py`
-49. `src/onto_canon6/ontology_runtime/overlays.py`
+19. `notebooks/18_stable_identity_slice.ipynb`
+20. `prompts/extraction/text_to_candidate_assertions.yaml`
+21. `prompts/evaluation/judge_candidate_reasonableness.yaml`
+22. `src/onto_canon6/pipeline/text_extraction.py`
+23. `src/onto_canon6/evaluation/`
+24. `src/onto_canon6/cli.py`
+25. `src/onto_canon6/__main__.py`
+26. `src/onto_canon6/notebook_process.py`
+27. `src/onto_canon6/artifacts/`
+28. `src/onto_canon6/core/`
+29. `src/onto_canon6/extensions/epistemic/`
+30. `src/onto_canon6/surfaces/lineage_report.py`
+31. `src/onto_canon6/surfaces/epistemic_report.py`
+32. `src/onto_canon6/surfaces/governed_bundle.py`
+33. `src/onto_canon6/surfaces/graph_report.py`
+34. `src/onto_canon6/surfaces/identity_report.py`
+35. `ontology_packs/dodaf_minimal/0.1.0/manifest.yaml`
+36. `profiles/dodaf_minimal_strict/0.1.0/manifest.yaml`
+37. `profiles/dodaf_minimal_mixed/0.1.0/manifest.yaml`
+38. tests in `tests/ontology_runtime/`
+39. tests in `tests/pipeline/`
+40. tests in `tests/evaluation/`
+41. tests in `tests/artifacts/`
+42. tests in `tests/core/`
+43. tests in `tests/extensions/`
+44. tests in `tests/surfaces/`
+45. `tests/integration/test_cli_flow.py`
+46. `tests/integration/test_graph_cli.py`
+47. `tests/integration/test_identity_cli.py`
+48. `tests/integration/test_notebook_process.py`
+49. `tests/integration/test_dodaf_minimal_cli.py`
+50. `src/onto_canon6/surfaces/review_report.py`
+51. `src/onto_canon6/pipeline/overlay_service.py`
+52. `src/onto_canon6/ontology_runtime/overlays.py`
 
 Planning companion:
 
@@ -144,7 +158,7 @@ Still missing:
 1. broader benchmark coverage and calibration beyond the first local live slice;
 2. the broader v1 concept/belief graph and system-belief layer beyond the
    first promoted-assertion/entity slice;
-3. successor-local stable identity plus external-reference recovery;
+3. broader identity recovery beyond the first promoted-entity identity slice;
 4. a recovered or explicitly replaced semantic canonicalization stack covering
    the main v1 ontology layers;
 5. any post-Phase-10 outward-facing boundary beyond the governed-bundle CLI
@@ -202,6 +216,8 @@ The current locked strategic decisions are:
 10. canonical graph recovery stays explicit and bounded: accepted candidates
     promote into durable graph records, while governance and provenance
     context is traversed through the source candidate rather than duplicated.
+11. stable identity also stays explicit and bounded: promoted entities map into
+    local identities through reviewed membership rather than automatic linking.
 
 The authoritative phase exit criteria and remaining explicit unknowns now live
 in `docs/plans/0001_successor_roadmap.md`.
@@ -229,13 +245,13 @@ The authoritative parity ledger for the broader successor now lives in
    should be modeled.
 8. Phase 10 completed the bootstrap roadmap, but the successor still has
    explicit parity gaps against `onto-canon`.
-9. Phase 11 recovered the first canonical-graph slice, but stable identity,
+9. Phase 12 recovered the first stable-identity slice, but broader identity,
    semantic-stack recovery or replacement, richer surfaces/adapters, and
    broader epistemics are still not implemented.
 
 ## Immediate Next Step
 
-The immediate strategic next step is no longer “start Phase 11.”
+The immediate strategic next step is no longer “start Phase 12.”
 
 The repo should now treat Phase 10 as bootstrap completion and drive next work
 from the parity gaps:
@@ -243,9 +259,11 @@ from the parity gaps:
 1. use `docs/plans/0005_v1_capability_parity_matrix.md` as the feature ledger;
 2. treat Phase 11 as the first durable graph recovery slice rather than full
    parity with the v1 concept/belief layer;
-3. start Phase 12 when the stable-identity shape is locked with explicit
+3. treat Phase 12 as the first stable-identity slice rather than full v1
+   identity and Q-code parity;
+4. start Phase 13 when the semantic-stack decision shape is locked with explicit
    acceptance criteria;
-4. continue to require explicit pressure before adding a richer surface than the
+5. continue to require explicit pressure before adding a richer surface than the
    current CLI, but do not confuse that rule with “the successor is done”.
 
 The locked decisions for the latest slices are already explicit
@@ -261,3 +279,5 @@ in:
 8. `docs/plans/0005_v1_capability_parity_matrix.md`
 9. `docs/adr/0012-start-canonical-graph-recovery-with-explicit-promotion-from-accepted-candidates.md`
 10. `docs/plans/0006_phase11_graph_promotion_shape.md`
+11. `docs/adr/0013-start-stable-identity-with-promoted-entity-identities-alias-membership-and-explicit-external-reference-state.md`
+12. `docs/plans/0007_phase12_identity_shape.md`

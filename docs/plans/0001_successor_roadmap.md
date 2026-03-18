@@ -719,7 +719,7 @@ Proved:
    `docs/adr/0012-start-canonical-graph-recovery-with-explicit-promotion-from-accepted-candidates.md`
    and `docs/plans/0006_phase11_graph_promotion_shape.md`.
 
-## Phase 12: Stable Identity and External References [planned]
+## Phase 12: Stable Identity and External References [completed]
 
 Goal:
 
@@ -763,6 +763,25 @@ Explicit uncertainties:
 
 1. whether Wikidata stays the default first provider;
 2. whether local stable ids should be concept-centric, entity-centric, or both.
+
+Proved:
+
+1. promoted entities now map into stable local identities through
+   `src/onto_canon6/core/identity_service.py` and
+   `src/onto_canon6/core/identity_store.py`;
+2. repeated identity creation for the same promoted `entity_id` deterministically
+   reuses the same local identity;
+3. alias membership is explicit and auditable instead of inferred silently;
+4. external references are now explicit attached or unresolved records through
+   `src/onto_canon6/surfaces/identity_report.py` and the CLI identity commands;
+5. the slice is covered by `tests/core/test_identity_service.py`,
+   `tests/integration/test_identity_cli.py`, and
+   `notebooks/18_stable_identity_slice.ipynb`;
+6. the canonical journey notebook now includes a live stable-identity phase in
+   `notebooks/00_master_governed_text_to_reviewed_assertions.ipynb`;
+7. the local rationale is now recorded in
+   `docs/adr/0013-start-stable-identity-with-promoted-entity-identities-alias-membership-and-explicit-external-reference-state.md`
+   and `docs/plans/0007_phase12_identity_shape.md`.
 
 ## Phase 13: Semantic Canonicalization Stack Recovery Or Replacement [planned]
 

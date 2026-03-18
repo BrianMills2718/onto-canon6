@@ -11,7 +11,8 @@ The main end-to-end user journey is:
 
 That notebook is the primary notebook entry point for the current workflow and
 now ends in a live governed-bundle export artifact plus explicit canonical
-graph promotion rather than a provisional workflow plan.
+graph promotion and stable-identity state rather than a provisional workflow
+plan.
 
 ## Registry
 
