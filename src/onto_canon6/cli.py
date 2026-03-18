@@ -29,7 +29,11 @@ from .core import (
     IdentityBundleRecord,
     IdentityError,
     IdentityService,
+    PromotedGraphRecanonicalizationEventRecord,
     PromotedGraphAssertionRecord,
+    SemanticCanonicalizationError,
+    SemanticCanonicalizationResult,
+    SemanticCanonicalizationService,
 )
 from .pipeline import (
     CandidateAssertionRecord,
@@ -48,6 +52,8 @@ from .surfaces import (
     IdentityReportService,
     PromotedGraphReport,
     PromotedGraphReportService,
+    SemanticCanonicalizationReport,
+    SemanticCanonicalizationReportService,
 )
 
 
@@ -69,6 +75,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         ConfigError,
         IdentityError,
         ReviewStoreError,
+        SemanticCanonicalizationError,
         ValueError,
         FileNotFoundError,
     ) as exc:
@@ -253,6 +260,54 @@ def _build_parser() -> argparse.ArgumentParser:
         default_output=config.cli.default_output_format,
     )
     export_promoted_report_parser.set_defaults(handler=_handle_export_promoted_graph_report)
+
+    recanonicalize_parser = subparsers.add_parser(
+        "recanonicalize-promoted-assertion",
+        help="Repair one promoted assertion through pack-driven semantic canonicalization.",
+    )
+    _add_store_args(recanonicalize_parser, include_overlay_root=True)
+    recanonicalize_parser.add_argument(
+        "--assertion-id",
+        required=True,
+        help="Promoted assertion identifier to recanonicalize.",
+    )
+    recanonicalize_parser.add_argument(
+        "--actor-id",
+        required=True,
+        help="Actor id recorded for the repair event.",
+    )
+    recanonicalize_parser.add_argument(
+        "--reason",
+        help="Optional repair rationale recorded on the recanonicalization event.",
+    )
+    _add_output_arg(recanonicalize_parser, default_output=config.cli.default_output_format)
+    recanonicalize_parser.set_defaults(handler=_handle_recanonicalize_promoted_assertion)
+
+    list_recanonicalization_events_parser = subparsers.add_parser(
+        "list-recanonicalization-events",
+        help="List persisted promoted-assertion recanonicalization events.",
+    )
+    _add_store_args(list_recanonicalization_events_parser, include_overlay_root=False)
+    list_recanonicalization_events_parser.add_argument(
+        "--assertion-id",
+        help="Optional promoted assertion filter.",
+    )
+    _add_output_arg(
+        list_recanonicalization_events_parser,
+        default_output=config.cli.default_output_format,
+    )
+    list_recanonicalization_events_parser.set_defaults(handler=_handle_list_recanonicalization_events)
+
+    export_semantic_report_parser = subparsers.add_parser(
+        "export-semantic-canonicalization-report",
+        help="Export promoted assertions with their semantic repair history.",
+    )
+    _add_store_args(export_semantic_report_parser, include_overlay_root=True)
+    _add_output_arg(
+        export_semantic_report_parser,
+        default_output=config.cli.default_output_format,
+    )
+    export_semantic_report_parser.set_defaults(handler=_handle_export_semantic_canonicalization_report)
 
     create_identity_parser = subparsers.add_parser(
         "create-identity-for-entity",
@@ -470,6 +525,43 @@ def _handle_export_promoted_graph_report(args: argparse.Namespace) -> int:
     return 0
 
 
+def _handle_recanonicalize_promoted_assertion(args: argparse.Namespace) -> int:
+    """Repair one promoted assertion through the semantic canonicalization seam."""
+
+    semantic_service = _build_semantic_service(args)
+    result = semantic_service.recanonicalize_promoted_assertion(
+        assertion_id=args.assertion_id,
+        actor_id=args.actor_id,
+        reason=args.reason,
+    )
+    _emit_output(result, output_format=args.output)
+    return 0
+
+
+def _handle_list_recanonicalization_events(args: argparse.Namespace) -> int:
+    """List persisted recanonicalization events in deterministic order."""
+
+    semantic_service = _build_semantic_service(args)
+    events = tuple(
+        semantic_service.list_recanonicalization_events(assertion_id=args.assertion_id)
+    )
+    _emit_output(events, output_format=args.output)
+    return 0
+
+
+def _handle_export_semantic_canonicalization_report(args: argparse.Namespace) -> int:
+    """Export the semantic repair report over the current promoted graph."""
+
+    graph_service = _build_graph_service(args)
+    semantic_service = _build_semantic_service(args)
+    report = SemanticCanonicalizationReportService(
+        graph_service=graph_service,
+        semantic_service=semantic_service,
+    ).build_report()
+    _emit_output(report, output_format=args.output)
+    return 0
+
+
 def _handle_create_identity_for_entity(args: argparse.Namespace) -> int:
     """Create or reuse the stable identity for one promoted entity."""
 
@@ -573,6 +665,14 @@ def _build_identity_service(args: argparse.Namespace) -> IdentityService:
     return IdentityService(db_path=db_path)
 
 
+def _build_semantic_service(args: argparse.Namespace) -> SemanticCanonicalizationService:
+    """Create a semantic canonicalization service from config-backed defaults plus overrides."""
+
+    db_path = Path(args.review_db_path) if getattr(args, "review_db_path", None) else None
+    overlay_root = Path(args.overlay_root) if getattr(args, "overlay_root", None) else None
+    return SemanticCanonicalizationService(db_path=db_path, overlay_root=overlay_root)
+
+
 def _add_store_args(parser: argparse.ArgumentParser, *, include_overlay_root: bool) -> None:
     """Add explicit mutable-store overrides to one subcommand parser."""
 
@@ -634,7 +734,10 @@ def _to_jsonable(value: object) -> Any:
             ProposalRecord,
             PromotedGraphAssertionRecord,
             PromotedGraphReport,
+            PromotedGraphRecanonicalizationEventRecord,
             OverlayApplicationRecord,
+            SemanticCanonicalizationReport,
+            SemanticCanonicalizationResult,
         ),
     ):
         return value.model_dump(mode="json")
@@ -713,6 +816,31 @@ def _to_text(value: object) -> str:
             f"promoted_entities={value.summary.total_entities} "
             f"assertions_with_artifacts={value.summary.total_assertions_with_artifacts} "
             f"assertions_with_confidence={value.summary.total_assertions_with_confidence} "
+            f"assertion_ids={assertion_ids}"
+        )
+    if isinstance(value, SemanticCanonicalizationResult):
+        event_id = value.event.event_id if value.event is not None else "none"
+        return (
+            f"status={value.status} "
+            f"assertion_id={value.assertion.assertion_id} "
+            f"predicate={value.assertion.predicate} "
+            f"event_id={event_id}"
+        )
+    if isinstance(value, PromotedGraphRecanonicalizationEventRecord):
+        return (
+            f"event_id={value.event_id} "
+            f"assertion_id={value.assertion_id} "
+            f"before_predicate={value.before_predicate} "
+            f"after_predicate={value.after_predicate}"
+        )
+    if isinstance(value, SemanticCanonicalizationReport):
+        assertion_ids = ",".join(
+            bundle.assertion.assertion_id for bundle in value.assertion_bundles
+        ) or "none"
+        return (
+            f"promoted_assertions={value.summary.total_assertions} "
+            f"recanonicalization_events={value.summary.total_recanonicalization_events} "
+            f"rewritten_assertions={value.summary.total_rewritten_assertions} "
             f"assertion_ids={assertion_ids}"
         )
     if isinstance(value, IdentityBundleRecord):

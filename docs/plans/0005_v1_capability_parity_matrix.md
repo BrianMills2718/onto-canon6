@@ -38,14 +38,14 @@ From this point forward:
 | Live evaluation of extraction quality | v1 had extraction validation and benchmark-like checks | Proved with separated reasonableness, structural validation, and canonicalization fidelity lanes | Expanded | Closed in bootstrap |
 | Canonical concept/belief graph with system beliefs | `concept_storage.py`, `beliefs`/`concepts` schema, `sys:*` beliefs | Narrow first slice recovered through promoted assertions/entities and explicit promotion from accepted candidates; full concept/system-belief layer still not recovered | Narrowed | Phase 11 |
 | Stable identity and external references, including Q-code-like cross-investigation identity | Wikidata/Q-code flow in v1 | Narrow first slice recovered through promoted-entity identities, explicit alias membership, and explicit attached or unresolved external-reference state; broader v1 identity/Q-code behavior still not recovered | Narrowed | Phase 12 |
-| Semantic canonicalization stack over predicates and roles | AMR/PropBank/SUMO/FrameNet/Wikidata stack in v1 | Not yet recovered or explicitly replaced end to end | Deferred | Phase 13 |
+| Semantic canonicalization stack over predicates and roles | AMR/PropBank/SUMO/FrameNet/Wikidata stack in v1 | Narrow replacement slice recovered through explicit semantic-stack disposition, pack-driven predicate/role canonicalization, and persisted recanonicalization over promoted assertions; broader producer-side semantic adapters are still deferred | Replaced, narrowed | Phase 13 |
 | Artifact lineage registry | `artifact_registry.py` and related MCP surface | Recovered as a bounded three-kind subsystem with candidate-centered links | Retained, narrowed | Broaden only if later phases need it |
 | Epistemic engine | `belief_ops.py`, tension handling, updates, status transitions | Recovered only as confidence plus supersession over accepted candidates | Retained, narrowed | Phase 15 for broader recovery |
 | Agent-facing operational surface | `canon_mcp_server.py`, 35 MCP tools | CLI proved; MCP and richer agent boundary still absent | Deferred | Phase 14 |
 | External adapters | DIGIMON and WhyGame adapters in v1 | Not yet recovered in successor-local form | Deferred | Phase 14 |
 | Cross-channel corroboration | Planned `canon_find_corroborations` in v1 status doc | Not present in successor | Deferred | Phase 15 |
 | Temporal extraction and inference integration | Phase 4 plan in v1 status doc | Not present in successor | Deferred | Phase 15 |
-| Repair and recanonicalization flows over bad stored assertions | v1 repair pipeline and SUMO repair tools | Not yet recovered for successor-local canonical graph state | Deferred | Phase 13 and Phase 15 |
+| Repair and recanonicalization flows over bad stored assertions | v1 repair pipeline and SUMO repair tools | Narrow promoted-assertion repair flow recovered through explicit recanonicalization events and revalidation before persistence; broader graph-wide repair remains deferred | Retained, narrowed | Phase 13 and Phase 15 |
 
 ## Notes
 

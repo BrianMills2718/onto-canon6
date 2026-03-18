@@ -29,6 +29,12 @@ def test_local_dodaf_minimal_pack_and_profiles_load() -> None:
     assert mixed.ontology_policy.mode == "mixed"
     assert mixed.ontology_policy.overlay_target is not None
     assert mixed.ontology_policy.overlay_target.pack_id == "dodaf_minimal__overlay"
+    assert pack.predicate_aliases["operationalnodeexchangesinformation"] == (
+        "dodaf:operational_node_exchanges_information"
+    )
+    assert pack.role_aliases["source"] == "source_node"
+    assert pack.role_aliases["target"] == "target_node"
+    assert pack.role_aliases["information"] == "information_element"
 
 
 def test_dodaf_minimal_strict_accepts_known_assertion() -> None:

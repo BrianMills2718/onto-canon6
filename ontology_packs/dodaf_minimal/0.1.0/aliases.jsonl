@@ -1,1 +1,4 @@
 {"canonical_id":"dodaf:operational_node_exchanges_information","alias":"OperationalNodeExchangesInformation"}
+{"canonical_id":"source_node","alias":"source"}
+{"canonical_id":"target_node","alias":"target"}
+{"canonical_id":"information_element","alias":"information"}

@@ -17,6 +17,12 @@ from .governed_bundle import (
 )
 from .lineage_report import LineageReportService
 from .review_report import ReviewReport, ReviewReportService, ReviewReportSummary
+from .semantic_report import (
+    SemanticCanonicalizationAssertionBundle,
+    SemanticCanonicalizationReport,
+    SemanticCanonicalizationReportService,
+    SemanticCanonicalizationReportSummary,
+)
 
 __all__ = [
     "EpistemicReportService",
@@ -36,4 +42,8 @@ __all__ = [
     "ReviewReport",
     "ReviewReportService",
     "ReviewReportSummary",
+    "SemanticCanonicalizationAssertionBundle",
+    "SemanticCanonicalizationReport",
+    "SemanticCanonicalizationReportService",
+    "SemanticCanonicalizationReportSummary",
 ]

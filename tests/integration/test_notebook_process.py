@@ -17,8 +17,8 @@ def test_notebook_registry_validates() -> None:
 
     assert report.registry_path == "notebooks/notebook_registry.yaml"
     assert report.journey_count == 1
-    assert report.auxiliary_notebook_count == 18
-    assert report.phase_count == 13
+    assert report.auxiliary_notebook_count == 19
+    assert report.phase_count == 14
     assert (
         "notebooks/00_master_governed_text_to_reviewed_assertions.ipynb"
         in report.validated_notebooks

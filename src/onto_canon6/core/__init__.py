@@ -1,4 +1,4 @@
-"""Core exports for the successor's durable promoted-graph slice."""
+"""Core exports for the successor's durable graph, identity, and repair slices."""
 
 from .graph_models import (
     CanonicalGraphPromotionResult,
@@ -28,6 +28,17 @@ from .identity_service import (
     IdentityNotFoundError,
     IdentityService,
 )
+from .semantic_models import (
+    PromotedGraphRecanonicalizationEventRecord,
+    SemanticCanonicalizationResult,
+    SemanticCanonicalizationStatus,
+)
+from .semantic_service import (
+    SemanticCanonicalizationConflictError,
+    SemanticCanonicalizationError,
+    SemanticCanonicalizationNotFoundError,
+    SemanticCanonicalizationService,
+)
 
 __all__ = [
     "CanonicalGraphPromotionConflictError",
@@ -49,5 +60,12 @@ __all__ = [
     "PromotedGraphAssertionRecord",
     "PromotedGraphEntityRecord",
     "PromotedGraphFillerKind",
+    "PromotedGraphRecanonicalizationEventRecord",
     "PromotedGraphRoleFillerRecord",
+    "SemanticCanonicalizationConflictError",
+    "SemanticCanonicalizationError",
+    "SemanticCanonicalizationNotFoundError",
+    "SemanticCanonicalizationResult",
+    "SemanticCanonicalizationService",
+    "SemanticCanonicalizationStatus",
 ]

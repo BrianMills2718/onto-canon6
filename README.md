@@ -39,6 +39,9 @@ entire prior runtime. The current scope is intentionally narrow:
   accepted candidates into durable promoted assertions and graph reports
 - one first stable-identity slice with explicit alias membership and explicit
   attached or unresolved external-reference state over promoted entities
+- one first semantic canonicalization slice that replaces the v1 hard semantic
+  stack with pack-driven predicate/role canonicalization plus explicit
+  recanonicalization over promoted graph state
 
 The governing architectural rationale lives in the local successor charter and
 the adopted ADR set.
@@ -61,6 +64,7 @@ Repo-local strategic and planning docs now live in:
 - `notebooks/16_governed_bundle_workflow.ipynb`
 - `notebooks/17_canonical_graph_recovery_slice.ipynb`
 - `notebooks/18_stable_identity_slice.ipynb`
+- `notebooks/19_semantic_canonicalization_slice.ipynb`
 
 ## Current Scope
 
@@ -96,6 +100,9 @@ Today this repo proves only one thin slice:
     and inspect promoted graph state through a thin CLI-backed report surface
 19. create stable identities over promoted entities, attach alias membership,
     and persist explicit attached or unresolved external-reference state
+20. canonicalize promoted assertion predicates and roles through pack-declared
+    aliases and explicit recanonicalization events instead of a hidden runtime
+    mapping layer
 
 Not in scope yet:
 
@@ -103,7 +110,8 @@ Not in scope yet:
 - the broader v1 concept/belief graph and system-belief layer beyond the first
   promoted-assertion slice
 - broader identity recovery beyond the first promoted-entity identity slice
-- the broader semantic canonicalization stack from v1
+- broader producer-side semantic adapters beyond the first pack-driven
+  canonicalization replacement slice
 - domain-specific query helpers
 - richer external producer integrations
 - UI or MCP surfaces

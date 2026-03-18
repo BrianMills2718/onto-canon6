@@ -783,7 +783,7 @@ Proved:
    `docs/adr/0013-start-stable-identity-with-promoted-entity-identities-alias-membership-and-explicit-external-reference-state.md`
    and `docs/plans/0007_phase12_identity_shape.md`.
 
-## Phase 13: Semantic Canonicalization Stack Recovery Or Replacement [planned]
+## Phase 13: Semantic Canonicalization Stack Recovery Or Replacement [complete]
 
 Goal:
 
@@ -829,9 +829,33 @@ Non-goals:
 
 Explicit uncertainties:
 
-1. whether AMR/PropBank remains the main predicate path or becomes one adapter
-   among several;
-2. how much of SUMO/FrameNet should remain hard dependencies.
+1. whether AMR/PropBank returns later as one optional producer adapter among
+   several;
+2. how much richer pack metadata should later represent SUMO/FrameNet lineage
+   explicitly.
+
+Proved:
+
+1. the v1 AMR/PropBank/SUMO/FrameNet/Wikidata stack is now explicitly marked
+   as replaced or deferred by layer through
+   `docs/adr/0014-replace-the-v1-semantic-stack-with-pack-driven-canonicalization-and-explicit-recanonicalization.md`;
+2. the first successor semantic slice now canonicalizes promoted assertion
+   predicates and role ids through ontology-pack alias and source-mapping
+   metadata loaded in `src/onto_canon6/ontology_runtime/loaders.py`;
+3. bad promoted graph state can now be explicitly repaired and revalidated
+   through `src/onto_canon6/core/semantic_service.py` and
+   `src/onto_canon6/core/semantic_store.py`;
+4. persisted recanonicalization events are now inspectable through
+   `src/onto_canon6/surfaces/semantic_report.py` and the new CLI commands;
+5. the slice is covered by `tests/core/test_semantic_service.py`,
+   `tests/integration/test_semantic_cli.py`, and the local pack-loading proof
+   in `tests/ontology_runtime/test_dodaf_minimal.py`;
+6. the live proof artifact is
+   `notebooks/19_semantic_canonicalization_slice.ipynb`, and the canonical
+   journey notebook now includes the semantic recanonicalization phase in
+   `notebooks/00_master_governed_text_to_reviewed_assertions.ipynb`;
+7. the phase shape is locked locally in
+   `docs/plans/0008_phase13_semantic_canonicalization_shape.md`.
 
 ## Phase 14: Agent Surface And Adapter Recovery [planned]
 

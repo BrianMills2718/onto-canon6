@@ -18,6 +18,7 @@ during the restart review and planning phase.
 11. [0011 - Treat Phase 10 as bootstrap completion and track v1 capability parity explicitly](0011-treat-phase-10-as-bootstrap-completion-and-track-v1-capability-parity-explicitly.md)
 12. [0012 - Start canonical graph recovery with explicit promotion from accepted candidates](0012-start-canonical-graph-recovery-with-explicit-promotion-from-accepted-candidates.md)
 13. [0013 - Start stable identity with promoted-entity identities, alias membership, and explicit external reference state](0013-start-stable-identity-with-promoted-entity-identities-alias-membership-and-explicit-external-reference-state.md)
+14. [0014 - Replace the v1 semantic stack with pack-driven canonicalization and explicit recanonicalization](0014-replace-the-v1-semantic-stack-with-pack-driven-canonicalization-and-explicit-recanonicalization.md)
 
 ## Notes
 

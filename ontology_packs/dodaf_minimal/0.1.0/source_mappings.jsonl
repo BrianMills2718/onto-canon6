@@ -1,1 +1,2 @@
 {"source_system":"local_authoring","source_id":"dodaf_minimal","pack_predicate_id":"dodaf:operational_node_exchanges_information"}
+{"source_system":"legacy_dodaf","source_id":"OperationalNodeExchangesInformation","pack_predicate_id":"dodaf:operational_node_exchanges_information"}

@@ -389,7 +389,7 @@ Recover or explicitly replace the semantic canonicalization stack:
 2. implement one credible canonicalization path over promoted assertions;
 3. recover explicit repair and recanonicalization behavior for bad graph state.
 
-Status: planned
+Status: complete
 
 ### Phase 14
 

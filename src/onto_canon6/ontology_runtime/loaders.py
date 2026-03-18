@@ -10,6 +10,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from functools import lru_cache
+import logging
 from pathlib import Path
 from typing import Mapping, cast
 import json
@@ -37,6 +38,7 @@ _REQUIRED_CONTENT_KEYS = (
     "aliases",
     "constraints",
 )
+logger = logging.getLogger(__name__)
 
 
 class OntologyPackLoadError(ValueError):
@@ -116,7 +118,10 @@ class LoadedOntologyPack:
     description: str
     path: Path
     predicate_ids: frozenset[str]
+    role_ids: frozenset[str]
     predicate_rules: Mapping[str, PackPredicateRule]
+    predicate_aliases: Mapping[str, str]
+    role_aliases: Mapping[str, str]
     type_parents: Mapping[str, tuple[str, ...]]
 
 
@@ -342,12 +347,19 @@ def _load_pack_cached(
     content_paths = _resolve_content_paths(pack_dir, content_block)
     role_runtime_names = _load_role_runtime_names(content_paths["role_types"])
     predicate_ids = _load_predicate_ids(content_paths["predicate_types"])
+    role_ids = frozenset(sorted(role_runtime_names.values()))
     type_parents = _load_type_parents(content_paths["hierarchy_edges"])
     predicate_rules = _load_predicate_rules(
         predicate_role_edges_path=content_paths["predicate_role_edges"],
         constraints_path=content_paths["constraints"],
         role_runtime_names=role_runtime_names,
         predicate_ids=predicate_ids,
+    )
+    predicate_aliases, role_aliases = _load_alias_maps(
+        aliases_path=content_paths["aliases"],
+        source_mappings_path=content_paths["source_mappings"],
+        predicate_ids=predicate_ids,
+        role_ids=role_ids,
     )
 
     return LoadedOntologyPack(
@@ -360,7 +372,10 @@ def _load_pack_cached(
         ),
         path=pack_dir,
         predicate_ids=predicate_ids,
+        role_ids=role_ids,
         predicate_rules=predicate_rules,
+        predicate_aliases=predicate_aliases,
+        role_aliases=role_aliases,
         type_parents=type_parents,
     )
 
@@ -960,6 +975,119 @@ def _load_predicate_rules(
             constraint_builder.role_value_kinds[runtime_name] = expected_value_kind
 
     return {predicate_id: builders[predicate_id].build() for predicate_id in sorted(builders)}
+
+
+def _load_alias_maps(
+    *,
+    aliases_path: Path,
+    source_mappings_path: Path,
+    predicate_ids: frozenset[str],
+    role_ids: frozenset[str],
+) -> tuple[Mapping[str, str], Mapping[str, str]]:
+    """Load normalized predicate and role alias maps from pack content.
+
+    The successor keeps canonicalization knowledge in ontology-pack content
+    rather than hard-coded runtime tables. This first slice treats:
+
+    1. explicit alias rows as predicate or role aliases based on the declared
+       canonical id;
+    2. source-mapping `source_id` values as additional predicate aliases.
+    """
+
+    predicate_aliases: dict[str, str] = {
+        _normalize_lookup_key(predicate_id): predicate_id for predicate_id in predicate_ids
+    }
+    role_aliases: dict[str, str] = {
+        _normalize_lookup_key(role_id): role_id for role_id in role_ids
+    }
+    for row in _load_jsonl(aliases_path):
+        canonical_id = _required_token(
+            row.get("canonical_id"),
+            "aliases[].canonical_id",
+            error_cls=OntologyPackLoadError,
+        )
+        alias = _required_token(
+            row.get("alias"),
+            f"aliases[{canonical_id}].alias",
+            error_cls=OntologyPackLoadError,
+        )
+        normalized_alias = _normalize_lookup_key(alias)
+        if canonical_id in predicate_ids:
+            _insert_alias(
+                predicate_aliases,
+                normalized_alias,
+                canonical_id,
+                context=f"aliases[{canonical_id}]",
+            )
+            continue
+        if canonical_id in role_ids:
+            _insert_alias(
+                role_aliases,
+                normalized_alias,
+                canonical_id,
+                context=f"aliases[{canonical_id}]",
+            )
+            continue
+        logger.info(
+            "ignoring non-predicate/non-role alias row aliases_path=%s canonical_id=%s",
+            aliases_path,
+            canonical_id,
+        )
+
+    for row in _load_jsonl(source_mappings_path):
+        predicate_id_raw = row.get("pack_predicate_id")
+        if not isinstance(predicate_id_raw, str) or not predicate_id_raw.strip():
+            logger.info(
+                "ignoring non-predicate source-mapping row source_mappings_path=%s row_keys=%s",
+                source_mappings_path,
+                sorted(str(key) for key in row),
+            )
+            continue
+        source_id = _required_token(
+            row.get("source_id"),
+            "source_mappings[].source_id",
+            error_cls=OntologyPackLoadError,
+        )
+        predicate_id = _required_token(
+            predicate_id_raw,
+            "source_mappings[].pack_predicate_id",
+            error_cls=OntologyPackLoadError,
+        )
+        if predicate_id not in predicate_ids:
+            raise OntologyPackLoadError(
+                f"{source_mappings_path}: pack_predicate_id is not a known predicate: {predicate_id}"
+            )
+        _insert_alias(
+            predicate_aliases,
+            _normalize_lookup_key(source_id),
+            predicate_id,
+            context=f"source_mappings[{source_id}]",
+        )
+
+    return predicate_aliases, role_aliases
+
+
+def _insert_alias(
+    aliases: dict[str, str],
+    normalized_alias: str,
+    canonical_id: str,
+    *,
+    context: str,
+) -> None:
+    """Insert one alias mapping and reject ambiguous collisions loudly."""
+
+    existing = aliases.get(normalized_alias)
+    if existing is not None and existing != canonical_id:
+        raise OntologyPackLoadError(
+            f"{context}: alias {normalized_alias!r} conflicts with {existing!r}"
+        )
+    aliases[normalized_alias] = canonical_id
+
+
+def _normalize_lookup_key(value: str) -> str:
+    """Normalize one canonicalization lookup token conservatively."""
+
+    return value.strip().lower()
 
 
 def _required_object(
