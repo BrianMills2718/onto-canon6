@@ -27,6 +27,15 @@ messages:
       non-empty `roles` object grounded directly in the source text, return an
       empty `candidates` array instead of a partial candidate.
 
+      Use exact source surface forms for entity names and values. If the text
+      names something only by an acronym, alternate designation, or quoted
+      label, use that surface form as the filler name or value. Do not leave a
+      role empty while waiting for a more canonical name.
+
+      Build candidates role-first. Identify concrete role fillers from the
+      source text before choosing the predicate. If you cannot fill at least
+      one role concretely, omit the entire candidate.
+
       Omit a candidate if:
 
       - the entity cannot be named from the source text

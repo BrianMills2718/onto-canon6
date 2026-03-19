@@ -58,7 +58,7 @@ LLMClientRoutingPolicy = Literal["openrouter", "direct"]
 class _GetModel(Protocol):
     """Resolve one model ID from a configured task name."""
 
-    def __call__(self, task: str) -> str: ...
+    def __call__(self, task: str, *, use_performance: bool = True) -> str: ...
 
 
 class _RenderPrompt(Protocol):
@@ -151,6 +151,7 @@ class ExtractionPromptExperimentService:
         self._observability_dataset = experiment.observability_dataset
         self._observability_phase = experiment.observability_phase
         self._selection_task = experiment.selection_task
+        self._selection_use_performance = experiment.selection_use_performance
         self._n_runs = experiment.n_runs
         self._temperature = experiment.temperature
         self._timeout_seconds = experiment.timeout_seconds
@@ -228,7 +229,10 @@ class ExtractionPromptExperimentService:
 
         llm_client_api = _load_llm_client_api()
         prompt_eval_api = _load_prompt_eval_api()
-        selected_model = llm_client_api.get_model(effective_selection_task)
+        selected_model = llm_client_api.get_model(
+            effective_selection_task,
+            use_performance=self._selection_use_performance,
+        )
         llm_client_config = _build_llm_client_config_for_routing_policy(routing_policy)
         loaded_profile = load_effective_profile(
             profile.profile_id,

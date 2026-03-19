@@ -246,7 +246,7 @@ class TextExtractionRun(BaseModel):
 class _GetModel(Protocol):
     """Resolve one model ID from a configured task name."""
 
-    def __call__(self, task: str) -> str: ...
+    def __call__(self, task: str, *, use_performance: bool = True) -> str: ...
 
 
 class _RenderPrompt(Protocol):
@@ -296,6 +296,7 @@ class TextExtractionService:
         config = get_config()
         self._review_service = review_service or ReviewService()
         self._selection_task = config.extraction.selection_task
+        self._selection_use_performance = config.extraction.selection_use_performance
         self._prompt_template = config.extraction_prompt_template()
         self._prompt_ref = config.extraction.prompt_ref
         self._timeout_seconds = config.extraction.timeout_seconds
@@ -385,7 +386,10 @@ class TextExtractionService:
             normalized_profile.profile_version,
             overlay_root=self._review_service.overlay_root,
         )
-        selected_model = llm_client_api.get_model(self._selection_task)
+        selected_model = llm_client_api.get_model(
+            self._selection_task,
+            use_performance=self._selection_use_performance,
+        )
         messages = llm_client_api.render_prompt(
             self._prompt_template,
             profile_id=normalized_profile.profile_id,

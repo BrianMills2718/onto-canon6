@@ -72,11 +72,17 @@ class ExtractionConfig(BaseModel):
     Explicit completion-token caps are intentionally excluded here. The
     extraction path relies on llm_client's model-aware defaults so structured
     outputs are not prematurely truncated by repo-local ceilings.
+
+    ``selection_use_performance`` stays repo-configured because extraction
+    prompt tuning can generate many intentional failures. The default keeps
+    model choice on the static task profile until the extraction lane is
+    stable enough for shared performance overlays to be trustworthy.
     """
 
     model_config = ConfigDict(extra="forbid", frozen=True)
 
     selection_task: str = Field(min_length=1)
+    selection_use_performance: bool = False
     prompt_template: str = Field(min_length=1)
     prompt_ref: str = Field(min_length=1)
     timeout_seconds: int = Field(ge=1)
@@ -143,6 +149,10 @@ class PromptEvalExperimentConfig(BaseModel):
     This slice is intentionally narrow: it runs prompt variants over one
     single-profile benchmark fixture, scores them deterministically, and logs
     the run family through shared `llm_client`/`prompt_eval` observability.
+
+    Prompt experiments also default to static model selection so repeated
+    failed variants do not immediately poison the shared extraction task's
+    performance overlay during active tuning.
     """
 
     model_config = ConfigDict(extra="forbid", frozen=True)
@@ -151,6 +161,7 @@ class PromptEvalExperimentConfig(BaseModel):
     observability_dataset: str = Field(min_length=1)
     observability_phase: str = Field(min_length=1)
     selection_task: str = Field(min_length=1)
+    selection_use_performance: bool = False
     n_runs: int = Field(ge=1)
     temperature: float = Field(ge=0.0)
     timeout_seconds: int = Field(ge=1)

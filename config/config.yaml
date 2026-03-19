@@ -21,10 +21,11 @@ ontology_runtime:
   overlay_pack_suffix: "__overlay"
 
 extraction:
-  selection_task: "extraction"
+  selection_task: "fast_extraction"
+  selection_use_performance: false
   prompt_template: "prompts/extraction/text_to_candidate_assertions.yaml"
   prompt_ref: "onto_canon6.extraction.text_to_candidate_assertions@1"
-  timeout_seconds: 60
+  timeout_seconds: 90
   num_retries: 2
   max_budget_usd: 0.25
 
@@ -48,17 +49,18 @@ evaluation:
     experiment_name: "onto_canon6_extraction_prompt_eval"
     observability_dataset: "onto_canon6_extraction_prompt_eval"
     observability_phase: "evaluation"
-    selection_task: "extraction"
+    selection_task: "fast_extraction"
+    selection_use_performance: false
     n_runs: 2
     temperature: 0.0
-    timeout_seconds: 60
+    timeout_seconds: 90
     num_retries: 2
     max_budget_usd: 0.25
     baseline_variant_name: "baseline"
     comparison_method: "welch"
     comparison_confidence: 0.95
-    max_candidates_per_case: 4
-    max_evidence_spans_per_candidate: 2
+    max_candidates_per_case: 2
+    max_evidence_spans_per_candidate: 1
     variants:
       - name: "baseline"
         prompt_template: "prompts/extraction/prompt_eval_text_to_candidate_assertions_baseline.yaml"

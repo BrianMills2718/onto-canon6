@@ -58,8 +58,9 @@ def test_extract_candidate_imports_uses_llm_client_boundary(tmp_path: Path, monk
     service = TextExtractionService(review_service=_make_review_service(tmp_path))
     calls: dict[str, object] = {}
 
-    def fake_get_model(task: str) -> str:
+    def fake_get_model(task: str, *, use_performance: bool = True) -> str:
         calls["selection_task"] = task
+        calls["selection_use_performance"] = use_performance
         return "fake-structured-model"
 
     # mock-ok: isolates the llm_client network boundary while still exercising
@@ -128,10 +129,11 @@ def test_extract_candidate_imports_uses_llm_client_boundary(tmp_path: Path, monk
     assert imports[0].evidence_spans[0].text == "Mission planning"
     assert imports[0].evidence_spans[0].start_char == 0
     assert imports[0].source_artifact.content_text is not None
-    assert calls["selection_task"] == "extraction"
+    assert calls["selection_task"] == "fast_extraction"
+    assert calls["selection_use_performance"] is False
     call_kwargs = calls["kwargs"]
     assert isinstance(call_kwargs, dict)
-    assert call_kwargs["task"] == "extraction"
+    assert call_kwargs["task"] == "fast_extraction"
     assert call_kwargs["max_budget"] == 0.25
     assert call_kwargs["prompt_ref"] == "onto_canon6.extraction.text_to_candidate_assertions@1"
     assert str(call_kwargs["trace_id"]).startswith("onto_canon6.extract.")
@@ -149,7 +151,8 @@ def test_extract_and_submit_persists_extracted_candidates(
     review_service = _make_review_service(tmp_path)
     service = TextExtractionService(review_service=review_service)
 
-    def fake_get_model(task: str) -> str:
+    def fake_get_model(task: str, *, use_performance: bool = True) -> str:
+        del use_performance
         return f"model-for-{task}"
 
     # mock-ok: isolates the llm_client network boundary for deterministic
@@ -224,7 +227,8 @@ def test_extract_and_submit_fails_loud_on_bad_evidence_span(
 
     service = TextExtractionService(review_service=_make_review_service(tmp_path))
 
-    def fake_get_model(task: str) -> str:
+    def fake_get_model(task: str, *, use_performance: bool = True) -> str:
+        del use_performance
         return f"model-for-{task}"
 
     # mock-ok: isolates the llm_client network boundary so the test can focus

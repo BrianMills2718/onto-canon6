@@ -378,7 +378,7 @@ def test_run_prompt_experiment_builds_report_and_variant_comparison(
         prompt_eval_service_module,
         "_load_llm_client_api",
         lambda: prompt_eval_service_module._LLMClientAPI(
-            get_model=lambda task: f"model-for-{task}",
+            get_model=lambda task, use_performance=True: f"model-for-{task}",
             render_prompt=_render_prompt,
         ),
     )
@@ -401,8 +401,8 @@ def test_run_prompt_experiment_builds_report_and_variant_comparison(
 
     assert report.execution_id == "exec123"
     assert report.baseline_variant_name == "baseline"
-    assert report.selection_task == "extraction"
-    assert report.selected_model == "model-for-extraction"
+    assert report.selection_task == "fast_extraction"
+    assert report.selected_model == "model-for-fast_extraction"
     assert [item.variant_name for item in report.variant_summaries] == [
         "baseline",
         "compact",
@@ -423,37 +423,41 @@ def test_run_prompt_experiment_builds_report_and_variant_comparison(
         "compact",
         "single_response_hardened",
     ]
-    assert experiment.variants[0].kwargs["task"] == "extraction"
+    assert experiment.variants[0].kwargs["task"] == "fast_extraction"
     assert experiment.variants[0].kwargs["max_budget"] == 0.25
-    assert experiment.variants[1].kwargs["task"] == "extraction"
+    assert experiment.variants[1].kwargs["task"] == "fast_extraction"
     assert experiment.variants[1].kwargs["max_budget"] == 0.25
-    assert experiment.variants[2].kwargs["task"] == "extraction"
+    assert experiment.variants[2].kwargs["task"] == "fast_extraction"
     assert experiment.variants[2].kwargs["max_budget"] == 0.25
-    assert experiment.variants[3].kwargs["task"] == "extraction"
+    assert experiment.variants[3].kwargs["task"] == "fast_extraction"
     assert experiment.variants[3].kwargs["max_budget"] == 0.25
     baseline_messages = experiment.variants[0].messages
     hardened_messages = experiment.variants[1].messages
     compact_messages = experiment.variants[2].messages
     single_response_messages = experiment.variants[3].messages
     assert "Case input:\n{input}" in baseline_messages[-1]["content"]
-    assert "Return at most 4 candidates." in baseline_messages[0]["content"]
-    assert "Use at most 2 evidence spans per" in baseline_messages[0]["content"]
+    assert "Return at most 2 candidates." in baseline_messages[0]["content"]
+    assert "Use at most 1 evidence spans per" in baseline_messages[0]["content"]
+    assert "Use exact source surface forms for entity names and values." in baseline_messages[0]["content"]
+    assert "Build candidates role-first." in baseline_messages[0]["content"]
     assert "abbreviation expansions" in hardened_messages[0]["content"]
     assert "Prefer the smallest sufficient candidate set" in compact_messages[0]["content"]
     assert "Return at most 1 candidates." in compact_messages[0]["content"]
     assert "Use at most 1 evidence spans per" in compact_messages[0]["content"]
     assert "Empty candidates are allowed." in compact_messages[0]["content"]
+    assert "Build candidates role-first." in compact_messages[0]["content"]
     assert "Return exactly one structured response object" in single_response_messages[0]["content"]
     assert "Return at most 1 candidates." in single_response_messages[0]["content"]
     assert "Use at most 1 evidence spans per" in single_response_messages[0]["content"]
     assert "Never emit `roles: {}`." in single_response_messages[0]["content"]
+    assert "Use exact source surface forms for entity names and values." in single_response_messages[0]["content"]
     observability = captured["observability"]
     assert isinstance(observability, _FakePromptEvalObservabilityConfig)
     assert observability.kwargs["dataset"] == "onto_canon6_extraction_prompt_eval"
     assert observability.kwargs["project"] == "onto-canon6"
     provenance = observability.kwargs["provenance"]
     assert isinstance(provenance, dict)
-    assert provenance["selection_task"] == "extraction"
+    assert provenance["selection_task"] == "fast_extraction"
     assert captured["loaded_execution_id"] == "exec123"
     assert captured["loaded_dataset"] == "onto_canon6_extraction_prompt_eval"
     trial_score = captured["trial_score"]
@@ -591,7 +595,7 @@ def test_run_prompt_experiment_allows_bootstrap_override_on_small_live_slice(
         prompt_eval_service_module,
         "_load_llm_client_api",
         lambda: prompt_eval_service_module._LLMClientAPI(
-            get_model=lambda task: f"model-for-{task}",
+            get_model=lambda task, use_performance=True: f"model-for-{task}",
             render_prompt=_render_prompt,
         ),
     )
@@ -724,7 +728,7 @@ def test_run_prompt_experiment_allows_selection_task_override(
         prompt_eval_service_module,
         "_load_llm_client_api",
         lambda: prompt_eval_service_module._LLMClientAPI(
-            get_model=lambda task: f"model-for-{task}",
+            get_model=lambda task, use_performance=True: f"model-for-{task}",
             render_prompt=_render_prompt,
         ),
     )
@@ -866,7 +870,7 @@ def test_run_prompt_experiment_allows_routing_policy_override(
         prompt_eval_service_module,
         "_load_llm_client_api",
         lambda: prompt_eval_service_module._LLMClientAPI(
-            get_model=lambda task: f"model-for-{task}",
+            get_model=lambda task, use_performance=True: f"model-for-{task}",
             render_prompt=_render_prompt,
         ),
     )
@@ -897,7 +901,7 @@ def test_run_prompt_experiment_allows_routing_policy_override(
         routing_policy="direct",
     )
 
-    assert report.selection_task == "extraction"
+    assert report.selection_task == "fast_extraction"
     experiment = captured["experiment"]
     assert isinstance(experiment, _FakeExperiment)
     assert all(variant.kwargs["config"] is fake_config for variant in experiment.variants)
@@ -989,7 +993,7 @@ def test_run_prompt_experiment_fails_loud_when_live_errors_break_welch(
         prompt_eval_service_module,
         "_load_llm_client_api",
         lambda: prompt_eval_service_module._LLMClientAPI(
-            get_model=lambda task: f"model-for-{task}",
+            get_model=lambda task, use_performance=True: f"model-for-{task}",
             render_prompt=_render_prompt,
         ),
     )

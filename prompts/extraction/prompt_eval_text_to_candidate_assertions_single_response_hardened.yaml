@@ -34,6 +34,15 @@ messages:
       emit type-only entity fillers. If a role cannot be filled with a named
       entity or concrete value from the source, omit that entire candidate.
 
+      Use exact source surface forms for entity names and values. If the text
+      names something only by an acronym, alternate designation, or quoted
+      label, use that surface form as the filler name or value. Do not leave a
+      role empty while waiting for a more canonical name.
+
+      Build candidates role-first. Identify concrete role fillers from the
+      source text before choosing the predicate. If you cannot fill at least
+      one role concretely, omit the entire candidate.
+
       Use the active ontology catalog when it fits the text. If the text
       clearly supports a predicate outside the catalog, propose the strongest
       descriptive `oc:*` predicate you can, but only when you can still fill
