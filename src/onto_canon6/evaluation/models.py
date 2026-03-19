@@ -21,6 +21,16 @@ from ..pipeline import CandidateAssertionImport, CandidateValidationStatus, Prof
 
 ReasonablenessLabel = Literal["supported", "partially_supported", "unsupported"]
 PromptEvalComparisonMethod = Literal["bootstrap", "welch"]
+PromptEvalFailureCategory = Literal[
+    "length_truncated",
+    "multiple_tool_calls",
+    "provider_rate_limited",
+    "unnamed_entity_filler",
+    "empty_roles",
+    "bad_evidence_span",
+    "schema_validation_error",
+    "other_failure",
+]
 
 
 class BenchmarkReferenceCandidate(BaseModel):
@@ -187,10 +197,12 @@ class PromptVariantSummaryRecord(BaseModel):
     prompt_template: str = Field(min_length=1)
     prompt_ref: str = Field(min_length=1)
     n_trials: int = Field(ge=0)
+    successful_trials: int = Field(ge=0)
     n_errors: int = Field(ge=0)
     mean_score: float | None = Field(default=None, ge=0.0, le=1.0)
     std_score: float | None = Field(default=None, ge=0.0)
     dimension_means: dict[str, float] = Field(default_factory=dict)
+    failure_counts: dict[PromptEvalFailureCategory, int] = Field(default_factory=dict)
     mean_cost: float = Field(ge=0.0)
     mean_latency_ms: float = Field(ge=0.0)
     total_tokens: int = Field(ge=0)

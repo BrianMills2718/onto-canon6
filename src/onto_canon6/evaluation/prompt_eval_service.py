@@ -34,6 +34,7 @@ from .models import (
     BenchmarkCase,
     ExtractionPromptExperimentReport,
     PromptEvalComparisonMethod,
+    PromptEvalFailureCategory,
     PromptVariantComparisonRecord,
     PromptVariantSummaryRecord,
 )
@@ -532,6 +533,13 @@ def _build_prompt_experiment_report(
         raise ExtractionPromptExperimentError("prompt_eval report summary must be a mapping")
     variant_by_name = {variant.name: variant for variant in variant_configs}
     variant_summaries = []
+    trial_obj = getattr(result, "trials", None)
+    if not isinstance(trial_obj, list):
+        raise ExtractionPromptExperimentError("prompt_eval report trials must be a list")
+    failures_by_variant = _summarize_trial_failures_by_variant(
+        trials=tuple(trial_obj),
+        variant_names=tuple(variant_by_name.keys()),
+    )
     for variant_name, variant_summary in summary_obj.items():
         if not isinstance(variant_name, str) or variant_name not in variant_by_name:
             raise ExtractionPromptExperimentError(
@@ -545,10 +553,16 @@ def _build_prompt_experiment_report(
                 prompt_template=variant_config.prompt_template,
                 prompt_ref=variant_config.prompt_ref,
                 n_trials=int(getattr(variant_summary, "n_trials")),
+                successful_trials=max(
+                    0,
+                    int(getattr(variant_summary, "n_trials"))
+                    - int(getattr(variant_summary, "n_errors")),
+                ),
                 n_errors=int(getattr(variant_summary, "n_errors")),
                 mean_score=getattr(variant_summary, "mean_score", None),
                 std_score=getattr(variant_summary, "std_score", None),
                 dimension_means=dict(dimension_means or {}),
+                failure_counts=failures_by_variant[variant_name],
                 mean_cost=float(getattr(variant_summary, "mean_cost")),
                 mean_latency_ms=float(getattr(variant_summary, "mean_latency_ms")),
                 total_tokens=int(getattr(variant_summary, "total_tokens")),
@@ -585,6 +599,59 @@ def _build_prompt_experiment_report(
         variant_summaries=tuple(sorted(variant_summaries, key=lambda item: item.variant_name)),
         comparisons=comparison_records,
     )
+
+
+def _summarize_trial_failures_by_variant(
+    *,
+    trials: tuple[Any, ...],
+    variant_names: tuple[str, ...],
+) -> dict[str, dict[PromptEvalFailureCategory, int]]:
+    """Aggregate classified trial failures by variant name."""
+
+    counts_by_variant: dict[str, dict[PromptEvalFailureCategory, int]] = {
+        variant_name: {} for variant_name in variant_names
+    }
+    for trial in trials:
+        variant_name = getattr(trial, "variant_name", None)
+        if not isinstance(variant_name, str) or variant_name not in counts_by_variant:
+            raise ExtractionPromptExperimentError(
+                f"prompt_eval returned a trial with unknown variant {variant_name!r}"
+            )
+        category = _classify_prompt_eval_trial_failure(trial)
+        if category is None:
+            continue
+        variant_counts = counts_by_variant[variant_name]
+        variant_counts[category] = variant_counts.get(category, 0) + 1
+    return counts_by_variant
+
+
+def _classify_prompt_eval_trial_failure(trial: Any) -> PromptEvalFailureCategory | None:
+    """Classify one prompt_eval trial failure into a stable repo-local bucket."""
+
+    error_obj = getattr(trial, "error", None)
+    reasoning_obj = getattr(trial, "reasoning", None)
+    error_text = error_obj.strip().lower() if isinstance(error_obj, str) else ""
+    reasoning_text = reasoning_obj.strip().lower() if isinstance(reasoning_obj, str) else ""
+    if not error_text and not reasoning_text:
+        return None
+    combined = f"{error_text}\n{reasoning_text}".strip()
+    if "key limit exceeded" in combined or "rate limit" in combined or "429" in combined:
+        return "provider_rate_limited"
+    if "max_tokens length limit" in combined or "finish_reason='length'" in combined:
+        return "length_truncated"
+    if "multiple tool calls" in combined:
+        return "multiple_tool_calls"
+    if "entity fillers require entity_id or name" in combined:
+        return "unnamed_entity_filler"
+    if "candidate roles must not be empty" in combined:
+        return "empty_roles"
+    if "evidence span" in combined and "did not resolve" in combined:
+        return "bad_evidence_span"
+    if "validation error for textextractionresponse" in combined or "pydantic.dev" in combined:
+        return "schema_validation_error"
+    if error_text:
+        return "other_failure"
+    return None
 
 
 def _load_llm_client_api() -> _LLMClientAPI:

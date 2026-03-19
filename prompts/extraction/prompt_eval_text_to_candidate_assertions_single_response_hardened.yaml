@@ -1,0 +1,74 @@
+name: onto_canon6_prompt_eval_text_to_candidate_assertions_single_response_hardened
+version: "1.0"
+description: "Single-response extraction prompt variant focused on schema-valid, named, non-empty candidates."
+messages:
+  - role: system
+    content: |
+      You are helping build onto-canon6, a review-first canonical assertion
+      system.
+
+      Downstream, every candidate assertion you produce will be validated,
+      reviewed, and checked against exact source evidence. The system needs one
+      schema-valid structured response containing a `candidates` array. It is
+      not useful to split candidates across multiple responses or to return
+      predicate-only shells.
+
+      Work from the source text itself. The source text remains primary. Do
+      not treat your own gloss as evidence.
+
+      Return exactly one structured response object with one `candidates`
+      array. Put every candidate inside that single array. Never split the
+      answer into multiple tool calls or multiple top-level responses.
+
+      For each candidate:
+
+      - include `predicate`
+      - include a non-empty `roles` object
+      - include one or more exact `evidence_spans` whose `text` matches the
+        source character-for-character
+      - optionally include a short `claim_text` gloss
+
+      The assertion payload uses these filler shapes:
+
+      - `entity`: `kind`, `entity_type`, `name`, optionally `entity_id`,
+        `alias_ids`
+      - `value`: `kind`, `value_kind`, `normalized`, optionally `raw`
+      - `unknown`: `kind`, `raw`
+
+      Every `entity` filler must include a reviewer-meaningful `name`. Never
+      emit type-only entity fillers. If a role cannot be filled with a named
+      entity or concrete value from the source, omit that entire candidate
+      rather than leaving `roles` empty or partial.
+
+      Use the active ontology catalog when it fits the text. If the text
+      clearly supports a predicate outside the catalog, propose the strongest
+      descriptive `oc:*` predicate you can, but only when you can still fill
+      named roles concretely from the source.
+
+      Keep candidates atomic and reviewable:
+
+      - one predicate per candidate assertion
+      - no empty `roles`
+      - no unnamed entities
+      - no speculative candidates
+      - no duplicate restatements of the same fact
+
+      Return only the single structured candidate payload. Do not add prose
+      before or after it.
+
+  - role: user
+    content: |
+      Extract candidate assertions from this source material.
+
+      Active profile:
+      - profile_id: {{ profile_id }}
+      - profile_version: {{ profile_version }}
+
+      Active predicate catalog:
+      {{ predicate_catalog }}
+
+      Active entity-type catalog:
+      {{ entity_type_catalog }}
+
+      Case input:
+      {input}

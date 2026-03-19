@@ -237,11 +237,39 @@ def test_run_prompt_experiment_builds_report_and_variant_comparison(
                 mean_latency_ms=1180.0,
                 total_tokens=940,
             ),
+            "compact": SimpleNamespace(
+                n_trials=len(experiment.inputs) * experiment.n_runs,
+                n_errors=1,
+                mean_score=0.28,
+                std_score=0.03,
+                dimension_means={
+                    "exact_f1": 0.20,
+                    "structural_usable_rate": 0.90,
+                    "count_alignment": 0.62,
+                },
+                mean_cost=0.009,
+                mean_latency_ms=1000.0,
+                total_tokens=700,
+            ),
+            "single_response_hardened": SimpleNamespace(
+                n_trials=len(experiment.inputs) * experiment.n_runs,
+                n_errors=0,
+                mean_score=0.45,
+                std_score=0.04,
+                dimension_means={
+                    "exact_f1": 0.41,
+                    "structural_usable_rate": 0.84,
+                    "count_alignment": 0.69,
+                },
+                mean_cost=0.012,
+                mean_latency_ms=1210.0,
+                total_tokens=960,
+            ),
         }
         return SimpleNamespace(
             experiment_name=experiment.name,
             execution_id="exec123",
-            variants=["baseline", "hardened"],
+            variants=["baseline", "compact", "hardened", "single_response_hardened"],
             trials=[],
             summary=summary,
         )
@@ -260,7 +288,7 @@ def test_run_prompt_experiment_builds_report_and_variant_comparison(
         return SimpleNamespace(
             experiment_name="onto_canon6_extraction_prompt_eval",
             execution_id=execution_id,
-            variants=["baseline", "hardened"],
+            variants=["baseline", "compact", "hardened", "single_response_hardened"],
             trials=[],
             summary={
                 "baseline": SimpleNamespace(
@@ -290,6 +318,34 @@ def test_run_prompt_experiment_builds_report_and_variant_comparison(
                     mean_cost=0.011,
                     mean_latency_ms=1180.0,
                     total_tokens=940,
+                ),
+                "compact": SimpleNamespace(
+                    n_trials=4,
+                    n_errors=1,
+                    mean_score=0.28,
+                    std_score=0.03,
+                    dimension_means={
+                        "exact_f1": 0.20,
+                        "structural_usable_rate": 0.90,
+                        "count_alignment": 0.62,
+                    },
+                    mean_cost=0.009,
+                    mean_latency_ms=1000.0,
+                    total_tokens=700,
+                ),
+                "single_response_hardened": SimpleNamespace(
+                    n_trials=4,
+                    n_errors=0,
+                    mean_score=0.45,
+                    std_score=0.04,
+                    dimension_means={
+                        "exact_f1": 0.41,
+                        "structural_usable_rate": 0.84,
+                        "count_alignment": 0.69,
+                    },
+                    mean_cost=0.012,
+                    mean_latency_ms=1210.0,
+                    total_tokens=960,
                 ),
             },
         )
@@ -344,22 +400,42 @@ def test_run_prompt_experiment_builds_report_and_variant_comparison(
 
     assert report.execution_id == "exec123"
     assert report.baseline_variant_name == "baseline"
-    assert [item.variant_name for item in report.variant_summaries] == ["baseline", "hardened"]
+    assert [item.variant_name for item in report.variant_summaries] == [
+        "baseline",
+        "compact",
+        "hardened",
+        "single_response_hardened",
+    ]
     assert report.comparisons[0].variant_a == "hardened"
     assert report.comparisons[0].variant_b == "baseline"
+    assert report.variant_summaries[0].successful_trials == 4
+    assert report.variant_summaries[0].failure_counts == {}
     experiment = captured["experiment"]
     assert isinstance(experiment, _FakeExperiment)
     assert experiment.n_runs == 2
     assert experiment.response_model is TextExtractionResponse
-    assert [variant.name for variant in experiment.variants] == ["baseline", "hardened"]
+    assert [variant.name for variant in experiment.variants] == [
+        "baseline",
+        "hardened",
+        "compact",
+        "single_response_hardened",
+    ]
     assert experiment.variants[0].kwargs["task"] == "budget_extraction"
     assert experiment.variants[0].kwargs["max_budget"] == 0.25
     assert experiment.variants[1].kwargs["task"] == "budget_extraction"
     assert experiment.variants[1].kwargs["max_budget"] == 0.25
+    assert experiment.variants[2].kwargs["task"] == "budget_extraction"
+    assert experiment.variants[2].kwargs["max_budget"] == 0.25
+    assert experiment.variants[3].kwargs["task"] == "budget_extraction"
+    assert experiment.variants[3].kwargs["max_budget"] == 0.25
     baseline_messages = experiment.variants[0].messages
     hardened_messages = experiment.variants[1].messages
+    compact_messages = experiment.variants[2].messages
+    single_response_messages = experiment.variants[3].messages
     assert "Case input:\n{input}" in baseline_messages[-1]["content"]
     assert "abbreviation expansions" in hardened_messages[0]["content"]
+    assert "Prefer the smallest sufficient candidate set" in compact_messages[0]["content"]
+    assert "Return exactly one structured response object" in single_response_messages[0]["content"]
     observability = captured["observability"]
     assert isinstance(observability, _FakePromptEvalObservabilityConfig)
     assert observability.kwargs["dataset"] == "onto_canon6_extraction_prompt_eval"
@@ -414,7 +490,7 @@ def test_run_prompt_experiment_fails_loud_when_live_errors_break_welch(
         return SimpleNamespace(
             experiment_name=experiment.name,
             execution_id="exec123",
-            variants=["baseline", "hardened"],
+            variants=["baseline", "compact", "hardened", "single_response_hardened"],
             trials=[],
             summary={},
         )
@@ -430,7 +506,7 @@ def test_run_prompt_experiment_fails_loud_when_live_errors_break_welch(
         return SimpleNamespace(
             experiment_name="onto_canon6_extraction_prompt_eval",
             execution_id="exec123",
-            variants=["baseline", "hardened"],
+            variants=["baseline", "compact", "hardened", "single_response_hardened"],
             trials=[],
             summary={
                 "baseline": SimpleNamespace(
@@ -452,6 +528,26 @@ def test_run_prompt_experiment_fails_loud_when_live_errors_break_welch(
                     mean_cost=0.011,
                     mean_latency_ms=1180.0,
                     total_tokens=940,
+                ),
+                "compact": SimpleNamespace(
+                    n_trials=2,
+                    n_errors=0,
+                    mean_score=0.28,
+                    std_score=0.03,
+                    dimension_means={},
+                    mean_cost=0.009,
+                    mean_latency_ms=1000.0,
+                    total_tokens=700,
+                ),
+                "single_response_hardened": SimpleNamespace(
+                    n_trials=2,
+                    n_errors=0,
+                    mean_score=0.45,
+                    std_score=0.04,
+                    dimension_means={},
+                    mean_cost=0.012,
+                    mean_latency_ms=1210.0,
+                    total_tokens=960,
                 ),
             },
         )
@@ -484,3 +580,58 @@ def test_run_prompt_experiment_fails_loud_when_live_errors_break_welch(
         match="welch comparison became impossible after live trial errors",
     ):
         ExtractionPromptExperimentService().run_prompt_experiment(case_limit=2, n_runs=1)
+
+
+def test_classify_prompt_eval_trial_failure_categories() -> None:
+    """Known live trial failures should map to stable taxonomy labels."""
+
+    classify = prompt_eval_service_module._classify_prompt_eval_trial_failure
+
+    assert (
+        classify(SimpleNamespace(error="The output is incomplete due to a max_tokens length limit."))
+        == "length_truncated"
+    )
+    assert (
+        classify(SimpleNamespace(error="Instructor does not support multiple tool calls"))
+        == "multiple_tool_calls"
+    )
+    assert (
+        classify(SimpleNamespace(error='APIError: {"message":"Key limit exceeded (total limit)"}'))
+        == "provider_rate_limited"
+    )
+    assert (
+        classify(SimpleNamespace(reasoning="deterministic prompt_eval scoring failed: entity fillers require entity_id or name"))
+        == "unnamed_entity_filler"
+    )
+    assert (
+        classify(SimpleNamespace(error="candidate roles must not be empty"))
+        == "empty_roles"
+    )
+    assert (
+        classify(SimpleNamespace(reasoning="deterministic prompt_eval scoring failed: evidence span 0 text did not resolve to a unique exact match in source"))
+        == "bad_evidence_span"
+    )
+
+
+def test_summarize_trial_failures_by_variant() -> None:
+    """The report builder should aggregate classified failures per variant."""
+
+    summarize = prompt_eval_service_module._summarize_trial_failures_by_variant
+    failures = summarize(
+        trials=(
+            SimpleNamespace(variant_name="baseline", error="The output is incomplete due to a max_tokens length limit.", reasoning=None),
+            SimpleNamespace(variant_name="baseline", error='APIError: {"message":"Key limit exceeded (total limit)"}', reasoning=None),
+            SimpleNamespace(variant_name="hardened", error=None, reasoning="deterministic prompt_eval scoring failed: entity fillers require entity_id or name"),
+        ),
+        variant_names=("baseline", "hardened"),
+    )
+
+    assert failures == {
+        "baseline": {
+            "length_truncated": 1,
+            "provider_rate_limited": 1,
+        },
+        "hardened": {
+            "unnamed_entity_filler": 1,
+        },
+    }

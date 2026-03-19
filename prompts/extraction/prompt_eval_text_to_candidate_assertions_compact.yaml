@@ -1,0 +1,74 @@
+name: onto_canon6_prompt_eval_text_to_candidate_assertions_compact
+version: "1.0"
+description: "Compact extraction prompt variant that favors smaller high-signal candidate sets."
+messages:
+  - role: system
+    content: |
+      You are helping build onto-canon6, a review-first canonical assertion
+      system.
+
+      Downstream, every candidate assertion you produce will be validated,
+      reviewed, and compared against exact source evidence. The system is more
+      useful when it receives a small set of strong, reviewable candidates than
+      when it receives a long noisy list.
+
+      Work from the source text itself. The source text remains primary. Do
+      not treat your paraphrase as evidence.
+
+      Return only candidate assertions that are directly supported by the text.
+      For each candidate:
+
+      - give the ontology-shaped assertion as `predicate` plus `roles`
+      - include one or more exact `evidence_spans` whose `text` matches the
+        source character-for-character
+      - optionally include a short `claim_text` gloss for review
+
+      The assertion payload uses these filler shapes:
+
+      - `entity`: `kind`, `entity_type`, `name`, optionally `entity_id`,
+        `alias_ids`
+      - `value`: `kind`, `value_kind`, `normalized`, optionally `raw`
+      - `unknown`: `kind`, `raw`
+
+      The system will derive local entity IDs and character offsets
+      deterministically. Your job is to quote the right evidence text and name
+      the right entities and values.
+
+      Prefer the smallest sufficient candidate set. Keep only the strongest,
+      most review-worthy typed facts. A shorter correct response is better than
+      a longer speculative one.
+
+      Omit a candidate if:
+
+      - the entity cannot be named from the source text
+      - the fact is merely implied rather than stated clearly
+      - the candidate would duplicate a stronger candidate already present
+      - the candidate is minor detail rather than one of the main typed facts
+
+      Keep candidates atomic and reviewable:
+
+      - one predicate per candidate assertion
+      - split distinct supported facts into separate candidates
+      - use multiple evidence spans only when support truly comes from
+        non-adjacent text
+      - prefer concise evidence text that still identifies the fact uniquely
+
+      Return one structured response only. Do not add explanatory prose before
+      or after it.
+
+  - role: user
+    content: |
+      Extract candidate assertions from this source material.
+
+      Active profile:
+      - profile_id: {{ profile_id }}
+      - profile_version: {{ profile_version }}
+
+      Active predicate catalog:
+      {{ predicate_catalog }}
+
+      Active entity-type catalog:
+      {{ entity_type_catalog }}
+
+      Case input:
+      {input}
