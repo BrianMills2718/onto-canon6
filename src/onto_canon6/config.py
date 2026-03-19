@@ -17,6 +17,7 @@ from pydantic import BaseModel, ConfigDict, Field
 AcceptancePolicyValue = Literal["record_only", "apply_to_overlay"]
 CLIOutputFormatValue = Literal["json", "text"]
 MCPTransportValue = Literal["stdio"]
+PromptEvalComparisonMethodValue = Literal["bootstrap", "welch"]
 
 
 class ConfigError(RuntimeError):
@@ -109,6 +110,48 @@ class EvaluationConfig(BaseModel):
     judge_num_retries: int = Field(ge=0)
     judge_max_budget_usd: float = Field(gt=0)
     judge_max_output_tokens: int = Field(ge=1)
+    prompt_experiment: "PromptEvalExperimentConfig"
+
+
+class PromptEvalVariantConfig(BaseModel):
+    """One configured prompt variant for extraction-quality experiments.
+
+    The experiment runner compares prompt templates over the same extraction
+    benchmark fixture. Each variant keeps an explicit prompt reference for
+    shared observability even though the templates still live in this repo's
+    local `prompts/` directory.
+    """
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    name: str = Field(min_length=1)
+    prompt_template: str = Field(min_length=1)
+    prompt_ref: str = Field(min_length=1)
+
+
+class PromptEvalExperimentConfig(BaseModel):
+    """Configurable defaults for the extraction prompt-variant experiment.
+
+    This slice is intentionally narrow: it runs prompt variants over one
+    single-profile benchmark fixture, scores them deterministically, and logs
+    the run family through shared `llm_client`/`prompt_eval` observability.
+    """
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    experiment_name: str = Field(min_length=1)
+    observability_dataset: str = Field(min_length=1)
+    observability_phase: str = Field(min_length=1)
+    selection_task: str = Field(min_length=1)
+    n_runs: int = Field(ge=1)
+    temperature: float = Field(ge=0.0)
+    timeout_seconds: int = Field(ge=1)
+    num_retries: int = Field(ge=0)
+    max_output_tokens: int = Field(ge=1)
+    baseline_variant_name: str = Field(min_length=1)
+    comparison_method: PromptEvalComparisonMethodValue
+    comparison_confidence: float = Field(gt=0.0, lt=1.0)
+    variants: tuple[PromptEvalVariantConfig, ...] = Field(min_length=2)
 
 
 class CLIConfig(BaseModel):
@@ -254,6 +297,15 @@ class AppConfig(BaseModel):
         """Return the configured reasonableness-judge prompt template path."""
 
         return self.resolve_repo_path(self.evaluation.judge_prompt_template)
+
+    def evaluation_prompt_experiment_variant_template(self, relative_path: str) -> Path:
+        """Return the configured extraction prompt-experiment template path."""
+
+        return self.resolve_repo_path(relative_path)
+
+
+EvaluationConfig.model_rebuild()
+AdaptersConfig.model_rebuild()
 
 
 def repo_root() -> Path:

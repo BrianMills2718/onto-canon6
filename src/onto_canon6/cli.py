@@ -47,6 +47,11 @@ from .extensions.epistemic import (
     EpistemicStoreError,
     PromotedAssertionEpistemicCollectionReport,
 )
+from .evaluation import (
+    ExtractionPromptExperimentError,
+    ExtractionPromptExperimentReport,
+    ExtractionPromptExperimentService,
+)
 from .pipeline import (
     CandidateAssertionRecord,
     CandidateSubmissionResult,
@@ -90,6 +95,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         CanonicalGraphPromotionError,
         ConfigError,
         EpistemicStoreError,
+        ExtractionPromptExperimentError,
         IdentityError,
         ReviewStoreError,
         SemanticCanonicalizationError,
@@ -166,6 +172,28 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     _add_output_arg(split_parser, default_output=config.cli.default_output_format)
     split_parser.set_defaults(handler=_handle_split_text)
+
+    prompt_experiment_parser = subparsers.add_parser(
+        "run-extraction-prompt-experiment",
+        help="Run the configured prompt_eval extraction prompt comparison over the benchmark fixture.",
+    )
+    prompt_experiment_parser.add_argument(
+        "--fixture-path",
+        type=Path,
+        help="Optional benchmark fixture override. Defaults to config.",
+    )
+    prompt_experiment_parser.add_argument(
+        "--case-limit",
+        type=int,
+        help="Optional case limit for a smaller experiment slice.",
+    )
+    prompt_experiment_parser.add_argument(
+        "--n-runs",
+        type=int,
+        help="Optional replicate override. Defaults to config.",
+    )
+    _add_output_arg(prompt_experiment_parser, default_output=config.cli.default_output_format)
+    prompt_experiment_parser.set_defaults(handler=_handle_run_extraction_prompt_experiment)
 
     import_whygame_parser = subparsers.add_parser(
         "import-whygame-relationships",
@@ -588,6 +616,18 @@ def _handle_split_text(args: argparse.Namespace) -> int:
     return 0
 
 
+def _handle_run_extraction_prompt_experiment(args: argparse.Namespace) -> int:
+    """Run the configured prompt_eval extraction prompt experiment."""
+
+    report = ExtractionPromptExperimentService().run_prompt_experiment(
+        fixture_path=args.fixture_path,
+        case_limit=args.case_limit,
+        n_runs=args.n_runs,
+    )
+    _emit_output(report, output_format=args.output)
+    return 0
+
+
 def _handle_import_whygame_relationships(args: argparse.Namespace) -> int:
     """Import one file of WhyGame relationship facts through the existing adapter."""
 
@@ -977,6 +1017,7 @@ def _to_jsonable(value: object) -> Any:
             CandidateAssertionRecord,
             CandidateSubmissionResult,
             CanonicalGraphPromotionResult,
+            ExtractionPromptExperimentReport,
             GraphExternalReferenceRecord,
             GraphIdentityMembershipRecord,
             GovernedWorkflowBundle,
@@ -1043,6 +1084,13 @@ def _to_text(value: object) -> str:
             f"input_path={value.input_path} "
             f"total_chunks={value.total_chunks} "
             f"output_dir={value.output_dir}"
+        )
+    if isinstance(value, ExtractionPromptExperimentReport):
+        return (
+            f"execution_id={value.execution_id} "
+            f"baseline_variant={value.baseline_variant_name} "
+            f"variant_count={len(value.variant_summaries)} "
+            f"case_count={value.case_count}"
         )
     if isinstance(value, TextChunkFileRecord):
         return (

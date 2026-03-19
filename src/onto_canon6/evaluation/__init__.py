@@ -12,10 +12,14 @@ from .models import (
     CandidateEvaluationRecord,
     CandidateReasonablenessReview,
     CanonicalizationSummary,
+    ExtractionPromptExperimentReport,
     LLMRunRecord,
+    PromptVariantComparisonRecord,
+    PromptVariantSummaryRecord,
     ReasonablenessLabel,
     ReasonablenessReview,
 )
+from .prompt_eval_service import ExtractionPromptExperimentError, ExtractionPromptExperimentService
 from .service import EvaluationError, LiveExtractionEvaluationService, load_benchmark_fixture
 
 __all__ = [
@@ -31,10 +35,14 @@ __all__ = [
     "CandidateReasonablenessReview",
     "CanonicalizationSummary",
     "EvaluationError",
+    "ExtractionPromptExperimentError",
+    "ExtractionPromptExperimentReport",
+    "ExtractionPromptExperimentService",
     "LLMRunRecord",
+    "PromptVariantComparisonRecord",
+    "PromptVariantSummaryRecord",
     "LiveExtractionEvaluationService",
     "ReasonablenessLabel",
     "ReasonablenessReview",
     "load_benchmark_fixture",
 ]
-

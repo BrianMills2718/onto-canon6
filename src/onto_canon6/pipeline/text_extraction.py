@@ -298,6 +298,12 @@ class TextExtractionService:
 
         return self._selection_task
 
+    @property
+    def prompt_ref(self) -> str:
+        """Return the configured prompt reference recorded on extraction calls."""
+
+        return self._prompt_ref
+
     def extract_candidate_imports(
         self,
         *,
@@ -362,8 +368,8 @@ class TextExtractionService:
             self._prompt_template,
             profile_id=normalized_profile.profile_id,
             profile_version=normalized_profile.profile_version,
-            predicate_catalog=_render_predicate_catalog(profile),
-            entity_type_catalog=_render_entity_type_catalog(profile),
+            predicate_catalog=render_predicate_catalog(profile),
+            entity_type_catalog=render_entity_type_catalog(profile),
             source_kind=source_artifact.source_kind,
             source_ref=source_artifact.source_ref,
             source_label=source_artifact.source_label,
@@ -387,7 +393,7 @@ class TextExtractionService:
             raise ExtractionError(f"llm_client text extraction failed: {exc}") from exc
 
         candidate_imports = tuple(
-            _candidate_import_from_extracted(
+            candidate_import_from_extracted(
                 candidate=candidate,
                 profile=normalized_profile,
                 submitted_by=submitted_by,
@@ -445,7 +451,7 @@ class TextExtractionService:
         )
 
 
-def _candidate_import_from_extracted(
+def candidate_import_from_extracted(
     *,
     candidate: ExtractedCandidate,
     profile: ProfileRef,
@@ -617,7 +623,7 @@ def _trace_id_for_source(*, source_ref: str, text: str) -> str:
     return f"{get_config().project.package_name}.extract.{digest}"
 
 
-def _render_predicate_catalog(profile: LoadedProfile) -> str:
+def render_predicate_catalog(profile: LoadedProfile) -> str:
     """Render the active predicate catalog with role constraints.
 
     The first real extraction run showed that role names alone are not enough
@@ -659,7 +665,7 @@ def _render_predicate_catalog(profile: LoadedProfile) -> str:
     return "\n".join(lines)
 
 
-def _render_entity_type_catalog(profile: LoadedProfile) -> str:
+def render_entity_type_catalog(profile: LoadedProfile) -> str:
     """Render the active entity-type catalog from pack and profile information."""
 
     type_names: set[str] = set(profile.type_hierarchy_overrides.keys())
@@ -735,9 +741,13 @@ def _load_llm_client_api() -> _LLMClientAPI:
 
 
 __all__ = [
+    "candidate_import_from_extracted",
     "ExtractedCandidate",
+    "ExtractedEvidenceSpan",
     "ExtractedFiller",
     "ExtractionError",
+    "render_entity_type_catalog",
+    "render_predicate_catalog",
     "TextExtractionRun",
     "TextExtractionResponse",
     "TextExtractionService",

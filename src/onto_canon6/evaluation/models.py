@@ -20,6 +20,7 @@ from pydantic import BaseModel, ConfigDict, Field, JsonValue
 from ..pipeline import CandidateAssertionImport, CandidateValidationStatus, ProfileRef, SourceArtifactRef
 
 ReasonablenessLabel = Literal["supported", "partially_supported", "unsupported"]
+PromptEvalComparisonMethod = Literal["bootstrap", "welch"]
 
 
 class BenchmarkReferenceCandidate(BaseModel):
@@ -175,3 +176,57 @@ class BenchmarkEvaluationReport(BaseModel):
     experiment_execution_id: str | None = None
     cases: tuple[BenchmarkCaseEvaluation, ...] = ()
     summary: BenchmarkAggregateSummary
+
+
+class PromptVariantSummaryRecord(BaseModel):
+    """Stable repo-local view of one prompt-eval variant summary."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    variant_name: str = Field(min_length=1)
+    prompt_template: str = Field(min_length=1)
+    prompt_ref: str = Field(min_length=1)
+    n_trials: int = Field(ge=0)
+    n_errors: int = Field(ge=0)
+    mean_score: float | None = Field(default=None, ge=0.0, le=1.0)
+    std_score: float | None = Field(default=None, ge=0.0)
+    dimension_means: dict[str, float] = Field(default_factory=dict)
+    mean_cost: float = Field(ge=0.0)
+    mean_latency_ms: float = Field(ge=0.0)
+    total_tokens: int = Field(ge=0)
+
+
+class PromptVariantComparisonRecord(BaseModel):
+    """Stable repo-local view of one prompt-eval variant comparison."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    variant_a: str = Field(min_length=1)
+    variant_b: str = Field(min_length=1)
+    mean_a: float = Field(ge=0.0, le=1.0)
+    mean_b: float = Field(ge=0.0, le=1.0)
+    difference: float
+    ci_lower: float
+    ci_upper: float
+    significant: bool
+    method: PromptEvalComparisonMethod
+    detail: str = Field(min_length=1)
+
+
+class ExtractionPromptExperimentReport(BaseModel):
+    """Typed report for one prompt-eval extraction-variant experiment."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    generated_at: str = Field(default_factory=lambda: datetime.now(UTC).isoformat())
+    experiment_name: str = Field(min_length=1)
+    fixture_id: str = Field(min_length=1)
+    fixture_path: str = Field(min_length=1)
+    execution_id: str = Field(min_length=1)
+    observability_dataset: str = Field(min_length=1)
+    observability_phase: str = Field(min_length=1)
+    case_count: int = Field(ge=1)
+    n_runs: int = Field(ge=1)
+    baseline_variant_name: str = Field(min_length=1)
+    variant_summaries: tuple[PromptVariantSummaryRecord, ...] = ()
+    comparisons: tuple[PromptVariantComparisonRecord, ...] = ()

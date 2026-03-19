@@ -1,0 +1,395 @@
+"""Tests for the prompt_eval-backed extraction prompt experiment slice."""
+
+from __future__ import annotations
+
+import json
+from pathlib import Path
+from types import SimpleNamespace
+import sys
+from typing import Callable, cast
+
+import pytest
+
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+if str(PROJECT_ROOT / "src") not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT / "src"))
+
+from onto_canon6.evaluation import ExtractionPromptExperimentError, ExtractionPromptExperimentService  # noqa: E402
+from onto_canon6.evaluation import prompt_eval_service as prompt_eval_service_module  # noqa: E402
+from onto_canon6.evaluation.models import BenchmarkCase, BenchmarkReferenceCandidate  # noqa: E402
+from onto_canon6.pipeline import (  # noqa: E402
+    ExtractedCandidate,
+    ExtractedEvidenceSpan,
+    ExtractedFiller,
+    ProfileRef,
+    SourceArtifactRef,
+    TextExtractionResponse,
+)
+
+
+def _render_prompt(template_path: str | Path, **context: object) -> list[dict[str, str]]:
+    """Load llm_client.render_prompt lazily for deterministic local tests."""
+
+    module = __import__("llm_client", fromlist=["render_prompt"])
+    render = cast(Callable[..., list[dict[str, str]]], getattr(module, "render_prompt"))
+    return render(template_path, **context)
+
+
+def _fixture_path() -> Path:
+    """Return the shared local benchmark fixture path."""
+
+    return PROJECT_ROOT / "tests" / "fixtures" / "psyop_eval_slice.json"
+
+
+class _FakeEvalScore:
+    """Small stand-in for prompt_eval.EvalScore."""
+
+    def __init__(self, *, score: float, dimension_scores: dict[str, float], reasoning: str) -> None:
+        self.score = score
+        self.dimension_scores = dimension_scores
+        self.reasoning = reasoning
+
+
+class _FakePromptVariant:
+    """Small prompt variant record for service-level wiring tests."""
+
+    def __init__(
+        self,
+        *,
+        name: str,
+        messages: list[dict[str, str]],
+        prompt_ref: str,
+        model: str,
+        temperature: float,
+        kwargs: dict[str, object],
+    ) -> None:
+        self.name = name
+        self.messages = messages
+        self.prompt_ref = prompt_ref
+        self.model = model
+        self.temperature = temperature
+        self.kwargs = kwargs
+
+
+class _FakeExperimentInput:
+    """Small prompt_eval input record for service-level wiring tests."""
+
+    def __init__(self, *, id: str, content: str, expected: object) -> None:
+        self.id = id
+        self.content = content
+        self.expected = expected
+
+
+class _FakeExperiment:
+    """Small prompt_eval experiment record for service-level wiring tests."""
+
+    def __init__(
+        self,
+        *,
+        name: str,
+        variants: list[_FakePromptVariant],
+        inputs: list[_FakeExperimentInput],
+        n_runs: int,
+        response_model: type[TextExtractionResponse],
+    ) -> None:
+        self.name = name
+        self.variants = variants
+        self.inputs = inputs
+        self.n_runs = n_runs
+        self.response_model = response_model
+
+
+class _FakePromptEvalObservabilityConfig:
+    """Small prompt_eval observability config stand-in."""
+
+    def __init__(self, **kwargs: object) -> None:
+        self.kwargs = kwargs
+
+
+def test_score_prompt_eval_trial_rewards_exact_usable_output() -> None:
+    """The deterministic scorer should give a perfect score to an exact usable match."""
+
+    case = BenchmarkCase(
+        case_id="case-1",
+        profile=ProfileRef(profile_id="default", profile_version="1.0.0"),
+        source_artifact=SourceArtifactRef(
+            source_kind="raw_text",
+            source_ref="text://case-1",
+            source_label="Case 1",
+            source_metadata={},
+            content_text="Mission planning uses the radar system.",
+        ),
+        expected_candidates=(
+            BenchmarkReferenceCandidate(
+                payload={
+                    "predicate": "oc:uses_system_demo",
+                    "roles": {
+                        "subject": [
+                            {
+                                "kind": "entity",
+                                "entity_type": "oc:activity",
+                                "name": "Mission planning",
+                                "entity_id": "ent:activity:mission_planning",
+                                "alias_ids": [],
+                            }
+                        ],
+                        "object": [
+                            {
+                                "kind": "entity",
+                                "entity_type": "oc:system",
+                                "name": "radar system",
+                                "entity_id": "ent:system:radar_system",
+                                "alias_ids": [],
+                            }
+                        ],
+                    },
+                }
+            ),
+        ),
+    )
+    output = TextExtractionResponse(
+        candidates=[
+            ExtractedCandidate(
+                predicate="oc:uses_system_demo",
+                roles={
+                    "subject": [
+                        ExtractedFiller(
+                            kind="entity",
+                            entity_type="oc:activity",
+                            name="Mission planning",
+                            entity_id="ent:activity:mission_planning",
+                        )
+                    ],
+                    "object": [
+                        ExtractedFiller(
+                            kind="entity",
+                            entity_type="oc:system",
+                            name="radar system",
+                            entity_id="ent:system:radar_system",
+                        )
+                    ],
+                },
+                evidence_spans=[
+                    ExtractedEvidenceSpan(text="Mission planning"),
+                    ExtractedEvidenceSpan(text="radar system"),
+                ],
+            )
+        ]
+    )
+
+    score = prompt_eval_service_module._score_prompt_eval_trial(
+        output=output,
+        expected=case,
+        eval_score_cls=_FakeEvalScore,
+        overlay_root=PROJECT_ROOT / "var" / "ontology_overlays",
+    )
+
+    assert score.score == 1.0
+    assert score.dimension_scores["exact_f1"] == 1.0
+    assert score.dimension_scores["structural_usable_rate"] == 1.0
+    assert score.dimension_scores["count_alignment"] == 1.0
+
+
+def test_run_prompt_experiment_builds_report_and_variant_comparison(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The service should build a typed report over one prompt_eval execution family."""
+
+    captured: dict[str, object] = {}
+
+    async def fake_run_experiment(
+        experiment: _FakeExperiment,
+        evaluator: Callable[[object, object | None], object],
+        *,
+        observability: _FakePromptEvalObservabilityConfig,
+    ) -> object:
+        captured["experiment"] = experiment
+        captured["observability"] = observability
+        first_input = experiment.inputs[0]
+        sample_output = TextExtractionResponse(candidates=[])
+        captured["trial_score"] = evaluator(sample_output, first_input.expected)
+        summary = {
+            "baseline": SimpleNamespace(
+                n_trials=len(experiment.inputs) * experiment.n_runs,
+                n_errors=0,
+                mean_score=0.31,
+                std_score=0.04,
+                dimension_means={
+                    "exact_f1": 0.25,
+                    "structural_usable_rate": 0.75,
+                    "count_alignment": 0.60,
+                },
+                mean_cost=0.01,
+                mean_latency_ms=1200.0,
+                total_tokens=900,
+            ),
+            "hardened": SimpleNamespace(
+                n_trials=len(experiment.inputs) * experiment.n_runs,
+                n_errors=0,
+                mean_score=0.43,
+                std_score=0.05,
+                dimension_means={
+                    "exact_f1": 0.39,
+                    "structural_usable_rate": 0.80,
+                    "count_alignment": 0.68,
+                },
+                mean_cost=0.011,
+                mean_latency_ms=1180.0,
+                total_tokens=940,
+            ),
+        }
+        return SimpleNamespace(
+            experiment_name=experiment.name,
+            execution_id="exec123",
+            variants=["baseline", "hardened"],
+            trials=[],
+            summary=summary,
+        )
+
+    def fake_load_result_from_observability(
+        execution_id: str,
+        *,
+        project: str | None = None,
+        dataset: str | None = None,
+        limit: int = 1000,
+    ) -> object:
+        captured["loaded_execution_id"] = execution_id
+        captured["loaded_project"] = project
+        captured["loaded_dataset"] = dataset
+        captured["loaded_limit"] = limit
+        return SimpleNamespace(
+            experiment_name="onto_canon6_extraction_prompt_eval",
+            execution_id=execution_id,
+            variants=["baseline", "hardened"],
+            trials=[],
+            summary={
+                "baseline": SimpleNamespace(
+                    n_trials=4,
+                    n_errors=0,
+                    mean_score=0.31,
+                    std_score=0.04,
+                    dimension_means={
+                        "exact_f1": 0.25,
+                        "structural_usable_rate": 0.75,
+                        "count_alignment": 0.60,
+                    },
+                    mean_cost=0.01,
+                    mean_latency_ms=1200.0,
+                    total_tokens=900,
+                ),
+                "hardened": SimpleNamespace(
+                    n_trials=4,
+                    n_errors=0,
+                    mean_score=0.43,
+                    std_score=0.05,
+                    dimension_means={
+                        "exact_f1": 0.39,
+                        "structural_usable_rate": 0.80,
+                        "count_alignment": 0.68,
+                    },
+                    mean_cost=0.011,
+                    mean_latency_ms=1180.0,
+                    total_tokens=940,
+                ),
+            },
+        )
+
+    def fake_compare_variants(
+        result: object,
+        variant_a: str,
+        variant_b: str,
+        *,
+        confidence: float = 0.95,
+        method: str = "bootstrap",
+        dimension: str | None = None,
+    ) -> object:
+        del result, confidence, dimension
+        return SimpleNamespace(
+            variant_a=variant_a,
+            variant_b=variant_b,
+            mean_a=0.43,
+            mean_b=0.31,
+            difference=0.12,
+            ci_lower=0.01,
+            ci_upper=0.23,
+            significant=True,
+            method=method,
+            detail="welch comparison",
+        )
+
+    monkeypatch.setattr(
+        prompt_eval_service_module,
+        "_load_llm_client_api",
+        lambda: prompt_eval_service_module._LLMClientAPI(
+            get_model=lambda task: f"model-for-{task}",
+            render_prompt=_render_prompt,
+        ),
+    )
+    monkeypatch.setattr(
+        prompt_eval_service_module,
+        "_load_prompt_eval_api",
+        lambda: prompt_eval_service_module._PromptEvalAPI(
+            Experiment=_FakeExperiment,
+            ExperimentInput=_FakeExperimentInput,
+            PromptVariant=_FakePromptVariant,
+            EvalScore=_FakeEvalScore,
+            PromptEvalObservabilityConfig=_FakePromptEvalObservabilityConfig,
+            run_experiment=fake_run_experiment,
+            load_result_from_observability=fake_load_result_from_observability,
+            compare_variants=fake_compare_variants,
+        ),
+    )
+
+    report = ExtractionPromptExperimentService().run_prompt_experiment()
+
+    assert report.execution_id == "exec123"
+    assert report.baseline_variant_name == "baseline"
+    assert [item.variant_name for item in report.variant_summaries] == ["baseline", "hardened"]
+    assert report.comparisons[0].variant_a == "hardened"
+    assert report.comparisons[0].variant_b == "baseline"
+    experiment = captured["experiment"]
+    assert isinstance(experiment, _FakeExperiment)
+    assert experiment.n_runs == 2
+    assert experiment.response_model is TextExtractionResponse
+    assert [variant.name for variant in experiment.variants] == ["baseline", "hardened"]
+    baseline_messages = experiment.variants[0].messages
+    hardened_messages = experiment.variants[1].messages
+    assert "Case input:\n{input}" in baseline_messages[-1]["content"]
+    assert "abbreviation expansions" in hardened_messages[0]["content"]
+    observability = captured["observability"]
+    assert isinstance(observability, _FakePromptEvalObservabilityConfig)
+    assert observability.kwargs["dataset"] == "onto_canon6_extraction_prompt_eval"
+    assert observability.kwargs["project"] == "onto-canon6"
+    assert captured["loaded_execution_id"] == "exec123"
+    assert captured["loaded_dataset"] == "onto_canon6_extraction_prompt_eval"
+    trial_score = captured["trial_score"]
+    assert isinstance(trial_score, _FakeEvalScore)
+
+
+def test_run_prompt_experiment_fails_loud_on_mixed_profile_fixture(tmp_path: Path) -> None:
+    """Mixed-profile fixtures should fail before any prompt_eval work starts."""
+
+    fixture = json.loads(_fixture_path().read_text(encoding="utf-8"))
+    fixture["cases"][1]["profile"]["profile_id"] = "default"
+    mixed_fixture_path = tmp_path / "mixed_fixture.json"
+    mixed_fixture_path.write_text(json.dumps(fixture), encoding="utf-8")
+
+    service = ExtractionPromptExperimentService()
+
+    with pytest.raises(
+        ExtractionPromptExperimentError,
+        match="single shared profile",
+    ):
+        service.run_prompt_experiment(fixture_path=mixed_fixture_path)
+
+
+def test_run_prompt_experiment_fails_loud_on_undersized_welch_shape() -> None:
+    """Welch comparison should fail before any live prompt work if the shape is too small."""
+
+    service = ExtractionPromptExperimentService()
+
+    with pytest.raises(
+        ExtractionPromptExperimentError,
+        match="welch comparison requires at least two scored trials per variant",
+    ):
+        service.run_prompt_experiment(case_limit=1, n_runs=1)

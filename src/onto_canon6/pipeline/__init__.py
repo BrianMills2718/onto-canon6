@@ -26,9 +26,13 @@ from .service import ReviewService
 from .store import ReviewStore, ReviewStoreConflictError, ReviewStoreError, ReviewStoreNotFoundError
 from .text_chunking import TextChunkFileRecord, TextChunkManifest, TextChunkRecord, TextChunkingService
 from .text_extraction import (
+    candidate_import_from_extracted,
     ExtractedCandidate,
+    ExtractedEvidenceSpan,
     ExtractedFiller,
     ExtractionError,
+    render_entity_type_catalog,
+    render_predicate_catalog,
     TextExtractionRun,
     TextExtractionResponse,
     TextExtractionService,
@@ -43,8 +47,10 @@ __all__ = [
     "CandidateReviewStatus",
     "CandidateSubmissionResult",
     "CandidateValidationStatus",
+    "candidate_import_from_extracted",
     "EvidenceSpan",
     "ExtractedCandidate",
+    "ExtractedEvidenceSpan",
     "ExtractedFiller",
     "ExtractionError",
     "OverlayApplicationRecord",
@@ -62,6 +68,8 @@ __all__ = [
     "ReviewStoreConflictError",
     "ReviewStoreError",
     "ReviewStoreNotFoundError",
+    "render_entity_type_catalog",
+    "render_predicate_catalog",
     "SourceArtifactRef",
     "TextChunkFileRecord",
     "TextChunkManifest",

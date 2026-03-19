@@ -312,7 +312,7 @@ def test_extraction_response_accepts_entity_fillers_without_entity_id() -> None:
 def test_extraction_response_resolves_offsets_from_exact_text() -> None:
     """Quoted evidence text should resolve into deterministic offsets."""
 
-    candidate_import = extraction_module._candidate_import_from_extracted(
+    candidate_import = extraction_module.candidate_import_from_extracted(
         candidate=ExtractedCandidate(
             predicate="oc:uses_system_demo",
             roles={
@@ -345,7 +345,7 @@ def test_extraction_response_resolves_offsets_from_exact_text() -> None:
 def test_extraction_response_normalizes_raw_only_value_filler() -> None:
     """Raw-only value fillers should normalize into pipeline payload values."""
 
-    candidate_import = extraction_module._candidate_import_from_extracted(
+    candidate_import = extraction_module.candidate_import_from_extracted(
         candidate=ExtractedCandidate(
             predicate="oc:describe_dissatisfaction",
             roles={
@@ -389,7 +389,7 @@ def test_render_predicate_catalog_includes_role_constraints(tmp_path: Path) -> N
         overlay_root=review_service.overlay_root,
     )
 
-    rendered = extraction_module._render_predicate_catalog(profile)
+    rendered = extraction_module.render_predicate_catalog(profile)
 
     assert "source_node [required" in rendered
     assert "entity_type=dm2:OperationalNode" in rendered
