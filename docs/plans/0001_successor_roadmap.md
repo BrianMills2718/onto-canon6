@@ -663,6 +663,13 @@ Before opening a new roadmap extension, the repo should:
 3. use that evidence to justify the smallest next slice, whether that slice is
    parity-closing, ergonomics-driven, or consumer-specific.
 
+This gate has now been satisfied once through the local PSYOP Stage 1 run
+documented in:
+
+1. `docs/plans/0011_first_real_run_psyop_stage1.md`
+2. `docs/runs/2026-03-18_psyop_stage1_run_summary.md`
+3. `docs/runs/2026-03-18_psyop_stage1_friction_log.md`
+
 This keeps the parity matrix as a decision aid rather than a mandate to rebuild
 every earlier capability before the successor is used.
 

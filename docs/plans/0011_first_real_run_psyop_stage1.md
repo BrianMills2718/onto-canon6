@@ -1,4 +1,6 @@
-# Phase 16 Candidate: First Real Run Over Local PSYOP Research Outputs
+# First Real Run Over Local PSYOP Research Outputs
+
+Status: complete
 
 ## Purpose
 
@@ -105,3 +107,14 @@ friction.
 2. Do not create a new generalized ingestion framework.
 3. Do not treat this one run as a benchmark of extraction quality.
 4. Do not add MCP or UI work just to support this run.
+
+## Outcome
+
+This run completed the intended adoption-first gate with one important caveat:
+it also exposed a real graph-promotion bug on normalized value fillers, which
+was fixed during the run rather than worked around.
+
+See:
+
+1. `docs/runs/2026-03-18_psyop_stage1_run_summary.md`
+2. `docs/runs/2026-03-18_psyop_stage1_friction_log.md`

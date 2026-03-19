@@ -16,10 +16,12 @@ if str(PROJECT_ROOT / "src") not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT / "src"))
 
 from onto_canon6.ontology_runtime import clear_loader_caches  # noqa: E402
-from onto_canon6.pipeline import EvidenceSpan, ReviewService  # noqa: E402
+from onto_canon6.ontology_runtime import load_effective_profile  # noqa: E402
+from onto_canon6.pipeline import EvidenceSpan, ProfileRef, ReviewService, SourceArtifactRef  # noqa: E402
 from onto_canon6.pipeline import text_extraction as extraction_module  # noqa: E402
 from onto_canon6.pipeline.text_extraction import (  # noqa: E402
     ExtractedCandidate,
+    ExtractedEvidenceSpan,
     ExtractedFiller,
     TextExtractionResponse,
     TextExtractionService,
@@ -94,8 +96,8 @@ def test_extract_candidate_imports_uses_llm_client_boundary(tmp_path: Path, monk
                         ],
                     },
                     evidence_spans=[
-                        EvidenceSpan(start_char=0, end_char=16, text="Mission planning"),
-                        EvidenceSpan(start_char=26, end_char=38, text="radar system"),
+                        ExtractedEvidenceSpan(text="Mission planning"),
+                        ExtractedEvidenceSpan(text="radar system"),
                     ],
                     claim_text="Mission planning uses the radar system.",
                 ),
@@ -124,11 +126,12 @@ def test_extract_candidate_imports_uses_llm_client_boundary(tmp_path: Path, monk
     assert len(imports) == 1
     assert imports[0].claim_text == "Mission planning uses the radar system."
     assert imports[0].evidence_spans[0].text == "Mission planning"
+    assert imports[0].evidence_spans[0].start_char == 0
     assert imports[0].source_artifact.content_text is not None
-    assert calls["selection_task"] == "extraction"
+    assert calls["selection_task"] == "budget_extraction"
     call_kwargs = calls["kwargs"]
     assert isinstance(call_kwargs, dict)
-    assert call_kwargs["task"] == "extraction"
+    assert call_kwargs["task"] == "budget_extraction"
     assert call_kwargs["max_budget"] == 0.25
     assert str(call_kwargs["trace_id"]).startswith("onto_canon6.extract.")
     messages = calls["messages"]
@@ -165,12 +168,13 @@ def test_extract_and_submit_persists_extracted_candidates(
                             "subject": [
                                 ExtractedFiller(
                                     kind="entity",
-                                    entity_id="ent:activity:mission_planning",
+                                    entity_type="oc:activity",
+                                    name="Mission planning",
                                 ),
                             ],
                         },
                         evidence_spans=[
-                            EvidenceSpan(start_char=0, end_char=16, text="Mission planning"),
+                            ExtractedEvidenceSpan(text="Mission planning"),
                         ],
                         claim_text="Mission planning is the subject.",
                     ),
@@ -202,6 +206,13 @@ def test_extract_and_submit_persists_extracted_candidates(
     assert len(persisted) == 1
     assert persisted[0].claim_text == "Mission planning is the subject."
     assert persisted[0].evidence_spans[0].text == "Mission planning"
+    roles_obj = persisted[0].payload.get("roles")
+    assert isinstance(roles_obj, dict)
+    subject_fillers = roles_obj.get("subject")
+    assert isinstance(subject_fillers, list)
+    subject_filler = subject_fillers[0]
+    assert isinstance(subject_filler, dict)
+    assert str(subject_filler["entity_id"]).startswith("ent:auto:")
 
 
 def test_extract_and_submit_fails_loud_on_bad_evidence_span(
@@ -232,12 +243,13 @@ def test_extract_and_submit_fails_loud_on_bad_evidence_span(
                             "subject": [
                                 ExtractedFiller(
                                     kind="entity",
-                                    entity_id="ent:activity:mission_planning",
+                                    entity_type="oc:activity",
+                                    name="Alpha",
                                 ),
                             ],
                         },
                         evidence_spans=[
-                            EvidenceSpan(start_char=0, end_char=5, text="Wrong"),
+                            ExtractedEvidenceSpan(text="Wrong"),
                         ],
                     ),
                 ]
@@ -255,7 +267,10 @@ def test_extract_and_submit_fails_loud_on_bad_evidence_span(
         ),
     )
 
-    with pytest.raises(ValueError, match="evidence span 0 text does not match source text"):
+    with pytest.raises(
+        ValueError,
+        match="evidence span 0 text did not resolve to a unique exact match in source",
+    ):
         service.extract_and_submit(
             source_text="Alpha Beta",
             profile_id="default",
@@ -263,6 +278,122 @@ def test_extract_and_submit_fails_loud_on_bad_evidence_span(
             submitted_by="analyst:text-extract",
             source_ref="text://phase4/bad-span",
         )
+
+
+def test_extraction_response_accepts_entity_fillers_without_entity_id() -> None:
+    """Entity fillers may omit entity_id when they still provide a named mention."""
+
+    response = TextExtractionResponse.model_validate(
+        {
+            "candidates": [
+                {
+                    "predicate": "oc:hold_command_role",
+                    "roles": {
+                        "commander": [
+                            {
+                                "kind": "entity",
+                                "entity_type": "oc:person",
+                                "name": "Admiral Eric Olson",
+                            }
+                        ]
+                    },
+                    "evidence_spans": [{"text": "Admiral Eric Olson"}],
+                }
+            ]
+        }
+    )
+
+    candidate = response.candidates[0]
+    assert candidate.roles["commander"][0].entity_id is None
+    assert candidate.roles["commander"][0].name == "Admiral Eric Olson"
+
+
+def test_extraction_response_resolves_offsets_from_exact_text() -> None:
+    """Quoted evidence text should resolve into deterministic offsets."""
+
+    candidate_import = extraction_module._candidate_import_from_extracted(
+        candidate=ExtractedCandidate(
+            predicate="oc:uses_system_demo",
+            roles={
+                "subject": [
+                    ExtractedFiller(
+                        kind="entity",
+                        entity_type="oc:activity",
+                        name="Mission planning",
+                    )
+                ],
+            },
+            evidence_spans=[
+                ExtractedEvidenceSpan(text="Mission planning"),
+            ],
+        ),
+        profile=ProfileRef(profile_id="default", profile_version="1.0.0"),
+        submitted_by="analyst:text-extract",
+        source_artifact=SourceArtifactRef(
+            source_kind="raw_text",
+            source_ref="text://phase4/span-resolution",
+            content_text="Mission planning uses the radar system.",
+        ),
+    )
+
+    assert candidate_import.evidence_spans == (
+        EvidenceSpan(start_char=0, end_char=16, text="Mission planning"),
+    )
+
+
+def test_extraction_response_normalizes_raw_only_value_filler() -> None:
+    """Raw-only value fillers should normalize into pipeline payload values."""
+
+    candidate_import = extraction_module._candidate_import_from_extracted(
+        candidate=ExtractedCandidate(
+            predicate="oc:describe_dissatisfaction",
+            roles={
+                "description": [
+                    ExtractedFiller(
+                        kind="value",
+                        value_kind="description",
+                        raw="transition to a central pillar",
+                    )
+                ],
+            },
+            evidence_spans=[
+                ExtractedEvidenceSpan(text="transition to a central pillar"),
+            ],
+        ),
+        profile=ProfileRef(profile_id="default", profile_version="1.0.0"),
+        submitted_by="analyst:text-extract",
+        source_artifact=SourceArtifactRef(
+            source_kind="raw_text",
+            source_ref="text://phase4/raw-value",
+            content_text="The report describes a transition to a central pillar.",
+        ),
+    )
+
+    roles_obj = candidate_import.payload.get("roles")
+    assert isinstance(roles_obj, dict)
+    fillers = roles_obj.get("description")
+    assert isinstance(fillers, list)
+    filler = fillers[0]
+    assert isinstance(filler, dict)
+    assert filler["normalized"] == "transition to a central pillar"
+
+
+def test_render_predicate_catalog_includes_role_constraints(tmp_path: Path) -> None:
+    """The prompt-facing predicate catalog should include role-level constraints."""
+
+    review_service = _make_review_service(tmp_path)
+    profile = load_effective_profile(
+        "dodaf_minimal_strict",
+        "0.1.0",
+        overlay_root=review_service.overlay_root,
+    )
+
+    rendered = extraction_module._render_predicate_catalog(profile)
+
+    assert "source_node [required" in rendered
+    assert "entity_type=dm2:OperationalNode" in rendered
+    assert "information_element [required" in rendered
+    assert "entity_type=dm2:InformationElement" in rendered
 
 
 def test_extraction_response_normalizes_live_provider_shape() -> None:

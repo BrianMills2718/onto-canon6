@@ -303,17 +303,23 @@ The authoritative parity ledger for the broader successor now lives in
 
 The current roadmap is now proved through Phase 15.
 
-There is no automatic “Phase 16” until a new roadmap extension is justified.
+The first real non-fixture workflow run has now been completed over local PSYOP
+research outputs. See:
+
+1. `docs/plans/0011_first_real_run_psyop_stage1.md`
+2. `docs/runs/2026-03-18_psyop_stage1_run_summary.md`
+3. `docs/runs/2026-03-18_psyop_stage1_friction_log.md`
+
+There is still no automatic “Phase 16” until a new roadmap extension is justified.
 The repo should now:
 
 1. use `docs/plans/0005_v1_capability_parity_matrix.md` as the feature ledger;
 2. treat the current roadmap as the proved bounded successor core, not as full
    v1 parity;
-3. run at least one real non-fixture investigation or consumer workflow through
-   extract -> review -> promote -> export before opening a new broad parity
-   phase;
-4. capture the friction, breakage, and missing value from that real run as the
-   justification record for any later roadmap extension;
+3. use the completed PSYOP Stage 1 run as the first justification record rather
+   than treating “run a real workflow” as still pending;
+4. require any later roadmap extension to point to concrete friction, breakage,
+   or missing value observed in a real run;
 5. require explicit workflow pressure before reopening temporal/inference work
    or another broad parity-recovery phase;
 6. prefer the smallest next product-facing or parity-closing slice if a new

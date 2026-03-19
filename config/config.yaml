@@ -21,7 +21,7 @@ ontology_runtime:
   overlay_pack_suffix: "__overlay"
 
 extraction:
-  selection_task: "extraction"
+  selection_task: "budget_extraction"
   prompt_template: "prompts/extraction/text_to_candidate_assertions.yaml"
   timeout_seconds: 60
   num_retries: 2

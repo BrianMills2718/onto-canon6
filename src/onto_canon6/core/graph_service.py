@@ -275,11 +275,14 @@ def _materialize_role_filler(
             raise CanonicalGraphPromotionConflictError(
                 f"value filler is missing value_kind at {role_id}[{filler_index}]"
             )
-        if "value" not in filler_object:
+        if "value" in filler_object:
+            value = _JSON_VALUE_ADAPTER.validate_python(filler_object["value"])
+        elif "normalized" in filler_object:
+            value = _JSON_VALUE_ADAPTER.validate_python(filler_object["normalized"])
+        else:
             raise CanonicalGraphPromotionConflictError(
                 f"value filler is missing value payload at {role_id}[{filler_index}]"
             )
-        value = _JSON_VALUE_ADAPTER.validate_python(filler_object["value"])
         store.insert_role_filler(
             conn,
             assertion_id=assertion_id,

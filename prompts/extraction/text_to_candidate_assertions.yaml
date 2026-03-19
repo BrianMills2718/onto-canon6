@@ -27,17 +27,28 @@ messages:
       - give the ontology-shaped assertion as `predicate` plus `roles`
       - keep `predicate` to the predicate ID only; put filler data only in the
         sibling `roles` object
-      - include one or more exact `evidence_spans` whose text matches the
+      - include one or more exact `evidence_spans` whose `text` matches the
         source character-for-character
       - optionally include a short `claim_text` gloss that helps a reviewer
         understand the candidate quickly
 
       The assertion payload is expected to use these filler shapes:
 
-      - `entity`: `kind`, `entity_id`, optionally `entity_type`, `name`,
+      - `entity`: `kind`, `entity_type`, `name`, optionally `entity_id`,
         `alias_ids`
       - `value`: `kind`, `value_kind`, `normalized`, optionally `raw`
       - `unknown`: `kind`, `raw`
+
+      The system will derive local entity IDs and character offsets
+      deterministically. Your job is to quote the right evidence text and name
+      the right entities and values.
+
+      Every `entity` filler must include a reviewer-meaningful `name`. Do not
+      emit type-only entity fillers. If you cannot name an entity from the
+      source text, omit that candidate rather than guessing.
+
+      Return only the structured candidate payload. Do not add explanatory
+      prose before or after it.
 
       Use the active ontology catalog when it fits the text. If the text
       clearly supports a predicate outside the current catalog, propose the
@@ -50,6 +61,9 @@ messages:
       - split distinct supported facts into separate candidates
       - use multiple evidence spans when support comes from non-adjacent parts
         of the source
+      - quote evidence text that is specific enough to locate uniquely in the
+        source
+      - omit any candidate whose roles would require unnamed entities
       - omit candidates that would require speculation beyond the source
 
   - role: user

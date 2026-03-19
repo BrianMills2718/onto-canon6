@@ -126,6 +126,62 @@ def test_promote_candidate_materializes_assertion_entities_and_fillers(tmp_path:
     assert title_filler.value_kind == "string"
 
 
+def test_promote_candidate_accepts_normalized_value_fillers(tmp_path: Path) -> None:
+    """Promotion should accept the normalized-only value filler shape used by live extraction."""
+
+    review_service, _overlay_service = _seed_review_service(tmp_path)
+    source_text = "Operation Enduring Freedom occurred in Afghanistan."
+    start_char = source_text.index("Afghanistan")
+    submission = review_service.submit_candidate_assertion(
+        payload={
+            "predicate": "oc:operation_occurs_in_location",
+            "roles": {
+                "operation": [
+                    {
+                        "entity_id": "ent:operation:enduring_freedom",
+                        "entity_type": "oc:military_operation",
+                    }
+                ],
+                "location": [
+                    {
+                        "kind": "value",
+                        "value_kind": "string",
+                        "normalized": "Afghanistan",
+                    }
+                ],
+            },
+        },
+        profile_id="default",
+        profile_version="1.0.0",
+        submitted_by="analyst:graph-seed",
+        source_kind="text_file",
+        source_ref="notes/location.txt",
+        source_text=source_text,
+        evidence_spans=(
+            {
+                "start_char": start_char,
+                "end_char": start_char + len("Afghanistan"),
+                "text": "Afghanistan",
+            },
+        ),
+    )
+    candidate_id = review_service.review_candidate(
+        candidate_id=submission.candidate.candidate_id,
+        decision="accepted",
+        actor_id="analyst:reviewer",
+    ).candidate_id
+
+    promotion = CanonicalGraphService(db_path=review_service.store.db_path).promote_candidate(
+        candidate_id=candidate_id,
+        promoted_by="analyst:graph-promoter",
+    )
+
+    location_filler = next(filler for filler in promotion.role_fillers if filler.role_id == "location")
+    assert location_filler.filler_kind == "value"
+    assert location_filler.value_kind == "string"
+    assert location_filler.value == "Afghanistan"
+
+
 def test_promote_candidate_is_idempotent_for_same_accepted_candidate(tmp_path: Path) -> None:
     """Repeated promotion should return the existing promoted assertion instead of duplicating it."""
 

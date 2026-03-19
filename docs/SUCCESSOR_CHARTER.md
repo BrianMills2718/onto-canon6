@@ -447,10 +447,10 @@ The next default move is not another broad internal phase.
 
 The current priority is:
 
-1. run the proved bounded successor core against at least one real
-   investigation or consumer workflow;
-2. use that run to identify the highest-friction missing capability or product
-   gap;
+1. treat the completed PSYOP Stage 1 run as the first real non-fixture proof
+   that the bounded successor can be used operationally;
+2. use the resulting friction log and run summary to identify the
+   highest-friction missing capability or product gap;
 3. justify any later roadmap extension from observed usage pressure rather than
    from parity-chasing alone.
 

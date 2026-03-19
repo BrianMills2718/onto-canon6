@@ -19,6 +19,7 @@ from importlib import import_module
 import json
 import logging
 from pathlib import Path
+import re
 from typing import Any, Mapping, Protocol, cast
 
 from pydantic import BaseModel, ConfigDict, Field, JsonValue, model_validator
@@ -67,20 +68,52 @@ class ExtractedFiller(BaseModel):
 
         normalized_kind = self.kind.strip()
         if normalized_kind == "entity":
-            if self.entity_id is None or not self.entity_id.strip():
-                raise ValueError("entity fillers require entity_id")
+            if self.entity_id is not None and self.entity_id.strip():
+                return self
+            if self.name is None or not self.name.strip():
+                raise ValueError("entity fillers require entity_id or name")
             return self
         if normalized_kind == "value":
             if self.value_kind is None or not self.value_kind.strip():
                 raise ValueError("value fillers require value_kind")
-            if self.normalized is None:
-                raise ValueError("value fillers require normalized")
+            if self.normalized is None and (self.raw is None or not self.raw.strip()):
+                raise ValueError("value fillers require normalized or raw")
             return self
         if normalized_kind == "unknown":
             if self.raw is None or not self.raw.strip():
                 raise ValueError("unknown fillers require raw")
             return self
         raise ValueError(f"unsupported filler kind: {self.kind!r}")
+
+
+class ExtractedEvidenceSpan(BaseModel):
+    """Extractor-facing evidence span before deterministic offset resolution.
+
+    The live extraction run showed that models are much better at quoting exact
+    source text than at computing reliable character offsets. The producer
+    boundary therefore treats exact span text as primary and resolves offsets
+    deterministically against the source text before handing the candidate to
+    the review pipeline.
+    """
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    text: str = Field(min_length=1)
+    start_char: int | None = Field(default=None, ge=0)
+    end_char: int | None = Field(default=None, gt=0)
+
+    @model_validator(mode="after")
+    def _validate_optional_offsets(self) -> "ExtractedEvidenceSpan":
+        """Require both offsets together when either offset is present."""
+
+        has_start = self.start_char is not None
+        has_end = self.end_char is not None
+        if has_start != has_end:
+            raise ValueError("evidence span offsets must provide both start_char and end_char")
+        if self.start_char is not None and self.end_char is not None:
+            if self.end_char <= self.start_char:
+                raise ValueError("end_char must be greater than start_char")
+        return self
 
 
 class ExtractedCandidate(BaseModel):
@@ -90,7 +123,7 @@ class ExtractedCandidate(BaseModel):
 
     predicate: str = Field(min_length=1)
     roles: dict[str, list[ExtractedFiller]] = Field(default_factory=dict)
-    evidence_spans: list[EvidenceSpan] = Field(min_length=1)
+    evidence_spans: list[ExtractedEvidenceSpan] = Field(min_length=1)
     claim_text: str | None = None
 
     @model_validator(mode="before")
@@ -421,9 +454,9 @@ def _candidate_import_from_extracted(
         "predicate": candidate.predicate,
         "roles": {
             role_name: [
-                cast(
-                    dict[str, JsonValue],
-                    filler.model_dump(exclude_none=True, mode="json"),
+                _pipeline_filler_from_extracted(
+                    filler=filler,
+                    source_ref=source_artifact.source_ref,
                 )
                 for filler in fillers
             ]
@@ -436,9 +469,141 @@ def _candidate_import_from_extracted(
         payload=payload,
         submitted_by=submitted_by,
         source_artifact=source_artifact,
-        evidence_spans=tuple(candidate.evidence_spans),
+        evidence_spans=_resolve_evidence_spans(
+            source_text=source_artifact.content_text or "",
+            evidence_spans=tuple(candidate.evidence_spans),
+        ),
         claim_text=claim_text if claim_text else None,
     )
+
+
+def _pipeline_filler_from_extracted(
+    *,
+    filler: ExtractedFiller,
+    source_ref: str,
+) -> dict[str, JsonValue]:
+    """Normalize one extracted filler into the persisted pipeline payload.
+
+    Entity fillers now allow `name` without `entity_id` at the extraction
+    boundary. The runtime derives a source-scoped local entity identifier so
+    raw-text extraction does not need to solve cross-document identity before
+    review, promotion, or the later identity phase.
+    """
+
+    filler_payload = cast(
+        dict[str, JsonValue],
+        filler.model_dump(exclude_none=True, mode="json"),
+    )
+    if filler.kind == "value" and "normalized" not in filler_payload:
+        raw_value = filler.raw.strip() if filler.raw is not None else ""
+        if not raw_value:
+            raise ValueError("value filler is missing normalized and raw")
+        filler_payload["normalized"] = raw_value
+        return filler_payload
+    if filler.kind != "entity":
+        return filler_payload
+    entity_id = filler.entity_id.strip() if filler.entity_id is not None else ""
+    if entity_id:
+        filler_payload["entity_id"] = entity_id
+        return filler_payload
+    filler_payload["entity_id"] = _derive_local_entity_id(
+        source_ref=source_ref,
+        name=filler.name or "",
+        entity_type=filler.entity_type,
+    )
+    return filler_payload
+
+
+def _derive_local_entity_id(
+    *,
+    source_ref: str,
+    name: str,
+    entity_type: str | None,
+) -> str:
+    """Derive a deterministic source-scoped local entity id from one mention.
+
+    The ID is intentionally scoped by `source_ref` so separate documents do not
+    silently merge similarly named mentions before the later stable-identity
+    phase has a chance to review them.
+    """
+
+    normalized_name = name.strip()
+    if not normalized_name:
+        raise ValueError("cannot derive local entity id from blank entity name")
+    source_digest = hashlib.sha256(source_ref.encode("utf-8")).hexdigest()[:8]
+    type_slug = _slug_token(entity_type or "entity")
+    name_slug = _slug_token(normalized_name)
+    return f"ent:auto:{source_digest}:{type_slug}:{name_slug}"
+
+
+def _slug_token(value: str) -> str:
+    """Collapse free text into a stable ASCII token for local ids."""
+
+    slug = re.sub(r"[^a-z0-9]+", "_", value.strip().lower()).strip("_")
+    if not slug:
+        raise ValueError(f"cannot derive slug token from value: {value!r}")
+    return slug
+
+
+def _resolve_evidence_spans(
+    *,
+    source_text: str,
+    evidence_spans: tuple[ExtractedEvidenceSpan, ...],
+) -> tuple[EvidenceSpan, ...]:
+    """Resolve extractor evidence text into verified pipeline evidence spans.
+
+    Exact quoted text is primary at the producer boundary. When valid offsets
+    are present and match the quoted text, they are reused. Otherwise the
+    runtime finds a unique exact match in the source text and emits the verified
+    offsets explicitly. Ambiguous or missing matches still fail loudly.
+    """
+
+    resolved: list[EvidenceSpan] = []
+    for index, span in enumerate(evidence_spans):
+        if span.start_char is not None and span.end_char is not None:
+            candidate_text = source_text[span.start_char : span.end_char]
+            if candidate_text == span.text:
+                resolved.append(
+                    EvidenceSpan(
+                        start_char=span.start_char,
+                        end_char=span.end_char,
+                        text=span.text,
+                    )
+                )
+                continue
+            logger.warning(
+                "extractor evidence offsets did not match quoted text span_index=%d start=%s end=%s",
+                index,
+                span.start_char,
+                span.end_char,
+            )
+        matches = _find_unique_span_matches(source_text=source_text, span_text=span.text)
+        if len(matches) != 1:
+            raise ValueError(
+                f"evidence span {index} text did not resolve to a unique exact match in source"
+            )
+        start_char, end_char = matches[0]
+        resolved.append(
+            EvidenceSpan(
+                start_char=start_char,
+                end_char=end_char,
+                text=span.text,
+            )
+        )
+    return tuple(resolved)
+
+
+def _find_unique_span_matches(*, source_text: str, span_text: str) -> list[tuple[int, int]]:
+    """Return all exact occurrences of one quoted span within the source text."""
+
+    matches: list[tuple[int, int]] = []
+    start = 0
+    while True:
+        found = source_text.find(span_text, start)
+        if found < 0:
+            return matches
+        matches.append((found, found + len(span_text)))
+        start = found + 1
 
 
 def _trace_id_for_source(*, source_ref: str, text: str) -> str:
@@ -449,15 +614,44 @@ def _trace_id_for_source(*, source_ref: str, text: str) -> str:
 
 
 def _render_predicate_catalog(profile: LoadedProfile) -> str:
-    """Render a small predicate catalog string from the active profile."""
+    """Render the active predicate catalog with role constraints.
+
+    The first real extraction run showed that role names alone are not enough
+    guidance for the model. This catalog now carries the role-level contract as
+    well so the extractor can choose entity types and value kinds that the
+    runtime will actually accept.
+    """
 
     rules = sorted(profile.predicate_rules.items())
     if not rules:
         return "none provided"
     lines = []
     for predicate_id, rule in rules:
-        role_text = ", ".join(rule.allowed_roles) if rule.allowed_roles else "no declared roles"
-        lines.append(f"- {predicate_id} (roles: {role_text})")
+        if not rule.allowed_roles:
+            lines.append(f"- {predicate_id} (roles: no declared roles)")
+            continue
+        role_parts: list[str] = []
+        for role_name in rule.allowed_roles:
+            details: list[str] = []
+            cardinality = rule.role_cardinality.get(role_name)
+            if cardinality is not None:
+                required = role_name in rule.required_roles or cardinality.min_count > 0
+                details.append("required" if required else "optional")
+                if cardinality.max_count is None:
+                    details.append(f"min={cardinality.min_count}")
+                else:
+                    details.append(f"count={cardinality.min_count}..{cardinality.max_count}")
+            elif role_name in rule.required_roles:
+                details.append("required")
+            expected_entity_type = rule.role_filler_types.get(role_name)
+            expected_value_kind = rule.role_value_kinds.get(role_name)
+            if expected_entity_type is not None:
+                details.append(f"entity_type={expected_entity_type}")
+            if expected_value_kind is not None:
+                details.append(f"value_kind={expected_value_kind}")
+            detail_text = ", ".join(details) if details else "declared"
+            role_parts.append(f"{role_name} [{detail_text}]")
+        lines.append(f"- {predicate_id} (roles: {'; '.join(role_parts)})")
     return "\n".join(lines)
 
 
