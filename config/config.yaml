@@ -55,3 +55,5 @@ adapters:
     default_profile_version: "0.1.0"
     source_kind: "whygame_hypergraph"
     register_artifact_by_default: true
+  research_agent:
+    default_relationship_confidence: 0.8

@@ -72,6 +72,9 @@ Representative imported relationships:
 3. Artifact-backed provenance survives the cross-project import path cleanly.
 4. A thin CLI command for WhyGame relationship import was enough to turn the
    adapter into an operational surface.
+5. A second thin CLI command was enough to convert `research-agent`
+   `entities.json` relationship output into WhyGame facts without leaving the
+   workflow dependent on ad hoc Python.
 
 ## What This Run Did Not Prove
 
@@ -86,7 +89,11 @@ Representative imported relationships:
 This run adds real consumer pressure evidence without justifying a new broad
 phase by itself.
 
-The clearest follow-on, if this producer path recurs, is a narrow helper that
-turns `research-agent` relationship-bearing output into WhyGame facts without
-requiring ad hoc transformation code. Any broader integration should still be
-demand-driven.
+The main consumer-friction items exposed by the run are now already addressed
+locally:
+
+1. file-backed WhyGame import now has a CLI surface
+2. `research-agent` relationship-bearing output now has a narrow transformation
+   helper into WhyGame facts
+
+Any broader integration should still be demand-driven.

@@ -146,6 +146,15 @@ class AdaptersConfig(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
     whygame: WhyGameAdapterConfig
+    research_agent: "ResearchAgentAdapterConfig"
+
+
+class ResearchAgentAdapterConfig(BaseModel):
+    """Configurable defaults for the narrow research-agent producer helper."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    default_relationship_confidence: float = Field(gt=0.0, le=1.0)
 
 
 class AppConfig(BaseModel):

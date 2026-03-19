@@ -54,6 +54,8 @@ entire prior runtime. The current scope is intentionally narrow:
 - one thin FastMCP agent surface over the proved successor services
 - one narrow WhyGame relationship adapter plus local `whygame_minimal` pack
   and strict profile
+- thin CLI commands for WhyGame relationship import and research-agent
+  relationship transformation into WhyGame facts
 
 The governing architectural rationale lives in the local successor charter and
 the adopted ADR set.

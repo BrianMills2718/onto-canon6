@@ -19,7 +19,12 @@ from pathlib import Path
 import sys
 from typing import Any, Sequence
 
-from .adapters import WhyGameImportResult, WhyGameImportService
+from .adapters import (
+    ResearchAgentWhyGameTransformResult,
+    ResearchAgentWhyGameTransformService,
+    WhyGameImportResult,
+    WhyGameImportService,
+)
 from .config import CLIOutputFormatValue, ConfigError, get_config
 from .core import (
     CanonicalGraphPromotionError,
@@ -201,6 +206,29 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     _add_output_arg(import_whygame_parser, default_output=config.cli.default_output_format)
     import_whygame_parser.set_defaults(handler=_handle_import_whygame_relationships)
+
+    convert_research_agent_parser = subparsers.add_parser(
+        "convert-research-agent-entities-to-whygame",
+        help="Convert one research-agent entities.json file into WhyGame relationship facts.",
+    )
+    convert_research_agent_parser.add_argument(
+        "--input",
+        required=True,
+        type=Path,
+        help="Path to the research-agent entities.json file.",
+    )
+    convert_research_agent_parser.add_argument(
+        "--output-file",
+        required=True,
+        type=Path,
+        help="Path where the WhyGame relationship facts JSON file will be written.",
+    )
+    convert_research_agent_parser.add_argument(
+        "--investigation-id",
+        help="Optional investigation identifier recorded in the fact context.",
+    )
+    _add_output_arg(convert_research_agent_parser, default_output=config.cli.default_output_format)
+    convert_research_agent_parser.set_defaults(handler=_handle_convert_research_agent_entities)
 
     list_candidates_parser = subparsers.add_parser(
         "list-candidates",
@@ -585,6 +613,18 @@ def _handle_import_whygame_relationships(args: argparse.Namespace) -> int:
     return 0
 
 
+def _handle_convert_research_agent_entities(args: argparse.Namespace) -> int:
+    """Convert one research-agent entities file into a WhyGame relationship fact file."""
+
+    result = ResearchAgentWhyGameTransformService().write_transformed_facts(
+        input_path=args.input,
+        output_path=args.output_file,
+        investigation_id=args.investigation_id,
+    )
+    _emit_output(result, output_format=args.output)
+    return 0
+
+
 def _handle_list_candidates(args: argparse.Namespace) -> int:
     """List persisted candidate assertions with optional filters."""
 
@@ -952,6 +992,7 @@ def _to_jsonable(value: object) -> Any:
             SemanticCanonicalizationResult,
             TextChunkFileRecord,
             TextChunkManifest,
+            ResearchAgentWhyGameTransformResult,
             WhyGameImportResult,
         ),
     ):
@@ -1008,6 +1049,12 @@ def _to_text(value: object) -> str:
             f"chunk_id={value.chunk_id} "
             f"text_length={value.text_length} "
             f"output_path={value.output_path}"
+        )
+    if isinstance(value, ResearchAgentWhyGameTransformResult):
+        return (
+            f"input_path={value.input_path} "
+            f"output_path={value.output_path} "
+            f"fact_count={value.fact_count}"
         )
     if isinstance(value, WhyGameImportResult):
         artifact_id = value.artifact.artifact_id if value.artifact is not None else "none"
