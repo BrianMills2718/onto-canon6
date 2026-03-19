@@ -20,7 +20,7 @@ from dataclasses import dataclass
 from importlib import import_module
 import logging
 from pathlib import Path
-from typing import Any, Awaitable, Callable, Literal, Protocol, cast
+from typing import Any, Awaitable, Callable, Literal, Mapping, Protocol, cast
 
 from ..config import ConfigError, PromptEvalVariantConfig, get_config
 from ..ontology_runtime import load_effective_profile
@@ -235,13 +235,11 @@ class ExtractionPromptExperimentService:
             profile.profile_version,
             overlay_root=self._overlay_root,
         )
-        render_context = {
+        shared_render_context = {
             "profile_id": profile.profile_id,
             "profile_version": profile.profile_version,
             "predicate_catalog": render_predicate_catalog(loaded_profile),
             "entity_type_catalog": render_entity_type_catalog(loaded_profile),
-            "max_candidates_per_case": self._max_candidates_per_case,
-            "max_evidence_spans_per_candidate": self._max_evidence_spans_per_candidate,
         }
         variants = [
             prompt_eval_api.PromptVariant(
@@ -250,7 +248,12 @@ class ExtractionPromptExperimentService:
                     get_config().evaluation_prompt_experiment_variant_template(
                         variant.prompt_template
                     ),
-                    **render_context,
+                    **_variant_render_context(
+                        shared_context=shared_render_context,
+                        default_max_candidates_per_case=self._max_candidates_per_case,
+                        default_max_evidence_spans_per_candidate=self._max_evidence_spans_per_candidate,
+                        variant=variant,
+                    ),
                 ),
                 prompt_ref=variant.prompt_ref,
                 model=selected_model,
@@ -359,6 +362,35 @@ class ExtractionPromptExperimentService:
             baseline_variant_name=self._baseline_variant_name,
             variant_configs=self._variant_configs,
         )
+
+
+def _variant_render_context(
+    *,
+    shared_context: Mapping[str, object],
+    default_max_candidates_per_case: int,
+    default_max_evidence_spans_per_candidate: int,
+    variant: PromptEvalVariantConfig,
+) -> dict[str, object]:
+    """Build the prompt-render context for one variant deterministically.
+
+    Prompt experiments need to compare wording changes and extraction-budget
+    changes independently. Keeping the per-variant budget override here avoids
+    mutating repo-global config just to ask one prompt variant for fewer
+    candidates or fewer evidence spans.
+    """
+
+    context = dict(shared_context)
+    context["max_candidates_per_case"] = (
+        variant.max_candidates_per_case
+        if variant.max_candidates_per_case is not None
+        else default_max_candidates_per_case
+    )
+    context["max_evidence_spans_per_candidate"] = (
+        variant.max_evidence_spans_per_candidate
+        if variant.max_evidence_spans_per_candidate is not None
+        else default_max_evidence_spans_per_candidate
+    )
+    return context
 
 
 def _score_prompt_eval_trial(

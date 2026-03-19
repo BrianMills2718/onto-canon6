@@ -123,7 +123,9 @@ class PromptEvalVariantConfig(BaseModel):
     The experiment runner compares prompt templates over the same extraction
     benchmark fixture. Each variant keeps an explicit prompt reference for
     shared observability even though the templates still live in this repo's
-    local `prompts/` directory.
+    local `prompts/` directory. Variants may also narrow the candidate or
+    evidence budget so prompt experiments can test smaller extraction asks
+    without mutating the repo-wide defaults.
     """
 
     model_config = ConfigDict(extra="forbid", frozen=True)
@@ -131,6 +133,8 @@ class PromptEvalVariantConfig(BaseModel):
     name: str = Field(min_length=1)
     prompt_template: str = Field(min_length=1)
     prompt_ref: str = Field(min_length=1)
+    max_candidates_per_case: int | None = Field(default=None, ge=1)
+    max_evidence_spans_per_candidate: int | None = Field(default=None, ge=1)
 
 
 class PromptEvalExperimentConfig(BaseModel):

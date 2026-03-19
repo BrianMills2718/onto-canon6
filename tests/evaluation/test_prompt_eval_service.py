@@ -17,6 +17,7 @@ if str(PROJECT_ROOT / "src") not in sys.path:
 from onto_canon6.evaluation import ExtractionPromptExperimentError, ExtractionPromptExperimentService  # noqa: E402
 from onto_canon6.evaluation import prompt_eval_service as prompt_eval_service_module  # noqa: E402
 from onto_canon6.evaluation.models import BenchmarkCase, BenchmarkReferenceCandidate  # noqa: E402
+from onto_canon6.config import PromptEvalVariantConfig  # noqa: E402
 from onto_canon6.pipeline import (  # noqa: E402
     ExtractedCandidate,
     ExtractedEvidenceSpan,
@@ -439,6 +440,8 @@ def test_run_prompt_experiment_builds_report_and_variant_comparison(
     assert "Use at most 2 evidence spans per" in baseline_messages[0]["content"]
     assert "abbreviation expansions" in hardened_messages[0]["content"]
     assert "Prefer the smallest sufficient candidate set" in compact_messages[0]["content"]
+    assert "Return at most 2 candidates." in compact_messages[0]["content"]
+    assert "Use at most 1 evidence spans per" in compact_messages[0]["content"]
     assert "Return exactly one structured response object" in single_response_messages[0]["content"]
     observability = captured["observability"]
     assert isinstance(observability, _FakePromptEvalObservabilityConfig)
@@ -1143,3 +1146,31 @@ def test_validate_loaded_result_has_scored_trials_for_comparison_raises_clear_er
     message = str(exc_info.value)
     assert "provider_schema_rejected=1" in message
     assert "insufficient_credits=1" in message
+
+
+def test_variant_render_context_applies_per_variant_budget_overrides() -> None:
+    """Variant prompt budgets should override the shared experiment defaults only locally."""
+
+    variant = PromptEvalVariantConfig(
+        name="compact",
+        prompt_template="prompts/extraction/prompt_eval_text_to_candidate_assertions_compact.yaml",
+        prompt_ref="onto_canon6.extraction.prompt_eval_text_to_candidate_assertions_compact@1",
+        max_candidates_per_case=2,
+        max_evidence_spans_per_candidate=1,
+    )
+
+    context = prompt_eval_service_module._variant_render_context(
+        shared_context={
+            "profile_id": "psyop_seed",
+            "profile_version": "0.1.0",
+            "predicate_catalog": "- oc:example",
+            "entity_type_catalog": "- oc:entity",
+        },
+        default_max_candidates_per_case=4,
+        default_max_evidence_spans_per_candidate=2,
+        variant=variant,
+    )
+
+    assert context["profile_id"] == "psyop_seed"
+    assert context["max_candidates_per_case"] == 2
+    assert context["max_evidence_spans_per_candidate"] == 1
