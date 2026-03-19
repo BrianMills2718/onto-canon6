@@ -163,6 +163,7 @@ class ExtractionPromptExperimentService:
         fixture_path: Path | str | None = None,
         case_limit: int | None = None,
         n_runs: int | None = None,
+        comparison_method: PromptEvalComparisonMethod | None = None,
     ) -> ExtractionPromptExperimentReport:
         """Run the extraction prompt experiment from synchronous code.
 
@@ -179,6 +180,7 @@ class ExtractionPromptExperimentService:
                     fixture_path=fixture_path,
                     case_limit=case_limit,
                     n_runs=n_runs,
+                    comparison_method=comparison_method,
                 )
             )
         raise ExtractionPromptExperimentError(
@@ -192,6 +194,7 @@ class ExtractionPromptExperimentService:
         fixture_path: Path | str | None = None,
         case_limit: int | None = None,
         n_runs: int | None = None,
+        comparison_method: PromptEvalComparisonMethod | None = None,
     ) -> ExtractionPromptExperimentReport:
         """Run the configured extraction prompt experiment asynchronously."""
 
@@ -201,10 +204,11 @@ class ExtractionPromptExperimentService:
         if not cases:
             raise ExtractionPromptExperimentError("prompt_eval requires at least one benchmark case")
         effective_n_runs = n_runs or self._n_runs
+        effective_comparison_method = comparison_method or self._comparison_method
         _validate_experiment_shape(
             case_count=len(cases),
             n_runs=effective_n_runs,
-            comparison_method=self._comparison_method,
+            comparison_method=effective_comparison_method,
         )
         profile = _require_single_profile(cases)
 
@@ -303,7 +307,7 @@ class ExtractionPromptExperimentService:
         )
         _validate_loaded_result_comparison_shape(
             result=loaded_result,
-            comparison_method=self._comparison_method,
+            comparison_method=effective_comparison_method,
             baseline_variant_name=self._baseline_variant_name,
             variant_names=tuple(variant.name for variant in self._variant_configs),
         )
@@ -313,7 +317,7 @@ class ExtractionPromptExperimentService:
                 variant.name,
                 self._baseline_variant_name,
                 confidence=self._comparison_confidence,
-                method=self._comparison_method,
+                method=effective_comparison_method,
             )
             for variant in self._variant_configs
             if variant.name != self._baseline_variant_name

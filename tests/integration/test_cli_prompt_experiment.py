@@ -23,9 +23,11 @@ class _FakeExtractionPromptExperimentService:
         fixture_path: object | None = None,
         case_limit: int | None = None,
         n_runs: int | None = None,
+        comparison_method: object | None = None,
     ) -> ExtractionPromptExperimentReport:
         """Return one stable report without invoking live prompt_eval work."""
 
+        assert comparison_method in {None, "bootstrap", "welch"}
         del fixture_path, case_limit, n_runs
         return ExtractionPromptExperimentReport(
             experiment_name="onto_canon6_extraction_prompt_eval",
@@ -113,3 +115,47 @@ def test_cli_runs_extraction_prompt_experiment_and_emits_json(
     assert output["execution_id"] == "exec123"
     assert output["baseline_variant_name"] == "baseline"
     assert output["variant_summaries"][1]["variant_name"] == "hardened"
+
+
+def test_cli_forwards_comparison_method_override(
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """The CLI should pass an explicit comparison-method override to the service."""
+
+    recorded: dict[str, object] = {}
+
+    class _RecordingService(_FakeExtractionPromptExperimentService):
+        def run_prompt_experiment(
+            self,
+            *,
+            fixture_path: object | None = None,
+            case_limit: int | None = None,
+            n_runs: int | None = None,
+            comparison_method: object | None = None,
+        ) -> ExtractionPromptExperimentReport:
+            recorded["comparison_method"] = comparison_method
+            return super().run_prompt_experiment(
+                fixture_path=fixture_path,
+                case_limit=case_limit,
+                n_runs=n_runs,
+                comparison_method=comparison_method,
+            )
+
+    # mock-ok: the CLI wiring is the target here; prompt_eval execution itself
+    # is covered at the service boundary.
+    monkeypatch.setattr(cli_module, "ExtractionPromptExperimentService", _RecordingService)
+
+    exit_code = cli_module.main(
+        [
+            "run-extraction-prompt-experiment",
+            "--comparison-method",
+            "bootstrap",
+            "--output",
+            "json",
+        ]
+    )
+
+    assert exit_code == 0
+    assert recorded["comparison_method"] == "bootstrap"
+    assert json.loads(capsys.readouterr().out)["execution_id"] == "exec123"

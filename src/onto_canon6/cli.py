@@ -192,6 +192,11 @@ def _build_parser() -> argparse.ArgumentParser:
         type=int,
         help="Optional replicate override. Defaults to config.",
     )
+    prompt_experiment_parser.add_argument(
+        "--comparison-method",
+        choices=("bootstrap", "welch"),
+        help="Optional comparison-method override. Defaults to config.",
+    )
     _add_output_arg(prompt_experiment_parser, default_output=config.cli.default_output_format)
     prompt_experiment_parser.set_defaults(handler=_handle_run_extraction_prompt_experiment)
 
@@ -623,6 +628,7 @@ def _handle_run_extraction_prompt_experiment(args: argparse.Namespace) -> int:
         fixture_path=args.fixture_path,
         case_limit=args.case_limit,
         n_runs=args.n_runs,
+        comparison_method=args.comparison_method,
     )
     _emit_output(report, output_format=args.output)
     return 0
