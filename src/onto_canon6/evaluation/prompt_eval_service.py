@@ -710,7 +710,11 @@ def _classify_prompt_eval_trial_failure(trial: Any) -> PromptEvalFailureCategory
     combined = f"{error_text}\n{reasoning_text}".strip()
     if "requires more credits" in combined or '"code":402' in combined:
         return "insufficient_credits"
-    if "invalid_json_schema" in combined or "invalid schema for response_format" in combined:
+    if (
+        "invalid_json_schema" in combined
+        or "invalid schema for response_format" in combined
+        or "provider rejected structured json-schema output" in combined
+    ):
         return "provider_schema_rejected"
     if "key limit exceeded" in combined or "rate limit" in combined or "429" in combined:
         return "provider_rate_limited"

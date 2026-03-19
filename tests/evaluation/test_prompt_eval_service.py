@@ -1040,6 +1040,17 @@ def test_classify_prompt_eval_trial_failure_categories() -> None:
         == "provider_schema_rejected"
     )
     assert (
+        classify(
+            SimpleNamespace(
+                error=(
+                    "LLMCapabilityError: call_llm_structured: provider rejected structured "
+                    "JSON-schema output for GPT-5-family model gpt-5-mini"
+                )
+            )
+        )
+        == "provider_schema_rejected"
+    )
+    assert (
         classify(SimpleNamespace(reasoning="deterministic prompt_eval scoring failed: entity fillers require entity_id or name"))
         == "unnamed_entity_filler"
     )
