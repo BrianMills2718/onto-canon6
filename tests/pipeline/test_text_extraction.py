@@ -128,10 +128,10 @@ def test_extract_candidate_imports_uses_llm_client_boundary(tmp_path: Path, monk
     assert imports[0].evidence_spans[0].text == "Mission planning"
     assert imports[0].evidence_spans[0].start_char == 0
     assert imports[0].source_artifact.content_text is not None
-    assert calls["selection_task"] == "budget_extraction"
+    assert calls["selection_task"] == "extraction"
     call_kwargs = calls["kwargs"]
     assert isinstance(call_kwargs, dict)
-    assert call_kwargs["task"] == "budget_extraction"
+    assert call_kwargs["task"] == "extraction"
     assert call_kwargs["max_budget"] == 0.25
     assert call_kwargs["prompt_ref"] == "onto_canon6.extraction.text_to_candidate_assertions@1"
     assert str(call_kwargs["trace_id"]).startswith("onto_canon6.extract.")
