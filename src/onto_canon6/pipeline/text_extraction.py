@@ -53,7 +53,10 @@ class ExtractedFiller(BaseModel):
 
     model_config = ConfigDict(extra="forbid", frozen=True)
 
-    kind: str = Field(min_length=1)
+    kind: str = Field(
+        min_length=1,
+        description="Filler kind. Use `entity` for named entities and `value` for concrete literals.",
+    )
     entity_id: str | None = None
     entity_type: str | None = None
     name: str | None = None
@@ -98,7 +101,10 @@ class ExtractedEvidenceSpan(BaseModel):
 
     model_config = ConfigDict(extra="forbid", frozen=True)
 
-    text: str = Field(min_length=1)
+    text: str = Field(
+        min_length=1,
+        description="Exact source substring copied character-for-character from the input text.",
+    )
     start_char: int | None = Field(default=None, ge=0)
     end_char: int | None = Field(default=None, gt=0)
 
@@ -121,10 +127,25 @@ class ExtractedCandidate(BaseModel):
 
     model_config = ConfigDict(extra="forbid", frozen=True)
 
-    predicate: str = Field(min_length=1)
-    roles: dict[str, list[ExtractedFiller]] = Field(default_factory=dict)
-    evidence_spans: list[ExtractedEvidenceSpan] = Field(min_length=1)
-    claim_text: str | None = None
+    predicate: str = Field(
+        min_length=1,
+        description="Predicate identifier only, without serialized role payloads or extra prose.",
+    )
+    roles: dict[str, list[ExtractedFiller]] = Field(
+        min_length=1,
+        description=(
+            "Required non-empty role mapping. Every candidate must include at least one role, "
+            "and each role must contain one or more fillers."
+        ),
+    )
+    evidence_spans: list[ExtractedEvidenceSpan] = Field(
+        min_length=1,
+        description="One or more exact evidence spans that directly support the candidate assertion.",
+    )
+    claim_text: str | None = Field(
+        default=None,
+        description="Optional short natural-language gloss to help reviewers inspect the candidate.",
+    )
 
     @model_validator(mode="before")
     @classmethod
@@ -198,7 +219,9 @@ class TextExtractionResponse(BaseModel):
 
     model_config = ConfigDict(extra="forbid", frozen=True)
 
-    candidates: list[ExtractedCandidate] = Field(default_factory=list)
+    candidates: list[ExtractedCandidate] = Field(
+        description="Single required candidate array for the extractor response. Use an empty array when no candidates are supported.",
+    )
 
 
 class TextExtractionRun(BaseModel):

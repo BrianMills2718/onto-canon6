@@ -309,6 +309,32 @@ def test_extraction_response_accepts_entity_fillers_without_entity_id() -> None:
     assert candidate.roles["commander"][0].name == "Admiral Eric Olson"
 
 
+def test_extraction_response_fails_loud_when_candidate_omits_roles() -> None:
+    """Candidates without a `roles` field should fail at schema-validation time."""
+
+    with pytest.raises(ValueError, match="Field required"):
+        TextExtractionResponse.model_validate(
+            {
+                "candidates": [
+                    {
+                        "predicate": "oc:replace_designation",
+                        "evidence_spans": [{"text": "PSYOP was officially replaced"}],
+                    }
+                ]
+            }
+        )
+
+
+def test_extraction_response_schema_requires_candidates_and_roles() -> None:
+    """The structured schema should advertise `candidates` and candidate `roles` as required."""
+
+    response_schema = TextExtractionResponse.model_json_schema()
+    candidate_schema = ExtractedCandidate.model_json_schema()
+
+    assert "candidates" in response_schema["required"]
+    assert "roles" in candidate_schema["required"]
+
+
 def test_extraction_response_resolves_offsets_from_exact_text() -> None:
     """Quoted evidence text should resolve into deterministic offsets."""
 
