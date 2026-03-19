@@ -25,7 +25,7 @@ extraction:
   selection_use_performance: false
   prompt_template: "prompts/extraction/text_to_candidate_assertions.yaml"
   prompt_ref: "onto_canon6.extraction.text_to_candidate_assertions@1"
-  timeout_seconds: 90
+  timeout_seconds: 60
   num_retries: 2
   max_budget_usd: 0.25
 
@@ -53,7 +53,7 @@ evaluation:
     selection_use_performance: false
     n_runs: 2
     temperature: 0.0
-    timeout_seconds: 90
+    timeout_seconds: 60
     num_retries: 2
     max_budget_usd: 0.25
     baseline_variant_name: "baseline"
