@@ -310,6 +310,13 @@ research outputs. See:
 2. `docs/runs/2026-03-18_psyop_stage1_run_summary.md`
 3. `docs/runs/2026-03-18_psyop_stage1_friction_log.md`
 
+A second real cross-project consumer run has also been completed over local
+`research-agent` Shield AI relationship output. See:
+
+1. `docs/plans/0012_research_agent_shield_ai_whygame_run.md`
+2. `docs/runs/2026-03-18_research_agent_shield_ai_whygame_run_summary.md`
+3. `docs/runs/2026-03-18_research_agent_shield_ai_whygame_friction_log.md`
+
 There is still no automatic “Phase 16” until a new roadmap extension is justified.
 The repo should now:
 

@@ -19,6 +19,7 @@ from pathlib import Path
 import sys
 from typing import Any, Sequence
 
+from .adapters import WhyGameImportResult, WhyGameImportService
 from .config import CLIOutputFormatValue, ConfigError, get_config
 from .core import (
     CanonicalGraphPromotionError,
@@ -160,6 +161,46 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     _add_output_arg(split_parser, default_output=config.cli.default_output_format)
     split_parser.set_defaults(handler=_handle_split_text)
+
+    import_whygame_parser = subparsers.add_parser(
+        "import-whygame-relationships",
+        help="Import one JSON array of WhyGame relationship facts into the review workflow.",
+    )
+    _add_store_args(import_whygame_parser, include_overlay_root=True)
+    import_whygame_parser.add_argument(
+        "--input",
+        required=True,
+        type=Path,
+        help="Path to the JSON file containing WhyGame relationship facts.",
+    )
+    import_whygame_parser.add_argument(
+        "--submitted-by",
+        required=True,
+        help="Actor id recorded for the imported candidates.",
+    )
+    import_whygame_parser.add_argument(
+        "--source-ref",
+        help="Stable source reference recorded on imported candidates. Defaults to the input path string.",
+    )
+    import_whygame_parser.add_argument(
+        "--source-label",
+        help="Optional human-readable source label. Defaults to the input file name.",
+    )
+    import_whygame_parser.add_argument(
+        "--artifact-uri",
+        help="Optional artifact URI recorded when artifact registration is enabled.",
+    )
+    import_whygame_parser.add_argument(
+        "--artifact-label",
+        help="Optional artifact label recorded when artifact registration is enabled.",
+    )
+    import_whygame_parser.add_argument(
+        "--no-register-artifact",
+        action="store_true",
+        help="Disable the adapter's default artifact registration for this import.",
+    )
+    _add_output_arg(import_whygame_parser, default_output=config.cli.default_output_format)
+    import_whygame_parser.set_defaults(handler=_handle_import_whygame_relationships)
 
     list_candidates_parser = subparsers.add_parser(
         "list-candidates",
@@ -516,6 +557,31 @@ def _handle_split_text(args: argparse.Namespace) -> int:
         encoding="utf-8",
     )
     _emit_output(manifest, output_format=args.output)
+    return 0
+
+
+def _handle_import_whygame_relationships(args: argparse.Namespace) -> int:
+    """Import one file of WhyGame relationship facts through the existing adapter."""
+
+    review_service = _build_review_service(args)
+    input_path = args.input
+    loaded = json.loads(input_path.read_text(encoding="utf-8"))
+    if not isinstance(loaded, list):
+        raise ValueError("WhyGame import input must be a JSON array of relationship facts")
+    source_ref = args.source_ref if args.source_ref is not None else str(input_path)
+    source_label = args.source_label if args.source_label is not None else input_path.name
+    service = WhyGameImportService(review_service=review_service)
+    request = service.build_default_request(
+        facts=loaded,
+        submitted_by=args.submitted_by,
+        source_ref=source_ref,
+        source_label=source_label,
+        register_artifact=False if args.no_register_artifact else None,
+        artifact_uri=args.artifact_uri,
+        artifact_label=args.artifact_label,
+    )
+    result = service.import_request(request=request)
+    _emit_output(result, output_format=args.output)
     return 0
 
 
@@ -886,6 +952,7 @@ def _to_jsonable(value: object) -> Any:
             SemanticCanonicalizationResult,
             TextChunkFileRecord,
             TextChunkManifest,
+            WhyGameImportResult,
         ),
     ):
         return value.model_dump(mode="json")
@@ -941,6 +1008,13 @@ def _to_text(value: object) -> str:
             f"chunk_id={value.chunk_id} "
             f"text_length={value.text_length} "
             f"output_path={value.output_path}"
+        )
+    if isinstance(value, WhyGameImportResult):
+        artifact_id = value.artifact.artifact_id if value.artifact is not None else "none"
+        return (
+            f"profile={value.profile.profile_id}@{value.profile.profile_version} "
+            f"submissions={len(value.submissions)} "
+            f"artifact={artifact_id}"
         )
     if isinstance(value, GovernedWorkflowBundle):
         candidate_ids = ",".join(
