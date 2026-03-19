@@ -23,6 +23,7 @@ ontology_runtime:
 extraction:
   selection_task: "budget_extraction"
   prompt_template: "prompts/extraction/text_to_candidate_assertions.yaml"
+  prompt_ref: "onto_canon6.extraction.text_to_candidate_assertions@1"
   timeout_seconds: 60
   num_retries: 2
   max_budget_usd: 0.25
@@ -35,8 +36,11 @@ chunking:
 
 evaluation:
   benchmark_fixture: "tests/fixtures/psyop_eval_slice.json"
+  observability_dataset: "onto_canon6_live_extraction_benchmark"
+  observability_phase: "evaluation"
   judge_selection_task: "judging"
   judge_prompt_template: "prompts/evaluation/judge_candidate_reasonableness.yaml"
+  judge_prompt_ref: "onto_canon6.evaluation.judge_candidate_reasonableness@1"
   judge_timeout_seconds: 60
   judge_num_retries: 2
   judge_max_budget_usd: 0.25

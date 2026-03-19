@@ -294,7 +294,8 @@ Measure live extraction quality without conflating support and canonical form:
 1. run the text extractor against a small local benchmark slice;
 2. judge candidate-assertion reasonableness separately from structural
    validation and exact preferred-form agreement;
-3. keep the resulting evidence inspectable through a local notebook proof.
+3. keep the resulting evidence inspectable through a local notebook proof;
+4. emit prompt provenance and shared experiment records for the benchmark path.
 
 Status: complete
 

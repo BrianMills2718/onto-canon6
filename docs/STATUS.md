@@ -31,13 +31,17 @@ typed ontology runtime:
 19. a typed live extraction-evaluation harness that separates reasonableness,
     structural validation, and exact canonicalization fidelity;
 20. a first real-model benchmark proof over the local PSYOP evaluation slice;
-21. a thin operational CLI over extraction, review, proposal, and overlay
+21. config-backed prompt provenance on both extraction and benchmark-judge
+    calls;
+22. shared experiment run, item, and aggregate logging for the live benchmark
+    path;
+23. a thin operational CLI over extraction, review, proposal, and overlay
     actions;
-22. JSON-first CLI output suitable for scripting and notebook inspection;
-23. loud end-to-end CLI proof for both the happy path and a review-transition
+24. JSON-first CLI output suitable for scripting and notebook inspection;
+25. loud end-to-end CLI proof for both the happy path and a review-transition
     failure path;
-24. one canonical journey notebook for the current user-visible workflow;
-25. a machine-readable notebook registry that keeps phase contracts outside the
+26. one canonical journey notebook for the current user-visible workflow;
+27. a machine-readable notebook registry that keeps phase contracts outside the
     notebook;
 26. a local notebook-process validator plus notebook execution proof;
 27. one local second-pack proof with `dodaf_minimal` strict and mixed profiles
@@ -280,6 +284,8 @@ The authoritative parity ledger for the broader successor now lives in
    server.
 3. The extraction boundary now has a real live benchmark slice, but the
    benchmark corpus is still small and not yet calibrated for broader claims.
+   It now emits shared experiment records, but `prompt_eval`-driven
+   prompt/model iteration is still optional rather than wired by default.
 4. Notebook process validation is local to `onto-canon6`; it is not yet wired
    into the wider workspace hook and graph system.
 5. The artifact-lineage slice is intentionally narrow and does not yet answer

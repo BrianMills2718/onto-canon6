@@ -287,6 +287,9 @@ Proved:
    `notebooks/10_live_extraction_evaluation.ipynb`;
 5. the local rationale is now recorded in
    `docs/adr/0005-separate-live-extraction-reasonableness-from-structural-validation-and-canonicalization-fidelity.md`.
+6. benchmark calls now carry config-backed prompt refs and the live benchmark
+   emits shared experiment runs, item rows, and a family aggregate through
+   `llm_client` observability.
 
 ## Phase 6: First Operational Surface [completed]
 

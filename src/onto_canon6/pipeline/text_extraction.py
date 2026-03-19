@@ -213,6 +213,7 @@ class TextExtractionRun(BaseModel):
 
     selection_task: str = Field(min_length=1)
     prompt_template: str = Field(min_length=1)
+    prompt_ref: str | None = None
     selected_model: str = Field(min_length=1)
     resolved_model: str = Field(min_length=1)
     trace_id: str = Field(min_length=1)
@@ -273,6 +274,7 @@ class TextExtractionService:
         self._review_service = review_service or ReviewService()
         self._selection_task = config.extraction.selection_task
         self._prompt_template = config.extraction_prompt_template()
+        self._prompt_ref = config.extraction.prompt_ref
         self._timeout_seconds = config.extraction.timeout_seconds
         self._num_retries = config.extraction.num_retries
         self._max_budget_usd = config.extraction.max_budget_usd
@@ -379,6 +381,7 @@ class TextExtractionService:
                 trace_id=trace_id,
                 max_budget=self._max_budget_usd,
                 max_tokens=self._max_output_tokens,
+                prompt_ref=self._prompt_ref,
             )
         except Exception as exc:
             raise ExtractionError(f"llm_client text extraction failed: {exc}") from exc
@@ -405,6 +408,7 @@ class TextExtractionService:
         return TextExtractionRun(
             selection_task=self._selection_task,
             prompt_template=str(self._prompt_template),
+            prompt_ref=self._prompt_ref,
             selected_model=selected_model,
             resolved_model=resolved_model,
             trace_id=trace_id,

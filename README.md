@@ -28,7 +28,8 @@ entire prior runtime. The current scope is intentionally narrow:
 - `llm_client`-backed raw-text extraction into candidate assertions via prompt
   templates and structured output
 - live extraction evaluation that separates reasonableness, structural
-  validation, and exact canonicalization fidelity
+  validation, and exact canonicalization fidelity while emitting prompt
+  provenance and shared experiment records
 - explicit overlay application for accepted ontology proposals
 - overlay-aware validation against local additions
 - minimal report surface over persisted review and overlay state
@@ -70,6 +71,7 @@ Repo-local strategic and planning docs now live in:
 - `docs/runs/2026-03-18_psyop_stage1_run_summary.md`
 - `docs/runs/2026-03-18_psyop_stage1_friction_log.md`
 - `docs/plans/0012_research_agent_shield_ai_whygame_run.md`
+- `docs/plans/0013_llm_observability_and_prompt_eval_adoption.md`
 - `docs/runs/2026-03-18_research_agent_shield_ai_whygame_run_summary.md`
 - `docs/runs/2026-03-18_research_agent_shield_ai_whygame_friction_log.md`
 - `notebooks/README.md`
@@ -105,7 +107,8 @@ Today this repo proves only one thin slice:
 10. extract candidate assertions from raw text through `llm_client` without
     bypassing the review, proposal, or overlay workflow
 11. evaluate live extraction quality without collapsing support,
-    structural validity, and exact preferred-form agreement into one score
+    structural validity, and exact preferred-form agreement into one score,
+    while logging prompt provenance and shared experiment records
 12. operate the proved workflow through a thin CLI instead of direct Python
     calls
 13. keep the main user-visible workflow represented by one canonical journey

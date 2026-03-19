@@ -20,6 +20,7 @@ from importlib import import_module
 import json
 from pathlib import Path
 from typing import Any, Mapping, Protocol, cast
+import uuid
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -102,6 +103,30 @@ class _CallStructured(Protocol):
     ) -> tuple[_JudgeResponse, object]: ...
 
 
+class _StartRun(Protocol):
+    """Start one shared observability experiment run and return its run ID."""
+
+    def __call__(self, **kwargs: Any) -> str: ...
+
+
+class _FinishRun(Protocol):
+    """Finish one shared observability experiment run."""
+
+    def __call__(self, *, run_id: str, **kwargs: Any) -> dict[str, Any]: ...
+
+
+class _LogItem(Protocol):
+    """Log one item row into a shared observability experiment run."""
+
+    def __call__(self, *, run_id: str, item_id: str, metrics: dict[str, Any], **kwargs: Any) -> None: ...
+
+
+class _LogAggregate(Protocol):
+    """Log one family-level shared experiment aggregate."""
+
+    def __call__(self, **kwargs: Any) -> str: ...
+
+
 class _ExtractionRunner(Protocol):
     """Narrow extraction seam needed by the evaluation slice."""
 
@@ -134,6 +159,16 @@ class _JudgeLLMClientAPI:
     call_llm_structured: _CallStructured
 
 
+@dataclass(frozen=True)
+class _ObservabilityAPI:
+    """Small typed view of the shared experiment-observability functions."""
+
+    start_run: _StartRun
+    finish_run: _FinishRun
+    log_item: _LogItem
+    log_experiment_aggregate: _LogAggregate
+
+
 def load_benchmark_fixture(fixture_path: Path | str) -> BenchmarkFixture:
     """Load one benchmark fixture file into typed evaluation models."""
 
@@ -156,8 +191,11 @@ class LiveExtractionEvaluationService:
         config = get_config()
         self._extractor = extractor or TextExtractionService()
         self._benchmark_fixture = config.evaluation_benchmark_fixture()
+        self._observability_dataset = config.evaluation.observability_dataset
+        self._observability_phase = config.evaluation.observability_phase
         self._judge_selection_task = config.evaluation.judge_selection_task
         self._judge_prompt_template = config.evaluation_judge_prompt_template()
+        self._judge_prompt_ref = config.evaluation.judge_prompt_ref
         self._judge_timeout_seconds = config.evaluation.judge_timeout_seconds
         self._judge_num_retries = config.evaluation.judge_num_retries
         self._judge_max_budget_usd = config.evaluation.judge_max_budget_usd
@@ -181,22 +219,41 @@ class LiveExtractionEvaluationService:
         resolved_fixture_path = Path(fixture_path or self._benchmark_fixture)
         fixture = load_benchmark_fixture(resolved_fixture_path)
         cases = fixture.cases if case_limit is None else fixture.cases[:case_limit]
+        experiment_execution_id = uuid.uuid4().hex[:12]
+        observability_api = _load_observability_api()
         case_reports = tuple(
-            self.evaluate_case_live(case=case, submitted_by=submitted_by)
+            self.evaluate_case_live(
+                case=case,
+                submitted_by=submitted_by,
+                experiment_execution_id=experiment_execution_id,
+                fixture_id=fixture.fixture_id,
+                fixture_path=resolved_fixture_path,
+                observability_api=observability_api,
+            )
             for case in cases
         )
-        return BenchmarkEvaluationReport(
+        report = BenchmarkEvaluationReport(
             fixture_id=fixture.fixture_id,
             fixture_path=str(resolved_fixture_path),
+            experiment_execution_id=experiment_execution_id,
             cases=case_reports,
             summary=_build_aggregate_summary(case_reports),
         )
+        _log_fixture_observability_aggregate(
+            observability_api=observability_api,
+            report=report,
+        )
+        return report
 
     def evaluate_case_live(
         self,
         *,
         case: BenchmarkCase,
         submitted_by: str,
+        experiment_execution_id: str | None = None,
+        fixture_id: str | None = None,
+        fixture_path: Path | None = None,
+        observability_api: _ObservabilityAPI | None = None,
     ) -> BenchmarkCaseEvaluation:
         """Run extraction and split evaluation for one benchmark case."""
 
@@ -239,13 +296,14 @@ class LiveExtractionEvaluationService:
             )
             for index, candidate_import in enumerate(extraction_run.candidate_imports)
         )
-        return BenchmarkCaseEvaluation(
+        case_evaluation = BenchmarkCaseEvaluation(
             case_id=case.case_id,
             profile=case.profile,
             source_artifact=case.source_artifact,
             extraction_run=LLMRunRecord(
                 selection_task=extraction_run.selection_task,
                 prompt_template=extraction_run.prompt_template,
+                prompt_ref=extraction_run.prompt_ref,
                 selected_model=extraction_run.selected_model,
                 resolved_model=extraction_run.resolved_model,
                 trace_id=extraction_run.trace_id,
@@ -257,6 +315,15 @@ class LiveExtractionEvaluationService:
             important_missing_facts=support_review.important_missing_facts,
             overall_notes=support_review.overall_notes,
         )
+        observability_run_id = _log_case_observability_run(
+            observability_api=observability_api,
+            case=case,
+            case_evaluation=case_evaluation,
+            experiment_execution_id=experiment_execution_id,
+            fixture_id=fixture_id,
+            fixture_path=fixture_path,
+        )
+        return case_evaluation.model_copy(update={"observability_run_id": observability_run_id})
 
     def _judge_reasonableness(
         self,
@@ -302,6 +369,7 @@ class LiveExtractionEvaluationService:
                 trace_id=trace_id,
                 max_budget=self._judge_max_budget_usd,
                 max_tokens=self._judge_max_output_tokens,
+                prompt_ref=self._judge_prompt_ref,
             )
         except Exception as exc:
             raise EvaluationError(f"reasonableness judge failed: {exc}") from exc
@@ -312,6 +380,7 @@ class LiveExtractionEvaluationService:
         judge_run = LLMRunRecord(
             selection_task=self._judge_selection_task,
             prompt_template=str(self._judge_prompt_template),
+            prompt_ref=self._judge_prompt_ref,
             selected_model=selected_model,
             resolved_model=str(getattr(meta, "resolved_model", selected_model)),
             trace_id=trace_id,
@@ -535,6 +604,155 @@ def _build_aggregate_summary(
     )
 
 
+def _log_case_observability_run(
+    *,
+    observability_api: _ObservabilityAPI | None,
+    case: BenchmarkCase,
+    case_evaluation: BenchmarkCaseEvaluation,
+    experiment_execution_id: str | None,
+    fixture_id: str | None,
+    fixture_path: Path | None,
+) -> str | None:
+    """Persist one benchmark-case experiment run when observability is enabled."""
+
+    if observability_api is None or experiment_execution_id is None or fixture_id is None:
+        return None
+    config = get_config()
+    run_id = observability_api.start_run(
+        dataset=config.evaluation.observability_dataset,
+        model=case_evaluation.extraction_run.resolved_model,
+        task="benchmark.live_extraction",
+        config={
+            "profile_id": case.profile.profile_id,
+            "profile_version": case.profile.profile_version,
+            "extraction_selection_task": case_evaluation.extraction_run.selection_task,
+            "judge_selection_task": case_evaluation.judge_run.selection_task,
+            "extraction_prompt_ref": case_evaluation.extraction_run.prompt_ref,
+            "judge_prompt_ref": case_evaluation.judge_run.prompt_ref,
+        },
+        condition_id=case.case_id,
+        replicate=0,
+        scenario_id=fixture_id,
+        phase=config.evaluation.observability_phase,
+        metrics_schema=[
+            "supported",
+            "partially_supported",
+            "unsupported",
+            "acceptable",
+            "valid",
+            "needs_review",
+            "invalid",
+            "exact_preferred_match",
+        ],
+        provenance={
+            "source_package": config.project.package_name,
+            "benchmark_execution_id": experiment_execution_id,
+            "fixture_id": fixture_id,
+            "fixture_path": str(fixture_path) if fixture_path is not None else None,
+            "source_ref": case.source_artifact.source_ref,
+            "source_kind": case.source_artifact.source_kind,
+            "judge_model": case_evaluation.judge_run.resolved_model,
+            "judge_trace_id": case_evaluation.judge_run.trace_id,
+            "important_missing_facts": list(case_evaluation.important_missing_facts),
+        },
+        allow_missing_agent_spec=True,
+        missing_agent_spec_reason=(
+            "live extraction benchmark runs evaluate one service boundary rather than "
+            "an agent-spec-governed agent workload"
+        ),
+        project=config.project.name,
+    )
+    for candidate_evaluation in case_evaluation.candidate_evaluations:
+        observability_api.log_item(
+            run_id=run_id,
+            item_id=f"candidate_{candidate_evaluation.candidate_index}",
+            metrics=_candidate_metrics(candidate_evaluation),
+            predicted=json.dumps(
+                {
+                    "payload": candidate_evaluation.candidate_import.payload,
+                    "claim_text": candidate_evaluation.candidate_import.claim_text,
+                    "evidence_spans": [
+                        span.model_dump(mode="json")
+                        for span in candidate_evaluation.candidate_import.evidence_spans
+                    ],
+                },
+                sort_keys=True,
+            ),
+            gold=None,
+            extra={
+                "support_label": candidate_evaluation.support_label,
+                "support_reasoning": candidate_evaluation.support_reasoning,
+                "validation_status": candidate_evaluation.validation_status,
+                "exact_preferred_match": candidate_evaluation.exact_preferred_match,
+                "profile_id": case.profile.profile_id,
+                "profile_version": case.profile.profile_version,
+                "judge_trace_id": case_evaluation.judge_run.trace_id,
+            },
+            trace_id=case_evaluation.extraction_run.trace_id,
+        )
+    observability_api.finish_run(run_id=run_id)
+    return run_id
+
+
+def _candidate_metrics(candidate_evaluation: CandidateEvaluationRecord) -> dict[str, float]:
+    """Convert one benchmark candidate evaluation into numeric experiment metrics."""
+
+    support_label = candidate_evaluation.support_label
+    validation_status = candidate_evaluation.validation_status
+    return {
+        "supported": 1.0 if support_label == "supported" else 0.0,
+        "partially_supported": 1.0 if support_label == "partially_supported" else 0.0,
+        "unsupported": 1.0 if support_label == "unsupported" else 0.0,
+        "acceptable": 1.0 if support_label in {"supported", "partially_supported"} else 0.0,
+        "valid": 1.0 if validation_status == "valid" else 0.0,
+        "needs_review": 1.0 if validation_status == "needs_review" else 0.0,
+        "invalid": 1.0 if validation_status == "invalid" else 0.0,
+        "exact_preferred_match": 1.0 if candidate_evaluation.exact_preferred_match else 0.0,
+    }
+
+
+def _log_fixture_observability_aggregate(
+    *,
+    observability_api: _ObservabilityAPI | None,
+    report: BenchmarkEvaluationReport,
+) -> str | None:
+    """Persist one family-level aggregate over a full benchmark invocation."""
+
+    if observability_api is None or report.experiment_execution_id is None:
+        return None
+    config = get_config()
+    source_run_ids = tuple(
+        case.observability_run_id
+        for case in report.cases
+        if case.observability_run_id is not None
+    )
+    return observability_api.log_experiment_aggregate(
+        dataset=config.evaluation.observability_dataset,
+        family_id=report.experiment_execution_id,
+        aggregate_type="onto_canon6.live_extraction_benchmark.summary",
+        scenario_id=report.fixture_id,
+        phase=config.evaluation.observability_phase,
+        metrics={
+            "case_count": report.summary.case_count,
+            "supported_rate": report.summary.reasonableness.supported_rate,
+            "acceptable_rate": report.summary.reasonableness.acceptable_rate,
+            "valid_count": report.summary.validation.valid_count,
+            "needs_review_count": report.summary.validation.needs_review_count,
+            "invalid_count": report.summary.validation.invalid_count,
+            "exact_precision": report.summary.canonicalization.precision,
+            "exact_recall": report.summary.canonicalization.recall,
+            "exact_f1": report.summary.canonicalization.f1,
+        },
+        provenance={
+            "source_package": config.project.package_name,
+            "fixture_id": report.fixture_id,
+            "fixture_path": report.fixture_path,
+        },
+        source_run_ids=list(source_run_ids),
+        project=config.project.name,
+    )
+
+
 def _judge_trace_id(*, case_id: str, source_ref: str) -> str:
     """Build a deterministic trace identifier for the reasonableness judge."""
 
@@ -556,4 +774,22 @@ def _load_judge_llm_client_api() -> _JudgeLLMClientAPI:
         get_model=cast(_GetModel, getattr(module, "get_model")),
         render_prompt=cast(_RenderPrompt, getattr(module, "render_prompt")),
         call_llm_structured=cast(_CallStructured, getattr(module, "call_llm_structured")),
+    )
+
+
+def _load_observability_api() -> _ObservabilityAPI:
+    """Import the shared experiment-observability APIs lazily and fail loudly."""
+
+    try:
+        module = import_module("llm_client.observability")
+    except ImportError as exc:
+        raise ConfigError(
+            "live evaluation observability requires llm_client to be installed; "
+            "run `pip install -e ~/projects/llm_client` in this repo's .venv"
+        ) from exc
+    return _ObservabilityAPI(
+        start_run=cast(_StartRun, getattr(module, "start_run")),
+        finish_run=cast(_FinishRun, getattr(module, "finish_run")),
+        log_item=cast(_LogItem, getattr(module, "log_item")),
+        log_experiment_aggregate=cast(_LogAggregate, getattr(module, "log_experiment_aggregate")),
     )

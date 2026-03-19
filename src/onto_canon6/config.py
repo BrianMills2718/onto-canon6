@@ -72,6 +72,7 @@ class ExtractionConfig(BaseModel):
 
     selection_task: str = Field(min_length=1)
     prompt_template: str = Field(min_length=1)
+    prompt_ref: str = Field(min_length=1)
     timeout_seconds: int = Field(ge=1)
     num_retries: int = Field(ge=0)
     max_budget_usd: float = Field(gt=0)
@@ -99,8 +100,11 @@ class EvaluationConfig(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
     benchmark_fixture: str = Field(min_length=1)
+    observability_dataset: str = Field(min_length=1)
+    observability_phase: str = Field(min_length=1)
     judge_selection_task: str = Field(min_length=1)
     judge_prompt_template: str = Field(min_length=1)
+    judge_prompt_ref: str = Field(min_length=1)
     judge_timeout_seconds: int = Field(ge=1)
     judge_num_retries: int = Field(ge=0)
     judge_max_budget_usd: float = Field(gt=0)

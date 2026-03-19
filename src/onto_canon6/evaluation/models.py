@@ -93,6 +93,7 @@ class LLMRunRecord(BaseModel):
 
     selection_task: str = Field(min_length=1)
     prompt_template: str = Field(min_length=1)
+    prompt_ref: str | None = None
     selected_model: str = Field(min_length=1)
     resolved_model: str = Field(min_length=1)
     trace_id: str = Field(min_length=1)
@@ -120,6 +121,7 @@ class BenchmarkCaseEvaluation(BaseModel):
     case_id: str = Field(min_length=1)
     profile: ProfileRef
     source_artifact: SourceArtifactRef
+    observability_run_id: str | None = None
     extraction_run: LLMRunRecord
     judge_run: LLMRunRecord
     candidate_evaluations: tuple[CandidateEvaluationRecord, ...] = ()
@@ -170,6 +172,6 @@ class BenchmarkEvaluationReport(BaseModel):
     generated_at: str = Field(default_factory=lambda: datetime.now(UTC).isoformat())
     fixture_id: str = Field(min_length=1)
     fixture_path: str = Field(min_length=1)
+    experiment_execution_id: str | None = None
     cases: tuple[BenchmarkCaseEvaluation, ...] = ()
     summary: BenchmarkAggregateSummary
-

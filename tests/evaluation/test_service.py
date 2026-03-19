@@ -157,6 +157,7 @@ class _FakeExtractor:
         return TextExtractionRun(
             selection_task=self.selection_task,
             prompt_template=str(self.prompt_template),
+            prompt_ref="onto_canon6.extraction.text_to_candidate_assertions@1",
             selected_model="fake-extraction-model",
             resolved_model="fake-extraction-model",
             trace_id="onto_canon6.extract.fake",
@@ -198,6 +199,7 @@ def test_run_live_benchmark_separates_reasonableness_and_exact_fidelity(
     ) -> tuple[evaluation_service_module._JudgeResponse, object]:
         assert model == "fake-judge-model"
         assert kwargs["task"] == "judging"
+        assert kwargs["prompt_ref"] == "onto_canon6.evaluation.judge_candidate_reasonableness@1"
         assert "Candidate assertions JSON" in messages[-1]["content"]
         parsed = response_model(
             candidate_reviews=(
@@ -241,6 +243,8 @@ def test_run_live_benchmark_separates_reasonableness_and_exact_fidelity(
     assert report.summary.canonicalization.recall == 0.25
     assert report.cases[0].candidate_evaluations[0].exact_preferred_match is True
     assert report.cases[0].candidate_evaluations[1].exact_preferred_match is False
+    assert report.cases[0].extraction_run.prompt_ref == "onto_canon6.extraction.text_to_candidate_assertions@1"
+    assert report.cases[0].judge_run.prompt_ref == "onto_canon6.evaluation.judge_candidate_reasonableness@1"
     assert report.cases[0].important_missing_facts == (
         "The source also names PSYOP and MISO as designation labels.",
     )
@@ -293,3 +297,106 @@ def test_run_live_benchmark_fails_loud_when_judge_omits_candidate_review(
         match="judge must return exactly one candidate review for each extracted candidate",
     ):
         service.run_live_benchmark(fixture_path=_fixture_path(), case_limit=1)
+
+
+def test_run_live_benchmark_emits_shared_experiment_records(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The benchmark should log case runs and one family aggregate."""
+
+    extractor = _FakeExtractor()
+    service = LiveExtractionEvaluationService(extractor=extractor)
+    run_calls: dict[str, object] = {}
+    item_calls: list[dict[str, object]] = []
+    aggregate_calls: list[dict[str, object]] = []
+
+    def fake_get_model(task: str) -> str:
+        assert task == "judging"
+        return "fake-judge-model"
+
+    # mock-ok: isolates both the llm_client network boundary and the shared
+    # observability backend while preserving the local benchmark logic.
+    def fake_call_llm_structured(
+        model: str,
+        messages: list[dict[str, str]],
+        response_model: type[evaluation_service_module._JudgeResponse],
+        **kwargs: object,
+    ) -> tuple[evaluation_service_module._JudgeResponse, object]:
+        del model, messages
+        assert kwargs["prompt_ref"] == "onto_canon6.evaluation.judge_candidate_reasonableness@1"
+        parsed = response_model(
+            candidate_reviews=(
+                evaluation_service_module._JudgeCandidateReview(
+                    candidate_index=0,
+                    support_label="supported",
+                    reasoning="supported",
+                ),
+                evaluation_service_module._JudgeCandidateReview(
+                    candidate_index=1,
+                    support_label="partially_supported",
+                    reasoning="partial",
+                ),
+            ),
+        )
+        return parsed, SimpleNamespace(resolved_model="fake-judge-model")
+
+    def fake_start_run(**kwargs: object) -> str:
+        run_calls.update(kwargs)
+        return "run-case-1"
+
+    def fake_finish_run(*, run_id: str, **kwargs: object) -> dict[str, object]:
+        assert run_id == "run-case-1"
+        return {"run_id": run_id, **kwargs}
+
+    def fake_log_item(**kwargs: object) -> None:
+        item_calls.append(dict(kwargs))
+
+    def fake_log_experiment_aggregate(**kwargs: object) -> str:
+        aggregate_calls.append(dict(kwargs))
+        return "agg-1"
+
+    monkeypatch.setattr(
+        evaluation_service_module,
+        "_load_judge_llm_client_api",
+        lambda: evaluation_service_module._JudgeLLMClientAPI(
+            get_model=fake_get_model,
+            render_prompt=_render_prompt,
+            call_llm_structured=fake_call_llm_structured,
+        ),
+    )
+    monkeypatch.setattr(
+        evaluation_service_module,
+        "_load_observability_api",
+        lambda: evaluation_service_module._ObservabilityAPI(
+            start_run=fake_start_run,
+            finish_run=fake_finish_run,
+            log_item=fake_log_item,
+            log_experiment_aggregate=fake_log_experiment_aggregate,
+        ),
+    )
+
+    report = service.run_live_benchmark(fixture_path=_fixture_path(), case_limit=1)
+
+    assert report.experiment_execution_id is not None
+    assert report.cases[0].observability_run_id == "run-case-1"
+    assert run_calls["dataset"] == "onto_canon6_live_extraction_benchmark"
+    assert run_calls["task"] == "benchmark.live_extraction"
+    assert run_calls["condition_id"] == report.cases[0].case_id
+    assert run_calls["scenario_id"] == report.fixture_id
+    assert len(item_calls) == 2
+    assert item_calls[0]["trace_id"] == "onto_canon6.extract.fake"
+    assert item_calls[0]["metrics"] == {
+        "supported": 1.0,
+        "partially_supported": 0.0,
+        "unsupported": 0.0,
+        "acceptable": 1.0,
+        "valid": 1.0,
+        "needs_review": 0.0,
+        "invalid": 0.0,
+        "exact_preferred_match": 1.0,
+    }
+    assert len(aggregate_calls) == 1
+    assert aggregate_calls[0]["family_id"] == report.experiment_execution_id
+    aggregate_metrics = aggregate_calls[0]["metrics"]
+    assert isinstance(aggregate_metrics, dict)
+    assert aggregate_metrics["exact_f1"] == report.summary.canonicalization.f1
