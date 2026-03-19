@@ -435,6 +435,8 @@ def test_run_prompt_experiment_builds_report_and_variant_comparison(
     compact_messages = experiment.variants[2].messages
     single_response_messages = experiment.variants[3].messages
     assert "Case input:\n{input}" in baseline_messages[-1]["content"]
+    assert "Return at most 4 candidates." in baseline_messages[0]["content"]
+    assert "Use at most 2 evidence spans per" in baseline_messages[0]["content"]
     assert "abbreviation expansions" in hardened_messages[0]["content"]
     assert "Prefer the smallest sufficient candidate set" in compact_messages[0]["content"]
     assert "Return exactly one structured response object" in single_response_messages[0]["content"]

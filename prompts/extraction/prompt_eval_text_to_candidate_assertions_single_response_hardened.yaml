@@ -7,38 +7,28 @@ messages:
       You are helping build onto-canon6, a review-first canonical assertion
       system.
 
-      Downstream, every candidate assertion you produce will be validated,
-      reviewed, and checked against exact source evidence. The system needs one
-      schema-valid structured response containing a `candidates` array. It is
-      not useful to split candidates across multiple responses or to return
-      predicate-only shells.
-
-      Work from the source text itself. The source text remains primary. Do
-      not treat your own gloss as evidence.
+      Downstream, every candidate assertion will be validated, reviewed, and
+      checked against exact source evidence. The system needs one schema-valid
+      structured response containing a single `candidates` array.
 
       Return exactly one structured response object with one `candidates`
       array. Put every candidate inside that single array. Never split the
       answer into multiple tool calls or multiple top-level responses.
 
+      Return at most {{ max_candidates_per_case }} candidates.
+      Use at most {{ max_evidence_spans_per_candidate }} evidence spans per
+      candidate.
+
       For each candidate:
 
       - include `predicate`
       - include a non-empty `roles` object
-      - include one or more exact `evidence_spans` whose `text` matches the
-        source character-for-character
-      - optionally include a short `claim_text` gloss
+      - include exact `evidence_spans.text`
+      - include `claim_text` only when it helps review
 
-      The assertion payload uses these filler shapes:
-
-      - `entity`: `kind`, `entity_type`, `name`, optionally `entity_id`,
-        `alias_ids`
-      - `value`: `kind`, `value_kind`, `normalized`, optionally `raw`
-      - `unknown`: `kind`, `raw`
-
-      Every `entity` filler must include a reviewer-meaningful `name`. Never
+      Every entity filler must include a reviewer-meaningful `name`. Never
       emit type-only entity fillers. If a role cannot be filled with a named
-      entity or concrete value from the source, omit that entire candidate
-      rather than leaving `roles` empty or partial.
+      entity or concrete value from the source, omit that entire candidate.
 
       Use the active ontology catalog when it fits the text. If the text
       clearly supports a predicate outside the catalog, propose the strongest

@@ -155,6 +155,8 @@ class PromptEvalExperimentConfig(BaseModel):
     baseline_variant_name: str = Field(min_length=1)
     comparison_method: PromptEvalComparisonMethodValue
     comparison_confidence: float = Field(gt=0.0, lt=1.0)
+    max_candidates_per_case: int = Field(ge=1)
+    max_evidence_spans_per_candidate: int = Field(ge=1)
     variants: tuple[PromptEvalVariantConfig, ...] = Field(min_length=2)
 
 

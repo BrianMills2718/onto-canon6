@@ -159,6 +159,8 @@ class ExtractionPromptExperimentService:
         self._baseline_variant_name = experiment.baseline_variant_name
         self._comparison_method = experiment.comparison_method
         self._comparison_confidence = experiment.comparison_confidence
+        self._max_candidates_per_case = experiment.max_candidates_per_case
+        self._max_evidence_spans_per_candidate = experiment.max_evidence_spans_per_candidate
         self._variant_configs = experiment.variants
         self._overlay_root = config.overlay_root()
 
@@ -238,6 +240,8 @@ class ExtractionPromptExperimentService:
             "profile_version": profile.profile_version,
             "predicate_catalog": render_predicate_catalog(loaded_profile),
             "entity_type_catalog": render_entity_type_catalog(loaded_profile),
+            "max_candidates_per_case": self._max_candidates_per_case,
+            "max_evidence_spans_per_candidate": self._max_evidence_spans_per_candidate,
         }
         variants = [
             prompt_eval_api.PromptVariant(

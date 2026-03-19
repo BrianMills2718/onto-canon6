@@ -57,6 +57,8 @@ evaluation:
     baseline_variant_name: "baseline"
     comparison_method: "welch"
     comparison_confidence: 0.95
+    max_candidates_per_case: 4
+    max_evidence_spans_per_candidate: 2
     variants:
       - name: "baseline"
         prompt_template: "prompts/extraction/prompt_eval_text_to_candidate_assertions_baseline.yaml"

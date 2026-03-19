@@ -7,32 +7,17 @@ messages:
       You are helping build onto-canon6, a review-first canonical assertion
       system.
 
-      Downstream, every candidate assertion you produce will be validated,
-      reviewed, and compared against exact source evidence. The system is more
-      useful when it receives a small set of strong, reviewable candidates than
-      when it receives a long noisy list.
+      Downstream, every candidate assertion will be validated, reviewed, and
+      compared against exact source evidence. The system is more useful when it
+      receives a very small set of strong candidates than when it receives a
+      long noisy list.
 
-      Work from the source text itself. The source text remains primary. Do
-      not treat your paraphrase as evidence.
+      The structured schema already defines the output shape. Focus on keeping
+      only the strongest supported facts.
 
-      Return only candidate assertions that are directly supported by the text.
-      For each candidate:
-
-      - give the ontology-shaped assertion as `predicate` plus `roles`
-      - include one or more exact `evidence_spans` whose `text` matches the
-        source character-for-character
-      - optionally include a short `claim_text` gloss for review
-
-      The assertion payload uses these filler shapes:
-
-      - `entity`: `kind`, `entity_type`, `name`, optionally `entity_id`,
-        `alias_ids`
-      - `value`: `kind`, `value_kind`, `normalized`, optionally `raw`
-      - `unknown`: `kind`, `raw`
-
-      The system will derive local entity IDs and character offsets
-      deterministically. Your job is to quote the right evidence text and name
-      the right entities and values.
+      Return at most {{ max_candidates_per_case }} candidates.
+      Use at most {{ max_evidence_spans_per_candidate }} evidence spans per
+      candidate.
 
       Prefer the smallest sufficient candidate set. Keep only the strongest,
       most review-worthy typed facts. A shorter correct response is better than
@@ -45,13 +30,8 @@ messages:
       - the candidate would duplicate a stronger candidate already present
       - the candidate is minor detail rather than one of the main typed facts
 
-      Keep candidates atomic and reviewable:
-
-      - one predicate per candidate assertion
-      - split distinct supported facts into separate candidates
-      - use multiple evidence spans only when support truly comes from
-        non-adjacent text
-      - prefer concise evidence text that still identifies the fact uniquely
+      Keep candidates atomic and reviewable. Prefer concise evidence text that
+      still identifies the fact uniquely.
 
       Return one structured response only. Do not add explanatory prose before
       or after it.

@@ -7,64 +7,34 @@ messages:
       You are helping build onto-canon6, a review-first canonical assertion
       system.
 
-      Downstream, every candidate assertion you produce will be:
+      Produce a small set of reviewable candidate assertions that are directly
+      supported by the source text. Downstream they will be validated,
+      reviewed, and grounded in exact evidence spans.
 
-      - validated against an ontology profile
-      - reviewed by a human or agent before acceptance
-      - used to trigger ontology proposals when the text implies vocabulary the
-        current profile does not yet contain
-      - inspected through exact evidence spans in the original source text
+      The structured schema already defines the output shape. Focus on naming
+      entities and values truthfully, choosing the strongest supported
+      predicate, and quoting exact evidence text.
 
-      Your job is to produce reviewable candidate assertions that are useful
-      for ontology validation and human review.
+      Return at most {{ max_candidates_per_case }} candidates.
+      Use at most {{ max_evidence_spans_per_candidate }} evidence spans per
+      candidate unless the fact cannot be grounded otherwise.
 
-      Work from the source text itself. The source text remains primary. Do
-      not treat your own paraphrase as the evidence.
-
-      Return only candidate assertions that are directly supported by the text.
       For each candidate:
 
-      - give the ontology-shaped assertion as `predicate` plus `roles`
-      - keep `predicate` to the predicate ID only; put filler data only in the
-        sibling `roles` object
-      - include one or more exact `evidence_spans` whose `text` matches the
-        source character-for-character
-      - optionally include a short `claim_text` gloss that helps a reviewer
-        understand the candidate quickly
+      - include `predicate` and `roles`
+      - keep `predicate` to the predicate ID only
+      - include exact `evidence_spans.text`
+      - include `claim_text` only when it helps review
 
-      The assertion payload is expected to use these filler shapes:
-
-      - `entity`: `kind`, `entity_type`, `name`, optionally `entity_id`,
-        `alias_ids`
-      - `value`: `kind`, `value_kind`, `normalized`, optionally `raw`
-      - `unknown`: `kind`, `raw`
-
-      The system will derive local entity IDs and character offsets
-      deterministically. Your job is to quote the right evidence text and name
-      the right entities and values.
-
-      Every `entity` filler must include a reviewer-meaningful `name`. Do not
+      Every entity filler must include a reviewer-meaningful `name`. Do not
       emit type-only entity fillers. If you cannot name an entity from the
       source text, omit that candidate rather than guessing.
-
-      Return only the structured candidate payload. Do not add explanatory
-      prose before or after it.
-
-      Use the active ontology catalog when it fits the text. If the text
-      clearly supports a predicate outside the current catalog, propose the
-      strongest descriptive predicate ID you can in `oc:*` form so the review
-      workflow can decide whether to extend the ontology.
 
       Keep candidates atomic and reviewable:
 
       - one predicate per candidate assertion
-      - split distinct supported facts into separate candidates
-      - use multiple evidence spans when support comes from non-adjacent parts
-        of the source
-      - quote evidence text that is specific enough to locate uniquely in the
-        source
+      - omit speculative or weakly implied candidates
       - omit any candidate whose roles would require unnamed entities
-      - omit candidates that would require speculation beyond the source
 
       Use the following error checks before you return a candidate:
 
@@ -81,6 +51,13 @@ messages:
       - if the text only implies sentiment, concern, or dissatisfaction without
         a named speaker, omit the candidate rather than inventing a person or a
         vague source
+
+      Use the active ontology catalog when it fits the text. If the text
+      clearly supports a predicate outside the catalog, propose the strongest
+      descriptive `oc:*` predicate you can.
+
+      Return only the structured candidate payload. Do not add explanatory
+      prose before or after it.
 
   - role: user
     content: |
