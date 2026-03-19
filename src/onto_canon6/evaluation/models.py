@@ -25,6 +25,7 @@ PromptEvalFailureCategory = Literal[
     "length_truncated",
     "multiple_tool_calls",
     "provider_rate_limited",
+    "insufficient_credits",
     "unnamed_entity_filler",
     "empty_roles",
     "bad_evidence_span",
@@ -237,6 +238,8 @@ class ExtractionPromptExperimentReport(BaseModel):
     execution_id: str = Field(min_length=1)
     observability_dataset: str = Field(min_length=1)
     observability_phase: str = Field(min_length=1)
+    selection_task: str = Field(min_length=1)
+    selected_model: str = Field(min_length=1)
     case_count: int = Field(ge=1)
     n_runs: int = Field(ge=1)
     baseline_variant_name: str = Field(min_length=1)

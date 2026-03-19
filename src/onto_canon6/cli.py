@@ -197,6 +197,10 @@ def _build_parser() -> argparse.ArgumentParser:
         choices=("bootstrap", "welch"),
         help="Optional comparison-method override. Defaults to config.",
     )
+    prompt_experiment_parser.add_argument(
+        "--selection-task",
+        help="Optional llm_client selection-task override. Defaults to config.",
+    )
     _add_output_arg(prompt_experiment_parser, default_output=config.cli.default_output_format)
     prompt_experiment_parser.set_defaults(handler=_handle_run_extraction_prompt_experiment)
 
@@ -629,6 +633,7 @@ def _handle_run_extraction_prompt_experiment(args: argparse.Namespace) -> int:
         case_limit=args.case_limit,
         n_runs=args.n_runs,
         comparison_method=args.comparison_method,
+        selection_task=args.selection_task,
     )
     _emit_output(report, output_format=args.output)
     return 0
@@ -1094,6 +1099,8 @@ def _to_text(value: object) -> str:
     if isinstance(value, ExtractionPromptExperimentReport):
         return (
             f"execution_id={value.execution_id} "
+            f"task={value.selection_task} "
+            f"model={value.selected_model} "
             f"baseline_variant={value.baseline_variant_name} "
             f"variant_count={len(value.variant_summaries)} "
             f"case_count={value.case_count}"

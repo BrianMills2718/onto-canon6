@@ -22,8 +22,6 @@ import logging
 from pathlib import Path
 from typing import Any, Awaitable, Callable, Protocol, cast
 
-logger = logging.getLogger(__name__)
-
 from ..config import ConfigError, PromptEvalVariantConfig, get_config
 from ..ontology_runtime import load_effective_profile
 from ..pipeline import (
@@ -46,6 +44,8 @@ from .service import (
     _validate_candidate_imports,
     load_benchmark_fixture,
 )
+
+logger = logging.getLogger(__name__)
 
 
 class ExtractionPromptExperimentError(RuntimeError):
@@ -166,6 +166,7 @@ class ExtractionPromptExperimentService:
         case_limit: int | None = None,
         n_runs: int | None = None,
         comparison_method: PromptEvalComparisonMethod | None = None,
+        selection_task: str | None = None,
     ) -> ExtractionPromptExperimentReport:
         """Run the extraction prompt experiment from synchronous code.
 
@@ -183,6 +184,7 @@ class ExtractionPromptExperimentService:
                     case_limit=case_limit,
                     n_runs=n_runs,
                     comparison_method=comparison_method,
+                    selection_task=selection_task,
                 )
             )
         raise ExtractionPromptExperimentError(
@@ -197,6 +199,7 @@ class ExtractionPromptExperimentService:
         case_limit: int | None = None,
         n_runs: int | None = None,
         comparison_method: PromptEvalComparisonMethod | None = None,
+        selection_task: str | None = None,
     ) -> ExtractionPromptExperimentReport:
         """Run the configured extraction prompt experiment asynchronously."""
 
@@ -207,6 +210,7 @@ class ExtractionPromptExperimentService:
             raise ExtractionPromptExperimentError("prompt_eval requires at least one benchmark case")
         effective_n_runs = n_runs or self._n_runs
         effective_comparison_method = comparison_method or self._comparison_method
+        effective_selection_task = selection_task or self._selection_task
         _validate_experiment_shape(
             case_count=len(cases),
             n_runs=effective_n_runs,
@@ -216,7 +220,7 @@ class ExtractionPromptExperimentService:
 
         llm_client_api = _load_llm_client_api()
         prompt_eval_api = _load_prompt_eval_api()
-        selected_model = llm_client_api.get_model(self._selection_task)
+        selected_model = llm_client_api.get_model(effective_selection_task)
         loaded_profile = load_effective_profile(
             profile.profile_id,
             profile.profile_version,
@@ -241,7 +245,7 @@ class ExtractionPromptExperimentService:
                 model=selected_model,
                 temperature=self._temperature,
                 kwargs={
-                    "task": self._selection_task,
+                    "task": effective_selection_task,
                     "max_budget": self._max_budget_usd,
                     "timeout": self._timeout_seconds,
                     "num_retries": self._num_retries,
@@ -271,7 +275,7 @@ class ExtractionPromptExperimentService:
             phase=self._observability_phase,
             provenance={
                 "source_package": get_config().project.package_name,
-                "selection_task": self._selection_task,
+                "selection_task": effective_selection_task,
                 "fixture_id": fixture.fixture_id,
                 "fixture_path": str(resolved_fixture_path),
             },
@@ -332,6 +336,8 @@ class ExtractionPromptExperimentService:
             n_runs=int(experiment.n_runs),
             observability_dataset=self._observability_dataset,
             observability_phase=self._observability_phase,
+            selection_task=effective_selection_task,
+            selected_model=selected_model,
             baseline_variant_name=self._baseline_variant_name,
             variant_configs=self._variant_configs,
         )
@@ -527,6 +533,8 @@ def _build_prompt_experiment_report(
     n_runs: int,
     observability_dataset: str,
     observability_phase: str,
+    selection_task: str,
+    selected_model: str,
     baseline_variant_name: str,
     variant_configs: tuple[PromptEvalVariantConfig, ...],
 ) -> ExtractionPromptExperimentReport:
@@ -604,6 +612,8 @@ def _build_prompt_experiment_report(
         execution_id=execution_id,
         observability_dataset=observability_dataset,
         observability_phase=observability_phase,
+        selection_task=selection_task,
+        selected_model=selected_model,
         case_count=case_count,
         n_runs=n_runs,
         baseline_variant_name=baseline_variant_name,
@@ -646,6 +656,8 @@ def _classify_prompt_eval_trial_failure(trial: Any) -> PromptEvalFailureCategory
     if not error_text and not reasoning_text:
         return None
     combined = f"{error_text}\n{reasoning_text}".strip()
+    if "requires more credits" in combined or '"code":402' in combined:
+        return "insufficient_credits"
     if "key limit exceeded" in combined or "rate limit" in combined or "429" in combined:
         return "provider_rate_limited"
     if "max_tokens length limit" in combined or "finish_reason='length'" in combined:

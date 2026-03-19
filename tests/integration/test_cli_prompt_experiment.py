@@ -24,6 +24,7 @@ class _FakeExtractionPromptExperimentService:
         case_limit: int | None = None,
         n_runs: int | None = None,
         comparison_method: object | None = None,
+        selection_task: object | None = None,
     ) -> ExtractionPromptExperimentReport:
         """Return one stable report without invoking live prompt_eval work."""
 
@@ -36,6 +37,8 @@ class _FakeExtractionPromptExperimentService:
             execution_id="exec123",
             observability_dataset="onto_canon6_extraction_prompt_eval",
             observability_phase="evaluation",
+            selection_task=str(selection_task or "budget_extraction"),
+            selected_model="gemini/gemini-3-flash-preview",
             case_count=2,
             n_runs=2,
             baseline_variant_name="baseline",
@@ -114,6 +117,7 @@ def test_cli_runs_extraction_prompt_experiment_and_emits_json(
     output = json.loads(capsys.readouterr().out)
     assert output["execution_id"] == "exec123"
     assert output["baseline_variant_name"] == "baseline"
+    assert output["selection_task"] == "budget_extraction"
     assert output["variant_summaries"][1]["variant_name"] == "hardened"
 
 
@@ -133,6 +137,7 @@ def test_cli_forwards_comparison_method_override(
             case_limit: int | None = None,
             n_runs: int | None = None,
             comparison_method: object | None = None,
+            selection_task: object | None = None,
         ) -> ExtractionPromptExperimentReport:
             recorded["comparison_method"] = comparison_method
             return super().run_prompt_experiment(
@@ -140,6 +145,7 @@ def test_cli_forwards_comparison_method_override(
                 case_limit=case_limit,
                 n_runs=n_runs,
                 comparison_method=comparison_method,
+                selection_task=selection_task,
             )
 
     # mock-ok: the CLI wiring is the target here; prompt_eval execution itself
@@ -159,3 +165,50 @@ def test_cli_forwards_comparison_method_override(
     assert exit_code == 0
     assert recorded["comparison_method"] == "bootstrap"
     assert json.loads(capsys.readouterr().out)["execution_id"] == "exec123"
+
+
+def test_cli_forwards_selection_task_override(
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """The CLI should pass an explicit selection-task override to the service."""
+
+    recorded: dict[str, object] = {}
+
+    class _RecordingService(_FakeExtractionPromptExperimentService):
+        def run_prompt_experiment(
+            self,
+            *,
+            fixture_path: object | None = None,
+            case_limit: int | None = None,
+            n_runs: int | None = None,
+            comparison_method: object | None = None,
+            selection_task: object | None = None,
+        ) -> ExtractionPromptExperimentReport:
+            recorded["selection_task"] = selection_task
+            return super().run_prompt_experiment(
+                fixture_path=fixture_path,
+                case_limit=case_limit,
+                n_runs=n_runs,
+                comparison_method=comparison_method,
+                selection_task=selection_task,
+            )
+
+    # mock-ok: the CLI wiring is the target here; prompt_eval execution itself
+    # is covered at the service boundary.
+    monkeypatch.setattr(cli_module, "ExtractionPromptExperimentService", _RecordingService)
+
+    exit_code = cli_module.main(
+        [
+            "run-extraction-prompt-experiment",
+            "--selection-task",
+            "extraction",
+            "--output",
+            "json",
+        ]
+    )
+
+    assert exit_code == 0
+    assert recorded["selection_task"] == "extraction"
+    output = json.loads(capsys.readouterr().out)
+    assert output["selection_task"] == "extraction"
