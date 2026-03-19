@@ -1042,6 +1042,14 @@ def test_classify_prompt_eval_trial_failure_categories() -> None:
     assert (
         classify(
             SimpleNamespace(
+                error="litellm.Timeout: Connection timed out. Timeout passed=60.0, time taken=62.095 seconds"
+            )
+        )
+        == "provider_timeout"
+    )
+    assert (
+        classify(
+            SimpleNamespace(
                 error=(
                     "LLMCapabilityError: call_llm_structured: provider rejected structured "
                     "JSON-schema output for GPT-5-family model gpt-5-mini"
@@ -1072,6 +1080,7 @@ def test_summarize_trial_failures_by_variant() -> None:
         trials=(
             SimpleNamespace(variant_name="baseline", error="The output is incomplete due to a max_tokens length limit.", reasoning=None),
             SimpleNamespace(variant_name="baseline", error='APIError: {"message":"Key limit exceeded (total limit)"}', reasoning=None),
+            SimpleNamespace(variant_name="baseline", error="litellm.Timeout: Connection timed out. Timeout passed=60.0, time taken=62.095 seconds", reasoning=None),
             SimpleNamespace(variant_name="baseline", error='APIError: {"message":"This request requires more credits, or fewer max_tokens.","code":402}', reasoning=None),
             SimpleNamespace(variant_name="baseline", error='OpenAIException - {"error":{"message":"Invalid schema for response_format","code":"invalid_json_schema"}}', reasoning=None),
             SimpleNamespace(variant_name="hardened", error=None, reasoning="deterministic prompt_eval scoring failed: entity fillers require entity_id or name"),
@@ -1083,6 +1092,7 @@ def test_summarize_trial_failures_by_variant() -> None:
         "baseline": {
             "length_truncated": 1,
             "provider_rate_limited": 1,
+            "provider_timeout": 1,
             "insufficient_credits": 1,
             "provider_schema_rejected": 1,
         },

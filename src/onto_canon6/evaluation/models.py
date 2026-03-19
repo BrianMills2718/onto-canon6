@@ -25,6 +25,7 @@ PromptEvalFailureCategory = Literal[
     "length_truncated",
     "multiple_tool_calls",
     "provider_rate_limited",
+    "provider_timeout",
     "insufficient_credits",
     "provider_schema_rejected",
     "unnamed_entity_filler",
