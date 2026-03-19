@@ -325,6 +325,11 @@ class ExtractionPromptExperimentService:
             baseline_variant_name=self._baseline_variant_name,
             variant_names=tuple(variant.name for variant in self._variant_configs),
         )
+        _validate_loaded_result_has_scored_trials_for_comparison(
+            result=loaded_result,
+            baseline_variant_name=self._baseline_variant_name,
+            variant_names=tuple(variant.name for variant in self._variant_configs),
+        )
         comparisons = tuple(
             prompt_eval_api.compare_variants(
                 loaded_result,
@@ -530,6 +535,70 @@ def _validate_loaded_result_comparison_shape(
             f"successful_scored_trials=({rendered}). rerun with more cases or runs, "
             "or switch the comparison method"
         )
+
+
+def _validate_loaded_result_has_scored_trials_for_comparison(
+    *,
+    result: Any,
+    baseline_variant_name: str,
+    variant_names: tuple[str, ...],
+) -> None:
+    """Fail loudly when a prompt_eval comparison has no scored trials to compare.
+
+    ``prompt_eval.compare_variants`` eventually raises a generic ``ValueError``
+    when one side has zero scored trials. That hides the actionable context we
+    already have locally: which variants fully failed and how they failed. This
+    helper turns that late stats error into an experiment-specific message with
+    per-variant failure counts.
+    """
+
+    summary_obj = getattr(result, "summary", None)
+    if not isinstance(summary_obj, dict):
+        raise ExtractionPromptExperimentError("prompt_eval result summary must be a mapping")
+    trial_obj = getattr(result, "trials", None)
+    if not isinstance(trial_obj, list):
+        raise ExtractionPromptExperimentError("prompt_eval report trials must be a list")
+    failures_by_variant = _summarize_trial_failures_by_variant(
+        trials=tuple(trial_obj),
+        variant_names=variant_names,
+    )
+
+    zero_success_variants: list[str] = []
+    details: list[str] = []
+    for variant_name in variant_names:
+        variant_summary = summary_obj.get(variant_name)
+        if variant_summary is None:
+            raise ExtractionPromptExperimentError(
+                f"prompt_eval result is missing summary for variant {variant_name!r}"
+            )
+        n_trials = int(getattr(variant_summary, "n_trials"))
+        n_errors = int(getattr(variant_summary, "n_errors"))
+        success_count = max(0, n_trials - n_errors)
+        if success_count > 0:
+            continue
+        zero_success_variants.append(variant_name)
+        failure_counts = failures_by_variant[variant_name]
+        rendered_failures = (
+            ", ".join(f"{name}={count}" for name, count in sorted(failure_counts.items()))
+            if failure_counts
+            else "unclassified"
+        )
+        details.append(
+            f"{variant_name}=0/{n_trials} successful_scored_trials "
+            f"(failures: {rendered_failures})"
+        )
+
+    if not zero_success_variants:
+        return
+
+    variants_rendered = ", ".join(sorted(zero_success_variants))
+    details_rendered = "; ".join(details)
+    raise ExtractionPromptExperimentError(
+        "prompt_eval comparison is impossible because one or more variants had zero "
+        f"successful scored trials (baseline={baseline_variant_name}; variants={variants_rendered}). "
+        f"Observed failures: {details_rendered}. Use a different model/routing choice, "
+        "or rerun after fixing the structural failure mode."
+    )
 
 
 def _build_prompt_experiment_report(

@@ -1090,3 +1090,44 @@ def test_summarize_trial_failures_by_variant() -> None:
             "unnamed_entity_filler": 1,
         },
     }
+
+
+def test_validate_loaded_result_has_scored_trials_for_comparison_raises_clear_error() -> None:
+    """Zero-success variants should fail before compare_variants with failure context."""
+
+    validate = prompt_eval_service_module._validate_loaded_result_has_scored_trials_for_comparison
+    result = SimpleNamespace(
+        summary={
+            "baseline": SimpleNamespace(n_trials=1, n_errors=1),
+            "hardened": SimpleNamespace(n_trials=1, n_errors=1),
+        },
+        trials=[
+            SimpleNamespace(
+                variant_name="baseline",
+                error=(
+                    "LLMCapabilityError: call_llm_structured: provider rejected structured "
+                    "JSON-schema output for GPT-5-family model gpt-5-mini"
+                ),
+                reasoning=None,
+            ),
+            SimpleNamespace(
+                variant_name="hardened",
+                error='APIError: {"message":"This request requires more credits, or fewer max_tokens.","code":402}',
+                reasoning=None,
+            ),
+        ],
+    )
+
+    with pytest.raises(
+        ExtractionPromptExperimentError,
+        match="zero successful scored trials",
+    ) as exc_info:
+        validate(
+            result=result,
+            baseline_variant_name="baseline",
+            variant_names=("baseline", "hardened"),
+        )
+
+    message = str(exc_info.value)
+    assert "provider_schema_rejected=1" in message
+    assert "insufficient_credits=1" in message
