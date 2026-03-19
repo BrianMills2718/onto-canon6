@@ -148,6 +148,7 @@ class ExtractionPromptExperimentService:
         self._temperature = experiment.temperature
         self._timeout_seconds = experiment.timeout_seconds
         self._num_retries = experiment.num_retries
+        self._max_budget_usd = experiment.max_budget_usd
         self._max_output_tokens = experiment.max_output_tokens
         self._baseline_variant_name = experiment.baseline_variant_name
         self._comparison_method = experiment.comparison_method
@@ -233,6 +234,8 @@ class ExtractionPromptExperimentService:
                 model=selected_model,
                 temperature=self._temperature,
                 kwargs={
+                    "task": self._selection_task,
+                    "max_budget": self._max_budget_usd,
                     "timeout": self._timeout_seconds,
                     "num_retries": self._num_retries,
                     "max_tokens": self._max_output_tokens,
@@ -296,6 +299,12 @@ class ExtractionPromptExperimentService:
                 variant_count=len(self._variant_configs),
                 n_runs=int(experiment.n_runs),
             ),
+        )
+        _validate_loaded_result_comparison_shape(
+            result=loaded_result,
+            comparison_method=self._comparison_method,
+            baseline_variant_name=self._baseline_variant_name,
+            variant_names=tuple(variant.name for variant in self._variant_configs),
         )
         comparisons = tuple(
             prompt_eval_api.compare_variants(
@@ -445,6 +454,54 @@ def _validate_experiment_shape(
         raise ExtractionPromptExperimentError(
             "welch comparison requires at least two scored trials per variant; "
             "increase case_count or n_runs, or switch the comparison method"
+        )
+
+
+def _validate_loaded_result_comparison_shape(
+    *,
+    result: Any,
+    comparison_method: str,
+    baseline_variant_name: str,
+    variant_names: tuple[str, ...],
+) -> None:
+    """Fail loudly if live trial errors make the chosen comparison impossible.
+
+    The pre-run shape check can only reason about planned trial counts. Live
+    prompt experiments can still lose trials to provider or schema errors, and
+    Welch requires at least two scored trials in each compared variant. This
+    helper turns the downstream stats failure into an experiment-specific error
+    with the observed successful-trial counts.
+    """
+
+    if comparison_method != "welch":
+        return
+    summary_obj = getattr(result, "summary", None)
+    if not isinstance(summary_obj, dict):
+        raise ExtractionPromptExperimentError("prompt_eval result summary must be a mapping")
+    success_counts: dict[str, int] = {}
+    for variant_name in variant_names:
+        variant_summary = summary_obj.get(variant_name)
+        if variant_summary is None:
+            raise ExtractionPromptExperimentError(
+                f"prompt_eval result is missing summary for variant {variant_name!r}"
+            )
+        n_trials = int(getattr(variant_summary, "n_trials"))
+        n_errors = int(getattr(variant_summary, "n_errors"))
+        success_counts[variant_name] = max(0, n_trials - n_errors)
+    baseline_successes = success_counts[baseline_variant_name]
+    insufficient = {
+        variant_name: success_count
+        for variant_name, success_count in success_counts.items()
+        if success_count < 2 or baseline_successes < 2
+    }
+    if insufficient:
+        rendered = ", ".join(
+            f"{variant_name}={success_count}" for variant_name, success_count in sorted(insufficient.items())
+        )
+        raise ExtractionPromptExperimentError(
+            "welch comparison became impossible after live trial errors; "
+            f"successful_scored_trials=({rendered}). rerun with more cases or runs, "
+            "or switch the comparison method"
         )
 
 

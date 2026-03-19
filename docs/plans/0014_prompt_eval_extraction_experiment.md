@@ -54,11 +54,7 @@ The first slice is intentionally narrow:
 
 ## Known Limits
 
-1. `prompt_eval` currently fixes `task="prompt_eval.run"` and `max_budget=0`
-   internally. The experiment still records explicit prompt provenance and
-   shared run families, but task-level budget control does not yet pass through
-   the same way the operational extractor does.
-2. The first slice uses repo-local prompt template paths plus explicit
+1. The first slice uses repo-local prompt template paths plus explicit
    `prompt_ref` metadata. It does not yet render through `llm_client`
    `prompt_ref` asset resolution because these prompt templates are not part of
    the shared `llm_client` prompt asset root.

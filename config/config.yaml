@@ -54,7 +54,8 @@ evaluation:
     temperature: 0.0
     timeout_seconds: 60
     num_retries: 2
-    max_output_tokens: 2500
+    max_budget_usd: 0.25
+    max_output_tokens: 5000
     baseline_variant_name: "baseline"
     comparison_method: "welch"
     comparison_confidence: 0.95

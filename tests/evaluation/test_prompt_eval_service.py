@@ -352,6 +352,10 @@ def test_run_prompt_experiment_builds_report_and_variant_comparison(
     assert experiment.n_runs == 2
     assert experiment.response_model is TextExtractionResponse
     assert [variant.name for variant in experiment.variants] == ["baseline", "hardened"]
+    assert experiment.variants[0].kwargs["task"] == "budget_extraction"
+    assert experiment.variants[0].kwargs["max_budget"] == 0.25
+    assert experiment.variants[1].kwargs["task"] == "budget_extraction"
+    assert experiment.variants[1].kwargs["max_budget"] == 0.25
     baseline_messages = experiment.variants[0].messages
     hardened_messages = experiment.variants[1].messages
     assert "Case input:\n{input}" in baseline_messages[-1]["content"]
@@ -393,3 +397,90 @@ def test_run_prompt_experiment_fails_loud_on_undersized_welch_shape() -> None:
         match="welch comparison requires at least two scored trials per variant",
     ):
         service.run_prompt_experiment(case_limit=1, n_runs=1)
+
+
+def test_run_prompt_experiment_fails_loud_when_live_errors_break_welch(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Live trial errors should become an experiment-specific Welch failure."""
+
+    async def fake_run_experiment(
+        experiment: _FakeExperiment,
+        evaluator: Callable[[object, object | None], object],
+        *,
+        observability: _FakePromptEvalObservabilityConfig,
+    ) -> object:
+        del evaluator, observability
+        return SimpleNamespace(
+            experiment_name=experiment.name,
+            execution_id="exec123",
+            variants=["baseline", "hardened"],
+            trials=[],
+            summary={},
+        )
+
+    def fake_load_result_from_observability(
+        execution_id: str,
+        *,
+        project: str | None = None,
+        dataset: str | None = None,
+        limit: int = 1000,
+    ) -> object:
+        del execution_id, project, dataset, limit
+        return SimpleNamespace(
+            experiment_name="onto_canon6_extraction_prompt_eval",
+            execution_id="exec123",
+            variants=["baseline", "hardened"],
+            trials=[],
+            summary={
+                "baseline": SimpleNamespace(
+                    n_trials=2,
+                    n_errors=1,
+                    mean_score=0.31,
+                    std_score=0.04,
+                    dimension_means={},
+                    mean_cost=0.01,
+                    mean_latency_ms=1200.0,
+                    total_tokens=900,
+                ),
+                "hardened": SimpleNamespace(
+                    n_trials=2,
+                    n_errors=0,
+                    mean_score=0.43,
+                    std_score=0.05,
+                    dimension_means={},
+                    mean_cost=0.011,
+                    mean_latency_ms=1180.0,
+                    total_tokens=940,
+                ),
+            },
+        )
+
+    monkeypatch.setattr(
+        prompt_eval_service_module,
+        "_load_llm_client_api",
+        lambda: prompt_eval_service_module._LLMClientAPI(
+            get_model=lambda task: f"model-for-{task}",
+            render_prompt=_render_prompt,
+        ),
+    )
+    monkeypatch.setattr(
+        prompt_eval_service_module,
+        "_load_prompt_eval_api",
+        lambda: prompt_eval_service_module._PromptEvalAPI(
+            Experiment=_FakeExperiment,
+            ExperimentInput=_FakeExperimentInput,
+            PromptVariant=_FakePromptVariant,
+            EvalScore=_FakeEvalScore,
+            PromptEvalObservabilityConfig=_FakePromptEvalObservabilityConfig,
+            run_experiment=fake_run_experiment,
+            load_result_from_observability=fake_load_result_from_observability,
+            compare_variants=lambda *args, **kwargs: None,
+        ),
+    )
+
+    with pytest.raises(
+        ExtractionPromptExperimentError,
+        match="welch comparison became impossible after live trial errors",
+    ):
+        ExtractionPromptExperimentService().run_prompt_experiment(case_limit=2, n_runs=1)

@@ -147,6 +147,7 @@ class PromptEvalExperimentConfig(BaseModel):
     temperature: float = Field(ge=0.0)
     timeout_seconds: int = Field(ge=1)
     num_retries: int = Field(ge=0)
+    max_budget_usd: float = Field(gt=0.0)
     max_output_tokens: int = Field(ge=1)
     baseline_variant_name: str = Field(min_length=1)
     comparison_method: PromptEvalComparisonMethodValue
