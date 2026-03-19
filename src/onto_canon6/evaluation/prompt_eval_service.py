@@ -821,6 +821,8 @@ def _classify_prompt_eval_trial_failure(trial: Any) -> PromptEvalFailureCategory
         or "provider rejected structured json-schema output" in combined
     ):
         return "provider_schema_rejected"
+    if "provider rejected structured-output call arguments" in combined or "invalid arguments passed to the model" in combined:
+        return "provider_invalid_arguments"
     if "connection timed out" in combined or "litellm.timeout" in combined or "timeout passed=" in combined:
         return "provider_timeout"
     if "key limit exceeded" in combined or "rate limit" in combined or "429" in combined:

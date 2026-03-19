@@ -28,6 +28,7 @@ PromptEvalFailureCategory = Literal[
     "provider_timeout",
     "insufficient_credits",
     "provider_schema_rejected",
+    "provider_invalid_arguments",
     "unnamed_entity_filler",
     "empty_roles",
     "bad_evidence_span",

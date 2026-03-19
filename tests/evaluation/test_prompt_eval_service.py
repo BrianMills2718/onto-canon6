@@ -1047,6 +1047,14 @@ def test_classify_prompt_eval_trial_failure_categories() -> None:
     assert (
         classify(
             SimpleNamespace(
+                error="LLMCapabilityError: acall_llm_structured: provider rejected structured-output call arguments for model openrouter/x-ai/grok-4.1-fast"
+            )
+        )
+        == "provider_invalid_arguments"
+    )
+    assert (
+        classify(
+            SimpleNamespace(
                 error="litellm.Timeout: Connection timed out. Timeout passed=60.0, time taken=62.095 seconds"
             )
         )
@@ -1088,6 +1096,7 @@ def test_summarize_trial_failures_by_variant() -> None:
             SimpleNamespace(variant_name="baseline", error="litellm.Timeout: Connection timed out. Timeout passed=60.0, time taken=62.095 seconds", reasoning=None),
             SimpleNamespace(variant_name="baseline", error='APIError: {"message":"This request requires more credits, or fewer max_tokens.","code":402}', reasoning=None),
             SimpleNamespace(variant_name="baseline", error='OpenAIException - {"error":{"message":"Invalid schema for response_format","code":"invalid_json_schema"}}', reasoning=None),
+            SimpleNamespace(variant_name="baseline", error="LLMCapabilityError: acall_llm_structured: provider rejected structured-output call arguments for model openrouter/x-ai/grok-4.1-fast", reasoning=None),
             SimpleNamespace(variant_name="hardened", error=None, reasoning="deterministic prompt_eval scoring failed: entity fillers require entity_id or name"),
         ),
         variant_names=("baseline", "hardened"),
@@ -1100,6 +1109,7 @@ def test_summarize_trial_failures_by_variant() -> None:
             "provider_timeout": 1,
             "insufficient_credits": 1,
             "provider_schema_rejected": 1,
+            "provider_invalid_arguments": 1,
         },
         "hardened": {
             "unnamed_entity_filler": 1,
