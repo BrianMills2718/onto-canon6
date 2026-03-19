@@ -28,6 +28,11 @@ extraction:
   max_budget_usd: 0.25
   max_output_tokens: 2500
 
+chunking:
+  target_max_chars: 4000
+  min_chunk_chars: 1200
+  max_chunk_chars: 5000
+
 evaluation:
   benchmark_fixture: "tests/fixtures/psyop_eval_slice.json"
   judge_selection_task: "judging"

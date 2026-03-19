@@ -78,6 +78,21 @@ class ExtractionConfig(BaseModel):
     max_output_tokens: int = Field(ge=1)
 
 
+class ChunkingConfig(BaseModel):
+    """Text-chunking defaults for real long-document extraction runs.
+
+    The first real investigation showed that whole-report extraction can exceed
+    the structured-output budget. These values keep the chunking helper
+    explicit and repo-configured rather than hiding size limits inside the CLI.
+    """
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    target_max_chars: int = Field(ge=200)
+    min_chunk_chars: int = Field(ge=1)
+    max_chunk_chars: int = Field(ge=200)
+
+
 class EvaluationConfig(BaseModel):
     """Live-evaluation defaults for the Phase 5 benchmark slice."""
 
@@ -143,6 +158,7 @@ class AppConfig(BaseModel):
     pipeline: PipelineConfig
     ontology_runtime: OntologyRuntimeConfig
     extraction: ExtractionConfig
+    chunking: ChunkingConfig
     evaluation: EvaluationConfig
     cli: CLIConfig
     mcp: MCPConfig

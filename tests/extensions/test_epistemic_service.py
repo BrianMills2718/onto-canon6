@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 import sys
+from typing import Mapping
 
 import pytest
 
@@ -65,7 +66,7 @@ def _submit_accepted_candidate(
 def _submit_and_accept_candidate(
     review_service: ReviewService,
     *,
-    payload: dict[str, object],
+    payload: Mapping[str, object],
     source_ref: str,
 ) -> str:
     """Persist and accept one candidate with an explicit normalized payload."""

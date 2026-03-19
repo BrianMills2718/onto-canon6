@@ -49,6 +49,9 @@ from .pipeline import (
     ProposalRecord,
     ReviewService,
     ReviewStoreError,
+    TextChunkFileRecord,
+    TextChunkManifest,
+    TextChunkingService,
     TextExtractionService,
 )
 from .surfaces import (
@@ -120,6 +123,43 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     _add_output_arg(extract_parser, default_output=config.cli.default_output_format)
     extract_parser.set_defaults(handler=_handle_extract_text)
+
+    split_parser = subparsers.add_parser(
+        "split-text",
+        help="Split one long text file into deterministic chunk files for later extraction.",
+    )
+    split_parser.add_argument("--input", required=True, type=Path, help="Path to the source text file.")
+    split_parser.add_argument(
+        "--output-dir",
+        required=True,
+        type=Path,
+        help="Directory where chunk files and the manifest will be written.",
+    )
+    split_parser.add_argument(
+        "--source-ref",
+        help="Stable source reference recorded in the manifest. Defaults to the input path string.",
+    )
+    split_parser.add_argument(
+        "--source-label",
+        help="Optional human-readable source label. Defaults to the input file name.",
+    )
+    split_parser.add_argument(
+        "--target-max-chars",
+        type=int,
+        help="Optional soft chunk target. Defaults to config.",
+    )
+    split_parser.add_argument(
+        "--min-chunk-chars",
+        type=int,
+        help="Optional minimum useful chunk size. Defaults to config.",
+    )
+    split_parser.add_argument(
+        "--max-chunk-chars",
+        type=int,
+        help="Optional hard maximum chunk size. Defaults to config.",
+    )
+    _add_output_arg(split_parser, default_output=config.cli.default_output_format)
+    split_parser.set_defaults(handler=_handle_split_text)
 
     list_candidates_parser = subparsers.add_parser(
         "list-candidates",
@@ -449,6 +489,33 @@ def _handle_extract_text(args: argparse.Namespace) -> int:
         source_label=source_label,
     )
     _emit_output(results, output_format=args.output)
+    return 0
+
+
+def _handle_split_text(args: argparse.Namespace) -> int:
+    """Split one source text file into deterministic chunk files."""
+
+    input_path = args.input
+    output_dir = args.output_dir
+    source_ref = args.source_ref if args.source_ref is not None else str(input_path)
+    source_label = args.source_label if args.source_label is not None else input_path.name
+    service = TextChunkingService(
+        target_max_chars=args.target_max_chars,
+        min_chunk_chars=args.min_chunk_chars,
+        max_chunk_chars=args.max_chunk_chars,
+    )
+    manifest = service.write_chunk_files(
+        input_path=input_path,
+        output_dir=output_dir,
+        source_ref=source_ref,
+        source_label=source_label,
+    )
+    manifest_path = output_dir / "manifest.json"
+    manifest_path.write_text(
+        json.dumps(manifest.model_dump(mode="json"), indent=2, sort_keys=True),
+        encoding="utf-8",
+    )
+    _emit_output(manifest, output_format=args.output)
     return 0
 
 
@@ -817,6 +884,8 @@ def _to_jsonable(value: object) -> Any:
             OverlayApplicationRecord,
             SemanticCanonicalizationReport,
             SemanticCanonicalizationResult,
+            TextChunkFileRecord,
+            TextChunkManifest,
         ),
     ):
         return value.model_dump(mode="json")
@@ -860,6 +929,18 @@ def _to_text(value: object) -> str:
             f"proposal_id={value.proposal_id} "
             f"overlay_pack={value.overlay_pack.pack_id}@{value.overlay_pack.pack_version} "
             f"content_path={value.content_path}"
+        )
+    if isinstance(value, TextChunkManifest):
+        return (
+            f"input_path={value.input_path} "
+            f"total_chunks={value.total_chunks} "
+            f"output_dir={value.output_dir}"
+        )
+    if isinstance(value, TextChunkFileRecord):
+        return (
+            f"chunk_id={value.chunk_id} "
+            f"text_length={value.text_length} "
+            f"output_path={value.output_path}"
         )
     if isinstance(value, GovernedWorkflowBundle):
         candidate_ids = ",".join(

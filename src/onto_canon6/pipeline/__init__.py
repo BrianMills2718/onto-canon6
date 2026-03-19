@@ -24,6 +24,7 @@ from .models import (
 from .overlay_service import OverlayApplicationService
 from .service import ReviewService
 from .store import ReviewStore, ReviewStoreConflictError, ReviewStoreError, ReviewStoreNotFoundError
+from .text_chunking import TextChunkFileRecord, TextChunkManifest, TextChunkRecord, TextChunkingService
 from .text_extraction import (
     ExtractedCandidate,
     ExtractedFiller,
@@ -62,6 +63,10 @@ __all__ = [
     "ReviewStoreError",
     "ReviewStoreNotFoundError",
     "SourceArtifactRef",
+    "TextChunkFileRecord",
+    "TextChunkManifest",
+    "TextChunkRecord",
+    "TextChunkingService",
     "TextExtractionRun",
     "TextExtractionResponse",
     "TextExtractionService",
