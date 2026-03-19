@@ -14,6 +14,16 @@ now ends in live governed-bundle export, canonical graph promotion, stable
 identity, semantic recanonicalization, and broadened promoted-assertion
 epistemic reporting rather than a provisional workflow plan.
 
+One important qualification:
+
+1. the canonical journey is mostly live, but its extraction phase is
+   intentionally `fixture`-backed;
+2. that phase uses a deterministic stand-in that emits the same
+   contract-shaped artifact as the real extraction boundary;
+3. the live extraction proof remains in
+   [08_text_extraction_slice.ipynb](08_text_extraction_slice.ipynb) and
+   [10_live_extraction_evaluation.ipynb](10_live_extraction_evaluation.ipynb).
+
 The current Phase 15 auxiliary proof is:
 
 - [21_phase15_epistemic_corroboration_slice.ipynb](21_phase15_epistemic_corroboration_slice.ipynb)
