@@ -20,7 +20,7 @@ from dataclasses import dataclass
 from importlib import import_module
 import logging
 from pathlib import Path
-from typing import Any, Awaitable, Callable, Protocol, cast
+from typing import Any, Awaitable, Callable, Literal, Protocol, cast
 
 from ..config import ConfigError, PromptEvalVariantConfig, get_config
 from ..ontology_runtime import load_effective_profile
@@ -50,6 +50,9 @@ logger = logging.getLogger(__name__)
 
 class ExtractionPromptExperimentError(RuntimeError):
     """Raised when the prompt-eval extraction experiment cannot run honestly."""
+
+
+LLMClientRoutingPolicy = Literal["openrouter", "direct"]
 
 
 class _GetModel(Protocol):
@@ -167,6 +170,7 @@ class ExtractionPromptExperimentService:
         n_runs: int | None = None,
         comparison_method: PromptEvalComparisonMethod | None = None,
         selection_task: str | None = None,
+        routing_policy: LLMClientRoutingPolicy | None = None,
     ) -> ExtractionPromptExperimentReport:
         """Run the extraction prompt experiment from synchronous code.
 
@@ -185,6 +189,7 @@ class ExtractionPromptExperimentService:
                     n_runs=n_runs,
                     comparison_method=comparison_method,
                     selection_task=selection_task,
+                    routing_policy=routing_policy,
                 )
             )
         raise ExtractionPromptExperimentError(
@@ -200,6 +205,7 @@ class ExtractionPromptExperimentService:
         n_runs: int | None = None,
         comparison_method: PromptEvalComparisonMethod | None = None,
         selection_task: str | None = None,
+        routing_policy: LLMClientRoutingPolicy | None = None,
     ) -> ExtractionPromptExperimentReport:
         """Run the configured extraction prompt experiment asynchronously."""
 
@@ -221,6 +227,7 @@ class ExtractionPromptExperimentService:
         llm_client_api = _load_llm_client_api()
         prompt_eval_api = _load_prompt_eval_api()
         selected_model = llm_client_api.get_model(effective_selection_task)
+        llm_client_config = _build_llm_client_config_for_routing_policy(routing_policy)
         loaded_profile = load_effective_profile(
             profile.profile_id,
             profile.profile_version,
@@ -244,13 +251,14 @@ class ExtractionPromptExperimentService:
                 prompt_ref=variant.prompt_ref,
                 model=selected_model,
                 temperature=self._temperature,
-                kwargs={
-                    "task": effective_selection_task,
-                    "max_budget": self._max_budget_usd,
-                    "timeout": self._timeout_seconds,
-                    "num_retries": self._num_retries,
-                    "prompt_ref": variant.prompt_ref,
-                },
+                kwargs=_build_variant_call_kwargs(
+                    selection_task=effective_selection_task,
+                    max_budget_usd=self._max_budget_usd,
+                    timeout_seconds=self._timeout_seconds,
+                    num_retries=self._num_retries,
+                    prompt_ref=variant.prompt_ref,
+                    llm_client_config=llm_client_config,
+                ),
             )
             for variant in self._variant_configs
         ]
@@ -276,6 +284,7 @@ class ExtractionPromptExperimentService:
             provenance={
                 "source_package": get_config().project.package_name,
                 "selection_task": effective_selection_task,
+                "routing_policy_override": routing_policy,
                 "fixture_id": fixture.fixture_id,
                 "fixture_path": str(resolved_fixture_path),
             },
@@ -646,6 +655,49 @@ def _summarize_trial_failures_by_variant(
     return counts_by_variant
 
 
+def _build_variant_call_kwargs(
+    *,
+    selection_task: str,
+    max_budget_usd: float,
+    timeout_seconds: int,
+    num_retries: int,
+    prompt_ref: str,
+    llm_client_config: Any | None,
+) -> dict[str, Any]:
+    """Build one prompt_eval variant call-kwargs bundle deterministically."""
+
+    kwargs: dict[str, Any] = {
+        "task": selection_task,
+        "max_budget": max_budget_usd,
+        "timeout": timeout_seconds,
+        "num_retries": num_retries,
+        "prompt_ref": prompt_ref,
+    }
+    if llm_client_config is not None:
+        kwargs["config"] = llm_client_config
+    return kwargs
+
+
+def _build_llm_client_config_for_routing_policy(
+    routing_policy: LLMClientRoutingPolicy | None,
+) -> Any | None:
+    """Build an explicit llm_client runtime config for one routing override."""
+
+    if routing_policy is None:
+        return None
+    try:
+        module = import_module("llm_client.config")
+    except ImportError as exc:
+        raise ConfigError(
+            "prompt_eval routing overrides require llm_client to be installed; "
+            "run `pip install -e ~/projects/llm_client` in this repo's .venv"
+        ) from exc
+    client_config_cls = getattr(module, "ClientConfig", None)
+    if client_config_cls is None:
+        raise ConfigError("llm_client.config.ClientConfig is required for routing overrides")
+    return client_config_cls(routing_policy=routing_policy)
+
+
 def _classify_prompt_eval_trial_failure(trial: Any) -> PromptEvalFailureCategory | None:
     """Classify one prompt_eval trial failure into a stable repo-local bucket."""
 
@@ -658,6 +710,8 @@ def _classify_prompt_eval_trial_failure(trial: Any) -> PromptEvalFailureCategory
     combined = f"{error_text}\n{reasoning_text}".strip()
     if "requires more credits" in combined or '"code":402' in combined:
         return "insufficient_credits"
+    if "invalid_json_schema" in combined or "invalid schema for response_format" in combined:
+        return "provider_schema_rejected"
     if "key limit exceeded" in combined or "rate limit" in combined or "429" in combined:
         return "provider_rate_limited"
     if "max_tokens length limit" in combined or "finish_reason='length'" in combined:

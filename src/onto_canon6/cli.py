@@ -201,6 +201,11 @@ def _build_parser() -> argparse.ArgumentParser:
         "--selection-task",
         help="Optional llm_client selection-task override. Defaults to config.",
     )
+    prompt_experiment_parser.add_argument(
+        "--routing-policy",
+        choices=("openrouter", "direct"),
+        help="Optional llm_client routing-policy override. Defaults to inherited runtime policy.",
+    )
     _add_output_arg(prompt_experiment_parser, default_output=config.cli.default_output_format)
     prompt_experiment_parser.set_defaults(handler=_handle_run_extraction_prompt_experiment)
 
@@ -634,6 +639,7 @@ def _handle_run_extraction_prompt_experiment(args: argparse.Namespace) -> int:
         n_runs=args.n_runs,
         comparison_method=args.comparison_method,
         selection_task=args.selection_task,
+        routing_policy=args.routing_policy,
     )
     _emit_output(report, output_format=args.output)
     return 0

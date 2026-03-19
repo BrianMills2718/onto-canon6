@@ -26,6 +26,7 @@ PromptEvalFailureCategory = Literal[
     "multiple_tool_calls",
     "provider_rate_limited",
     "insufficient_credits",
+    "provider_schema_rejected",
     "unnamed_entity_filler",
     "empty_roles",
     "bad_evidence_span",

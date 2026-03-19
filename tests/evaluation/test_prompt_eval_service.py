@@ -753,6 +753,152 @@ def test_run_prompt_experiment_allows_selection_task_override(
     assert provenance["selection_task"] == "extraction"
 
 
+def test_run_prompt_experiment_allows_routing_policy_override(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A call-site routing-policy override should flow into prompt_eval call kwargs."""
+
+    captured: dict[str, object] = {}
+    fake_config = object()
+    prepared_result = SimpleNamespace(
+        experiment_name="onto_canon6_extraction_prompt_eval",
+        execution_id="exec123",
+        variants=["baseline", "compact", "hardened", "single_response_hardened"],
+        trials=[],
+        summary={
+            "baseline": SimpleNamespace(
+                n_trials=1,
+                n_errors=0,
+                mean_score=0.31,
+                std_score=0.04,
+                dimension_means={},
+                mean_cost=0.01,
+                mean_latency_ms=1200.0,
+                total_tokens=900,
+            ),
+            "hardened": SimpleNamespace(
+                n_trials=1,
+                n_errors=0,
+                mean_score=0.43,
+                std_score=0.05,
+                dimension_means={},
+                mean_cost=0.011,
+                mean_latency_ms=1180.0,
+                total_tokens=940,
+            ),
+            "compact": SimpleNamespace(
+                n_trials=1,
+                n_errors=0,
+                mean_score=0.28,
+                std_score=0.03,
+                dimension_means={},
+                mean_cost=0.009,
+                mean_latency_ms=1000.0,
+                total_tokens=700,
+            ),
+            "single_response_hardened": SimpleNamespace(
+                n_trials=1,
+                n_errors=0,
+                mean_score=0.45,
+                std_score=0.04,
+                dimension_means={},
+                mean_cost=0.012,
+                mean_latency_ms=1210.0,
+                total_tokens=960,
+            ),
+        },
+    )
+
+    async def fake_run_experiment(
+        experiment: _FakeExperiment,
+        evaluator: Callable[[object, object | None], object],
+        *,
+        observability: _FakePromptEvalObservabilityConfig,
+    ) -> object:
+        del evaluator
+        captured["experiment"] = experiment
+        captured["observability"] = observability
+        return prepared_result
+
+    def fake_load_result_from_observability(
+        execution_id: str,
+        *,
+        project: str | None = None,
+        dataset: str | None = None,
+        limit: int = 1000,
+    ) -> object:
+        del execution_id, project, dataset, limit
+        return prepared_result
+
+    def fake_compare_variants(
+        result: object,
+        variant_a: str,
+        variant_b: str,
+        *,
+        confidence: float = 0.95,
+        method: str = "bootstrap",
+        dimension: str | None = None,
+    ) -> object:
+        del result, confidence, dimension
+        return SimpleNamespace(
+            variant_a=variant_a,
+            variant_b=variant_b,
+            mean_a=0.5,
+            mean_b=0.4,
+            difference=0.1,
+            ci_lower=-0.1,
+            ci_upper=0.3,
+            significant=False,
+            method=method,
+            detail="bootstrap comparison",
+        )
+
+    monkeypatch.setattr(
+        prompt_eval_service_module,
+        "_load_llm_client_api",
+        lambda: prompt_eval_service_module._LLMClientAPI(
+            get_model=lambda task: f"model-for-{task}",
+            render_prompt=_render_prompt,
+        ),
+    )
+    monkeypatch.setattr(
+        prompt_eval_service_module,
+        "_build_llm_client_config_for_routing_policy",
+        lambda routing_policy: fake_config if routing_policy == "direct" else None,
+    )
+    monkeypatch.setattr(
+        prompt_eval_service_module,
+        "_load_prompt_eval_api",
+        lambda: prompt_eval_service_module._PromptEvalAPI(
+            Experiment=_FakeExperiment,
+            ExperimentInput=_FakeExperimentInput,
+            PromptVariant=_FakePromptVariant,
+            EvalScore=_FakeEvalScore,
+            PromptEvalObservabilityConfig=_FakePromptEvalObservabilityConfig,
+            run_experiment=fake_run_experiment,
+            load_result_from_observability=fake_load_result_from_observability,
+            compare_variants=fake_compare_variants,
+        ),
+    )
+
+    report = ExtractionPromptExperimentService().run_prompt_experiment(
+        case_limit=1,
+        n_runs=1,
+        comparison_method="bootstrap",
+        routing_policy="direct",
+    )
+
+    assert report.selection_task == "budget_extraction"
+    experiment = captured["experiment"]
+    assert isinstance(experiment, _FakeExperiment)
+    assert all(variant.kwargs["config"] is fake_config for variant in experiment.variants)
+    observability = captured["observability"]
+    assert isinstance(observability, _FakePromptEvalObservabilityConfig)
+    provenance = observability.kwargs["provenance"]
+    assert isinstance(provenance, dict)
+    assert provenance["routing_policy_override"] == "direct"
+
+
 def test_run_prompt_experiment_fails_loud_when_live_errors_break_welch(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -886,6 +1032,14 @@ def test_classify_prompt_eval_trial_failure_categories() -> None:
         == "insufficient_credits"
     )
     assert (
+        classify(
+            SimpleNamespace(
+                error='OpenAIException - {"error":{"message":"Invalid schema for response_format","code":"invalid_json_schema"}}'
+            )
+        )
+        == "provider_schema_rejected"
+    )
+    assert (
         classify(SimpleNamespace(reasoning="deterministic prompt_eval scoring failed: entity fillers require entity_id or name"))
         == "unnamed_entity_filler"
     )
@@ -908,6 +1062,7 @@ def test_summarize_trial_failures_by_variant() -> None:
             SimpleNamespace(variant_name="baseline", error="The output is incomplete due to a max_tokens length limit.", reasoning=None),
             SimpleNamespace(variant_name="baseline", error='APIError: {"message":"Key limit exceeded (total limit)"}', reasoning=None),
             SimpleNamespace(variant_name="baseline", error='APIError: {"message":"This request requires more credits, or fewer max_tokens.","code":402}', reasoning=None),
+            SimpleNamespace(variant_name="baseline", error='OpenAIException - {"error":{"message":"Invalid schema for response_format","code":"invalid_json_schema"}}', reasoning=None),
             SimpleNamespace(variant_name="hardened", error=None, reasoning="deterministic prompt_eval scoring failed: entity fillers require entity_id or name"),
         ),
         variant_names=("baseline", "hardened"),
@@ -918,6 +1073,7 @@ def test_summarize_trial_failures_by_variant() -> None:
             "length_truncated": 1,
             "provider_rate_limited": 1,
             "insufficient_credits": 1,
+            "provider_schema_rejected": 1,
         },
         "hardened": {
             "unnamed_entity_filler": 1,

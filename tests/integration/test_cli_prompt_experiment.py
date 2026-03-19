@@ -25,10 +25,12 @@ class _FakeExtractionPromptExperimentService:
         n_runs: int | None = None,
         comparison_method: object | None = None,
         selection_task: object | None = None,
+        routing_policy: object | None = None,
     ) -> ExtractionPromptExperimentReport:
         """Return one stable report without invoking live prompt_eval work."""
 
         assert comparison_method in {None, "bootstrap", "welch"}
+        assert routing_policy in {None, "openrouter", "direct"}
         del fixture_path, case_limit, n_runs
         return ExtractionPromptExperimentReport(
             experiment_name="onto_canon6_extraction_prompt_eval",
@@ -138,6 +140,7 @@ def test_cli_forwards_comparison_method_override(
             n_runs: int | None = None,
             comparison_method: object | None = None,
             selection_task: object | None = None,
+            routing_policy: object | None = None,
         ) -> ExtractionPromptExperimentReport:
             recorded["comparison_method"] = comparison_method
             return super().run_prompt_experiment(
@@ -146,6 +149,7 @@ def test_cli_forwards_comparison_method_override(
                 n_runs=n_runs,
                 comparison_method=comparison_method,
                 selection_task=selection_task,
+                routing_policy=routing_policy,
             )
 
     # mock-ok: the CLI wiring is the target here; prompt_eval execution itself
@@ -184,6 +188,7 @@ def test_cli_forwards_selection_task_override(
             n_runs: int | None = None,
             comparison_method: object | None = None,
             selection_task: object | None = None,
+            routing_policy: object | None = None,
         ) -> ExtractionPromptExperimentReport:
             recorded["selection_task"] = selection_task
             return super().run_prompt_experiment(
@@ -192,6 +197,7 @@ def test_cli_forwards_selection_task_override(
                 n_runs=n_runs,
                 comparison_method=comparison_method,
                 selection_task=selection_task,
+                routing_policy=routing_policy,
             )
 
     # mock-ok: the CLI wiring is the target here; prompt_eval execution itself
@@ -212,3 +218,51 @@ def test_cli_forwards_selection_task_override(
     assert recorded["selection_task"] == "extraction"
     output = json.loads(capsys.readouterr().out)
     assert output["selection_task"] == "extraction"
+
+
+def test_cli_forwards_routing_policy_override(
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """The CLI should pass an explicit routing-policy override to the service."""
+
+    recorded: dict[str, object] = {}
+
+    class _RecordingService(_FakeExtractionPromptExperimentService):
+        def run_prompt_experiment(
+            self,
+            *,
+            fixture_path: object | None = None,
+            case_limit: int | None = None,
+            n_runs: int | None = None,
+            comparison_method: object | None = None,
+            selection_task: object | None = None,
+            routing_policy: object | None = None,
+        ) -> ExtractionPromptExperimentReport:
+            recorded["routing_policy"] = routing_policy
+            return super().run_prompt_experiment(
+                fixture_path=fixture_path,
+                case_limit=case_limit,
+                n_runs=n_runs,
+                comparison_method=comparison_method,
+                selection_task=selection_task,
+                routing_policy=routing_policy,
+            )
+
+    # mock-ok: the CLI wiring is the target here; prompt_eval execution itself
+    # is covered at the service boundary.
+    monkeypatch.setattr(cli_module, "ExtractionPromptExperimentService", _RecordingService)
+
+    exit_code = cli_module.main(
+        [
+            "run-extraction-prompt-experiment",
+            "--routing-policy",
+            "direct",
+            "--output",
+            "json",
+        ]
+    )
+
+    assert exit_code == 0
+    assert recorded["routing_policy"] == "direct"
+    assert json.loads(capsys.readouterr().out)["execution_id"] == "exec123"
