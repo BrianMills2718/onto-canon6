@@ -23,12 +23,20 @@ messages:
       most review-worthy typed facts. A shorter correct response is better than
       a longer speculative one.
 
+      Empty candidates are allowed. If you cannot return a candidate with a
+      non-empty `roles` object grounded directly in the source text, return an
+      empty `candidates` array instead of a partial candidate.
+
       Omit a candidate if:
 
       - the entity cannot be named from the source text
+      - any role would be missing or empty
       - the fact is merely implied rather than stated clearly
       - the candidate would duplicate a stronger candidate already present
       - the candidate is minor detail rather than one of the main typed facts
+
+      Never emit `roles: {}`. If a candidate cannot carry at least one filled
+      role from the source text, omit it entirely.
 
       Keep candidates atomic and reviewable. Prefer concise evidence text that
       still identifies the fact uniquely.

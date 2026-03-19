@@ -15,6 +15,10 @@ messages:
       array. Put every candidate inside that single array. Never split the
       answer into multiple tool calls or multiple top-level responses.
 
+      Empty candidates are allowed. If the source does not support any
+      candidate with at least one filled role, return an empty `candidates`
+      array instead of a partial or invalid candidate.
+
       Return at most {{ max_candidates_per_case }} candidates.
       Use at most {{ max_evidence_spans_per_candidate }} evidence spans per
       candidate.
@@ -42,6 +46,8 @@ messages:
       - no unnamed entities
       - no speculative candidates
       - no duplicate restatements of the same fact
+
+      Never emit `roles: {}`. Omit the entire candidate instead.
 
       Return only the single structured candidate payload. Do not add prose
       before or after it.

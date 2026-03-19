@@ -39,7 +39,7 @@ class _FakeExtractionPromptExperimentService:
             execution_id="exec123",
             observability_dataset="onto_canon6_extraction_prompt_eval",
             observability_phase="evaluation",
-            selection_task=str(selection_task or "budget_extraction"),
+            selection_task=str(selection_task or "extraction"),
             selected_model="gemini/gemini-3-flash-preview",
             case_count=2,
             n_runs=2,
@@ -119,7 +119,7 @@ def test_cli_runs_extraction_prompt_experiment_and_emits_json(
     output = json.loads(capsys.readouterr().out)
     assert output["execution_id"] == "exec123"
     assert output["baseline_variant_name"] == "baseline"
-    assert output["selection_task"] == "budget_extraction"
+    assert output["selection_task"] == "extraction"
     assert output["variant_summaries"][1]["variant_name"] == "hardened"
 
 

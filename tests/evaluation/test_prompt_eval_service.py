@@ -401,8 +401,8 @@ def test_run_prompt_experiment_builds_report_and_variant_comparison(
 
     assert report.execution_id == "exec123"
     assert report.baseline_variant_name == "baseline"
-    assert report.selection_task == "budget_extraction"
-    assert report.selected_model == "model-for-budget_extraction"
+    assert report.selection_task == "extraction"
+    assert report.selected_model == "model-for-extraction"
     assert [item.variant_name for item in report.variant_summaries] == [
         "baseline",
         "compact",
@@ -423,13 +423,13 @@ def test_run_prompt_experiment_builds_report_and_variant_comparison(
         "compact",
         "single_response_hardened",
     ]
-    assert experiment.variants[0].kwargs["task"] == "budget_extraction"
+    assert experiment.variants[0].kwargs["task"] == "extraction"
     assert experiment.variants[0].kwargs["max_budget"] == 0.25
-    assert experiment.variants[1].kwargs["task"] == "budget_extraction"
+    assert experiment.variants[1].kwargs["task"] == "extraction"
     assert experiment.variants[1].kwargs["max_budget"] == 0.25
-    assert experiment.variants[2].kwargs["task"] == "budget_extraction"
+    assert experiment.variants[2].kwargs["task"] == "extraction"
     assert experiment.variants[2].kwargs["max_budget"] == 0.25
-    assert experiment.variants[3].kwargs["task"] == "budget_extraction"
+    assert experiment.variants[3].kwargs["task"] == "extraction"
     assert experiment.variants[3].kwargs["max_budget"] == 0.25
     baseline_messages = experiment.variants[0].messages
     hardened_messages = experiment.variants[1].messages
@@ -440,16 +440,18 @@ def test_run_prompt_experiment_builds_report_and_variant_comparison(
     assert "Use at most 2 evidence spans per" in baseline_messages[0]["content"]
     assert "abbreviation expansions" in hardened_messages[0]["content"]
     assert "Prefer the smallest sufficient candidate set" in compact_messages[0]["content"]
-    assert "Return at most 2 candidates." in compact_messages[0]["content"]
+    assert "Return at most 1 candidates." in compact_messages[0]["content"]
     assert "Use at most 1 evidence spans per" in compact_messages[0]["content"]
+    assert "Empty candidates are allowed." in compact_messages[0]["content"]
     assert "Return exactly one structured response object" in single_response_messages[0]["content"]
+    assert "Never emit `roles: {}`." in single_response_messages[0]["content"]
     observability = captured["observability"]
     assert isinstance(observability, _FakePromptEvalObservabilityConfig)
     assert observability.kwargs["dataset"] == "onto_canon6_extraction_prompt_eval"
     assert observability.kwargs["project"] == "onto-canon6"
     provenance = observability.kwargs["provenance"]
     assert isinstance(provenance, dict)
-    assert provenance["selection_task"] == "budget_extraction"
+    assert provenance["selection_task"] == "extraction"
     assert captured["loaded_execution_id"] == "exec123"
     assert captured["loaded_dataset"] == "onto_canon6_extraction_prompt_eval"
     trial_score = captured["trial_score"]
@@ -498,9 +500,9 @@ def test_run_prompt_experiment_allows_bootstrap_override_on_small_live_slice(
         summary={
             "baseline": SimpleNamespace(
                 n_trials=1,
-                n_errors=1,
-                mean_score=None,
-                std_score=None,
+                n_errors=0,
+                mean_score=0.35,
+                std_score=0.02,
                 dimension_means={},
                 mean_cost=0.01,
                 mean_latency_ms=1200.0,
@@ -893,7 +895,7 @@ def test_run_prompt_experiment_allows_routing_policy_override(
         routing_policy="direct",
     )
 
-    assert report.selection_task == "budget_extraction"
+    assert report.selection_task == "extraction"
     experiment = captured["experiment"]
     assert isinstance(experiment, _FakeExperiment)
     assert all(variant.kwargs["config"] is fake_config for variant in experiment.variants)
@@ -1165,7 +1167,7 @@ def test_variant_render_context_applies_per_variant_budget_overrides() -> None:
         name="compact",
         prompt_template="prompts/extraction/prompt_eval_text_to_candidate_assertions_compact.yaml",
         prompt_ref="onto_canon6.extraction.prompt_eval_text_to_candidate_assertions_compact@1",
-        max_candidates_per_case=2,
+        max_candidates_per_case=1,
         max_evidence_spans_per_candidate=1,
     )
 
@@ -1182,5 +1184,5 @@ def test_variant_render_context_applies_per_variant_budget_overrides() -> None:
     )
 
     assert context["profile_id"] == "psyop_seed"
-    assert context["max_candidates_per_case"] == 2
+    assert context["max_candidates_per_case"] == 1
     assert context["max_evidence_spans_per_candidate"] == 1
