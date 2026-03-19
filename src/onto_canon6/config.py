@@ -67,7 +67,12 @@ class OntologyRuntimeConfig(BaseModel):
 
 
 class ExtractionConfig(BaseModel):
-    """Text-extraction defaults for the first llm_client-backed Phase 4 path."""
+    """Text-extraction defaults for the first llm_client-backed Phase 4 path.
+
+    Explicit completion-token caps are intentionally excluded here. The
+    extraction path relies on llm_client's model-aware defaults so structured
+    outputs are not prematurely truncated by repo-local ceilings.
+    """
 
     model_config = ConfigDict(extra="forbid", frozen=True)
 
@@ -77,7 +82,6 @@ class ExtractionConfig(BaseModel):
     timeout_seconds: int = Field(ge=1)
     num_retries: int = Field(ge=0)
     max_budget_usd: float = Field(gt=0)
-    max_output_tokens: int = Field(ge=1)
 
 
 class ChunkingConfig(BaseModel):
@@ -148,7 +152,6 @@ class PromptEvalExperimentConfig(BaseModel):
     timeout_seconds: int = Field(ge=1)
     num_retries: int = Field(ge=0)
     max_budget_usd: float = Field(gt=0.0)
-    max_output_tokens: int = Field(ge=1)
     baseline_variant_name: str = Field(min_length=1)
     comparison_method: PromptEvalComparisonMethodValue
     comparison_confidence: float = Field(gt=0.0, lt=1.0)

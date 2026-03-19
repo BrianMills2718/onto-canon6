@@ -27,7 +27,6 @@ extraction:
   timeout_seconds: 60
   num_retries: 2
   max_budget_usd: 0.25
-  max_output_tokens: 2500
 
 chunking:
   target_max_chars: 4000
@@ -55,7 +54,6 @@ evaluation:
     timeout_seconds: 60
     num_retries: 2
     max_budget_usd: 0.25
-    max_output_tokens: 5000
     baseline_variant_name: "baseline"
     comparison_method: "welch"
     comparison_confidence: 0.95

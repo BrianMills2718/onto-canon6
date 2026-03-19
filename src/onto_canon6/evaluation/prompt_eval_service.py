@@ -18,8 +18,11 @@ from __future__ import annotations
 import asyncio
 from dataclasses import dataclass
 from importlib import import_module
+import logging
 from pathlib import Path
 from typing import Any, Awaitable, Callable, Protocol, cast
+
+logger = logging.getLogger(__name__)
 
 from ..config import ConfigError, PromptEvalVariantConfig, get_config
 from ..ontology_runtime import load_effective_profile
@@ -150,7 +153,6 @@ class ExtractionPromptExperimentService:
         self._timeout_seconds = experiment.timeout_seconds
         self._num_retries = experiment.num_retries
         self._max_budget_usd = experiment.max_budget_usd
-        self._max_output_tokens = experiment.max_output_tokens
         self._baseline_variant_name = experiment.baseline_variant_name
         self._comparison_method = experiment.comparison_method
         self._comparison_confidence = experiment.comparison_confidence
@@ -243,7 +245,6 @@ class ExtractionPromptExperimentService:
                     "max_budget": self._max_budget_usd,
                     "timeout": self._timeout_seconds,
                     "num_retries": self._num_retries,
-                    "max_tokens": self._max_output_tokens,
                     "prompt_ref": variant.prompt_ref,
                 },
             )
@@ -350,15 +351,17 @@ def _score_prompt_eval_trial(
         "structural_usable_rate": 0.0,
         "count_alignment": 0.0,
     }
+    # Input validation: fail loud on contract violations so fixture or
+    # wiring bugs surface immediately rather than hiding as 0.0 scores.
+    if not isinstance(expected, BenchmarkCase):
+        raise ExtractionPromptExperimentError(
+            "prompt_eval expected payload must be one BenchmarkCase"
+        )
+    if not isinstance(output, TextExtractionResponse):
+        raise ExtractionPromptExperimentError(
+            "prompt_eval extraction output must be a TextExtractionResponse"
+        )
     try:
-        if not isinstance(expected, BenchmarkCase):
-            raise ExtractionPromptExperimentError(
-                "prompt_eval expected payload must be one BenchmarkCase"
-            )
-        if not isinstance(output, TextExtractionResponse):
-            raise ExtractionPromptExperimentError(
-                "prompt_eval extraction output must be a TextExtractionResponse"
-            )
         candidate_imports = tuple(
             candidate_import_from_extracted(
                 candidate=candidate,
@@ -403,6 +406,10 @@ def _score_prompt_eval_trial(
             ),
         )
     except Exception as exc:
+        logger.warning(
+            "deterministic prompt_eval scoring failed for live trial: %s",
+            exc,
+        )
         return eval_score_cls(
             score=0.0,
             dimension_scores=zero_dimensions,

@@ -278,7 +278,6 @@ class TextExtractionService:
         self._timeout_seconds = config.extraction.timeout_seconds
         self._num_retries = config.extraction.num_retries
         self._max_budget_usd = config.extraction.max_budget_usd
-        self._max_output_tokens = config.extraction.max_output_tokens
 
     @property
     def review_service(self) -> ReviewService:
@@ -386,7 +385,6 @@ class TextExtractionService:
                 task=self._selection_task,
                 trace_id=trace_id,
                 max_budget=self._max_budget_usd,
-                max_tokens=self._max_output_tokens,
                 prompt_ref=self._prompt_ref,
             )
         except Exception as exc:
