@@ -444,6 +444,8 @@ def test_run_prompt_experiment_builds_report_and_variant_comparison(
     assert "Use at most 1 evidence spans per" in compact_messages[0]["content"]
     assert "Empty candidates are allowed." in compact_messages[0]["content"]
     assert "Return exactly one structured response object" in single_response_messages[0]["content"]
+    assert "Return at most 1 candidates." in single_response_messages[0]["content"]
+    assert "Use at most 1 evidence spans per" in single_response_messages[0]["content"]
     assert "Never emit `roles: {}`." in single_response_messages[0]["content"]
     observability = captured["observability"]
     assert isinstance(observability, _FakePromptEvalObservabilityConfig)

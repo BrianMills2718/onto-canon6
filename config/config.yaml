@@ -74,6 +74,8 @@ evaluation:
       - name: "single_response_hardened"
         prompt_template: "prompts/extraction/prompt_eval_text_to_candidate_assertions_single_response_hardened.yaml"
         prompt_ref: "onto_canon6.extraction.prompt_eval_text_to_candidate_assertions_single_response_hardened@1"
+        max_candidates_per_case: 1
+        max_evidence_spans_per_candidate: 1
 
 cli:
   default_output_format: "json"
