@@ -4,6 +4,9 @@
 
 Phase 10 completed the bootstrap roadmap, not the full successor-parity goal.
 The explicit parity ledger now lives in `docs/plans/0005_v1_capability_parity_matrix.md`.
+The current strategic priority is to put the proved bounded core through at
+least one real investigation or consumer workflow before reopening broad
+parity-chasing or another roadmap extension.
 
 This repo starts from the first proved slice instead of trying to port an
 entire prior runtime. The current scope is intentionally narrow:

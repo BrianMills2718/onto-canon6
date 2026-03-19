@@ -441,6 +441,21 @@ explicitly marked as retained, expanded, replaced, deferred, or abandoned in
 `docs/plans/0005_v1_capability_parity_matrix.md`, and every retained/replaced
 capability has real proof artifacts.
 
+### Current Strategic Priority
+
+The next default move is not another broad internal phase.
+
+The current priority is:
+
+1. run the proved bounded successor core against at least one real
+   investigation or consumer workflow;
+2. use that run to identify the highest-friction missing capability or product
+   gap;
+3. justify any later roadmap extension from observed usage pressure rather than
+   from parity-chasing alone.
+
+The parity matrix remains the capability ledger, not an automatic work queue.
+
 ## Drift Conditions
 
 The following now count as drift and should not happen casually:

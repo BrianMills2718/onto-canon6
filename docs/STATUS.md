@@ -309,9 +309,14 @@ The repo should now:
 1. use `docs/plans/0005_v1_capability_parity_matrix.md` as the feature ledger;
 2. treat the current roadmap as the proved bounded successor core, not as full
    v1 parity;
-3. require explicit workflow pressure before reopening temporal/inference work
+3. run at least one real non-fixture investigation or consumer workflow through
+   extract -> review -> promote -> export before opening a new broad parity
+   phase;
+4. capture the friction, breakage, and missing value from that real run as the
+   justification record for any later roadmap extension;
+5. require explicit workflow pressure before reopening temporal/inference work
    or another broad parity-recovery phase;
-4. prefer the smallest next product-facing or parity-closing slice if a new
+6. prefer the smallest next product-facing or parity-closing slice if a new
    roadmap extension is needed.
 
 The locked decisions for the latest slices are already explicit

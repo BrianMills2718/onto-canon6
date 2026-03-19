@@ -649,6 +649,23 @@ completion rule from this point forward is:
 3. the successor is not considered complete until every retained or replaced
    capability has real proof evidence.
 
+## Post-Phase-15 Adoption Gate
+
+After Phase 15, the default next step is not another automatic implementation
+phase.
+
+Before opening a new roadmap extension, the repo should:
+
+1. run at least one real non-fixture investigation or external consumer
+   workflow through the proved extract -> review -> promote -> export path;
+2. record the observed friction, breakage, and missing user-visible value from
+   that run;
+3. use that evidence to justify the smallest next slice, whether that slice is
+   parity-closing, ergonomics-driven, or consumer-specific.
+
+This keeps the parity matrix as a decision aid rather than a mandate to rebuild
+every earlier capability before the successor is used.
+
 ## Phase 11: Canonical Graph Recovery [completed]
 
 Goal:
