@@ -58,6 +58,12 @@ from .evaluation.fidelity_experiment import (
     PreparedExperiment,
     prepare_experiment_from_config,
 )
+from .evaluation.fidelity_runner import (
+    FidelityComparisonReport,
+    FidelityExperimentReport,
+    run_fidelity_comparison,
+    run_fidelity_experiment,
+)
 from .evaluation.sumo_hierarchy import SUMOHierarchyError
 from .pipeline import (
     CandidateAssertionRecord,
@@ -250,6 +256,68 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     _add_output_arg(fidelity_prepare_parser, default_output="json")
     fidelity_prepare_parser.set_defaults(handler=_handle_fidelity_experiment_prepare)
+
+    fidelity_run_parser = fidelity_sub.add_parser(
+        "run",
+        help="Run a fidelity experiment through prompt_eval and score with ancestor evaluator.",
+    )
+    fidelity_run_parser.add_argument(
+        "--model",
+        help="Model to use for the experiment. Defaults to llm_client task-based selection.",
+    )
+    fidelity_run_parser.add_argument(
+        "--level",
+        choices=[lv.value for lv in FidelityLevel],
+        action="append",
+        dest="levels",
+        help="Fidelity level(s) to run. Repeatable. Defaults to all three.",
+    )
+    fidelity_run_parser.add_argument(
+        "--prepared-json",
+        type=Path,
+        help="Path to a PreparedExperiment JSON file. Overrides --level and entity options.",
+    )
+    fidelity_run_parser.add_argument(
+        "--sumo-db-path",
+        type=Path,
+        help="Override path to sumo_plus.db. Defaults to config.",
+    )
+    fidelity_run_parser.add_argument(
+        "--max-budget",
+        type=float,
+        help="Maximum budget in USD per experiment run. Defaults to 0.25.",
+    )
+    _add_output_arg(fidelity_run_parser, default_output="json")
+    fidelity_run_parser.set_defaults(handler=_handle_fidelity_experiment_run)
+
+    fidelity_compare_parser = fidelity_sub.add_parser(
+        "compare",
+        help="Run a fidelity experiment across multiple models and compare results.",
+    )
+    fidelity_compare_parser.add_argument(
+        "--models",
+        required=True,
+        help="Comma-separated list of model identifiers to compare.",
+    )
+    fidelity_compare_parser.add_argument(
+        "--level",
+        choices=[lv.value for lv in FidelityLevel],
+        action="append",
+        dest="levels",
+        help="Fidelity level(s) to run. Repeatable. Defaults to all three.",
+    )
+    fidelity_compare_parser.add_argument(
+        "--sumo-db-path",
+        type=Path,
+        help="Override path to sumo_plus.db. Defaults to config.",
+    )
+    fidelity_compare_parser.add_argument(
+        "--max-budget",
+        type=float,
+        help="Maximum budget in USD per model run. Defaults to 0.25.",
+    )
+    _add_output_arg(fidelity_compare_parser, default_output="json")
+    fidelity_compare_parser.set_defaults(handler=_handle_fidelity_experiment_compare)
 
     import_whygame_parser = subparsers.add_parser(
         "import-whygame-relationships",
@@ -729,6 +797,71 @@ def _handle_fidelity_experiment_prepare(args: argparse.Namespace) -> int:
     return 0
 
 
+def _handle_fidelity_experiment_run(args: argparse.Namespace) -> int:
+    """Run a fidelity experiment through prompt_eval and score with ancestor evaluator."""
+
+    import uuid as _uuid
+
+    config = get_config()
+    sumo_db_path = args.sumo_db_path or config.resolve_repo_path(config.evaluation.sumo_db_path)
+    max_budget = args.max_budget if args.max_budget is not None else 0.25
+
+    # Either load a prepared JSON or build from config.
+    if args.prepared_json:
+        raw = json.loads(args.prepared_json.read_text(encoding="utf-8"))
+        prepared = PreparedExperiment.model_validate(raw)
+    else:
+        levels: list[FidelityLevel] | None = None
+        if args.levels:
+            levels = [FidelityLevel(lv) for lv in args.levels]
+        prepared = prepare_experiment_from_config(
+            sumo_db_path=sumo_db_path,
+            levels=levels,
+        )
+
+    trace_id = f"fidelity_exp_{_uuid.uuid4().hex[:12]}"
+    report = run_fidelity_experiment(
+        prepared,
+        model=args.model,
+        sumo_db_path=sumo_db_path,
+        task="fidelity_experiment",
+        max_budget=max_budget,
+        trace_id=trace_id,
+    )
+    _emit_output(report, output_format=args.output)
+    return 0
+
+
+def _handle_fidelity_experiment_compare(args: argparse.Namespace) -> int:
+    """Run a fidelity experiment across multiple models and compare results."""
+
+    config = get_config()
+    sumo_db_path = args.sumo_db_path or config.resolve_repo_path(config.evaluation.sumo_db_path)
+    max_budget = args.max_budget if args.max_budget is not None else 0.25
+    models = [m.strip() for m in args.models.split(",") if m.strip()]
+    if not models:
+        print("Error: --models must contain at least one model identifier.", file=sys.stderr)
+        return 1
+
+    levels: list[FidelityLevel] | None = None
+    if args.levels:
+        levels = [FidelityLevel(lv) for lv in args.levels]
+    prepared = prepare_experiment_from_config(
+        sumo_db_path=sumo_db_path,
+        levels=levels,
+    )
+
+    report = run_fidelity_comparison(
+        prepared,
+        models=models,
+        sumo_db_path=sumo_db_path,
+        task="fidelity_experiment",
+        max_budget=max_budget,
+    )
+    _emit_output(report, output_format=args.output)
+    return 0
+
+
 def _handle_import_whygame_relationships(args: argparse.Namespace) -> int:
     """Import one file of WhyGame relationship facts through the existing adapter."""
 
@@ -1134,6 +1267,7 @@ def _to_jsonable(value: object) -> Any:
             SemanticCanonicalizationResult,
             TextChunkFileRecord,
             TextChunkManifest,
+            PreparedExperiment,
             ResearchAgentWhyGameTransformResult,
             WhyGameImportResult,
         ),

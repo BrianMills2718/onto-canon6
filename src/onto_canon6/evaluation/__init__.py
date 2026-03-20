@@ -10,6 +10,13 @@ from .fidelity_experiment import (
     prepare_experiment,
     prepare_experiment_from_config,
 )
+from .fidelity_runner import (
+    FidelityComparisonReport,
+    FidelityExperimentReport,
+    FidelityItemResult,
+    run_fidelity_comparison,
+    run_fidelity_experiment,
+)
 from .models import (
     AggregateReasonablenessSummary,
     AggregateValidationSummary,
@@ -37,6 +44,9 @@ __all__ = [
     "EntityFixture",
     "ExperimentItem",
     "ExperimentResult",
+    "FidelityComparisonReport",
+    "FidelityExperimentReport",
+    "FidelityItemResult",
     "FidelityLevel",
     "PreparedExperiment",
     "AggregateReasonablenessSummary",
@@ -64,4 +74,6 @@ __all__ = [
     "make_ancestor_evaluator",
     "prepare_experiment",
     "prepare_experiment_from_config",
+    "run_fidelity_comparison",
+    "run_fidelity_experiment",
 ]
