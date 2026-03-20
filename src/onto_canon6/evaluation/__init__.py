@@ -1,5 +1,6 @@
 """Evaluation exports for the Phase 5 live extraction benchmark."""
 
+from .ancestor_evaluator import AncestorEvalScore, make_ancestor_evaluator
 from .models import (
     AggregateReasonablenessSummary,
     AggregateValidationSummary,
@@ -23,6 +24,7 @@ from .prompt_eval_service import ExtractionPromptExperimentError, ExtractionProm
 from .service import EvaluationError, LiveExtractionEvaluationService, load_benchmark_fixture
 
 __all__ = [
+    "AncestorEvalScore",
     "AggregateReasonablenessSummary",
     "AggregateValidationSummary",
     "BenchmarkAggregateSummary",
@@ -45,4 +47,5 @@ __all__ = [
     "ReasonablenessLabel",
     "ReasonablenessReview",
     "load_benchmark_fixture",
+    "make_ancestor_evaluator",
 ]

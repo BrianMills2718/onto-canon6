@@ -66,12 +66,16 @@ class ReviewService:
         db_path: Path | None = None,
         overlay_root: Path | None = None,
         default_acceptance_policy: ProposalAcceptancePolicy | None = None,
+        permissive_review: bool | None = None,
     ) -> None:
         """Create a review service using config-backed defaults when omitted."""
 
         config = get_config()
         self._default_acceptance_policy = (
             default_acceptance_policy or config.pipeline.default_acceptance_policy
+        )
+        self._permissive_review = (
+            permissive_review if permissive_review is not None else config.pipeline.permissive_review
         )
         self._store = ReviewStore(db_path or config.review_db_path())
         self._overlay_root = (overlay_root or config.overlay_root()).resolve()
@@ -324,7 +328,11 @@ class ReviewService:
                 conn,
                 candidate_id=normalized_candidate_id,
             )
-            _validate_candidate_review_transition(candidate=candidate, decision=decision)
+            _validate_candidate_review_transition(
+                candidate=candidate,
+                decision=decision,
+                permissive=self._permissive_review,
+            )
             self._store.insert_candidate_review(
                 conn,
                 candidate_id=normalized_candidate_id,
@@ -403,24 +411,30 @@ def _validate_candidate_review_transition(
     *,
     candidate: CandidateAssertionRecord,
     decision: CandidateReviewDecision,
+    permissive: bool = False,
 ) -> None:
     """Reject unsupported candidate review transitions loudly.
 
     The current state machine is intentionally small:
 
-    - `pending_review -> accepted` only for validation statuses other than
-      `invalid`;
-    - `pending_review -> rejected` for any candidate;
-    - `accepted` and `rejected` are terminal.
+    - ``pending_review -> accepted`` only for validation statuses other than
+      ``invalid`` (unless *permissive* is ``True``);
+    - ``pending_review -> rejected`` for any candidate;
+    - ``accepted`` and ``rejected`` are terminal.
+
+    When *permissive* is ``True``, invalid candidates may be accepted. This
+    supports ADR-0017 (permissive extraction) where validation is an
+    annotation, not a gate, and the governance boundary moves to promotion.
     """
 
     if candidate.review_status != "pending_review":
         raise ReviewStoreConflictError(
             f"candidate review is terminal: {candidate.candidate_id} status={candidate.review_status}"
         )
-    if decision == "accepted" and candidate.validation_status == "invalid":
+    if decision == "accepted" and candidate.validation_status == "invalid" and not permissive:
         raise ReviewStoreConflictError(
             "invalid candidates cannot transition to accepted review status"
+            " (set pipeline.permissive_review: true to allow)"
         )
 
 

@@ -16,6 +16,7 @@ paths:
 
 pipeline:
   default_acceptance_policy: "record_only"
+  permissive_review: false
 
 ontology_runtime:
   overlay_pack_suffix: "__overlay"
@@ -35,6 +36,7 @@ chunking:
   max_chunk_chars: 5000
 
 evaluation:
+  sumo_db_path: "../onto-canon/data/sumo_plus.db"
   benchmark_fixture: "tests/fixtures/psyop_eval_slice.json"
   observability_dataset: "onto_canon6_live_extraction_benchmark"
   observability_phase: "evaluation"

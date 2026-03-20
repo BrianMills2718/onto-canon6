@@ -325,6 +325,35 @@ def test_invalid_candidate_cannot_be_accepted(tmp_path: Path) -> None:
         )
 
 
+def test_invalid_candidate_accepted_in_permissive_mode(tmp_path: Path) -> None:
+    """Permissive review allows accepting invalid candidates (ADR-0017)."""
+
+    service = ReviewService(
+        db_path=tmp_path / "review.sqlite3",
+        overlay_root=tmp_path / "ontology_overlays",
+        default_acceptance_policy="record_only",
+        permissive_review=True,
+    )
+    submission = _submit_candidate(
+        service,
+        payload={"roles": {}},
+        profile_id="default",
+        profile_version="1.0.0",
+        submitted_by="analyst:test",
+        source_ref="notebook://test/permissive-review",
+    )
+    assert submission.candidate.validation_status == "invalid"
+
+    # In permissive mode, this should succeed instead of raising.
+    reviewed = service.review_candidate(
+        candidate_id=submission.candidate.candidate_id,
+        decision="accepted",
+        actor_id="reviewer:test",
+    )
+    assert reviewed.review_status == "accepted"
+    assert reviewed.validation_status == "invalid"  # Validation status unchanged.
+
+
 def test_reviewing_same_candidate_twice_conflicts(tmp_path: Path) -> None:
     """Candidate review should be terminal once one decision is recorded."""
 

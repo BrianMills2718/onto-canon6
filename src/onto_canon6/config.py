@@ -56,6 +56,7 @@ class PipelineConfig(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
     default_acceptance_policy: AcceptancePolicyValue
+    permissive_review: bool = False
 
 
 class OntologyRuntimeConfig(BaseModel):
@@ -110,6 +111,7 @@ class EvaluationConfig(BaseModel):
 
     model_config = ConfigDict(extra="forbid", frozen=True)
 
+    sumo_db_path: str = Field(min_length=1)
     benchmark_fixture: str = Field(min_length=1)
     observability_dataset: str = Field(min_length=1)
     observability_phase: str = Field(min_length=1)
