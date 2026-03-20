@@ -2,16 +2,14 @@
 
 `onto-canon6` is the successor bootstrap for the `onto-canon` lineage.
 
-Phase 10 completed the bootstrap roadmap, not the full successor-parity goal.
+Phases 0-15 completed the bootstrap roadmap, not the full successor-parity goal.
 The explicit parity ledger now lives in `docs/plans/0005_v1_capability_parity_matrix.md`.
-The first real non-fixture workflow run is now documented in
-`docs/plans/0011_first_real_run_psyop_stage1.md` and
-`docs/runs/2026-03-18_psyop_stage1_run_summary.md`. A second real
-cross-project consumer run is documented in
-`docs/plans/0012_research_agent_shield_ai_whygame_run.md` and
-`docs/runs/2026-03-18_research_agent_shield_ai_whygame_run_summary.md`. The
-current strategic priority is to use the recorded friction from real runs
-before reopening broad parity-chasing or another roadmap extension.
+Two real non-fixture runs completed (PSYOP Stage 1 + Shield AI WhyGame).
+Post-bootstrap work is now active: ADRs 0017-0019 and Plans 0016-0018 define
+the permissive extraction + progressive disclosure architecture. The current
+active work is extraction quality baseline
+(`docs/plans/0014_extraction_quality_baseline.md`) and the new permissive
+extraction pipeline (ADR-0017, Plan 0016).
 
 This repo starts from the first proved slice instead of trying to port an
 entire prior runtime. The current scope is intentionally narrow:
@@ -92,7 +90,7 @@ Repo-local strategic and planning docs now live in:
 
 ## Current Scope
 
-Today this repo proves only one thin slice:
+Phases 0-15 are complete. The repo now proves:
 
 1. model ontology pack references and ontology policy explicitly
 2. load real donor profiles and ontology packs from `onto-canon5`

@@ -21,6 +21,9 @@ during the restart review and planning phase.
 14. [0014 - Replace the v1 semantic stack with pack-driven canonicalization and explicit recanonicalization](0014-replace-the-v1-semantic-stack-with-pack-driven-canonicalization-and-explicit-recanonicalization.md)
 15. [0015 - Recover Phase 14 through a thin MCP surface and a WhyGame relationship adapter](0015-recover-phase-14-through-a-thin-mcp-surface-and-a-whygame-relationship-adapter.md)
 16. [0016 - Recover Phase 15 through extension-local promoted-assertion dispositions and derived corroboration](0016-recover-phase-15-through-extension-local-promoted-assertion-dispositions-and-derived-corroboration.md)
+17. [0017 - Adopt permissive extraction with downstream governance](0017-adopt-permissive-extraction-with-downstream-governance.md)
+18. [0018 - Adopt multi-pass progressive disclosure extraction](0018-adopt-multi-pass-progressive-disclosure-extraction.md)
+19. [0019 - Adopt ancestor-aware evaluation with growing acceptable sets](0019-adopt-ancestor-aware-evaluation-with-growing-acceptable-sets.md)
 
 ## Notes
 

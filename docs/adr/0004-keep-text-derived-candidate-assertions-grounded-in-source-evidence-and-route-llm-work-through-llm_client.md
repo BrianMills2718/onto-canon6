@@ -1,6 +1,7 @@
 # ADR-0004: Keep text-derived candidate assertions grounded in source evidence and route LLM work through llm_client
 
-Status: Accepted  
+Status: Accepted
+Note: ADR-0017 (2026-03-19) modifies this ADR — validation is now annotation, not gate. See ADR-0017 for details.
 Date: 2026-03-17
 
 ## Context
