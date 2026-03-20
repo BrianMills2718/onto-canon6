@@ -52,6 +52,13 @@ from .evaluation import (
     ExtractionPromptExperimentReport,
     ExtractionPromptExperimentService,
 )
+from .evaluation.fidelity_experiment import (
+    EntityFixture,
+    FidelityLevel,
+    PreparedExperiment,
+    prepare_experiment_from_config,
+)
+from .evaluation.sumo_hierarchy import SUMOHierarchyError
 from .pipeline import (
     CandidateAssertionRecord,
     CandidateSubmissionResult,
@@ -98,6 +105,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         ExtractionPromptExperimentError,
         IdentityError,
         ReviewStoreError,
+        SUMOHierarchyError,
         SemanticCanonicalizationError,
         ValueError,
         FileNotFoundError,
@@ -208,6 +216,40 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     _add_output_arg(prompt_experiment_parser, default_output=config.cli.default_output_format)
     prompt_experiment_parser.set_defaults(handler=_handle_run_extraction_prompt_experiment)
+
+    fidelity_parser = subparsers.add_parser(
+        "fidelity-experiment",
+        help="Prepare fidelity experiment inputs for SUMO type assignment accuracy comparison.",
+    )
+    fidelity_sub = fidelity_parser.add_subparsers(dest="fidelity_command")
+    fidelity_prepare_parser = fidelity_sub.add_parser(
+        "prepare",
+        help="Generate experiment inputs as JSON. Does NOT make LLM calls.",
+    )
+    fidelity_prepare_parser.add_argument(
+        "--level",
+        choices=[lv.value for lv in FidelityLevel],
+        action="append",
+        dest="levels",
+        help="Fidelity level(s) to prepare. Repeatable. Defaults to all three.",
+    )
+    fidelity_prepare_parser.add_argument(
+        "--entity",
+        action="append",
+        dest="entities",
+        help=(
+            "Entity spec as 'name:reference_type:constraint_type' or "
+            "'name:reference_type:constraint_type:context'. "
+            "Repeatable. Defaults to built-in fixture set."
+        ),
+    )
+    fidelity_prepare_parser.add_argument(
+        "--sumo-db-path",
+        type=Path,
+        help="Override path to sumo_plus.db. Defaults to config.",
+    )
+    _add_output_arg(fidelity_prepare_parser, default_output="json")
+    fidelity_prepare_parser.set_defaults(handler=_handle_fidelity_experiment_prepare)
 
     import_whygame_parser = subparsers.add_parser(
         "import-whygame-relationships",
@@ -642,6 +684,48 @@ def _handle_run_extraction_prompt_experiment(args: argparse.Namespace) -> int:
         routing_policy=args.routing_policy,
     )
     _emit_output(report, output_format=args.output)
+    return 0
+
+
+def _handle_fidelity_experiment_prepare(args: argparse.Namespace) -> int:
+    """Prepare fidelity experiment inputs and emit them as JSON."""
+
+    config = get_config()
+    sumo_db_path = args.sumo_db_path or config.resolve_repo_path(config.evaluation.sumo_db_path)
+
+    # Parse fidelity levels.
+    levels: list[FidelityLevel] | None = None
+    if args.levels:
+        levels = [FidelityLevel(lv) for lv in args.levels]
+
+    # Parse entity specs if provided.
+    entities: list[EntityFixture] | None = None
+    if args.entities:
+        entities = []
+        for spec in args.entities:
+            parts = spec.split(":")
+            if len(parts) < 3:
+                print(
+                    f"Error: entity spec must be 'name:reference_type:constraint_type' — got {spec!r}",
+                    file=sys.stderr,
+                )
+                return 1
+            context = parts[3] if len(parts) > 3 else ""
+            entities.append(
+                EntityFixture(
+                    entity_name=parts[0],
+                    entity_context=context,
+                    reference_type=parts[1],
+                    constraint_type=parts[2],
+                )
+            )
+
+    experiment = prepare_experiment_from_config(
+        sumo_db_path=sumo_db_path,
+        entities=entities,
+        levels=levels,
+    )
+    _emit_output(experiment, output_format=args.output)
     return 0
 
 

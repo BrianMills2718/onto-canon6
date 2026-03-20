@@ -1,6 +1,15 @@
 """Evaluation exports for the Phase 5 live extraction benchmark."""
 
 from .ancestor_evaluator import AncestorEvalScore, make_ancestor_evaluator
+from .fidelity_experiment import (
+    EntityFixture,
+    ExperimentItem,
+    ExperimentResult,
+    FidelityLevel,
+    PreparedExperiment,
+    prepare_experiment,
+    prepare_experiment_from_config,
+)
 from .models import (
     AggregateReasonablenessSummary,
     AggregateValidationSummary,
@@ -25,6 +34,11 @@ from .service import EvaluationError, LiveExtractionEvaluationService, load_benc
 
 __all__ = [
     "AncestorEvalScore",
+    "EntityFixture",
+    "ExperimentItem",
+    "ExperimentResult",
+    "FidelityLevel",
+    "PreparedExperiment",
     "AggregateReasonablenessSummary",
     "AggregateValidationSummary",
     "BenchmarkAggregateSummary",
@@ -48,4 +62,6 @@ __all__ = [
     "ReasonablenessReview",
     "load_benchmark_fixture",
     "make_ancestor_evaluator",
+    "prepare_experiment",
+    "prepare_experiment_from_config",
 ]

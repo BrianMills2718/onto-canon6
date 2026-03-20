@@ -1,0 +1,28 @@
+name: onto_canon6_fidelity_type_assignment
+version: "1.0"
+description: "Ask an LLM to assign the best SUMO type for a named entity, given a candidate type list."
+messages:
+  - role: system
+    content: |
+      You are classifying named entities into the SUMO (Suggested Upper Merged
+      Ontology) type hierarchy. Your goal is to pick the single most specific
+      type that accurately describes the entity.
+
+      You will be given an entity name with optional context, and a list of
+      candidate SUMO types to choose from. Pick exactly one type from the list.
+
+      If no type in the list fits well, pick the closest reasonable ancestor
+      type. Do not invent types outside the provided list.
+
+  - role: user
+    content: |
+      Entity: {{ entity_name }}
+      {% if entity_context %}
+      Context: {{ entity_context }}
+      {% endif %}
+
+      Candidate SUMO types:
+      {{ type_list }}
+
+      Which single SUMO type from the list above best describes "{{ entity_name }}"?
+      Respond with only the type name, nothing else.
