@@ -1,7 +1,7 @@
 # onto-canon6 Successor Roadmap
 
 Status: Active  
-Updated: 2026-03-18
+Updated: 2026-03-21
 
 ## Purpose
 
@@ -18,6 +18,10 @@ sketches for later phases.
 The canonical end-to-end workflow notebook now lives in
 `notebooks/00_master_governed_text_to_reviewed_assertions.ipynb`, with phase
 contracts kept in `notebooks/notebook_registry.yaml`.
+
+Phases 0-15 remain the canonical successor-core roadmap. The newer
+extraction-focused work under Plans 0014, 0016, 0017, and 0018 is tracked as a
+post-bootstrap R&D workstream, not as a silent Phase 16+ extension.
 
 ## Phase Exit Rule
 
@@ -640,7 +644,7 @@ Proved:
 
 ## Bootstrap Completion Rule
 
-Phase 10 completes the initial successor bootstrap roadmap.
+Phase 15 completes the current successor bootstrap roadmap.
 
 It does not, by itself, complete the broader successor goal. The strategic
 completion rule from this point forward is:
@@ -1010,35 +1014,42 @@ Proved:
    `docs/adr/0016-recover-phase-15-through-extension-local-promoted-assertion-dispositions-and-derived-corroboration.md`
    and `docs/plans/0010_phase15_epistemic_corroboration_shape.md`.
 
-## Extraction Quality Baseline [planned]
+## Post-Bootstrap Extraction Workstream [active]
 
-Goal:
+This is the current active R&D track after the canonical successor-core
+roadmap. It is governed by ADRs 0017-0022 and tracked through:
 
-1. get first-pass extraction quality to a reasonable baseline before
-   adding new features or consumers.
+1. `docs/plans/0014_extraction_quality_baseline.md`
+2. `docs/plans/0016_permissive_extraction_implementation.md`
+3. `docs/plans/0017_ancestor_aware_evaluator_and_fidelity_experiments.md`
+4. `docs/plans/0018_progressive_disclosure_extraction_design.md`
 
-Driven by Stage 1 friction log entries 5 and 7, not by parity pressure.
+It is not a hidden Phase 16+. The goal is to improve extraction quality and
+architecture without pretending that the canonical notebook journey or the
+successor-core roadmap has already absorbed those changes.
 
-Build:
+Current proved outcomes:
 
-1. prompt negative guidance for observed error patterns (alias
-   self-references, predicate disambiguation, entity type boundaries);
-2. typed-but-unidentified entity fillers at the extraction boundary;
-3. profile-level policy for whether unidentified entity fillers pass
-   validation;
-4. prompt rendering of the active unidentified-filler policy.
+1. permissive review now keeps validation as annotation while leaving graph
+   promotion governed by explicit acceptance;
+2. ancestor-aware evaluation, SUMO hierarchy utilities, Predicate Canon
+   access, and fidelity experiments now exist as repo-local evaluation tools;
+3. progressive disclosure extraction now exists as a real multi-pass pipeline
+   with tests and bounded real-text proof;
+4. extraction-quality iteration now has a usable prompt-eval harness, bounded
+   real-chunk review evidence, and explicit benchmark contracts;
+5. chunk extraction remains directly grounded to the current call input, while
+   broader document-level synthesis is explicitly deferred.
 
-Acceptance criteria:
+Current active questions:
 
-1. alias self-references and wrong-predicate candidates are reduced on the
-   same Stage 1 corpus;
-2. unidentified-filler acceptance is controlled by profile policy, not
-   hardcoded in the prompt;
-3. overall acceptance rate exceeds 50% on a verification run over the
-   Stage 1 corpus;
-4. all existing tests pass and new tests cover the changed boundaries.
-
-Full plan: `docs/plans/0014_extraction_quality_baseline.md`
+1. which prompt/model variant best handles the new real-chunk-derived cases in
+   the `psyop_eval_slice_v3` fixture;
+2. how far the bounded `budget_extraction` lane generalizes before broader
+   real-document verification is needed;
+3. when, if ever, this workstream is stable enough to enter the canonical
+   notebook journey;
+4. whether later document-level synthesis deserves a separate explicit pass.
 
 ## Standing Priorities
 
@@ -1061,10 +1072,10 @@ These are the remaining open questions for the successor beyond the bootstrap:
    successor after the explicit Phase 15 deferral;
 2. how much broader benchmark coverage is needed before Phase 5 results should
    be treated as stronger quality evidence;
-3. whether the unidentified-filler policy (plan 0014) reveals a need for
-   richer per-role optionality beyond the current per-profile boolean;
-4. how extraction quality scales to corpora beyond the Stage 1 PSYOP
-   documents.
+3. how extraction quality scales to corpora beyond the Stage 1 PSYOP
+   documents and the current bounded fixture slice;
+4. when the post-bootstrap extraction workstream should remain separate from,
+   or be promoted into, the canonical successor-core story.
 
 Resolved unknowns (by phase):
 

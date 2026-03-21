@@ -5,11 +5,11 @@
 Phases 0-15 completed the bootstrap roadmap, not the full successor-parity goal.
 The explicit parity ledger now lives in `docs/plans/0005_v1_capability_parity_matrix.md`.
 Two real non-fixture runs completed (PSYOP Stage 1 + Shield AI WhyGame).
-Post-bootstrap work is now active: ADRs 0017-0019 and Plans 0016-0018 define
-the permissive extraction + progressive disclosure architecture. The current
-active work is extraction quality baseline
-(`docs/plans/0014_extraction_quality_baseline.md`) and the new permissive
-extraction pipeline (ADR-0017, Plan 0016).
+Post-bootstrap work is now active in one explicit extraction R&D workstream,
+not a hidden Phase 16+ chain. That workstream is tracked by ADRs 0017-0022 and
+Plans 0014, 0016, 0017, and 0018. The canonical successor-core story still
+ends at Phase 15, and the canonical notebook journey stays conservative until
+the extraction work stabilizes more.
 
 This repo starts from the first proved slice instead of trying to port an
 entire prior runtime. The current scope is intentionally narrow:
@@ -59,36 +59,25 @@ entire prior runtime. The current scope is intentionally narrow:
 The governing architectural rationale lives in the local successor charter and
 the adopted ADR set.
 
-Repo-local strategic and planning docs now live in:
+High-signal reading order:
 
 - `docs/SUCCESSOR_CHARTER.md`
 - `docs/STATUS.md`
 - `docs/plans/0001_successor_roadmap.md`
 - `docs/plans/0005_v1_capability_parity_matrix.md`
-- `docs/plans/0011_first_real_run_psyop_stage1.md`
-- `docs/runs/2026-03-18_psyop_stage1_run_summary.md`
-- `docs/runs/2026-03-18_psyop_stage1_friction_log.md`
-- `docs/plans/0012_research_agent_shield_ai_whygame_run.md`
 - `docs/plans/0013_llm_observability_and_prompt_eval_adoption.md`
 - `docs/plans/0014_extraction_quality_baseline.md`
+- `docs/plans/0016_permissive_extraction_implementation.md`
+- `docs/plans/0017_ancestor_aware_evaluator_and_fidelity_experiments.md`
+- `docs/plans/0018_progressive_disclosure_extraction_design.md`
 - `docs/EXTRACTION_EXPERIMENT_RUNBOOK.md`
-- `docs/runs/2026-03-18_research_agent_shield_ai_whygame_run_summary.md`
-- `docs/runs/2026-03-18_research_agent_shield_ai_whygame_friction_log.md`
 - `notebooks/README.md`
 - `notebooks/notebook_registry.yaml`
 - `notebooks/00_master_governed_text_to_reviewed_assertions.ipynb`
-- `notebooks/09_successor_long_term_plan.ipynb`
-- `notebooks/11_future_phase_breakdown.ipynb`
-- `notebooks/12_cli_surface.ipynb`
-- `notebooks/13_dodaf_minimal_second_pack.ipynb`
-- `notebooks/14_artifact_lineage_slice.ipynb`
-- `notebooks/15_epistemic_extension_slice.ipynb`
-- `notebooks/16_governed_bundle_workflow.ipynb`
-- `notebooks/17_canonical_graph_recovery_slice.ipynb`
-- `notebooks/18_stable_identity_slice.ipynb`
-- `notebooks/19_semantic_canonicalization_slice.ipynb`
-- `notebooks/20_whygame_mcp_slice.ipynb`
-- `notebooks/21_phase15_epistemic_corroboration_slice.ipynb`
+
+Detailed dated run history now lives under `docs/runs/`. Auxiliary proof and
+planning notebooks stay cataloged in `notebooks/README.md` and
+`notebooks/notebook_registry.yaml` rather than being repeated here.
 
 ## Current Scope
 

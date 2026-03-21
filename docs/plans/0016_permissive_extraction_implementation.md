@@ -3,122 +3,90 @@
 Status: complete
 
 Updated: 2026-03-21
-
-## Outcome (2026-03-21)
-
-Implemented as part of the progressive extraction pipeline (Plan 0018).
-`pipeline.permissive_review` config flag added, ReviewService passes it to
-validation transition. When true, invalid candidates can be accepted
-(annotation, not gate). All 3 passes of progressive extraction store
-partial results permissively. 1 dedicated test + 8 e2e tests verify the
-permissive path.
+Implements: ADR-0017
+Workstream: post-bootstrap extraction R&D (ADR-0022)
 
 ## Purpose
 
-Implement ADR-0017: shift the pipeline from reject-at-ingest to
-store-everything-score-downstream. Validation becomes annotation, not gate.
-Promotion becomes the governance boundary.
+Implement the extraction-governance boundary from ADR-0017:
 
-Driven by the 37.5% acceptance rate on Stage 1 and the `roles: {}` structural
-blocker that prompt hardening cannot fully resolve.
+1. validation should remain visible;
+2. extracted candidates should still be stored and reviewed;
+3. graph promotion should remain governed by explicit acceptance rather than
+   by silent ingest rejection.
 
-## Requirements
-
-1. All extraction results persist as candidate assertions regardless of
-   validation outcome.
-2. Validation runs on every candidate and produces a `validation_outcome`
-   annotation. It does not reject.
-3. The existing review workflow (accept/reject) remains available.
-4. Promotion checks configurable quality thresholds before allowing
-   candidates into the canonical graph.
-5. Deletion of stored candidates is never the default.
-6. Existing tests that assert rejection on hard errors are updated to
-   assert annotation instead.
-
-## Design
-
-### Current flow (reject-at-ingest)
-
-```
-extract → submit_candidate_import() → validate → hard_error? → REJECT
-                                                → clean? → PERSIST
-```
-
-### New flow (permissive)
-
-```
-extract → submit_candidate_import() → validate → annotate → PERSIST always
-                                                           ↓
-review (human/LLM) or auto-promote policy → promote_candidate() → graph
-```
-
-### Key changes
-
-1. **`ReviewService.submit_candidate_import()`**: Remove the early return on
-   hard validation errors. Always persist. Attach validation outcome as a
-   field on the candidate record.
-
-2. **`CandidateAssertionRecord`**: Add `validation_outcome` field that stores
-   the full `ValidationOutcome` (hard errors, soft violations, proposal
-   requests). Currently this information is partially captured in
-   `validation_status` but hard-error candidates are never persisted.
-
-3. **`ReviewService.submit_candidate_assertion()`**: Same change — validate
-   and annotate, do not reject.
-
-4. **Promotion gate**: `CanonicalGraphService.promote_candidate()` already
-   requires an accepted review decision. Add a configurable quality gate
-   that checks `validation_outcome` before promotion. Default: reject
-   promotion of candidates with hard validation errors (preserves current
-   behavior at the promotion boundary).
-
-5. **Config**: Add `pipeline.permissive_ingest: true` to `config.yaml`.
-   When `false`, revert to reject-at-ingest behavior (backwards compat).
-   Default: `true`.
-
-## Files Affected
-
-- `src/onto_canon6/pipeline/service.py` — submission path changes
-- `src/onto_canon6/pipeline/models.py` — `CandidateAssertionRecord` field
-- `src/onto_canon6/pipeline/store.py` — persist validation outcome
-- `src/onto_canon6/core/graph_service.py` — promotion quality gate
-- `config/config.yaml` — `permissive_ingest` setting
-- `tests/pipeline/test_review_service.py` — update rejection assertions
-- `tests/core/test_graph_service.py` — promotion gate tests
-
-## Build Order
-
-1. Add `validation_outcome` field to `CandidateAssertionRecord` and update
-   store schema.
-2. Change `submit_candidate_import()` to always persist, attaching
-   validation outcome.
-3. Change `submit_candidate_assertion()` similarly.
-4. Add `permissive_ingest` config flag with default `true`.
-5. Add promotion quality gate to `promote_candidate()`.
-6. Update tests: existing rejection tests become annotation tests.
-7. Add new tests for: promotion gate blocks hard-error candidates,
-   config toggle reverts to strict behavior.
-8. Verify all 124 existing tests pass.
+The point of this plan was not to weaken governance. The point was to stop
+losing potentially useful extraction output before review and downstream
+evaluation can see it.
 
 ## Acceptance Criteria
 
-- [ ] Candidates with hard validation errors persist with full provenance
-- [ ] `validation_outcome` is queryable on stored candidates
-- [ ] Promotion rejects candidates with hard validation errors by default
-- [ ] `permissive_ingest: false` reverts to reject-at-ingest behavior
-- [ ] All existing tests pass (updated where needed)
-- [ ] New tests cover permissive path, promotion gate, config toggle
+This plan is complete when:
 
-## Non-Goals
+1. candidate submission persists candidates together with validation
+   annotation instead of rejecting them at persistence time;
+2. invalid candidates remain reviewable rather than being silently dropped;
+3. acceptance of invalid candidates is explicit and configurable;
+4. the canonical graph still only admits accepted candidates;
+5. tests cover the permissive review path and the strict default path.
 
-1. Do not implement LLM-automated review in this plan.
-2. Do not implement auto-promotion policies beyond the quality gate.
-3. Do not change the extraction pipeline itself.
+## Implemented Shape
 
-## Relationship to Prior Work
+The repo now implements the permissive boundary like this:
 
-- Implements: ADR-0017
-- Extends: Plan 0014 (extraction quality baseline) — permissive extraction
-  changes what "baseline" means
-- Enables: Plan 0017 (ancestor-aware evaluation needs stored partial candidates)
-- Enables: Plan 0018 (progressive disclosure produces partial candidates)
+1. `ReviewService.submit_candidate_import()` and
+   `ReviewService.submit_candidate_assertion()` persist candidates together
+   with:
+   - `validation_status`
+   - `validation: PersistedValidationSnapshot`
+   - full provenance
+2. `CandidateAssertionRecord` did **not** gain a separate
+   `validation_outcome` field. The persisted validation annotation lives in the
+   existing `validation_status` and `validation` fields.
+3. invalid candidates are therefore visible in the review store instead of
+   disappearing at ingest time.
+4. `pipeline.permissive_review` controls whether an invalid candidate may move
+   from `pending_review` to `accepted`.
+   - default: `false`
+   - permissive mode: `true`
+5. graph promotion remains governed by explicit accepted review state.
+   - there is no separate extra promotion-quality gate in this slice;
+   - the boundary is still “accepted candidate required”.
+
+This is the truthful repo-local shape today. The earlier design sketch that
+mentioned `permissive_ingest` and a new promotion gate is superseded by the
+implemented form above.
+
+## Evidence
+
+Primary implementation and proof:
+
+1. `src/onto_canon6/pipeline/service.py`
+2. `src/onto_canon6/pipeline/models.py`
+3. `config/config.yaml`
+4. `tests/pipeline/test_review_service.py`
+5. `tests/pipeline/test_progressive_extraction_e2e.py`
+6. `tests/pipeline/test_progressive_extractor_pass1.py`
+7. `tests/pipeline/test_progressive_extractor_pass2.py`
+8. `tests/pipeline/test_progressive_extractor_pass3.py`
+
+The dedicated permissive-review proof is the invalid-candidate acceptance test
+in `tests/pipeline/test_review_service.py`.
+
+## Consequences
+
+Positive:
+
+1. extraction errors are inspectable and reviewable instead of vanishing at
+   ingest time;
+2. downstream evaluation and progressive extraction can persist partial results
+   honestly;
+3. governance still stays explicit at the review and promotion boundaries.
+
+Costs:
+
+1. the review store now contains more low-quality or invalid candidate rows;
+2. operators must interpret validation annotation rather than assuming
+   persisted candidates are always clean;
+3. review configuration matters more, because `permissive_review` changes what
+   acceptance allows.

@@ -1,6 +1,6 @@
 # onto-canon6 Successor Charter
 
-Updated: 2026-03-18
+Updated: 2026-03-21
 
 ## Purpose
 
@@ -17,8 +17,8 @@ It exists to keep the project from repeating the drift that happened across
 
 This charter summarizes the accepted ADR direction. The detailed supporting ADR
 record still exists in `onto-canon5/docs/adr/` and the active implementation
-plan lives in this repo's roadmap plus the explicit v1 capability parity
-matrix.
+plan lives in this repo's roadmap, the explicit v1 capability parity matrix,
+and the post-bootstrap extraction workstream docs.
 
 ## The Successor Goal
 
@@ -28,9 +28,9 @@ That means the project is trying to recover and extend the useful capabilities
 proven in earlier repos while enforcing clear subsystem boundaries that earlier
 iterations did not hold.
 
-Phase 10 completed the initial bootstrap roadmap for that goal. It did not, by
-itself, finish the broader successor-parity work. The explicit parity ledger now
-lives in `docs/plans/0005_v1_capability_parity_matrix.md`.
+Phases 0-15 completed the current bootstrap roadmap for that goal. They did
+not, by themselves, finish the broader successor-parity work. The explicit
+parity ledger now lives in `docs/plans/0005_v1_capability_parity_matrix.md`.
 
 The intended architecture is:
 
@@ -241,6 +241,25 @@ authoritative companion for:
 2. which are intentionally narrowed or replaced;
 3. which are still deferred.
 
+### Post-Bootstrap Extraction Workstream
+
+The currently active extraction-focused work is **not** a silent Phase 16+
+extension of the successor roadmap.
+
+Instead, the repo now treats it as one explicit post-bootstrap R&D workstream:
+
+1. `docs/plans/0014_extraction_quality_baseline.md`
+2. `docs/plans/0016_permissive_extraction_implementation.md`
+3. `docs/plans/0017_ancestor_aware_evaluator_and_fidelity_experiments.md`
+4. `docs/plans/0018_progressive_disclosure_extraction_design.md`
+
+Its governing ADRs are 0017 through 0022.
+
+That workstream is real and active. It has code, tests, benchmark evidence,
+and bounded real-document runs. But it is not yet the canonical successor-core
+story, and it is not yet folded into the canonical journey notebook by
+default.
+
 ### Phase 0
 
 Prove ontology runtime contracts, donor loading, policy semantics, and local
@@ -435,7 +454,7 @@ Phase 15 now means:
 
 ### Bootstrap Completion vs Successor Completion
 
-The bootstrap roadmap is complete through Phase 10.
+The bootstrap roadmap is complete through Phase 15.
 
 The broader successor is not complete until every major v1 capability is
 explicitly marked as retained, expanded, replaced, deferred, or abandoned in
@@ -452,7 +471,9 @@ The current priority is:
    that the bounded successor can be used operationally;
 2. use the resulting friction log and run summary to identify the
    highest-friction missing capability or product gap;
-3. justify any later roadmap extension from observed usage pressure rather than
+3. run the post-bootstrap extraction workstream as an explicit bounded R&D
+   track rather than a hidden new phase chain;
+4. justify any later roadmap extension from observed usage pressure rather than
    from parity-chasing alone.
 
 The parity matrix remains the capability ledger, not an automatic work queue.

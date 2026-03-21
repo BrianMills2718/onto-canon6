@@ -1,6 +1,6 @@
 # onto-canon6 Status
 
-Updated: 2026-03-19
+Updated: 2026-03-21
 
 ## What Is Proven
 
@@ -210,6 +210,20 @@ Planning companion:
 70. json_schema response_format with field-level descriptions as a prompting
     surface (18.8% → 87.8% resolution via schema + prompt alone);
 
+## Post-Bootstrap Extraction Workstream
+
+The repo now has one active extraction-focused R&D workstream beyond the
+canonical Phase 0-15 successor core. That work is tracked by Plans 0014, 0016,
+0017, and 0018 plus ADRs 0017-0022.
+
+Important classification:
+
+1. this workstream is real code/test/run evidence, not a speculative branch;
+2. it is not yet a silent Phase 16+ successor extension;
+3. it is not yet folded into the canonical notebook journey by default;
+4. dated chronology belongs in `docs/runs/`, while active plan state belongs
+   in the plan docs above.
+
 ## What Is Not Proven Yet
 
 Still missing:
@@ -312,7 +326,7 @@ The authoritative parity ledger for the broader successor now lives in
 7. The epistemic slice is now broader over promoted assertions, but it still
    intentionally defers temporal/inference recovery and broader
    truth-maintenance machinery.
-8. Phase 10 completed the bootstrap roadmap, but the successor still has
+8. Phases 0-15 completed the current bootstrap roadmap, but the successor still has
    explicit parity gaps against `onto-canon`.
 9. Phase 12 recovered the first stable-identity slice, but broader identity
    and DIGIMON-style adapter recovery are still not implemented.

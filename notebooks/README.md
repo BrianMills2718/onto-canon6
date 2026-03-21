@@ -24,6 +24,15 @@ One important qualification:
    [08_text_extraction_slice.ipynb](08_text_extraction_slice.ipynb) and
    [10_live_extraction_evaluation.ipynb](10_live_extraction_evaluation.ipynb).
 
+Another important qualification:
+
+1. the newer permissive/progressive extraction work under Plans 0014, 0016,
+   0017, and 0018 is real code-and-test proof;
+2. it is currently treated as a post-bootstrap extraction R&D workstream, not
+   as part of the canonical notebook journey by default;
+3. until that work stabilizes more, the registry and canonical journey stay
+   conservative on purpose.
+
 The current Phase 15 auxiliary proof is:
 
 - [21_phase15_epistemic_corroboration_slice.ipynb](21_phase15_epistemic_corroboration_slice.ipynb)

@@ -3,209 +3,99 @@
 Status: complete
 
 Updated: 2026-03-21
-
-## Outcome (2026-03-21)
-
-All components built and experiments run:
-
-1. **SUMOHierarchy**: read-only interface to sumo_plus.db closure table (13 tests)
-2. **AncestorEvaluator**: prompt_eval evaluator with exact/ancestor/specificity
-   dimensions (10 tests)
-3. **Fidelity experiments**: 8 entities × 3 levels on gemini-2.5-flash-lite.
-   Results: top_level 87.5% ancestor match, mid_level 62.5%, full_subtree 50%.
-   Key finding: more types = worse performance. Top-level seeding confirmed
-   as optimal starting point.
-4. **GoldenSetManager**: growing acceptable set evaluator in prompt_eval (9 tests)
-5. **PredicateCanon bridge**: read-only predicate/role_slot interface (13 tests)
-
-Results embedded in Plan 0018 and ADR-0018 empirical validation section.
+Implements: ADR-0019
+Workstream: post-bootstrap extraction R&D (ADR-0022)
 
 ## Purpose
 
-Build the evaluation infrastructure needed to measure progressive disclosure
-extraction accuracy and determine optimal fidelity levels. This plan produces
-the empirical data that ADR-0018 (progressive disclosure) depends on before
-its pass structure can be finalized.
+Build the evaluator and experiment surfaces needed to measure type fidelity for
+the progressive extraction workstream.
 
-Implements ADR-0019 (ancestor-aware evaluation with growing acceptable sets).
-
-## Requirements
-
-1. An ancestor-aware evaluator that scores type picks against the SUMO
-   hierarchy from v1's `sumo_plus.db`.
-2. Integration with `prompt_eval`'s `GoldenSetManager` (Plan 07) for the
-   growing acceptable set.
-3. A fidelity experiment comparing top-level, mid-level, and full-subtree
-   SUMO seeding.
-4. Baseline measurement: how accurate are coarse LLM picks with top-level
-   SUMO seeding only?
-
-## Design
-
-### Component 1: Ancestor-aware evaluator
-
-A custom `prompt_eval` evaluator that lives in onto-canon6.
-
-```python
-# src/onto_canon6/evaluation/ancestor_evaluator.py
-
-def make_ancestor_evaluator(
-    sumo_db_path: Path,
-) -> Callable[[str, str], EvalScore]:
-    """Build an evaluator that checks ancestor-or-equal in SUMO hierarchy.
-
-    Returns EvalScore with dimensions:
-    - exact: 1.0 if pick == reference, else 0.0
-    - ancestor_match: 1.0 if pick is ancestor-or-equal, else 0.0
-    - specificity: depth(pick) / depth(reference) when ancestor match
-    """
-```
-
-**Data source**: v1's `sumo_plus.db` contains:
-- `type_ancestors` table: 73,730 materialized closure records
-- `types` table: 7,894 types with hierarchy depth
-
-**Query**: `SELECT 1 FROM type_ancestors WHERE type_name = ? AND ancestor_name = ?`
-→ O(1) ancestor check.
-
-For specificity: `depth(pick) / depth(reference)` where depth is the longest
-path from root. If pick == reference, specificity = 1.0. If pick is a
-direct ancestor, specificity < 1.0 proportional to how much coarser it is.
-
-### Component 2: SUMO hierarchy utilities
-
-```python
-# src/onto_canon6/evaluation/sumo_hierarchy.py
-
-class SUMOHierarchy:
-    """Read-only interface to v1's SUMO type hierarchy."""
-
-    def __init__(self, db_path: Path) -> None: ...
-    def is_ancestor_or_equal(self, candidate: str, reference: str) -> bool: ...
-    def depth(self, type_name: str) -> int: ...
-    def subtypes(self, type_name: str, max_depth: int | None = None) -> list[str]: ...
-    def ancestors(self, type_name: str) -> list[str]: ...
-    def subtree_at_depth(self, root: str, target_depth: int) -> list[str]: ...
-```
-
-This wraps v1's `sumo_plus.db` as a read-only dependency. The DB file is
-referenced by path in `config.yaml`, not copied into onto-canon6.
-
-### Component 3: Fidelity experiment
-
-Three conditions, same extraction corpus:
-
-| Condition | SUMO context in prompt | Expected tokens |
-|-----------|----------------------|-----------------|
-| `top_level` | ~50 types (Entity, Process, CognitiveAgent, ...) | ~500 |
-| `mid_level` | ~30 types per relevant branch | ~1500 |
-| `full_subtree` | All descendants of constraint type | variable |
-
-**Experiment design**:
-1. Select 10-20 entities from Stage 1 + Shield AI runs with known reference
-   types.
-2. For each entity, construct prompts with each fidelity level's type list.
-3. Ask the LLM to pick the best SUMO type.
-4. Score with the ancestor-aware evaluator.
-5. Compare conditions with `prompt_eval` statistical comparison.
-
-**Metrics per condition**:
-- `ancestor_match_rate`: fraction where pick is ancestor-or-equal
-- `exact_match_rate`: fraction where pick == reference
-- `mean_specificity`: average depth ratio
-- `wrong_branch_rate`: fraction where pick is neither ancestor nor descendant
-- `cost_per_item`: average cost per entity typing call
-- `latency_per_item`: average latency
-
-### Component 4: Growing acceptable set integration
-
-Uses `prompt_eval`'s `GoldenSetManager` (Plan 07). The evaluator pipeline:
-
-```
-pick == reference?
-  → yes: score 1.0
-
-pick is ancestor-or-equal of reference?
-  → yes: score by specificity
-
-pick in acceptable_alternatives[reference]?
-  → yes: return cached score
-
-LLM judge: "Is pick a reasonable type for this entity given the source text?"
-  → reasonable: add to acceptable set, score as alternative match
-  → unreasonable: add to rejected set, score 0.0
-```
-
-**If Plan 07 is not yet implemented**: the evaluator works without it — the
-growing acceptable set is an enhancement, not a prerequisite. Without it,
-non-ancestor picks always go to the LLM judge (higher cost, same accuracy).
-
-### Component 5: Baseline measurement
-
-Before the fidelity experiment, measure: what do LLMs already know about
-SUMO types without any ontology context?
-
-1. Same entity set as the fidelity experiment.
-2. Prompt: "What SUMO type best describes [entity]?" with NO type list.
-3. Score with ancestor-aware evaluator.
-4. This establishes the LLM's baseline training knowledge and tells us how
-   much ontology seeding actually helps.
-
-v1 already has `eval_llm_ontology_knowledge_*.json` files that may provide
-partial data for this.
-
-## Files Affected
-
-New files:
-- `src/onto_canon6/evaluation/ancestor_evaluator.py`
-- `src/onto_canon6/evaluation/sumo_hierarchy.py`
-- `tests/evaluation/test_ancestor_evaluator.py`
-- `tests/evaluation/test_sumo_hierarchy.py`
-
-Modified files:
-- `config/config.yaml` — add `sumo_db_path` and fidelity experiment config
-
-## Build Order
-
-1. **SUMO hierarchy utilities**: `SUMOHierarchy` class wrapping v1's DB.
-   Tests: ancestor checks, depth queries, subtree enumeration.
-2. **Ancestor-aware evaluator**: Custom evaluator returning `EvalScore`.
-   Tests: exact match, ancestor match with specificity, wrong branch.
-3. **Config**: Add `sumo_db_path` pointing to v1's `sumo_plus.db`.
-4. **Baseline measurement**: Run zero-context SUMO type assignment on
-   10-20 entities. Record results.
-5. **Fidelity experiment**: Three conditions over the same entity set.
-   Run via `prompt_eval`. Compare with statistical tests.
-6. **Growing acceptable set**: Wire `GoldenSetManager` into the evaluator
-   (after Plan 07 ships). This step is optional and can be deferred.
-
-Steps 1-3 are immediately implementable. Steps 4-5 require LLM calls and
-cost money. Step 6 depends on prompt_eval Plan 07.
+This plan exists to answer a narrow but important question before scaling the
+new extractor: when an LLM is choosing SUMO types, what prompt context level is
+actually helpful, and how should those choices be scored truthfully?
 
 ## Acceptance Criteria
 
-- [ ] `SUMOHierarchy` correctly queries v1's `sumo_plus.db` ancestor closure
-- [ ] Ancestor-aware evaluator returns correct scores for exact, ancestor,
-      wrong-branch cases
-- [ ] Baseline measurement produces ancestor_match_rate for zero-context picks
-- [ ] Fidelity experiment compares 3 conditions with statistical significance
-- [ ] Results inform ADR-0018 pass structure decisions
-- [ ] All existing tests pass
+This plan is complete when:
 
-## Known Risks
+1. the repo has a local SUMO hierarchy utility that can score ancestor and
+   descendant relationships deterministically;
+2. the repo has a local ancestor-aware evaluator that returns more signal than
+   exact-match-only scoring;
+3. fidelity experiments can run through `prompt_eval` and produce aggregate
+   reports;
+4. the repo has a deterministic Predicate Canon bridge for lemma and role-slot
+   lookups;
+5. the empirical results are strong enough to inform Plan 0018 pass design.
 
-1. v1's `sumo_plus.db` may have stale or incomplete data. Validate a sample
-   of ancestor queries against known SUMO relationships.
-2. The entity set for experiments must be representative. Using only military
-   domain entities may not generalize. Include at least 2-3 non-military
-   entities from the WhyGame run.
-3. LLM baseline SUMO knowledge may vary by model. Run baseline on at least
-   2 models (gemini-2.5-flash, claude-sonnet).
+## Implemented Shape
 
-## Relationship to Prior Work
+The repo-local implementation now consists of:
 
-- Implements: ADR-0019 (ancestor-aware evaluation)
-- Depends on: v1's `sumo_plus.db` (read-only)
-- Integrates with: prompt_eval Plan 07 (growing acceptable set, optional)
-- Informs: Plan 0018 (progressive disclosure pass structure)
-- Extends: Plan 0014 (extraction quality baseline) with type-accuracy metrics
+1. `src/onto_canon6/evaluation/sumo_hierarchy.py`
+   - read-only access to v1's `sumo_plus.db`
+   - ancestor, descendant, depth, and subtree queries
+2. `src/onto_canon6/evaluation/ancestor_evaluator.py`
+   - exact, ancestor-branch, and specificity-aware scoring
+3. `src/onto_canon6/evaluation/predicate_canon.py`
+   - read-only Predicate Canon bridge over predicates and role slots
+4. `src/onto_canon6/evaluation/fidelity_experiment.py`
+   - typed experiment-item preparation
+5. `src/onto_canon6/evaluation/fidelity_runner.py`
+   - `prompt_eval` execution bridge plus aggregate reporting
+
+## Empirical Result
+
+The key fidelity result that informed Plan 0018 was:
+
+1. top-level seeding: `87.5%` ancestor match
+2. mid-level seeding: `62.5%`
+3. full-subtree seeding: `50.0%`
+
+The main conclusion is that showing more ontology types by default made the
+model worse, not better. That result is why Plan 0018 starts with coarse
+top-level typing and only narrows later.
+
+## Shared vs Local Responsibility
+
+One earlier design sketch overstated the local outcome by listing
+`GoldenSetManager` as if it were a new onto-canon6-owned subsystem.
+
+The truthful boundary is:
+
+1. `onto-canon6` owns the hierarchy utility, evaluator, Predicate Canon
+   bridge, experiment preparation, and report interpretation;
+2. `prompt_eval` remains the shared experiment runner and the place where
+   growing acceptable-set support belongs;
+3. this repo may depend on that shared capability, but it does not need to
+   pretend it re-implemented it locally.
+
+## Evidence
+
+Primary proof surfaces:
+
+1. `tests/evaluation/test_sumo_hierarchy.py`
+2. `tests/evaluation/test_ancestor_evaluator.py`
+3. `tests/evaluation/test_predicate_canon.py`
+4. `tests/evaluation/test_fidelity_experiment.py`
+5. `tests/evaluation/test_fidelity_runner.py`
+6. CLI surfaces in `src/onto_canon6/cli.py`
+
+## Consequences
+
+Positive:
+
+1. the extraction workstream now has a truthful type-fidelity scoring surface;
+2. Plan 0018 no longer relies on intuition alone for its coarse-to-fine pass
+   structure;
+3. ontology seeding decisions can be judged by measured branch accuracy rather
+   than by “more ontology must be better”.
+
+Costs:
+
+1. the evaluator depends on donor SUMO data from v1;
+2. experiment interpretation is now a real maintenance surface, not just an
+   ad hoc notebook exercise;
+3. some advanced acceptable-set behavior still lives upstream in `prompt_eval`
+   rather than entirely inside this repo.

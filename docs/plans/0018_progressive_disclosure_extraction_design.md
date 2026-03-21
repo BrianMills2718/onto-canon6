@@ -3,6 +3,7 @@
 Status: complete
 Updated: 2026-03-21
 Implements: ADR-0018
+Workstream: post-bootstrap extraction R&D (ADR-0022)
 Blocked by: ~~Plan 0017 empirical results~~ (unblocked — data collected)
 Depends on: Plan 0016 (permissive extraction), v1 Predicate Canon data
 
