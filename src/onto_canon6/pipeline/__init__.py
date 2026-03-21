@@ -34,6 +34,7 @@ from .progressive_types import (
     Pass2Result,
     Pass3Result,
     Pass3TypedAssertion,
+    ProgressiveExtractionReport,
 )
 from .text_extraction import (
     candidate_import_from_extracted,
@@ -73,6 +74,7 @@ __all__ = [
     "Pass2Result",
     "Pass3Result",
     "Pass3TypedAssertion",
+    "ProgressiveExtractionReport",
     "PersistedValidationSnapshot",
     "ProfileRef",
     "ProposalAcceptancePolicy",

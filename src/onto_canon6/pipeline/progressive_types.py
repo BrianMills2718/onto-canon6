@@ -280,3 +280,54 @@ class Pass3Result(BaseModel):
         ge=0,
         description="How many entities had no meaningful role constraint.",
     )
+
+
+class ProgressiveExtractionReport(BaseModel):
+    """Full report from a progressive extraction run (all three passes).
+
+    Aggregates the Pass 1, Pass 2, and Pass 3 results together with
+    total cost, provenance metadata, and summary statistics for the
+    entire pipeline run.  Produced by :func:`run_progressive_extraction`.
+    """
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    pass1: Pass1Result
+    pass2: Pass2Result
+    pass3: Pass3Result
+    total_cost: float = Field(
+        ge=0.0,
+        description="Aggregate cost in USD across all three passes.",
+    )
+    trace_id: str = Field(
+        min_length=1,
+        description="Trace ID shared across all passes for observability.",
+    )
+    model: str = Field(
+        min_length=1,
+        description="The LLM model used (same for all passes).",
+    )
+    triples_extracted: int = Field(
+        ge=0,
+        description="Number of triples extracted in Pass 1.",
+    )
+    predicates_mapped: int = Field(
+        ge=0,
+        description="Number of triples successfully mapped to predicates in Pass 2.",
+    )
+    predicates_unresolved: int = Field(
+        ge=0,
+        description="Number of triples with no predicate match in Pass 2.",
+    )
+    entities_refined: int = Field(
+        ge=0,
+        description="Number of unique entities refined in Pass 3.",
+    )
+    single_sense_early_exits: int = Field(
+        ge=0,
+        description="Pass 2 triples resolved via single-sense deterministic mapping.",
+    )
+    leaf_type_early_exits: int = Field(
+        ge=0,
+        description="Pass 3 entities skipped because their coarse type was already a SUMO leaf.",
+    )

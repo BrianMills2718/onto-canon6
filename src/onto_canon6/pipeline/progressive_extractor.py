@@ -1,4 +1,4 @@
-"""Progressive disclosure extraction — Passes 1, 2, and 3.
+"""Progressive disclosure extraction — Passes 1, 2, 3, and orchestrator.
 
 Pass 1 (Slice B): open extraction with SUMO seeding. Extracts entities and
 relationships from raw text, assigning coarse SUMO types from the ~50
@@ -14,6 +14,11 @@ mapped assertion, refines entity types by intersecting the coarse type's
 descendants with the role constraint from the predicate canon.  Leaf types
 bypass the LLM entirely.
 
+Orchestrator (Slice E): ``run_progressive_extraction()`` chains the three
+passes sequentially, opening SUMOHierarchy and PredicateCanon internally,
+splitting the budget across passes, and aggregating results into a
+``ProgressiveExtractionReport``.
+
 All LLM calls go through ``llm_client`` with mandatory ``task=``,
 ``trace_id=``, and ``max_budget=`` kwargs. Prompt templates are YAML/Jinja2
 files loaded via ``llm_client.render_prompt()``. No f-string prompts in Python.
@@ -25,8 +30,10 @@ import asyncio
 import hashlib
 import json
 import logging
+import uuid as _uuid
 from dataclasses import dataclass
 from importlib import import_module
+from pathlib import Path
 from typing import Any, Protocol, cast
 
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
@@ -45,6 +52,7 @@ from .progressive_types import (
     Pass2Result,
     Pass3Result,
     Pass3TypedAssertion,
+    ProgressiveExtractionReport,
 )
 
 logger = logging.getLogger(__name__)
@@ -1143,6 +1151,200 @@ def run_pass3_sync(
             task=task,
             trace_id=trace_id,
             max_budget=max_budget,
+            _llm_api=_llm_api,
+        )
+    )
+
+
+# ---------------------------------------------------------------------------
+# Pipeline Orchestrator (Slice E)
+# ---------------------------------------------------------------------------
+
+
+class ProgressiveExtractionError(RuntimeError):
+    """Raised when the progressive extraction pipeline fails.
+
+    Wraps the underlying exception with context about which pass
+    failed and the trace ID for debugging.
+    """
+
+
+async def run_progressive_extraction(
+    text: str,
+    *,
+    sumo_db_path: Path,
+    model: str | None = None,
+    task: str = "progressive_extraction",
+    trace_id: str | None = None,
+    max_budget: float = 0.30,
+    max_triples: int = 50,
+    _llm_api: _LLMClientAPI | None = None,
+) -> ProgressiveExtractionReport:
+    """Run the full 3-pass progressive extraction pipeline.
+
+    Pass 1: Extract entities and relationships with coarse SUMO types.
+    Pass 2: Map relationship verbs to Predicate Canon entries.
+    Pass 3: Refine entity types using narrowed SUMO subtrees.
+
+    Opens SUMOHierarchy and PredicateCanon internally (caller does not
+    need to manage them).  Generates ``trace_id`` if not provided.
+
+    Budget is split across passes: 40% Pass 1, 30% Pass 2, 30% Pass 3.
+
+    Parameters
+    ----------
+    text:
+        The source text to extract from.
+    sumo_db_path:
+        Path to the ``sumo_plus.db`` file used by SUMOHierarchy and
+        PredicateCanon.
+    model:
+        LLM model identifier.  Defaults to ``gemini/gemini-2.5-flash-lite``.
+    task:
+        Task tag for ``llm_client`` observability.
+    trace_id:
+        Trace ID for ``llm_client`` observability.  Auto-generated if not
+        provided.
+    max_budget:
+        Maximum total spend in USD across all passes.
+    max_triples:
+        Soft limit on triples for Pass 1.
+    _llm_api:
+        Override for the llm_client API handle (testing only).
+
+    Returns
+    -------
+    ProgressiveExtractionReport with all three pass results and summary
+    statistics.
+
+    Raises
+    ------
+    ProgressiveExtractionError:
+        If any pass fails with an unrecoverable error.
+    """
+    effective_trace_id = trace_id or f"prog_{_uuid.uuid4().hex[:12]}"
+    effective_model = model or _DEFAULT_MODEL
+
+    # Budget allocation: 40% pass 1, 30% pass 2, 30% pass 3.
+    budget_pass1 = max_budget * 0.4
+    budget_pass2 = max_budget * 0.3
+    budget_pass3 = max_budget * 0.3
+
+    # --- Pass 1 ---
+    try:
+        pass1_result = await run_pass1(
+            text,
+            model=effective_model,
+            task=task,
+            trace_id=effective_trace_id,
+            max_budget=budget_pass1,
+            max_triples=max_triples,
+            _llm_api=_llm_api,
+        )
+    except Exception as exc:
+        raise ProgressiveExtractionError(
+            f"Pass 1 failed (trace_id={effective_trace_id}): {exc}"
+        ) from exc
+
+    # --- Pass 2 ---
+    with PredicateCanon(sumo_db_path) as predicate_canon:
+        try:
+            pass2_result = await run_pass2(
+                pass1_result,
+                predicate_canon=predicate_canon,
+                model=effective_model,
+                task=task,
+                trace_id=effective_trace_id,
+                max_budget=budget_pass2,
+                _llm_api=_llm_api,
+            )
+        except Exception as exc:
+            raise ProgressiveExtractionError(
+                f"Pass 2 failed (trace_id={effective_trace_id}): {exc}"
+            ) from exc
+
+        # --- Pass 3 ---
+        with SUMOHierarchy(sumo_db_path) as sumo_hierarchy:
+            try:
+                pass3_result = await run_pass3(
+                    pass2_result,
+                    sumo_hierarchy=sumo_hierarchy,
+                    predicate_canon=predicate_canon,
+                    model=effective_model,
+                    task=task,
+                    trace_id=effective_trace_id,
+                    max_budget=budget_pass3,
+                    _llm_api=_llm_api,
+                )
+            except Exception as exc:
+                raise ProgressiveExtractionError(
+                    f"Pass 3 failed (trace_id={effective_trace_id}): {exc}"
+                ) from exc
+
+    # --- Aggregate ---
+    total_cost = pass1_result.cost + pass2_result.cost + pass3_result.cost
+
+    # Count unique entities refined in Pass 3 (from the dedup cache perspective,
+    # each typed assertion has a list of entity refinements).
+    refined_entities: set[tuple[str, str]] = set()
+    for typed_assertion in pass3_result.typed_assertions:
+        for refinement in typed_assertion.entity_refinements:
+            refined_entities.add((refinement.entity_name, refinement.coarse_type))
+
+    report = ProgressiveExtractionReport(
+        pass1=pass1_result,
+        pass2=pass2_result,
+        pass3=pass3_result,
+        total_cost=total_cost,
+        trace_id=effective_trace_id,
+        model=effective_model,
+        triples_extracted=len(pass1_result.triples),
+        predicates_mapped=len(pass2_result.mapped),
+        predicates_unresolved=len(pass2_result.unresolved),
+        entities_refined=len(refined_entities),
+        single_sense_early_exits=pass2_result.single_sense_count,
+        leaf_type_early_exits=pass3_result.leaf_early_exit_count,
+    )
+
+    logger.info(
+        "Progressive extraction complete: %d triples, %d mapped, %d unresolved, "
+        "%d entities refined (trace_id=%s, total_cost=$%.4f)",
+        report.triples_extracted,
+        report.predicates_mapped,
+        report.predicates_unresolved,
+        report.entities_refined,
+        effective_trace_id,
+        total_cost,
+    )
+
+    return report
+
+
+def run_progressive_extraction_sync(
+    text: str,
+    *,
+    sumo_db_path: Path,
+    model: str | None = None,
+    task: str = "progressive_extraction",
+    trace_id: str | None = None,
+    max_budget: float = 0.30,
+    max_triples: int = 50,
+    _llm_api: _LLMClientAPI | None = None,
+) -> ProgressiveExtractionReport:
+    """Synchronous wrapper for :func:`run_progressive_extraction`.
+
+    Runs the async implementation in a new event loop.  Prefer the async
+    version when an event loop is already running.
+    """
+    return asyncio.run(
+        run_progressive_extraction(
+            text,
+            sumo_db_path=sumo_db_path,
+            model=model,
+            task=task,
+            trace_id=trace_id,
+            max_budget=max_budget,
+            max_triples=max_triples,
             _llm_api=_llm_api,
         )
     )

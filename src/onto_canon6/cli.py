@@ -70,6 +70,7 @@ from .pipeline import (
     CandidateSubmissionResult,
     OverlayApplicationRecord,
     OverlayApplicationService,
+    ProgressiveExtractionReport,
     ProposalRecord,
     ReviewService,
     ReviewStoreError,
@@ -318,6 +319,37 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     _add_output_arg(fidelity_compare_parser, default_output="json")
     fidelity_compare_parser.set_defaults(handler=_handle_fidelity_experiment_compare)
+
+    extract_progressive_parser = subparsers.add_parser(
+        "extract-progressive",
+        help="Run the full 3-pass progressive extraction pipeline on one text file.",
+    )
+    extract_progressive_parser.add_argument(
+        "--input", required=True, type=Path, help="Path to the source text file.",
+    )
+    extract_progressive_parser.add_argument(
+        "--model",
+        help="LLM model identifier. Defaults to gemini/gemini-2.5-flash-lite.",
+    )
+    extract_progressive_parser.add_argument(
+        "--max-budget",
+        type=float,
+        default=0.30,
+        help="Maximum total budget in USD across all passes. Defaults to 0.30.",
+    )
+    extract_progressive_parser.add_argument(
+        "--sumo-db-path",
+        type=Path,
+        help="Override path to sumo_plus.db. Defaults to config.",
+    )
+    extract_progressive_parser.add_argument(
+        "--max-triples",
+        type=int,
+        default=50,
+        help="Soft limit on triples for Pass 1. Defaults to 50.",
+    )
+    _add_output_arg(extract_progressive_parser, default_output=config.cli.default_output_format)
+    extract_progressive_parser.set_defaults(handler=_handle_extract_progressive)
 
     import_whygame_parser = subparsers.add_parser(
         "import-whygame-relationships",
@@ -862,6 +894,40 @@ def _handle_fidelity_experiment_compare(args: argparse.Namespace) -> int:
     return 0
 
 
+def _handle_extract_progressive(args: argparse.Namespace) -> int:
+    """Run the full 3-pass progressive extraction pipeline on one text file.
+
+    Uses a lazy import for ``progressive_extractor`` to avoid a circular
+    import at module load time (progressive_extractor -> evaluation ->
+    prompt_eval_service -> pipeline.__init__).
+    """
+
+    from .pipeline.progressive_extractor import (
+        ProgressiveExtractionError,
+        run_progressive_extraction_sync,
+    )
+
+    config = get_config()
+    sumo_db_path = args.sumo_db_path or config.resolve_repo_path(config.evaluation.sumo_db_path)
+    input_path: Path = args.input
+    source_text = input_path.read_text(encoding="utf-8")
+
+    try:
+        report = run_progressive_extraction_sync(
+            source_text,
+            sumo_db_path=sumo_db_path,
+            model=args.model,
+            max_budget=args.max_budget,
+            max_triples=args.max_triples,
+        )
+    except ProgressiveExtractionError as exc:
+        print(f"ERROR [{type(exc).__name__}] {exc}", file=sys.stderr)
+        return 1
+
+    _emit_output(report, output_format=args.output)
+    return 0
+
+
 def _handle_import_whygame_relationships(args: argparse.Namespace) -> int:
     """Import one file of WhyGame relationship facts through the existing adapter."""
 
@@ -1270,6 +1336,7 @@ def _to_jsonable(value: object) -> Any:
             PreparedExperiment,
             FidelityExperimentReport,
             FidelityComparisonReport,
+            ProgressiveExtractionReport,
             ResearchAgentWhyGameTransformResult,
             WhyGameImportResult,
         ),
@@ -1464,6 +1531,18 @@ def _to_text(value: object) -> str:
             f"memberships={value.summary.total_memberships} "
             f"external_references={value.summary.total_external_references} "
             f"identity_ids={identity_ids}"
+        )
+    if isinstance(value, ProgressiveExtractionReport):
+        return (
+            f"trace_id={value.trace_id} "
+            f"model={value.model} "
+            f"triples_extracted={value.triples_extracted} "
+            f"predicates_mapped={value.predicates_mapped} "
+            f"predicates_unresolved={value.predicates_unresolved} "
+            f"entities_refined={value.entities_refined} "
+            f"single_sense_early_exits={value.single_sense_early_exits} "
+            f"leaf_type_early_exits={value.leaf_type_early_exits} "
+            f"total_cost=${value.total_cost:.4f}"
         )
     if isinstance(value, tuple):
         return "\n".join(_to_text(item) for item in value)

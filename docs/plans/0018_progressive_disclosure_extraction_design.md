@@ -1,6 +1,6 @@
 # Progressive Disclosure Extraction Design
 
-Status: active
+Status: complete
 Updated: 2026-03-21
 Implements: ADR-0018
 Blocked by: ~~Plan 0017 empirical results~~ (unblocked — data collected)
@@ -144,11 +144,11 @@ class Pass3TypedAssertion(BaseModel):
   real DB
 
 **Acceptance criteria:**
-- [ ] `lookup_by_lemma("abandon")` returns 3 candidates with role schemas
-- [ ] `is_single_sense("abate")` returns True
-- [ ] `get_role_constraints("abandon_leave_behind")` returns
+- [x] `lookup_by_lemma("abandon")` returns 3 candidates with role schemas
+- [x] `is_single_sense("abate")` returns True
+- [x] `get_role_constraints("abandon_leave_behind")` returns
   `{ARG0: "AutonomousAgent", ARG1: "Entity", ARG2: "Object"}`
-- [ ] Context manager protocol (same pattern as SUMOHierarchy)
+- [x] Context manager protocol (same pattern as SUMOHierarchy)
 
 ### Slice B: Pass 1 — Open Extraction Prompt
 
@@ -158,10 +158,10 @@ class Pass3TypedAssertion(BaseModel):
 - `tests/pipeline/test_progressive_extractor_pass1.py` — mocked LLM tests
 
 **Acceptance criteria:**
-- [ ] Prompt renders with entity list and top_level types
-- [ ] LLM output parses into `list[Pass1Triple]`
-- [ ] Partial results (missing entity_b, missing type) are accepted
-- [ ] Results stored as permissive candidates (ADR-0017)
+- [x] Prompt renders with entity list and top_level types
+- [x] LLM output parses into `list[Pass1Triple]`
+- [x] Partial results (missing entity_b, missing type) are accepted
+- [x] Results stored as permissive candidates (ADR-0017)
 
 ### Slice C: Pass 2 — Predicate Mapping
 
@@ -171,10 +171,10 @@ class Pass3TypedAssertion(BaseModel):
 - `tests/pipeline/test_progressive_extractor_pass2.py`
 
 **Acceptance criteria:**
-- [ ] Single-sense lemmas (78%) bypass LLM
-- [ ] Multi-sense lemmas show only matching candidates
-- [ ] Unknown lemmas stored as unresolved (permissive)
-- [ ] Mapped roles match predicate schema
+- [x] Single-sense lemmas (78%) bypass LLM
+- [x] Multi-sense lemmas show only matching candidates
+- [x] Unknown lemmas stored as unresolved (permissive)
+- [x] Mapped roles match predicate schema
 
 ### Slice D: Pass 3 — Entity Refinement
 
@@ -184,10 +184,10 @@ class Pass3TypedAssertion(BaseModel):
 - `tests/pipeline/test_progressive_extractor_pass3.py`
 
 **Acceptance criteria:**
-- [ ] Subtree narrowing uses role constraint + Pass 1 coarse type
-- [ ] Leaf types bypass refinement
-- [ ] Refined types exist in SUMO hierarchy
-- [ ] Ancestor evaluator confirms improvement over Pass 1 types
+- [x] Subtree narrowing uses role constraint + Pass 1 coarse type
+- [x] Leaf types bypass refinement
+- [x] Refined types exist in SUMO hierarchy
+- [x] Ancestor evaluator confirms improvement over Pass 1 types
 
 ### Slice E: Pipeline Orchestrator
 
@@ -197,11 +197,11 @@ class Pass3TypedAssertion(BaseModel):
 - CLI command: `onto-canon6 extract-progressive`
 
 **Acceptance criteria:**
-- [ ] Full pipeline: text → Pass 1 → Pass 2 → Pass 3 → typed assertions
-- [ ] Each pass stores intermediate candidates (permissive)
-- [ ] Pass provenance tracked on each candidate
-- [ ] Cost reported per pass
-- [ ] At least one real text produces correct assertions end-to-end
+- [x] Full pipeline: text → Pass 1 → Pass 2 → Pass 3 → typed assertions
+- [x] Each pass stores intermediate candidates (permissive)
+- [x] Pass provenance tracked on each candidate
+- [x] Cost reported per pass
+- [x] At least one real text produces correct assertions end-to-end
 
 ---
 
