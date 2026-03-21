@@ -1,6 +1,6 @@
 # onto-canon6 Status
 
-Updated: 2026-03-18
+Updated: 2026-03-19
 
 ## What Is Proven
 
@@ -43,86 +43,86 @@ typed ontology runtime:
 26. one canonical journey notebook for the current user-visible workflow;
 27. a machine-readable notebook registry that keeps phase contracts outside the
     notebook;
-26. a local notebook-process validator plus notebook execution proof;
-27. one local second-pack proof with `dodaf_minimal` strict and mixed profiles
+28. a local notebook-process validator plus notebook execution proof;
+29. one local second-pack proof with `dodaf_minimal` strict and mixed profiles
     over the same pack vocabulary;
-28. proof that the second pack uses the same runtime, review, overlay, and CLI
+30. proof that the second pack uses the same runtime, review, overlay, and CLI
     surfaces without core branching;
-29. one bounded artifact subsystem with typed `source`, `derived_dataset`, and
+31. one bounded artifact subsystem with typed `source`, `derived_dataset`, and
     `analysis_result` records;
-30. candidate-centered artifact support links plus recursive lineage edges over
+32. candidate-centered artifact support links plus recursive lineage edges over
     persisted artifacts;
-31. one typed lineage report surface that exposes direct links and ancestor
+33. one typed lineage report surface that exposes direct links and ancestor
     artifacts without hidden metadata blobs;
-32. live notebook proof for the narrow Phase 8 artifact-lineage slice;
-33. one extension-local epistemic subsystem with typed confidence and
+34. live notebook proof for the narrow Phase 8 artifact-lineage slice;
+35. one extension-local epistemic subsystem with typed confidence and
     supersession records over accepted candidate assertions;
-34. one typed epistemic report surface that derives current candidate status
+36. one typed epistemic report surface that derives current candidate status
     without mutating the base review schema;
-35. loud failures when epistemic state is attempted on candidates that are not
+37. loud failures when epistemic state is attempted on candidates that are not
     accepted;
-36. live notebook proof for the narrow Phase 9 epistemic-extension slice;
-37. one typed governed-bundle export surface that composes accepted candidate
+38. live notebook proof for the narrow Phase 9 epistemic-extension slice;
+39. one typed governed-bundle export surface that composes accepted candidate
     assertions, linked governance state, candidate provenance, artifact
     lineage, and extension-local epistemic state;
-38. one CLI command that exports the governed bundle without direct
+40. one CLI command that exports the governed bundle without direct
     module-level Python calls;
-39. one live notebook proof for the first product-facing governed-bundle
+41. one live notebook proof for the first product-facing governed-bundle
     workflow;
-40. one canonical journey notebook that now ends in a real governed export
-    artifact rather than a provisional workflow plan.
-41. one narrow canonical-graph subsystem with durable promoted assertion,
+42. one canonical journey notebook that now ends in a real governed export
+    artifact rather than a provisional workflow plan;
+43. one narrow canonical-graph subsystem with durable promoted assertion,
     promoted entity, and promoted role-filler tables;
-42. explicit promotion from accepted candidates into deterministic durable
+44. explicit promotion from accepted candidates into deterministic durable
     graph records;
-43. one typed promoted-graph report surface that traverses candidate-backed
+45. one typed promoted-graph report surface that traverses candidate-backed
     proposal, overlay, artifact, and epistemic context without duplicating it
     into the graph tables;
-44. thin CLI commands for promotion, promoted-assertion listing, and promoted
+46. thin CLI commands for promotion, promoted-assertion listing, and promoted
     graph report export;
-45. one live notebook proof for the first canonical-graph recovery slice;
-46. one canonical journey notebook phase that now continues from governed
-    bundle export into explicit graph promotion.
-47. one bounded stable-identity subsystem with explicit local identity rows,
+47. one live notebook proof for the first canonical-graph recovery slice;
+48. one canonical journey notebook phase that now continues from governed
+    bundle export into explicit graph promotion;
+49. one bounded stable-identity subsystem with explicit local identity rows,
     identity memberships, and external-reference records over promoted
     entities;
-48. deterministic identity reuse for repeated promoted entity ids;
-49. explicit alias membership and explicit attached or unresolved external
+50. deterministic identity reuse for repeated promoted entity ids;
+51. explicit alias membership and explicit attached or unresolved external
     reference state;
-50. thin CLI commands for identity creation, alias attachment, external
+52. thin CLI commands for identity creation, alias attachment, external
     reference recording, identity listing, and identity report export;
-51. one live notebook proof for the first stable-identity slice;
-52. one canonical journey notebook phase that now continues from graph
-    promotion into stable identity creation and external-reference state.
-53. one bounded semantic canonicalization subsystem that explicitly replaces
+53. one live notebook proof for the first stable-identity slice;
+54. one canonical journey notebook phase that now continues from graph
+    promotion into stable identity creation and external-reference state;
+55. one bounded semantic canonicalization subsystem that explicitly replaces
     the v1 hard semantic stack with pack-driven predicate and role
     canonicalization over promoted assertions;
-54. explicit persisted recanonicalization events over promoted graph state,
+56. explicit persisted recanonicalization events over promoted graph state,
     with revalidation before repaired state is written;
-55. thin CLI commands for promoted-assertion recanonicalization, repair-event
+57. thin CLI commands for promoted-assertion recanonicalization, repair-event
     listing, and semantic repair report export;
-56. one live notebook proof for the first semantic canonicalization slice, and
+58. one live notebook proof for the first semantic canonicalization slice, and
     a canonical journey notebook phase that now continues from stable identity
-    into explicit semantic repair.
-57. one thin FastMCP server over the proved successor services rather than a
+    into explicit semantic repair;
+59. one thin FastMCP server over the proved successor services rather than a
     second workflow runtime;
-58. one explicit successor-local WhyGame relationship adapter that imports
+60. one explicit successor-local WhyGame relationship adapter that imports
     WhyGame `RELATIONSHIP` facts into candidate assertions;
-59. one local `whygame_minimal` pack and strict profile that give the adapter a
+61. one local `whygame_minimal` pack and strict profile that give the adapter a
     typed successor-local ontology target;
-60. optional WhyGame artifact registration and candidate-to-artifact links that
+62. optional WhyGame artifact registration and candidate-to-artifact links that
     keep imported provenance visible through governed bundles;
-61. integration proof that the MCP surface can import WhyGame facts, review
-    candidates, promote candidates, and export a governed bundle.
-62. one broadened extension-local promoted-assertion epistemic slice with
+63. integration proof that the MCP surface can import WhyGame facts, review
+    candidates, promote candidates, and export a governed bundle;
+64. one broadened extension-local promoted-assertion epistemic slice with
     explicit `active`, `weakened`, and `retracted` disposition events;
-63. derived promoted-assertion `superseded` state that still stays grounded in
+65. derived promoted-assertion `superseded` state that still stays grounded in
     candidate-level supersession rather than a second manual path;
-64. deterministic corroboration groups and deterministic role-filler tension
+66. deterministic corroboration groups and deterministic role-filler tension
     pairs over promoted graph state;
-65. thin CLI commands for promoted-assertion disposition recording and
+67. thin CLI commands for promoted-assertion disposition recording and
     assertion-level epistemic report export;
-66. one live notebook proof for the Phase 15 promoted-assertion epistemic
+68. one live notebook proof for the Phase 15 promoted-assertion epistemic
     slice.
 
 Concrete assets:
@@ -201,16 +201,20 @@ Planning companion:
 
 Still missing:
 
-1. broader benchmark coverage and calibration beyond the first local live slice;
-2. the broader v1 concept/belief graph and system-belief layer beyond the
+1. extraction quality baseline: the Stage 1 real run showed 37.5% acceptance
+   (6/16) with distinct failure modes (alias self-references, wrong predicate
+   choices, unattributed opinion claims). Active plan:
+   `docs/plans/0014_extraction_quality_baseline.md`;
+2. broader benchmark coverage and calibration beyond the first local live slice;
+3. the broader v1 concept/belief graph and system-belief layer beyond the
    first promoted-assertion/entity slice;
-3. broader identity recovery beyond the first promoted-entity identity slice;
-4. broader producer-side semantic adapters beyond the first pack-driven
+4. broader identity recovery beyond the first promoted-entity identity slice;
+5. broader producer-side semantic adapters beyond the first pack-driven
    canonicalization replacement slice;
-5. any richer interactive surface beyond the new thin MCP slice, such as a UI
+6. any richer interactive surface beyond the new thin MCP slice, such as a UI
    or a broader MCP tool set;
-6. any recovered DIGIMON adapter path;
-7. temporal/inference recovery and any broader truth-maintenance behavior
+7. any recovered DIGIMON adapter path;
+8. temporal/inference recovery and any broader truth-maintenance behavior
    beyond the explicit Phase 15 slice.
 
 ## Current Donor Dependencies
@@ -304,6 +308,10 @@ The authoritative parity ledger for the broader successor now lives in
    semantic adapters and richer pack metadata are still not implemented.
 11. Phase 15 recovered promoted-assertion corroboration/tension and broader
    disposition state, but temporal/inference are still explicitly deferred.
+12. First-pass extraction quality is below baseline: 37.5% acceptance rate
+   on Stage 1 corpus, with distinct failure modes (alias self-references,
+   wrong predicate choices, unattributed opinion claims). Active plan:
+   `docs/plans/0014_extraction_quality_baseline.md`.
 
 ## Immediate Next Step
 
@@ -323,19 +331,33 @@ A second real cross-project consumer run has also been completed over local
 2. `docs/runs/2026-03-18_research_agent_shield_ai_whygame_run_summary.md`
 3. `docs/runs/2026-03-18_research_agent_shield_ai_whygame_friction_log.md`
 
-There is still no automatic “Phase 16” until a new roadmap extension is justified.
-The repo should now:
+The immediate next step is the **extraction quality baseline** work described
+in `docs/plans/0014_extraction_quality_baseline.md`. This is driven by
+Stage 1 friction log entries 5 and 7:
+
+1. prompt hardening for observed error patterns (alias self-references,
+   predicate disambiguation, entity type boundaries);
+2. typed-but-unidentified entity fillers at the extraction boundary so the
+   model can express “I know this is a person but I can't name them”;
+3. profile-level policy for whether unidentified entity fillers pass
+   validation — strict profiles reject them, permissive profiles let them
+   through to review;
+4. prompt rendering of the active unidentified-filler policy.
+
+The target is >50% acceptance rate on the Stage 1 corpus, not perfection.
+The review workflow exists precisely because first-pass extraction will
+never be perfect.
+
+Broader roadmap rules remain:
 
 1. use `docs/plans/0005_v1_capability_parity_matrix.md` as the feature ledger;
 2. treat the current roadmap as the proved bounded successor core, not as full
    v1 parity;
-3. use the completed PSYOP Stage 1 run as the first justification record rather
-   than treating “run a real workflow” as still pending;
-4. require any later roadmap extension to point to concrete friction, breakage,
+3. require any later roadmap extension to point to concrete friction, breakage,
    or missing value observed in a real run;
-5. require explicit workflow pressure before reopening temporal/inference work
+4. require explicit workflow pressure before reopening temporal/inference work
    or another broad parity-recovery phase;
-6. prefer the smallest next product-facing or parity-closing slice if a new
+5. prefer the smallest next product-facing or parity-closing slice if a new
    roadmap extension is needed.
 
 The locked decisions for the latest slices are already explicit

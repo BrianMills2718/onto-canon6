@@ -1010,6 +1010,36 @@ Proved:
    `docs/adr/0016-recover-phase-15-through-extension-local-promoted-assertion-dispositions-and-derived-corroboration.md`
    and `docs/plans/0010_phase15_epistemic_corroboration_shape.md`.
 
+## Extraction Quality Baseline [planned]
+
+Goal:
+
+1. get first-pass extraction quality to a reasonable baseline before
+   adding new features or consumers.
+
+Driven by Stage 1 friction log entries 5 and 7, not by parity pressure.
+
+Build:
+
+1. prompt negative guidance for observed error patterns (alias
+   self-references, predicate disambiguation, entity type boundaries);
+2. typed-but-unidentified entity fillers at the extraction boundary;
+3. profile-level policy for whether unidentified entity fillers pass
+   validation;
+4. prompt rendering of the active unidentified-filler policy.
+
+Acceptance criteria:
+
+1. alias self-references and wrong-predicate candidates are reduced on the
+   same Stage 1 corpus;
+2. unidentified-filler acceptance is controlled by profile policy, not
+   hardcoded in the prompt;
+3. overall acceptance rate exceeds 50% on a verification run over the
+   Stage 1 corpus;
+4. all existing tests pass and new tests cover the changed boundaries.
+
+Full plan: `docs/plans/0014_extraction_quality_baseline.md`
+
 ## Standing Priorities
 
 Always prefer:
@@ -1027,13 +1057,21 @@ Always prefer:
 
 These are the remaining open questions for the successor beyond the bootstrap:
 
-1. what exact promotion target should define the recovered canonical graph;
-2. whether external identity should remain Wikidata-first or become a broader
-   external-reference model;
-3. how much of the v1 semantic stack should be retained versus intentionally
-   replaced;
-4. which richer surface or adapter should recover first after the CLI;
-5. whether temporal or inference behavior ever deserves re-entry into the
+1. whether temporal or inference behavior ever deserves re-entry into the
    successor after the explicit Phase 15 deferral;
-6. how much broader benchmark coverage is needed before Phase 5 results should
-   be treated as stronger quality evidence.
+2. how much broader benchmark coverage is needed before Phase 5 results should
+   be treated as stronger quality evidence;
+3. whether the unidentified-filler policy (plan 0014) reveals a need for
+   richer per-role optionality beyond the current per-profile boolean;
+4. how extraction quality scales to corpora beyond the Stage 1 PSYOP
+   documents.
+
+Resolved unknowns (by phase):
+
+- promotion target shape: resolved in Phase 11 (explicit candidate-backed
+  promotion);
+- external identity model: resolved in Phase 12 (broader external-reference
+  model with Wikidata as one provider, not the default);
+- v1 semantic stack disposition: resolved in Phase 13 (replaced by pack-driven
+  canonicalization);
+- first richer surface: resolved in Phase 14 (thin FastMCP + WhyGame adapter).

@@ -1,5 +1,7 @@
 # Plan 0013: LLM Observability and Prompt-Eval Adoption
 
+Status: complete
+
 ## Purpose
 
 Adopt the shared `llm_client` observability and `prompt_eval` experiment
@@ -43,10 +45,26 @@ Do not implement now:
 2. generalized prompt-asset resolution for repo-local prompt refs;
 3. a larger benchmark-expansion phase.
 
+## Outcome
+
+All acceptance criteria are satisfied:
+
+1. prompt provenance is config-backed (`extraction.prompt_ref`,
+   `judge_prompt_ref` in `config/config.yaml`);
+2. the live benchmark emits shared experiment runs, items, and aggregates
+   through `llm_client.observability`;
+3. benchmark outputs expose execution identifiers;
+4. `CLAUDE.md` and plan 0015 document `prompt_eval` as the preferred
+   layer for prompt/model iteration.
+
+The direct `prompt_eval` integration was subsequently implemented in plan
+0015 (`0015_prompt_eval_extraction_experiment.md`), which adds
+`ExtractionPromptExperimentService` with 4 prompt variants, failure
+taxonomy, and statistical comparison.
+
 ## Notes
 
-- This slice improves observability and repeatability without changing the
+- This slice improved observability and repeatability without changing the
   benchmark’s core semantics.
-- Direct `prompt_eval` adoption still makes sense for future prompt/model
-  comparison work, but it should be driven by actual extractor/judge iteration
-  pressure rather than by architecture completeness alone.
+- Direct `prompt_eval` adoption is now live through plan 0015 and is the
+  preferred approach for prompt/model comparison going forward.

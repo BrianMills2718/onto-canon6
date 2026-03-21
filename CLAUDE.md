@@ -42,8 +42,12 @@ config/
 - Phases 0-15 completed the bootstrap roadmap, not full successor parity.
 - The explicit parity ledger is `docs/plans/0005_v1_capability_parity_matrix.md`.
 - Two real non-fixture runs completed (PSYOP Stage 1 + Shield AI WhyGame).
-- **Active work**: extraction quality baseline
-  (`docs/plans/0014_extraction_quality_baseline.md`).
+- **Progressive extraction pipeline** (Plan 0018) is complete and proven on real
+  text. 3-pass architecture: open extraction → predicate mapping (78% early exit)
+  → entity refinement. 87.8% predicate resolution on Shield AI findings.
+- ADRs 0017-0019 adopted: permissive extraction, progressive disclosure,
+  ancestor-aware evaluation.
+- Predicate Canon bridge and ancestor-aware evaluator operational.
 
 ## Working Rules
 
