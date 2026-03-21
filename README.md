@@ -70,6 +70,8 @@ Repo-local strategic and planning docs now live in:
 - `docs/runs/2026-03-18_psyop_stage1_friction_log.md`
 - `docs/plans/0012_research_agent_shield_ai_whygame_run.md`
 - `docs/plans/0013_llm_observability_and_prompt_eval_adoption.md`
+- `docs/plans/0014_extraction_quality_baseline.md`
+- `docs/EXTRACTION_EXPERIMENT_RUNBOOK.md`
 - `docs/runs/2026-03-18_research_agent_shield_ai_whygame_run_summary.md`
 - `docs/runs/2026-03-18_research_agent_shield_ai_whygame_friction_log.md`
 - `notebooks/README.md`
