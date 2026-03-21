@@ -182,6 +182,18 @@ is stronger evidence to change it globally, but bounded real-document Phase B
 verification should currently use the explicit `--selection-task
 budget_extraction` override.
 
+The first bounded Phase B review pass on that chunk also yielded a useful
+quality signal: `8/10` candidates were accepted after real review. The two
+rejections were both honest semantic issues rather than structural failures:
+
+1. an unsupported `4th PSYOP Group -> USSOCOM` membership assertion
+2. a `JPOTF` `oc:use_organizational_form` predicate misfit
+
+So the current prompt state is now good enough to produce reviewable real
+output on a bounded Stage 1 chunk. The next iteration target is not
+“make extraction structurally valid.” It is “reduce the remaining semantic
+predicate and support mistakes on real text.”
+
 ## Motivation
 
 The Stage 1 run revealed three failure modes:

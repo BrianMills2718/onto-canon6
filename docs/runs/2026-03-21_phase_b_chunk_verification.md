@@ -102,6 +102,29 @@ Remaining semantic review concerns:
    speaker/topic interpretation even though the speaker is now explicitly
    named
 
+## Review Outcome
+
+The bounded review pass accepted `8` of the `10` candidates and rejected `2`,
+for an `80%` acceptance rate on this real chunk.
+
+Accepted:
+
+1. all five `oc:hold_command_role` commander-table rows
+2. both `oc:operation_occurs_in_location` operation headings
+3. the NDU-review `oc:express_concern` candidate
+
+Rejected:
+
+1. the `4th PSYOP Group -> USSOCOM` `oc:belongs_to_organization` candidate,
+   because this chunk does not directly support the USSOCOM membership claim
+2. the JPOTF `oc:use_organizational_form` candidate, because the cited text
+   supports establishment/integration language rather than organizational-form
+   usage
+
+This is materially better than the broader first Stage 1 run's `6/16`
+acceptance rate, though it is not directly comparable as a benchmark because
+this is one bounded chunk and not the whole earlier corpus.
+
 ## Decision
 
 Phase B real-document verification is now past the “can the operational path
