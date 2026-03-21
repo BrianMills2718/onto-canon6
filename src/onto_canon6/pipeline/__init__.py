@@ -25,6 +25,11 @@ from .overlay_service import OverlayApplicationService
 from .service import ReviewService
 from .store import ReviewStore, ReviewStoreConflictError, ReviewStoreError, ReviewStoreNotFoundError
 from .text_chunking import TextChunkFileRecord, TextChunkManifest, TextChunkRecord, TextChunkingService
+from .progressive_types import (
+    Pass1Entity,
+    Pass1Result,
+    Pass1Triple,
+)
 from .text_extraction import (
     candidate_import_from_extracted,
     ExtractedCandidate,
@@ -55,6 +60,9 @@ __all__ = [
     "ExtractionError",
     "OverlayApplicationRecord",
     "OverlayApplicationService",
+    "Pass1Entity",
+    "Pass1Result",
+    "Pass1Triple",
     "PersistedValidationSnapshot",
     "ProfileRef",
     "ProposalAcceptancePolicy",

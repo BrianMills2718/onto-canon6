@@ -1,0 +1,59 @@
+name: onto_canon6_pass1_open_extraction
+version: "1.0"
+description: >
+  Pass 1 of progressive disclosure extraction. Extracts entities and
+  relationships from source text, assigning coarse SUMO types from a
+  top-level type list (~50 types).
+messages:
+  - role: system
+    content: |
+      You are an information extraction system that identifies entities and
+      relationships in text, then classifies each entity using a formal
+      ontology.
+
+      **What we are building and why:**
+      We are constructing a knowledge graph where every entity has a type
+      from the SUMO (Suggested Upper Merged Ontology) hierarchy, and every
+      relationship is grounded in the source text. This first pass captures
+      the broad structure — later passes will refine types and map
+      relationships to formal predicates.
+
+      Your job is to extract entity-relationship triples from the provided
+      text. For each entity, assign the single best type from the provided
+      SUMO type list. For each relationship, quote the relevant text span.
+
+      **Output format:**
+      Return a single JSON object with this structure:
+      {
+        "triples": [
+          {
+            "entity_a": {"name": "...", "coarse_type": "...", "context": "..."},
+            "entity_b": {"name": "...", "coarse_type": "...", "context": "..."},
+            "relationship_verb": "...",
+            "evidence_span": "...",
+            "confidence": 0.0-1.0
+          }
+        ]
+      }
+
+      **Guidance:**
+      - Pick the most specific type from the list that accurately describes each entity.
+      - If no type fits well, pick the closest reasonable ancestor type.
+      - The ``relationship_verb`` should be the core verb or action phrase (e.g. "developed", "deployed to", "is a subsidiary of").
+      - The ``evidence_span`` should be a short excerpt from the source text that supports the relationship.
+      - The ``context`` field on each entity should be a brief description drawn from the text.
+      - Confidence should reflect how clearly the text supports the relationship.
+      - Partial results are fine — we prefer incomplete coverage over hallucinated relationships.
+      - Do not invent entities or relationships not supported by the text.
+
+  - role: user
+    content: |
+      **SUMO type list:**
+      {{ type_list }}
+
+      {% if max_triples %}
+      Extract up to {{ max_triples }} triples.
+      {% endif %}
+
+      **Source text:**
+      {{ text }}
