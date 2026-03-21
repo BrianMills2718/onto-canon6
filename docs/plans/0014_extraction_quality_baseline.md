@@ -42,6 +42,43 @@ experiment task to `budget_extraction` is premature. The explicit override
 works and is the right iteration lane for now, but the default path is not
 yet stable enough to flip globally.
 
+Later on 2026-03-21, the expanded 5-case fixture (`psyop_eval_slice_v2`)
+also ran end to end on the same explicit lane. Two useful things are now
+clear:
+
+1. The structural contract is stable enough to iterate on. After adding the
+   fixture-expansion cases and then tightening the prompt contract around
+   `kind`, all variants completed the expanded sweep with `10/10`
+   successful trials and no trial-level structural failure counts.
+2. Prompt-only guardrail changes did not produce a clear semantic winner.
+   The pre-guardrail expanded sweep had:
+   - `compact = 0.27`
+   - `single_response_hardened = 0.26`
+   - `baseline = 0.235`
+   - `hardened = 0.22`
+
+   After propagating the semantic guardrails and explicit `kind`
+   requirement, the expanded sweep had:
+   - `baseline = 0.2475`
+   - `single_response_hardened = 0.24`
+   - `compact = 0.20`
+   - `hardened = 0.17`
+
+   None of the bootstrap comparisons was significant, and every variant
+   still had `exact_f1 = 0.0`.
+
+That means the next blocker is no longer missing infrastructure or an
+obvious prompt-schema omission. The next blocker is a benchmark-contract
+question plus remaining semantic extraction quality work:
+
+- the exact-match lane is still partly confounded by extraction-boundary
+  normalization (`ent:auto:*`, raw-string normalization) versus
+  reviewer-style fixture payloads
+- the designation-change case still rewards variants that can emit more
+  than one candidate cleanly
+- prompt guardrails alone are not enough to separate the variants on the
+  expanded fixture
+
 ## Motivation
 
 The Stage 1 run revealed three failure modes:

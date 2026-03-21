@@ -36,6 +36,9 @@ messages:
       `roles` must map each role name to an array of fillers. Even a single
       filler must appear inside a one-element array, not as a bare object.
 
+      Every filler object must include `kind` set to `entity`, `value`, or
+      `unknown`.
+
       Every `kind: value` filler must include `value_kind` and `raw` or
       `normalized`.
 

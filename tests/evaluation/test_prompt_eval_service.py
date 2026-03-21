@@ -440,8 +440,10 @@ def test_run_prompt_experiment_builds_report_and_variant_comparison(
     assert "Use at most 1 evidence spans per" in baseline_messages[0]["content"]
     assert "Use exact source surface forms for entity names and values." in baseline_messages[0]["content"]
     assert "Build candidates role-first." in baseline_messages[0]["content"]
+    assert "Every filler object must include `kind`" in baseline_messages[0]["content"]
     assert "abbreviation expansions" in hardened_messages[0]["content"]
     assert "parenthetical name expansions" in hardened_messages[0]["content"]
+    assert "Every filler object must include `kind`" in hardened_messages[0]["content"]
     assert "Prefer the smallest sufficient candidate set" in compact_messages[0]["content"]
     assert "Return at most 1 candidates." in compact_messages[0]["content"]
     assert "Use at most 1 evidence spans per" in compact_messages[0]["content"]
@@ -449,6 +451,7 @@ def test_run_prompt_experiment_builds_report_and_variant_comparison(
     assert "Build candidates role-first." in compact_messages[0]["content"]
     assert "parenthetical name expansions" in compact_messages[0]["content"]
     assert "return no opinion candidate" in compact_messages[0]["content"]
+    assert "Every filler object must include `kind`" in compact_messages[0]["content"]
     assert "Return exactly one structured response object" in single_response_messages[0]["content"]
     assert "Return at most 1 candidates." in single_response_messages[0]["content"]
     assert "Use at most 1 evidence spans per" in single_response_messages[0]["content"]
@@ -456,6 +459,7 @@ def test_run_prompt_experiment_builds_report_and_variant_comparison(
     assert "Use exact source surface forms for entity names and values." in single_response_messages[0]["content"]
     assert "parenthetical name expansions" in single_response_messages[0]["content"]
     assert "return no opinion candidate" in single_response_messages[0]["content"]
+    assert "Every filler object must include `kind`" in single_response_messages[0]["content"]
     observability = captured["observability"]
     assert isinstance(observability, _FakePromptEvalObservabilityConfig)
     assert observability.kwargs["dataset"] == "onto_canon6_extraction_prompt_eval"
