@@ -1,8 +1,24 @@
 # Ancestor-Aware Evaluator and Fidelity Experiments
 
-Status: planned
+Status: complete
 
-Updated: 2026-03-19
+Updated: 2026-03-21
+
+## Outcome (2026-03-21)
+
+All components built and experiments run:
+
+1. **SUMOHierarchy**: read-only interface to sumo_plus.db closure table (13 tests)
+2. **AncestorEvaluator**: prompt_eval evaluator with exact/ancestor/specificity
+   dimensions (10 tests)
+3. **Fidelity experiments**: 8 entities × 3 levels on gemini-2.5-flash-lite.
+   Results: top_level 87.5% ancestor match, mid_level 62.5%, full_subtree 50%.
+   Key finding: more types = worse performance. Top-level seeding confirmed
+   as optimal starting point.
+4. **GoldenSetManager**: growing acceptable set evaluator in prompt_eval (9 tests)
+5. **PredicateCanon bridge**: read-only predicate/role_slot interface (13 tests)
+
+Results embedded in Plan 0018 and ADR-0018 empirical validation section.
 
 ## Purpose
 

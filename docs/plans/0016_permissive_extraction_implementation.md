@@ -1,8 +1,17 @@
 # Permissive Extraction Implementation
 
-Status: planned
+Status: complete
 
-Updated: 2026-03-19
+Updated: 2026-03-21
+
+## Outcome (2026-03-21)
+
+Implemented as part of the progressive extraction pipeline (Plan 0018).
+`pipeline.permissive_review` config flag added, ReviewService passes it to
+validation transition. When true, invalid candidates can be accepted
+(annotation, not gate). All 3 passes of progressive extraction store
+partial results permissively. 1 dedicated test + 8 e2e tests verify the
+permissive path.
 
 ## Purpose
 

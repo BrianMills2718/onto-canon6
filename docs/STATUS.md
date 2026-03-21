@@ -197,13 +197,25 @@ Planning companion:
 1. `notebooks/09_successor_long_term_plan.ipynb`
 2. `notebooks/11_future_phase_breakdown.ipynb`
 
+65. a 3-pass progressive disclosure extraction pipeline (Plan 0018): open
+    extraction with top-level SUMO seeding → predicate mapping with 78%
+    single-sense early exit → entity refinement with narrowed subtree typing;
+66. 87.8% predicate resolution on real text (Shield AI findings, 348 lines,
+    337 triples, $0.07 total cost);
+67. ancestor-aware evaluator with SUMO hierarchy integration (Plan 0017);
+68. Predicate Canon bridge: read-only interface to 4,669 predicates and
+    11,890 role slots with 78.1% single-sense lemma rate;
+69. fidelity experiments proving top-level seeding (50 types, 87.5% ancestor
+    match) outperforms mid-level (62.5%) and full-subtree (50%);
+70. json_schema response_format with field-level descriptions as a prompting
+    surface (18.8% → 87.8% resolution via schema + prompt alone);
+
 ## What Is Not Proven Yet
 
 Still missing:
 
-1. extraction quality baseline: the Stage 1 real run showed 37.5% acceptance
-   (6/16) with distinct failure modes (alias self-references, wrong predicate
-   choices, unattributed opinion claims). Active plan:
+1. extraction quality Phase B: real-document corpus verification beyond
+   single-document benchmarks. Active plan:
    `docs/plans/0014_extraction_quality_baseline.md`;
 2. broader benchmark coverage and calibration beyond the first local live slice;
 3. the broader v1 concept/belief graph and system-belief layer beyond the
