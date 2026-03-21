@@ -1,6 +1,13 @@
 """Evaluation exports for the Phase 5 live extraction benchmark."""
 
 from .ancestor_evaluator import AncestorEvalScore, make_ancestor_evaluator
+from .predicate_canon import (
+    PredicateCanon,
+    PredicateCanonError,
+    PredicateInfo,
+    PredicateMatch,
+    RoleSlotInfo,
+)
 from .fidelity_experiment import (
     EntityFixture,
     ExperimentItem,
@@ -41,6 +48,11 @@ from .service import EvaluationError, LiveExtractionEvaluationService, load_benc
 
 __all__ = [
     "AncestorEvalScore",
+    "PredicateCanon",
+    "PredicateCanonError",
+    "PredicateInfo",
+    "PredicateMatch",
+    "RoleSlotInfo",
     "EntityFixture",
     "ExperimentItem",
     "ExperimentResult",
