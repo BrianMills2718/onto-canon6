@@ -1,5 +1,5 @@
 {
-  "fixture_id": "psyop_eval_slice_v2",
+  "fixture_id": "psyop_eval_slice_v3",
   "cases": [
     {
       "case_id": "psyop_001_designation_change",
@@ -315,6 +315,86 @@
           "chunk_id": "psyop_005"
         },
         "content_text": "Concerns have been raised about the effectiveness of MISO in online influence campaigns."
+      },
+      "expected_candidates": []
+    },
+    {
+      "case_id": "psyop_006_context_only_membership_strict_omit",
+      "profile": {
+        "profile_id": "psyop_seed",
+        "profile_version": "0.1.0"
+      },
+      "source_artifact": {
+        "source_kind": "benchmark_fixture_text",
+        "source_ref": "onto-canon://benchmark/psyop_eval_slice#case=psyop_006_context_only_membership_strict_omit",
+        "source_label": "psyop_eval:context_only_membership_strict_omit",
+        "source_metadata": {
+          "doc_id": "psyop_eval_slice",
+          "chunk_id": "psyop_006"
+        },
+        "content_text": "The 4th PSYOP Group, as the principal Army PSYOP unit, had its own commanders, but their names are not widely available in open literature."
+      },
+      "expected_candidates": []
+    },
+    {
+      "case_id": "psyop_007_named_institutional_concern",
+      "profile": {
+        "profile_id": "psyop_seed",
+        "profile_version": "0.1.0"
+      },
+      "source_artifact": {
+        "source_kind": "benchmark_fixture_text",
+        "source_ref": "onto-canon://benchmark/psyop_eval_slice#case=psyop_007_named_institutional_concern",
+        "source_label": "psyop_eval:named_institutional_concern",
+        "source_metadata": {
+          "doc_id": "psyop_eval_slice",
+          "chunk_id": "psyop_007"
+        },
+        "content_text": "A 2005 review by the National Defense University highlighted both successes and persistent challenges in PSYOP, including the need for better integration with other elements of national power and improved measurement of effectiveness."
+      },
+      "expected_candidates": [
+        {
+          "candidate_id": "cand_psyop_007_express_concern",
+          "payload": {
+            "predicate": "oc:express_concern",
+            "roles": {
+              "speaker": [
+                {
+                  "entity_id": "ent:org:national_defense_university",
+                  "name": "National Defense University",
+                  "entity_type": "oc:community"
+                }
+              ],
+              "topic": [
+                {
+                  "kind": "value",
+                  "value_kind": "string",
+                  "raw": "better integration with other elements of national power and improved measurement of effectiveness",
+                  "normalized": {
+                    "value": "better integration with other elements of national power and improved measurement of effectiveness"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "psyop_008_jpotf_establishment_not_org_form",
+      "profile": {
+        "profile_id": "psyop_seed",
+        "profile_version": "0.1.0"
+      },
+      "source_artifact": {
+        "source_kind": "benchmark_fixture_text",
+        "source_ref": "onto-canon://benchmark/psyop_eval_slice#case=psyop_008_jpotf_establishment_not_org_form",
+        "source_label": "psyop_eval:jpotf_establishment_not_org_form",
+        "source_metadata": {
+          "doc_id": "psyop_eval_slice",
+          "chunk_id": "psyop_008"
+        },
+        "content_text": "A significant innovation during this period was the establishment of Joint PSYOP Task Forces (JPOTF), which allowed for the integration of PSYOP into all phases of campaign planning and execution."
       },
       "expected_candidates": []
     }

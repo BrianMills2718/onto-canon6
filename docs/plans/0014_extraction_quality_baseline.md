@@ -194,6 +194,42 @@ output on a bounded Stage 1 chunk. The next iteration target is not
 “make extraction structurally valid.” It is “reduce the remaining semantic
 predicate and support mistakes on real text.”
 
+One more 2026-03-21 lesson matters before the next prompt edit:
+
+1. a prompt-only attempt to suppress the real-chunk overbinding patterns by
+   adding generic “do not infer relationships from surrounding context” and
+   “establishment of X is not `use_organizational_form`” wording did not help
+   enough to keep
+2. that attempt removed the acceptable named-institutional concern candidate,
+   but it still left the unsupported `4th PSYOP Group -> USSOCOM` inference
+   and the JPOTF form misuse in place
+3. the right response was not to keep that wording; it was to add those real
+   patterns to the benchmark fixture
+
+The benchmark fixture is now `psyop_eval_slice_v3` and includes three new
+Phase B cases:
+
+- `psyop_006_context_only_membership_strict_omit`
+- `psyop_007_named_institutional_concern`
+- `psyop_008_jpotf_establishment_not_org_form`
+
+A focused live prompt-eval run over just those three new cases showed that
+the earlier clean winner does not generalize:
+
+- `compact = 0.44`, `exact_f1 = 0.2`, but `1` rate-limit failure
+- `hardened = 0.2833`
+- `baseline = 0.275`
+- `single_response_hardened = 0.2417`
+
+None of the bootstrap comparisons was significant, but the conclusion is
+still useful:
+
+- the new cases are discriminative enough to catch real-chunk regressions
+- `single_response_hardened` is no longer the obvious next default for this
+  problem slice
+- the next prompt iteration should target these three cases explicitly rather
+  than assuming the previous Phase A winner will carry over
+
 ## Motivation
 
 The Stage 1 run revealed three failure modes:
