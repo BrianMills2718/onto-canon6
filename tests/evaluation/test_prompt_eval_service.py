@@ -271,6 +271,36 @@ def test_score_prompt_eval_trial_ignores_reviewer_ids_and_value_normalization_sh
     assert score.dimension_scores["count_alignment"] == 1.0
 
 
+def test_score_prompt_eval_trial_rewards_correct_zero_candidate_omit() -> None:
+    """Strict omit cases should score perfectly when no candidates are returned."""
+
+    case = BenchmarkCase(
+        case_id="case-zero-omit",
+        profile=ProfileRef(profile_id="psyop_seed", profile_version="0.1.0"),
+        source_artifact=SourceArtifactRef(
+            source_kind="raw_text",
+            source_ref="text://case-zero-omit",
+            source_label="Strict omit case",
+            source_metadata={},
+            content_text="A heading-only parenthetical alias should not become an assertion.",
+        ),
+        expected_candidates=(),
+    )
+    output = TextExtractionResponse(candidates=[])
+
+    score = prompt_eval_service_module._score_prompt_eval_trial(
+        output=output,
+        expected=case,
+        eval_score_cls=_FakeEvalScore,
+        overlay_root=PROJECT_ROOT / "var" / "ontology_overlays",
+    )
+
+    assert score.score == 1.0
+    assert score.dimension_scores["exact_f1"] == 1.0
+    assert score.dimension_scores["structural_usable_rate"] == 1.0
+    assert score.dimension_scores["count_alignment"] == 1.0
+
+
 def test_run_prompt_experiment_builds_report_and_variant_comparison(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -533,11 +563,16 @@ def test_run_prompt_experiment_builds_report_and_variant_comparison(
     assert "return no opinion candidate" in compact_messages[0]["content"]
     assert "Every filler object must include `kind`" in compact_messages[0]["content"]
     assert "Return exactly one structured response object" in single_response_messages[0]["content"]
-    assert "Return at most 1 candidates." in single_response_messages[0]["content"]
+    assert "Return at most 2 candidates." in single_response_messages[0]["content"]
     assert "Use at most 1 evidence spans per" in single_response_messages[0]["content"]
     assert "Never emit `roles: {}`." in single_response_messages[0]["content"]
     assert "Use exact source surface forms for entity names and values." in single_response_messages[0]["content"]
+    assert "Every entity filler must include a reviewer-meaningful `name` and an" in single_response_messages[0]["content"]
+    assert "entity_type` chosen from the active ontology catalog" in single_response_messages[0]["content"]
     assert "parenthetical name expansions" in single_response_messages[0]["content"]
+    assert "the `subject` must be the" in single_response_messages[0]["content"]
+    assert "enduring named entity being renamed" in single_response_messages[0]["content"]
+    assert "emit separate candidates for the concern and the" in single_response_messages[0]["content"]
     assert "return no opinion candidate" in single_response_messages[0]["content"]
     assert "Every filler object must include `kind`" in single_response_messages[0]["content"]
     observability = captured["observability"]

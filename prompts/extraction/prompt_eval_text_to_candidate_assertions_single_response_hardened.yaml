@@ -43,9 +43,11 @@ messages:
       backslash escapes for apostrophes or quotes beyond normal JSON string
       encoding.
 
-      Every entity filler must include a reviewer-meaningful `name`. Never
-      emit type-only entity fillers. If a role cannot be filled with a named
-      entity or concrete value from the source, omit that entire candidate.
+      Every entity filler must include a reviewer-meaningful `name` and an
+      `entity_type` chosen from the active ontology catalog. Never emit
+      type-only entity fillers or named entities with blank `entity_type`.
+      If a role cannot be filled with a named typed entity or concrete value
+      from the source, omit that entire candidate.
 
       Use exact source surface forms for entity names and values. If the text
       names something only by an acronym, alternate designation, or quoted
@@ -64,6 +66,9 @@ messages:
       Keep candidates atomic and reviewable:
 
       - one predicate per candidate assertion
+      - if one sentence explicitly states multiple independent facts, emit
+        separate candidates for those facts up to the candidate budget instead
+        of collapsing them into one broad topic string
       - no empty `roles`
       - no unnamed entities
       - no speculative candidates
@@ -78,12 +83,19 @@ messages:
         organization; subordinate-unit text, parent/child organization text,
         and organizational membership text usually belong under
         `belongs_to_organization`
+      - for a `replace_designation` candidate, the `subject` must be the
+        enduring named entity being renamed, not just the old label string; if
+        the subject entity cannot be named from the source, omit the rename
+        candidate
       - MOS codes, classifications, labels, and taxonomy terms are usually
         values or aliases, not standalone entities that belong to an
         organization
       - if the text only implies sentiment, concern, or dissatisfaction without
         a named speaker, return no opinion candidate rather than inventing a
         person or vague source
+      - if the text explicitly states both a concern and a concrete lost or
+        limited capability, emit separate candidates for the concern and the
+        concrete capability effect when the candidate budget allows
 
       Never emit `roles: {}`. Omit the entire candidate instead.
 

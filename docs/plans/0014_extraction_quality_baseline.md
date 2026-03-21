@@ -102,6 +102,52 @@ structural ones:
 - one surviving compact-variant structural failure from an unnamed entity
   filler on `psyop_001_designation_change`
 
+One more scoring issue surfaced immediately after that: strict-omit cases
+with `expected_candidates = []` were still penalized when the extractor also
+returned `[]`. That was wrong. Phase A now treats `expected = 0` and
+`observed = 0` as perfect exact/count/usable agreement. After that fix, the
+same expanded sweep produced:
+
+- `baseline = 0.39416`, `exact_f1 = 0.23333`
+- `compact = 0.61875`, `exact_f1 = 0.5`, but with 2 structural failures
+- `hardened = 0.35`, `exact_f1 = 0.22222`, with 1 structural failure
+- `single_response_hardened = 0.475`, `exact_f1 = 0.4`, with 0 structural
+  failures
+
+That made the best clean variant obvious: `single_response_hardened`.
+
+A narrow follow-up prompt pass on that variant then:
+
+- raised its candidate budget from 1 to 2
+- required `entity_type` on every named entity filler
+- told it to split multi-fact sentences into separate candidates up to the
+  candidate budget
+- clarified that `replace_designation.subject` must be the enduring named
+  entity, not just the old label string
+- clarified that explicit concern + capability-loss text can justify two
+  separate candidates when the budget allows
+
+That rerun produced the current best clean Phase A result:
+
+- `single_response_hardened = 0.63916`
+- `exact_f1 = 0.53333`
+- `structural_usable_rate = 0.9`
+- `count_alignment = 0.675`
+- `n_errors = 0`
+
+The remaining misses in that variant are now narrow and honest:
+
+- `psyop_001_designation_change` is still inconsistent about emitting both
+  the rename and the command-role fact
+- `psyop_002_concerns_about_truth_based_shift` still collapses to one
+  candidate too often
+- one `bad_evidence_span` failure remained in the winning rerun
+
+A later evidence-span wording tweak was tested and rejected because it made
+the run noisier overall. The repo should treat the `single_response_v2`
+state as the current winning prompt variant, not the discarded follow-up
+experiment.
+
 ## Motivation
 
 The Stage 1 run revealed three failure modes:
@@ -550,6 +596,16 @@ The third run is the current honest baseline for Phase A interpretation:
 Bootstrap comparisons remain non-significant. So the contract alignment is
 done, but the semantic selection problem is still open.
 
+After the zero-omit scoring fix and the targeted `single_response_hardened`
+prompt pass, the repo now has a better clean interpretation point than that
+third run:
+
+- `single_response_hardened` is the best no-error variant
+- `compact` can score higher on some reruns but still carries more structural
+  volatility
+- later tiny prompt tweaks on evidence wording increased run variance and are
+  not the current recommended state
+
 **Phase B — Review-quality verification (manual or agent-assisted):**
 
 Run live extraction over 4-6 real documents (the 3 Stage 1 docs plus 1-3
@@ -583,6 +639,13 @@ guard fails, fix the structural issue before measuring semantic quality.
 | D0 extraction-boundary exact lane in place | yes |
 | at least one non-baseline variant beats baseline on `mean_score` or `exact_f1` | yes |
 | 0 structural failure trials across all variants | yes |
+
+Current status after the zero-omit fix and `single_response_v2` prompt pass:
+
+- `exact_f1 > 0.0`: met
+- non-baseline variant beating baseline: met
+- 0 structural failure trials across all variants: not met
+- best no-error variant identified: met (`single_response_hardened`)
 
 ### Phase B targets (strict profile — primary success metric)
 
@@ -675,11 +738,18 @@ have been measured.
     the evidence.
 
 Steps 2, 4, 5, and 6 are now complete. The immediate next thin slice is
-Step 3: dry review and taxonomy over the current expanded-fixture outputs so
-the next prompt iteration is driven by the remaining semantic failures, not
-by benchmark-contract ambiguity. Steps 7-9 are conditional, not automatic.
-The point is still to prove whether unidentified fillers are a real blocker
-before adding the policy dimension.
+Step 10: Phase B real-document verification using the current best clean
+variant. The dry review and taxonomy pass are now complete enough to justify
+that move:
+
+- strict-omit scoring is fixed
+- the best clean prompt-experiment variant is known
+- further tiny prompt-only tweaks are already showing diminishing returns and
+  higher run variance
+
+Steps 7-9 are still conditional, not automatic. The point remains to prove
+whether unidentified fillers are a real blocker before adding the policy
+dimension.
 
 ## Non-Goals
 

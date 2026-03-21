@@ -447,7 +447,10 @@ def _score_prompt_eval_trial(
         observed_count = len(candidate_imports)
         expected_count = len(expected.expected_candidates)
         usable_count = sum(status != "invalid" for status in validation_statuses)
-        usable_rate = usable_count / observed_count if observed_count else 0.0
+        if observed_count == 0 and expected_count == 0:
+            usable_rate = 1.0
+        else:
+            usable_rate = usable_count / observed_count if observed_count else 0.0
         count_alignment = 1.0 - (
             abs(observed_count - expected_count) / max(observed_count, expected_count, 1)
         )
@@ -505,11 +508,16 @@ def _score_prompt_eval_exact_canonicalization(
     matched = sum(matched_counter.values())
     expected_count = sum(expected_signatures.values())
     observed_count = sum(observed_signatures.values())
-    precision = matched / observed_count if observed_count else 0.0
-    recall = matched / expected_count if expected_count else 0.0
-    f1 = 0.0
-    if precision and recall:
-        f1 = 2 * precision * recall / (precision + recall)
+    if expected_count == 0 and observed_count == 0:
+        precision = 1.0
+        recall = 1.0
+        f1 = 1.0
+    else:
+        precision = matched / observed_count if observed_count else 0.0
+        recall = matched / expected_count if expected_count else 0.0
+        f1 = 0.0
+        if precision and recall:
+            f1 = 2 * precision * recall / (precision + recall)
 
     remaining = Counter(expected_signatures)
     match_flags: list[bool] = []

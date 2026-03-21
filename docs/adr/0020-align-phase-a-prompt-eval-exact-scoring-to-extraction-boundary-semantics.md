@@ -37,9 +37,13 @@ not share one exact-match contract blindly.
 3. The prompt-eval exact matcher also ignores richer downstream
    value-normalization shape when the extraction boundary already matches on
    the primary value text.
-4. `LiveExtractionEvaluationService` keeps the stricter reviewer-style exact
+4. When a Phase A fixture expects zero candidates and the extractor returns
+   zero candidates, prompt-eval exact agreement, structural usability, and
+   count alignment all score as perfect agreement. Strict omit is a valid
+   extraction outcome, not a near-zero score.
+5. `LiveExtractionEvaluationService` keeps the stricter reviewer-style exact
    canonicalization lane for later review-quality and fidelity checks.
-5. Phase A prompt-eval exact scores and later canonicalization-fidelity
+6. Phase A prompt-eval exact scores and later canonicalization-fidelity
    scores are intentionally related but not identical. They answer
    different questions.
 
