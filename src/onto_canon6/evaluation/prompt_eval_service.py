@@ -522,9 +522,9 @@ def _validate_experiment_shape(
 ) -> None:
     """Fail loudly on experiment shapes that cannot support the chosen comparison."""
 
-    if comparison_method == "welch" and case_count * n_runs < 2:
+    if comparison_method in {"welch", "bootstrap"} and case_count * n_runs < 2:
         raise ExtractionPromptExperimentError(
-            "welch comparison requires at least two scored trials per variant; "
+            f"{comparison_method} comparison requires at least two scored trials per variant; "
             "increase case_count or n_runs, or switch the comparison method"
         )
 
@@ -540,12 +540,13 @@ def _validate_loaded_result_comparison_shape(
 
     The pre-run shape check can only reason about planned trial counts. Live
     prompt experiments can still lose trials to provider or schema errors, and
-    Welch requires at least two scored trials in each compared variant. This
+    Welch and pooled bootstrap require at least two scored trials in each
+    compared variant. This
     helper turns the downstream stats failure into an experiment-specific error
     with the observed successful-trial counts.
     """
 
-    if comparison_method != "welch":
+    if comparison_method not in {"welch", "bootstrap"}:
         return
     summary_obj = getattr(result, "summary", None)
     if not isinstance(summary_obj, dict):
@@ -571,7 +572,7 @@ def _validate_loaded_result_comparison_shape(
             f"{variant_name}={success_count}" for variant_name, success_count in sorted(insufficient.items())
         )
         raise ExtractionPromptExperimentError(
-            "welch comparison became impossible after live trial errors; "
+            f"{comparison_method} comparison became impossible after live trial errors; "
             f"successful_scored_trials=({rendered}). rerun with more cases or runs, "
             "or switch the comparison method"
         )

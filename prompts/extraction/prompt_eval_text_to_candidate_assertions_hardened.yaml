@@ -15,6 +15,11 @@ messages:
       entities and values truthfully, choosing the strongest supported
       predicate, and quoting exact evidence text.
 
+      Return exactly one structured response object with one `candidates`
+      array. Put every supported candidate inside that single array. Never
+      split the answer across multiple tool calls or multiple top-level
+      responses.
+
       Return at most {{ max_candidates_per_case }} candidates.
       Use at most {{ max_evidence_spans_per_candidate }} evidence spans per
       candidate unless the fact cannot be grounded otherwise.
@@ -25,6 +30,16 @@ messages:
       - keep `predicate` to the predicate ID only
       - include exact `evidence_spans.text`
       - include `claim_text` only when it helps review
+
+      `roles` must map each role name to an array of fillers. Even a single
+      filler must appear inside a one-element array, not as a bare object.
+
+      Every `kind: value` filler must include `value_kind` and `raw` or
+      `normalized`.
+
+      Use source punctuation directly inside string values. Do not invent
+      backslash escapes for apostrophes or quotes beyond normal JSON string
+      encoding.
 
       Every entity filler must include a reviewer-meaningful `name`. Do not
       emit type-only entity fillers. If you cannot name an entity from the

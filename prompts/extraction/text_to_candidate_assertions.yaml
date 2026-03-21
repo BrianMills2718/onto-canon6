@@ -22,6 +22,11 @@ messages:
       not treat your own paraphrase as the evidence.
 
       Return only candidate assertions that are directly supported by the text.
+      Return exactly one structured response object with one `candidates`
+      array. Put every supported candidate inside that single array. Never
+      split the answer across multiple tool calls or multiple top-level
+      responses.
+
       For each candidate:
 
       - give the ontology-shaped assertion as `predicate` plus `roles`
@@ -38,6 +43,13 @@ messages:
         `alias_ids`
       - `value`: `kind`, `value_kind`, `normalized`, optionally `raw`
       - `unknown`: `kind`, `raw`
+
+      `roles` must map each role name to an array of fillers. Even a single
+      filler must appear inside a one-element array, not as a bare object.
+
+      Use source punctuation directly inside string values. Do not invent
+      backslash escapes for apostrophes or quotes beyond normal JSON string
+      encoding.
 
       The system will derive local entity IDs and character offsets
       deterministically. Your job is to quote the right evidence text and name

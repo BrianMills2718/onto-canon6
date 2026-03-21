@@ -28,7 +28,8 @@ cd ~/projects/onto-canon6
 
 ## Recommended Live Slice
 
-Use a bounded one-case run first.
+Use a bounded one-case run first, but give bootstrap enough scored trials to
+compare variants honestly.
 
 ```bash
 cd ~/projects/onto-canon6
@@ -37,9 +38,9 @@ env \
   LLM_CLIENT_TIMEOUT_POLICY=ban \
   ./.venv/bin/python -m onto_canon6 run-extraction-prompt-experiment \
   --case-limit 1 \
-  --n-runs 1 \
+  --n-runs 2 \
   --comparison-method bootstrap \
-  --selection-task fast_extraction \
+  --selection-task budget_extraction \
   --output json
 ```
 
@@ -48,10 +49,18 @@ Why these defaults:
 1. `LLM_CLIENT_TIMEOUT_POLICY=ban` keeps provider wall-clock timeouts from
    killing a slow-but-healthy call.
 2. `LLM_CLIENT_PROJECT=...` gives the run an isolated observability filter.
-3. `--case-limit 1 --n-runs 1` keeps cost and latency bounded while still
-   surfacing structural extraction failures.
-4. `--comparison-method bootstrap` avoids Welch assumptions when live failures
-   leave too few scored trials.
+3. `--case-limit 1 --n-runs 2` is the smallest shape that still gives the
+   SciPy bootstrap comparison path two scored trials per variant.
+4. `--selection-task budget_extraction` is the current viable prompt-eval lane
+   on the tiny PSYOP slice. `fast_extraction` remains useful for operational
+   extraction, but it has been much slower and less practical for prompt
+   iteration on this slice.
+5. `--comparison-method bootstrap` avoids Welch assumptions when live failures
+   leave just enough scored trials to compare.
+
+If you only want a smoke test of liveness rather than a real comparison, you
+can still use `--n-runs 1`, but `onto-canon6` will now fail loudly if you ask
+for a bootstrap or Welch comparison with too few planned scored trials.
 
 ## Active-Call Query
 
@@ -96,7 +105,11 @@ progress signals. This is not the same thing as a hang.
 Typical current prompt-experiment failures are structural, for example:
 
 - candidates with `roles: {}`
+- candidates whose role fillers are not wrapped in role arrays
+- `kind: value` fillers missing `value_kind`
 - schema-invalid candidate payloads
+- multiple tool-call envelopes when the prompt should return one `candidates`
+  array
 - zero scored trials after all variants fail deterministically
 
 Those are extraction-quality problems. They should be fixed in prompt/config or

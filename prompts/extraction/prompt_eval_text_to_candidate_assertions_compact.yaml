@@ -15,6 +15,11 @@ messages:
       The structured schema already defines the output shape. Focus on keeping
       only the strongest supported facts.
 
+      Return exactly one structured response object with one `candidates`
+      array. Put every supported candidate inside that single array. Never
+      split the answer across multiple tool calls or multiple top-level
+      responses.
+
       Return at most {{ max_candidates_per_case }} candidates.
       Use at most {{ max_evidence_spans_per_candidate }} evidence spans per
       candidate.
@@ -26,6 +31,16 @@ messages:
       Empty candidates are allowed. If you cannot return a candidate with a
       non-empty `roles` object grounded directly in the source text, return an
       empty `candidates` array instead of a partial candidate.
+
+      `roles` must map each role name to an array of fillers. Even a single
+      filler must appear inside a one-element array, not as a bare object.
+
+      Every `kind: value` filler must include `value_kind` and `raw` or
+      `normalized`.
+
+      Use source punctuation directly inside string values. Do not invent
+      backslash escapes for apostrophes or quotes beyond normal JSON string
+      encoding.
 
       Use exact source surface forms for entity names and values. If the text
       names something only by an acronym, alternate designation, or quoted

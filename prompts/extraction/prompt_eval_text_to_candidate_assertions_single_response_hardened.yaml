@@ -30,6 +30,16 @@ messages:
       - include exact `evidence_spans.text`
       - include `claim_text` only when it helps review
 
+      `roles` must map each role name to an array of fillers. Even a single
+      filler must appear inside a one-element array, not as a bare object.
+
+      Every `kind: value` filler must include `value_kind` and `raw` or
+      `normalized`.
+
+      Use source punctuation directly inside string values. Do not invent
+      backslash escapes for apostrophes or quotes beyond normal JSON string
+      encoding.
+
       Every entity filler must include a reviewer-meaningful `name`. Never
       emit type-only entity fillers. If a role cannot be filled with a named
       entity or concrete value from the source, omit that entire candidate.
