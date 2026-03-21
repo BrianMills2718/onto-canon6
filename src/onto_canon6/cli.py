@@ -152,6 +152,37 @@ def _build_parser() -> argparse.ArgumentParser:
         "--selection-task",
         help="Optional llm_client selection-task override. Defaults to config.",
     )
+    extract_parser.add_argument(
+        "--prompt-template",
+        type=Path,
+        help=(
+            "Optional prompt-template override for bounded extraction checks. "
+            "Must be paired with --prompt-ref."
+        ),
+    )
+    extract_parser.add_argument(
+        "--prompt-ref",
+        help=(
+            "Prompt reference recorded on the extraction call when "
+            "--prompt-template is overridden."
+        ),
+    )
+    extract_parser.add_argument(
+        "--max-candidates-per-call",
+        type=int,
+        help=(
+            "Optional prompt-render budget override for prompt variants that "
+            "reference max_candidates_per_case."
+        ),
+    )
+    extract_parser.add_argument(
+        "--max-evidence-spans-per-candidate",
+        type=int,
+        help=(
+            "Optional prompt-render budget override for prompt variants that "
+            "reference max_evidence_spans_per_candidate."
+        ),
+    )
     _add_output_arg(extract_parser, default_output=config.cli.default_output_format)
     extract_parser.set_defaults(handler=_handle_extract_text)
 
@@ -768,6 +799,10 @@ def _handle_extract_text(args: argparse.Namespace) -> int:
     extractor = TextExtractionService(
         review_service=review_service,
         selection_task=args.selection_task,
+        prompt_template=args.prompt_template,
+        prompt_ref=args.prompt_ref,
+        max_candidates_per_call=args.max_candidates_per_call,
+        max_evidence_spans_per_candidate=args.max_evidence_spans_per_candidate,
     )
     input_path = args.input
     source_text = input_path.read_text(encoding="utf-8")

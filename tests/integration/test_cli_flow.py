@@ -27,11 +27,19 @@ class _FakeTextExtractionService:
         *,
         review_service: ReviewService,
         selection_task: str | None = None,
+        prompt_template: Path | None = None,
+        prompt_ref: str | None = None,
+        max_candidates_per_call: int | None = None,
+        max_evidence_spans_per_candidate: int | None = None,
     ) -> None:
         """Capture the real review service used by the CLI handler."""
 
         self._review_service = review_service
         self.selection_task = selection_task
+        self.prompt_template = prompt_template
+        self.prompt_ref = prompt_ref
+        self.max_candidates_per_call = max_candidates_per_call
+        self.max_evidence_spans_per_candidate = max_evidence_spans_per_candidate
 
     def extract_and_submit(
         self,
@@ -294,11 +302,19 @@ def test_cli_extract_text_forwards_selection_task_override(
             *,
             review_service: ReviewService,
             selection_task: str | None = None,
+            prompt_template: Path | None = None,
+            prompt_ref: str | None = None,
+            max_candidates_per_call: int | None = None,
+            max_evidence_spans_per_candidate: int | None = None,
         ) -> None:
             recorded["selection_task"] = selection_task
             super().__init__(
                 review_service=review_service,
                 selection_task=selection_task,
+                prompt_template=prompt_template,
+                prompt_ref=prompt_ref,
+                max_candidates_per_call=max_candidates_per_call,
+                max_evidence_spans_per_candidate=max_evidence_spans_per_candidate,
             )
 
     # mock-ok: this test only verifies CLI wiring of the override.
@@ -329,6 +345,104 @@ def test_cli_extract_text_forwards_selection_task_override(
     assert exit_code == 0
     _ = json.loads(capsys.readouterr().out)
     assert recorded["selection_task"] == "budget_extraction"
+
+
+def test_cli_extract_text_forwards_prompt_override_pair(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """The CLI should forward bounded prompt overrides into the extraction service."""
+
+    source_path = tmp_path / "source.txt"
+    source_path.write_text(
+        "Campaign Alpha used aligned messaging across channels.",
+        encoding="utf-8",
+    )
+    prompt_path = tmp_path / "override_prompt.yaml"
+    prompt_path.write_text(
+        "\n".join(
+            [
+                'name: test_override',
+                'version: "1.0"',
+                'description: "test"',
+                "messages:",
+                "  - role: system",
+                "    content: |",
+                "      Override prompt.",
+                "  - role: user",
+                "    content: |",
+                "      Source: {{ source_text }}",
+            ]
+        ),
+        encoding="utf-8",
+    )
+    review_db_path = tmp_path / "review.sqlite3"
+    overlay_root = tmp_path / "ontology_overlays"
+    recorded: dict[str, object] = {}
+
+    class _RecordingExtractionService(_FakeTextExtractionService):
+        """Capture the forwarded prompt override pair."""
+
+        def __init__(
+            self,
+            *,
+            review_service: ReviewService,
+            selection_task: str | None = None,
+            prompt_template: Path | None = None,
+            prompt_ref: str | None = None,
+            max_candidates_per_call: int | None = None,
+            max_evidence_spans_per_candidate: int | None = None,
+        ) -> None:
+            recorded["prompt_template"] = prompt_template
+            recorded["prompt_ref"] = prompt_ref
+            recorded["max_candidates_per_call"] = max_candidates_per_call
+            recorded["max_evidence_spans_per_candidate"] = max_evidence_spans_per_candidate
+            super().__init__(
+                review_service=review_service,
+                selection_task=selection_task,
+                prompt_template=prompt_template,
+                prompt_ref=prompt_ref,
+                max_candidates_per_call=max_candidates_per_call,
+                max_evidence_spans_per_candidate=max_evidence_spans_per_candidate,
+            )
+
+    monkeypatch.setattr(cli_module, "TextExtractionService", _RecordingExtractionService)
+
+    exit_code = cli_module.main(
+        [
+            "extract-text",
+            "--input",
+            str(source_path),
+            "--profile-id",
+            "psyop_seed",
+            "--profile-version",
+            "0.1.0",
+            "--submitted-by",
+            "analyst:cli-test",
+            "--review-db-path",
+            str(review_db_path),
+            "--overlay-root",
+            str(overlay_root),
+            "--prompt-template",
+            str(prompt_path),
+            "--prompt-ref",
+            "onto_canon6.extraction.test_override@1",
+            "--max-candidates-per-call",
+            "1",
+            "--max-evidence-spans-per-candidate",
+            "1",
+            "--output",
+            "json",
+        ]
+    )
+
+    assert exit_code == 0
+    _ = json.loads(capsys.readouterr().out)
+    assert recorded["prompt_template"] == prompt_path
+    assert recorded["prompt_ref"] == "onto_canon6.extraction.test_override@1"
+    assert recorded["max_candidates_per_call"] == 1
+    assert recorded["max_evidence_spans_per_candidate"] == 1
 
 
 def test_cli_fails_loud_on_invalid_candidate_acceptance(

@@ -19,6 +19,7 @@ from onto_canon6.ontology_runtime import clear_loader_caches  # noqa: E402
 from onto_canon6.ontology_runtime import load_effective_profile  # noqa: E402
 from onto_canon6.pipeline import EvidenceSpan, ProfileRef, ReviewService, SourceArtifactRef  # noqa: E402
 from onto_canon6.pipeline import text_extraction as extraction_module  # noqa: E402
+from onto_canon6.config import ConfigError  # noqa: E402
 from onto_canon6.pipeline.text_extraction import (  # noqa: E402
     ExtractedCandidate,
     ExtractedEvidenceSpan,
@@ -194,6 +195,100 @@ def test_extract_candidate_imports_allows_selection_task_override(
     call_kwargs = calls["kwargs"]
     assert isinstance(call_kwargs, dict)
     assert call_kwargs["task"] == "budget_extraction"
+
+
+def test_extract_candidate_imports_allows_prompt_override_pair(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The extractor should allow a bounded prompt override with explicit provenance."""
+
+    override_prompt = tmp_path / "override_prompt.yaml"
+    override_prompt.write_text(
+        "\n".join(
+            [
+                'name: test_override',
+                'version: "1.0"',
+                'description: "Prompt override test"',
+                "messages:",
+                "  - role: system",
+                "    content: |",
+                "      Override prompt. Limit {{ max_candidates_per_case }} candidates.",
+                "  - role: user",
+                "    content: |",
+                "      Source: {{ source_text }}",
+                "      Evidence budget: {{ max_evidence_spans_per_candidate }}",
+            ]
+        ),
+        encoding="utf-8",
+    )
+    service = TextExtractionService(
+        review_service=_make_review_service(tmp_path),
+        prompt_template=override_prompt,
+        prompt_ref="onto_canon6.extraction.test_override@1",
+        max_candidates_per_call=1,
+        max_evidence_spans_per_candidate=1,
+    )
+    calls: dict[str, object] = {}
+
+    def fake_get_model(task: str, *, use_performance: bool = True) -> str:
+        calls["selection_task"] = task
+        calls["selection_use_performance"] = use_performance
+        return "fake-structured-model"
+
+    def fake_call_llm_structured(
+        model: str,
+        messages: list[dict[str, str]],
+        response_model: type[TextExtractionResponse],
+        **kwargs: object,
+    ) -> tuple[TextExtractionResponse, object]:
+        del model
+        calls["messages"] = messages
+        calls["kwargs"] = kwargs
+        return response_model(candidates=[]), SimpleNamespace(resolved_model="fake-structured-model")
+
+    monkeypatch.setattr(
+        extraction_module,
+        "_load_llm_client_api",
+        lambda: extraction_module._LLMClientAPI(
+            get_model=fake_get_model,
+            render_prompt=_render_prompt,
+            call_llm_structured=fake_call_llm_structured,
+        ),
+    )
+
+    imports = service.extract_candidate_imports(
+        source_text="Mission planning uses the radar system during the exercise.",
+        profile_id="default",
+        profile_version="1.0.0",
+        submitted_by="analyst:text-extract",
+        source_ref="text://phase4/mission-planning",
+    )
+
+    assert imports == ()
+    assert service.prompt_template == override_prompt.resolve()
+    assert service.prompt_ref == "onto_canon6.extraction.test_override@1"
+    messages = calls["messages"]
+    assert isinstance(messages, list)
+    assert messages[0]["content"] == "Override prompt. Limit 1 candidates."
+    assert "Mission planning uses the radar system during the exercise." in messages[-1]["content"]
+    assert "Evidence budget: 1" in messages[-1]["content"]
+    call_kwargs = calls["kwargs"]
+    assert isinstance(call_kwargs, dict)
+    assert call_kwargs["prompt_ref"] == "onto_canon6.extraction.test_override@1"
+
+
+def test_text_extraction_service_fails_loud_on_partial_prompt_override(tmp_path: Path) -> None:
+    """Prompt overrides must arrive as a template/ref pair so provenance stays honest."""
+
+    with pytest.raises(
+        ConfigError,
+        match="prompt_template and prompt_ref overrides must be provided together",
+    ):
+        TextExtractionService(
+            review_service=_make_review_service(tmp_path),
+            prompt_template=tmp_path / "override_prompt.yaml",
+        )
 
 
 def test_main_extraction_prompt_includes_current_winning_guidance() -> None:

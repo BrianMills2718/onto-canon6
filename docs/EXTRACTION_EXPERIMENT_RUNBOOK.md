@@ -62,6 +62,50 @@ If you only want a smoke test of liveness rather than a real comparison, you
 can still use `--n-runs 1`, but `onto-canon6` will now fail loudly if you ask
 for a bootstrap or Welch comparison with too few planned scored trials.
 
+## Bounded Real-Chunk Prompt Verification
+
+If you want to test a candidate extraction prompt on the real operational path
+without mutating the repo-wide live extraction default, use `extract-text`
+with an explicit prompt override pair.
+
+Important constraint:
+
+1. prompt-eval templates are experiment assets and are not automatically
+   extraction-compatible;
+2. the live extraction path passes `source_text` and related source metadata,
+   while the prompt-eval harness passes its own experiment input variables; and
+3. bounded operational checks therefore need an extraction-compatible prompt
+   asset plus an explicit `prompt_ref`.
+
+Current working example:
+
+```bash
+cd ~/projects/onto-canon6
+env \
+  LLM_CLIENT_PROJECT=onto-canon6-compact2-real-chunk-max10 \
+  LLM_CLIENT_TIMEOUT_POLICY=ban \
+  ./.venv/bin/python -m onto_canon6 extract-text \
+  --input var/real_runs/2026-03-21_phase_b_prompt_verification/chunks/01_stage1_query2/01_stage1_query2__chunk_002.md \
+  --profile-id psyop_seed \
+  --profile-version 0.1.0 \
+  --submitted-by analyst:compact2-run \
+  --review-db-path var/real_runs/2026-03-21_compact2_real_chunk_verification/review_state_max10.sqlite3 \
+  --overlay-root var/real_runs/2026-03-21_compact2_real_chunk_verification/overlays_max10 \
+  --selection-task budget_extraction \
+  --prompt-template prompts/extraction/text_to_candidate_assertions_compact_v2.yaml \
+  --prompt-ref onto_canon6.extraction.text_to_candidate_assertions_compact_v2@1 \
+  --max-candidates-per-call 10 \
+  --max-evidence-spans-per-candidate 1 \
+  --output json
+```
+
+Use this path when you need to answer:
+
+1. does the prompt variant still behave on the real extraction service,
+2. does it stay structurally valid outside the prompt-eval harness, and
+3. is it strong enough on a real chunk to justify broader verification or
+   promotion into the repo default.
+
 ## Active-Call Query
 
 In a second shell, inspect the active-call state while the command runs:

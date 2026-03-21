@@ -291,8 +291,19 @@ class TextExtractionService:
         *,
         review_service: ReviewService | None = None,
         selection_task: str | None = None,
+        prompt_template: Path | None = None,
+        prompt_ref: str | None = None,
+        max_candidates_per_call: int | None = None,
+        max_evidence_spans_per_candidate: int | None = None,
     ) -> None:
-        """Create the extractor with config-backed defaults and an optional task override."""
+        """Create the extractor with config-backed defaults and bounded overrides.
+
+        Task overrides let bounded experiments change model selection without
+        touching repo config. Prompt overrides are stricter: callers must
+        provide both the template path and the prompt reference together so the
+        live extraction path can stay observable and fail loud about which
+        prompt actually ran.
+        """
 
         config = get_config()
         self._review_service = review_service or ReviewService()
@@ -302,8 +313,44 @@ class TextExtractionService:
             else config.extraction.selection_task
         )
         self._selection_use_performance = config.extraction.selection_use_performance
-        self._prompt_template = config.extraction_prompt_template()
-        self._prompt_ref = config.extraction.prompt_ref
+        if (prompt_template is None) != (prompt_ref is None):
+            raise ConfigError(
+                "prompt_template and prompt_ref overrides must be provided together"
+            )
+        if prompt_template is None:
+            self._prompt_template = config.extraction_prompt_template()
+            self._prompt_ref = config.extraction.prompt_ref
+        else:
+            resolved_prompt_template = prompt_template.resolve()
+            if not resolved_prompt_template.exists():
+                raise FileNotFoundError(
+                    f"prompt_template override does not exist: {resolved_prompt_template}"
+                )
+            normalized_prompt_ref = prompt_ref.strip() if prompt_ref is not None else ""
+            if not normalized_prompt_ref:
+                raise ConfigError("prompt_ref override must be a non-empty string")
+            self._prompt_template = resolved_prompt_template
+            self._prompt_ref = normalized_prompt_ref
+        if max_candidates_per_call is not None and max_candidates_per_call < 1:
+            raise ValueError("max_candidates_per_call must be at least 1 when provided")
+        if (
+            max_evidence_spans_per_candidate is not None
+            and max_evidence_spans_per_candidate < 1
+        ):
+            raise ValueError(
+                "max_evidence_spans_per_candidate must be at least 1 when provided"
+            )
+        experiment_config = config.evaluation.prompt_experiment
+        self._max_candidates_per_call = (
+            max_candidates_per_call
+            if max_candidates_per_call is not None
+            else experiment_config.max_candidates_per_case
+        )
+        self._max_evidence_spans_per_candidate = (
+            max_evidence_spans_per_candidate
+            if max_evidence_spans_per_candidate is not None
+            else experiment_config.max_evidence_spans_per_candidate
+        )
         self._timeout_seconds = config.extraction.timeout_seconds
         self._num_retries = config.extraction.num_retries
         self._max_budget_usd = config.extraction.max_budget_usd
@@ -316,7 +363,7 @@ class TextExtractionService:
 
     @property
     def prompt_template(self) -> Path:
-        """Return the configured extraction prompt template path."""
+        """Return the configured or overridden extraction prompt template path."""
 
         return self._prompt_template
 
@@ -328,7 +375,7 @@ class TextExtractionService:
 
     @property
     def prompt_ref(self) -> str:
-        """Return the configured prompt reference recorded on extraction calls."""
+        """Return the configured or overridden prompt reference."""
 
         return self._prompt_ref
 
@@ -401,6 +448,8 @@ class TextExtractionService:
             profile_version=normalized_profile.profile_version,
             predicate_catalog=render_predicate_catalog(profile),
             entity_type_catalog=render_entity_type_catalog(profile),
+            max_candidates_per_case=self._max_candidates_per_call,
+            max_evidence_spans_per_candidate=self._max_evidence_spans_per_candidate,
             source_kind=source_artifact.source_kind,
             source_ref=source_artifact.source_ref,
             source_label=source_artifact.source_label,

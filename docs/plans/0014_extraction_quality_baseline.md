@@ -134,6 +134,32 @@ prompt work at all?" It is "can we verify it on another real chunk before
 promoting it, and can we reduce the last structural drift cases without losing
 the semantic gains?"
 
+### Compact-v2 Operational Checkpoint
+
+The bounded prompt-override path is now proved on the live `extract-text`
+surface.
+
+That checkpoint matters for two reasons:
+
+1. it lets the repo test a candidate extraction prompt on a real chunk without
+   mutating the repo-wide extraction default; and
+2. it proves the operational path can consume a prompt asset shaped for live
+   extraction, not only the prompt-eval experiment harness.
+
+The first explicit compact-v2 operational verification used the same Stage 1
+chunk that previously exposed the Phase B overbinding problems and produced:
+
+1. `9` structurally valid candidates;
+2. `8` accepted and `1` rejected after real review (`88.9%` acceptance);
+3. no JPOTF over-extraction candidate on the live extraction path; and
+4. the same remaining directly-grounded membership inference miss already known
+   from the earlier chunk review.
+
+This is the strongest current evidence that the extraction-quality campaign is
+past pure harness work. The remaining question is prompt generalization across
+more than one explicit real chunk, not whether the bounded operational
+verification path exists.
+
 ## Current Evidence
 
 Active run history and supporting evidence live here:
@@ -148,6 +174,7 @@ Active run history and supporting evidence live here:
 8. `var/evaluation_runs/psyop_eval_slice_phase_b_focus_prompt_eval_v2.json`
 9. `docs/runs/2026-03-21_v3_broad_prompt_eval_compact2.md`
 10. `var/evaluation_runs/psyop_eval_slice_v3_prompt_eval_compact2_broad.json`
+11. `docs/runs/2026-03-21_compact2_real_chunk_verification.md`
 
 This plan intentionally does not duplicate the dated campaign chronology. The
 run notes are the history. This file is the active plan and current state.
@@ -158,15 +185,12 @@ Build in this order:
 
 1. use the new case-level diagnostics plus representative outputs to review the
    broader v3 benchmark case by case, not only through aggregate scores;
-2. add a bounded real-chunk verification path that can use the current
-   best prompt-eval variant without mutating the repo-wide live extraction
-   default;
-3. rerun bounded real-chunk verification with the best surviving variant from
-   that broader sweep;
-4. only then decide whether any prompt wording should be promoted into the
-   main live extraction prompt;
-5. only after that decide whether broader corpus verification or a larger extraction
-   architecture change is justified.
+2. run a second explicit real chunk through the bounded compact-v2 operational
+   override path;
+3. if that second chunk is similarly strong, decide whether compact-v2 should
+   replace the current repo-default live extraction prompt;
+4. only after that decide whether broader corpus verification or a larger
+   extraction architecture change is justified.
 
 ## Known Risks and Uncertainties
 
@@ -179,6 +203,10 @@ Build in this order:
    smuggled into the chunk-grounded extraction contract.
 4. Some future gains may require model/task changes rather than prompt edits
    alone.
+5. The bounded override path depends on extraction-compatible prompt assets;
+   prompt-eval templates are similar but not directly interchangeable because
+   the live extraction path and the experiment harness pass different input
+   variables.
 
 ## Non-Goals
 
