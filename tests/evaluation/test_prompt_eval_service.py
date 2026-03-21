@@ -400,7 +400,131 @@ def test_run_prompt_experiment_builds_report_and_variant_comparison(
             experiment_name="onto_canon6_extraction_prompt_eval",
             execution_id=execution_id,
             variants=["baseline", "compact", "hardened", "single_response_hardened"],
-            trials=[],
+            trials=[
+                SimpleNamespace(
+                    variant_name="baseline",
+                    input_id="psyop_001_designation_change",
+                    score=0.4,
+                    dimension_scores={
+                        "exact_f1": 0.25,
+                        "structural_usable_rate": 1.0,
+                        "count_alignment": 0.75,
+                    },
+                    cost=0.01,
+                    latency_ms=1200.0,
+                    tokens_used=220,
+                    error=None,
+                    reasoning="ok",
+                    output={"candidates": [{"predicate": "oc:replace_designation"}]},
+                ),
+                SimpleNamespace(
+                    variant_name="baseline",
+                    input_id="psyop_002_concerns_about_truth_based_shift",
+                    score=0.22,
+                    dimension_scores={
+                        "exact_f1": 0.10,
+                        "structural_usable_rate": 1.0,
+                        "count_alignment": 0.40,
+                    },
+                    cost=0.012,
+                    latency_ms=1300.0,
+                    tokens_used=260,
+                    error=None,
+                    reasoning="ok",
+                    output={"candidates": [{"predicate": "oc:express_concern"}]},
+                ),
+                SimpleNamespace(
+                    variant_name="hardened",
+                    input_id="psyop_001_designation_change",
+                    score=0.5,
+                    dimension_scores={
+                        "exact_f1": 0.40,
+                        "structural_usable_rate": 1.0,
+                        "count_alignment": 0.75,
+                    },
+                    cost=0.011,
+                    latency_ms=1180.0,
+                    tokens_used=240,
+                    error=None,
+                    reasoning="ok",
+                    output={"candidates": [{"predicate": "oc:replace_designation"}]},
+                ),
+                SimpleNamespace(
+                    variant_name="hardened",
+                    input_id="psyop_002_concerns_about_truth_based_shift",
+                    score=None,
+                    dimension_scores=None,
+                    cost=0.011,
+                    latency_ms=1190.0,
+                    tokens_used=0,
+                    error="candidate roles must not be empty",
+                    reasoning=None,
+                ),
+                SimpleNamespace(
+                    variant_name="compact",
+                    input_id="psyop_001_designation_change",
+                    score=0.3,
+                    dimension_scores={
+                        "exact_f1": 0.20,
+                        "structural_usable_rate": 1.0,
+                        "count_alignment": 0.50,
+                    },
+                    cost=0.009,
+                    latency_ms=1000.0,
+                    tokens_used=180,
+                    error=None,
+                    reasoning="ok",
+                    output={"candidates": [{"predicate": "oc:replace_designation"}]},
+                ),
+                SimpleNamespace(
+                    variant_name="compact",
+                    input_id="psyop_002_concerns_about_truth_based_shift",
+                    score=0.18,
+                    dimension_scores={
+                        "exact_f1": 0.05,
+                        "structural_usable_rate": 1.0,
+                        "count_alignment": 0.50,
+                    },
+                    cost=0.009,
+                    latency_ms=1005.0,
+                    tokens_used=170,
+                    error=None,
+                    reasoning="ok",
+                    output={"candidates": []},
+                ),
+                SimpleNamespace(
+                    variant_name="single_response_hardened",
+                    input_id="psyop_001_designation_change",
+                    score=0.55,
+                    dimension_scores={
+                        "exact_f1": 0.45,
+                        "structural_usable_rate": 1.0,
+                        "count_alignment": 0.75,
+                    },
+                    cost=0.012,
+                    latency_ms=1210.0,
+                    tokens_used=250,
+                    error=None,
+                    reasoning="ok",
+                    output={"candidates": [{"predicate": "oc:replace_designation"}]},
+                ),
+                SimpleNamespace(
+                    variant_name="single_response_hardened",
+                    input_id="psyop_002_concerns_about_truth_based_shift",
+                    score=0.35,
+                    dimension_scores={
+                        "exact_f1": 0.25,
+                        "structural_usable_rate": 1.0,
+                        "count_alignment": 0.50,
+                    },
+                    cost=0.012,
+                    latency_ms=1215.0,
+                    tokens_used=255,
+                    error=None,
+                    reasoning="ok",
+                    output={"candidates": [{"predicate": "oc:express_concern"}]},
+                ),
+            ],
             summary={
                 "baseline": SimpleNamespace(
                     n_trials=4,
@@ -523,6 +647,25 @@ def test_run_prompt_experiment_builds_report_and_variant_comparison(
     assert report.comparisons[0].variant_b == "baseline"
     assert report.variant_summaries[0].successful_trials == 4
     assert report.variant_summaries[0].failure_counts == {}
+    case_diag = next(
+        item
+        for item in report.case_diagnostics
+        if item.case_id == "psyop_002_concerns_about_truth_based_shift"
+        and item.variant_name == "hardened"
+    )
+    assert case_diag.n_trials == 1
+    assert case_diag.successful_trials == 0
+    assert case_diag.failure_counts == {"empty_roles": 1}
+    assert case_diag.example_output is None
+    assert case_diag.example_failure == "candidate roles must not be empty"
+    baseline_case_diag = next(
+        item
+        for item in report.case_diagnostics
+        if item.case_id == "psyop_001_designation_change" and item.variant_name == "baseline"
+    )
+    assert baseline_case_diag.example_output == {
+        "candidates": [{"predicate": "oc:replace_designation"}]
+    }
     experiment = captured["experiment"]
     assert isinstance(experiment, _FakeExperiment)
     assert experiment.n_runs == 2
@@ -561,6 +704,9 @@ def test_run_prompt_experiment_builds_report_and_variant_comparison(
     assert "Build candidates role-first." in compact_messages[0]["content"]
     assert "parenthetical name expansions" in compact_messages[0]["content"]
     assert "return no opinion candidate" in compact_messages[0]["content"]
+    assert "descriptive appositives and role labels usually describe the same" in compact_messages[0]["content"]
+    assert "a bare mention that a unit, task force, or organization was" in compact_messages[0]["content"]
+    assert "a named institution, review, or report can be the speaker" in compact_messages[0]["content"]
     assert "Every filler object must include `kind`" in compact_messages[0]["content"]
     assert "Return exactly one structured response object" in single_response_messages[0]["content"]
     assert "Return at most 2 candidates." in single_response_messages[0]["content"]
@@ -759,6 +905,114 @@ def test_run_prompt_experiment_allows_bootstrap_override_with_minimal_valid_shap
     assert report.comparisons
     assert all(comparison.method == "bootstrap" for comparison in report.comparisons)
     assert comparison_methods == ["bootstrap", "bootstrap", "bootstrap"]
+
+
+def test_run_prompt_experiment_allows_diagnostic_only_mode_with_minimal_shape(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Diagnostic-only mode should emit a report without requiring comparison shape."""
+
+    prepared_result = SimpleNamespace(
+        experiment_name="onto_canon6_extraction_prompt_eval",
+        execution_id="exec123",
+        variants=["baseline", "compact", "hardened", "single_response_hardened"],
+        trials=[
+            SimpleNamespace(
+                variant_name="baseline",
+                input_id="psyop_001_designation_change",
+                score=0.4,
+                dimension_scores={"exact_f1": 0.25},
+                cost=0.01,
+                latency_ms=1200.0,
+                tokens_used=200,
+                error=None,
+                reasoning="ok",
+            ),
+        ],
+        summary={
+            "baseline": SimpleNamespace(
+                n_trials=1,
+                n_errors=0,
+                mean_score=0.31,
+                std_score=0.04,
+                dimension_means={},
+                mean_cost=0.01,
+                mean_latency_ms=1200.0,
+                total_tokens=900,
+            ),
+            "hardened": SimpleNamespace(
+                n_trials=1,
+                n_errors=1,
+                mean_score=None,
+                std_score=None,
+                dimension_means={},
+                mean_cost=0.011,
+                mean_latency_ms=1180.0,
+                total_tokens=0,
+            ),
+            "compact": SimpleNamespace(
+                n_trials=1,
+                n_errors=1,
+                mean_score=None,
+                std_score=None,
+                dimension_means={},
+                mean_cost=0.009,
+                mean_latency_ms=1000.0,
+                total_tokens=0,
+            ),
+            "single_response_hardened": SimpleNamespace(
+                n_trials=1,
+                n_errors=1,
+                mean_score=None,
+                std_score=None,
+                dimension_means={},
+                mean_cost=0.012,
+                mean_latency_ms=1210.0,
+                total_tokens=0,
+            ),
+        },
+    )
+
+    async def fake_run_experiment(
+        experiment: _FakeExperiment,
+        evaluator: Callable[[object, object | None], object],
+        *,
+        observability: _FakePromptEvalObservabilityConfig,
+    ) -> object:
+        del experiment, evaluator, observability
+        return prepared_result
+
+    monkeypatch.setattr(
+        prompt_eval_service_module,
+        "_load_llm_client_api",
+        lambda: prompt_eval_service_module._LLMClientAPI(
+            get_model=lambda task, use_performance=True: f"model-for-{task}",
+            render_prompt=_render_prompt,
+        ),
+    )
+    monkeypatch.setattr(
+        prompt_eval_service_module,
+        "_load_prompt_eval_api",
+        lambda: prompt_eval_service_module._PromptEvalAPI(
+            Experiment=_FakeExperiment,
+            ExperimentInput=_FakeExperimentInput,
+            PromptVariant=_FakePromptVariant,
+            EvalScore=_FakeEvalScore,
+            PromptEvalObservabilityConfig=_FakePromptEvalObservabilityConfig,
+            run_experiment=fake_run_experiment,
+            load_result_from_observability=lambda *args, **kwargs: prepared_result,
+            compare_variants=lambda *args, **kwargs: pytest.fail("compare_variants should not run"),
+        ),
+    )
+
+    report = ExtractionPromptExperimentService().run_prompt_experiment(
+        case_limit=1,
+        n_runs=1,
+        comparison_method="none",
+    )
+
+    assert report.comparisons == ()
+    assert report.case_diagnostics
 
 
 def test_run_prompt_experiment_allows_selection_task_override(
@@ -1372,6 +1626,81 @@ def test_summarize_trial_failures_by_variant() -> None:
     }
 
 
+def test_build_prompt_experiment_case_diagnostics() -> None:
+    """Case diagnostics should summarize per-case variant behavior compactly."""
+
+    diagnostics = prompt_eval_service_module._build_prompt_experiment_case_diagnostics(
+        trials=(
+            SimpleNamespace(
+                variant_name="baseline",
+                input_id="case-a",
+                score=0.6,
+                dimension_scores={"exact_f1": 0.4, "structural_usable_rate": 1.0},
+                cost=0.01,
+                latency_ms=1000.0,
+                tokens_used=200,
+                error=None,
+                reasoning="ok",
+                output={"candidates": [{"predicate": "oc:example"}]},
+            ),
+            SimpleNamespace(
+                variant_name="baseline",
+                input_id="case-a",
+                score=None,
+                dimension_scores=None,
+                cost=0.02,
+                latency_ms=1100.0,
+                tokens_used=0,
+                error="candidate roles must not be empty",
+                reasoning=None,
+            ),
+            SimpleNamespace(
+                variant_name="hardened",
+                input_id="case-a",
+                score=0.8,
+                dimension_scores={"exact_f1": 0.7, "structural_usable_rate": 1.0},
+                cost=0.03,
+                latency_ms=1200.0,
+                tokens_used=300,
+                error=None,
+                reasoning="ok",
+                output={"candidates": [{"predicate": "oc:other"}]},
+            ),
+        ),
+        case_ids=("case-a", "case-b"),
+        variant_names=("baseline", "hardened"),
+    )
+
+    baseline_case_a = next(
+        item for item in diagnostics if item.case_id == "case-a" and item.variant_name == "baseline"
+    )
+    assert baseline_case_a.n_trials == 2
+    assert baseline_case_a.successful_trials == 1
+    assert baseline_case_a.n_errors == 1
+    assert baseline_case_a.mean_score == 0.6
+    assert baseline_case_a.dimension_means == {
+        "exact_f1": 0.4,
+        "structural_usable_rate": 1.0,
+    }
+    assert baseline_case_a.failure_counts == {"empty_roles": 1}
+    assert baseline_case_a.mean_cost == 0.015
+    assert baseline_case_a.mean_latency_ms == 1050.0
+    assert baseline_case_a.total_tokens == 200
+    assert baseline_case_a.example_output == {"candidates": [{"predicate": "oc:example"}]}
+    assert baseline_case_a.example_failure == "candidate roles must not be empty"
+
+    hardened_case_b = next(
+        item for item in diagnostics if item.case_id == "case-b" and item.variant_name == "hardened"
+    )
+    assert hardened_case_b.n_trials == 0
+    assert hardened_case_b.successful_trials == 0
+    assert hardened_case_b.mean_score is None
+    assert hardened_case_b.dimension_means == {}
+    assert hardened_case_b.failure_counts == {}
+    assert hardened_case_b.example_output is None
+    assert hardened_case_b.example_failure is None
+
+
 def test_validate_loaded_result_has_scored_trials_for_comparison_raises_clear_error() -> None:
     """Zero-success variants should fail before compare_variants with failure context."""
 
@@ -1419,7 +1748,7 @@ def test_variant_render_context_applies_per_variant_budget_overrides() -> None:
     variant = PromptEvalVariantConfig(
         name="compact",
         prompt_template="prompts/extraction/prompt_eval_text_to_candidate_assertions_compact.yaml",
-        prompt_ref="onto_canon6.extraction.prompt_eval_text_to_candidate_assertions_compact@1",
+        prompt_ref="onto_canon6.extraction.prompt_eval_text_to_candidate_assertions_compact@2",
         max_candidates_per_case=1,
         max_evidence_spans_per_candidate=1,
     )

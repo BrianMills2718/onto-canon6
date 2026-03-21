@@ -24,6 +24,8 @@ from pathlib import Path
 import json
 from typing import Any, Awaitable, Callable, Literal, Mapping, Protocol, cast
 
+from pydantic import JsonValue
+
 from ..config import ConfigError, PromptEvalVariantConfig, get_config
 from ..ontology_runtime import canonical_assertion_body, load_effective_profile
 from ..pipeline import (
@@ -41,6 +43,7 @@ from .models import (
     ExtractionPromptExperimentReport,
     PromptEvalComparisonMethod,
     PromptEvalFailureCategory,
+    PromptVariantCaseDiagnosticRecord,
     PromptVariantComparisonRecord,
     PromptVariantSummaryRecord,
 )
@@ -334,33 +337,36 @@ class ExtractionPromptExperimentService:
                 n_runs=int(experiment.n_runs),
             ),
         )
-        _validate_loaded_result_comparison_shape(
-            result=loaded_result,
-            comparison_method=effective_comparison_method,
-            baseline_variant_name=self._baseline_variant_name,
-            variant_names=tuple(variant.name for variant in self._variant_configs),
-        )
-        _validate_loaded_result_has_scored_trials_for_comparison(
-            result=loaded_result,
-            baseline_variant_name=self._baseline_variant_name,
-            variant_names=tuple(variant.name for variant in self._variant_configs),
-        )
-        comparisons = tuple(
-            prompt_eval_api.compare_variants(
-                loaded_result,
-                variant.name,
-                self._baseline_variant_name,
-                confidence=self._comparison_confidence,
-                method=effective_comparison_method,
+        comparisons: tuple[Any, ...] = ()
+        if effective_comparison_method != "none":
+            _validate_loaded_result_comparison_shape(
+                result=loaded_result,
+                comparison_method=effective_comparison_method,
+                baseline_variant_name=self._baseline_variant_name,
+                variant_names=tuple(variant.name for variant in self._variant_configs),
             )
-            for variant in self._variant_configs
-            if variant.name != self._baseline_variant_name
-        )
+            _validate_loaded_result_has_scored_trials_for_comparison(
+                result=loaded_result,
+                baseline_variant_name=self._baseline_variant_name,
+                variant_names=tuple(variant.name for variant in self._variant_configs),
+            )
+            comparisons = tuple(
+                prompt_eval_api.compare_variants(
+                    loaded_result,
+                    variant.name,
+                    self._baseline_variant_name,
+                    confidence=self._comparison_confidence,
+                    method=effective_comparison_method,
+                )
+                for variant in self._variant_configs
+                if variant.name != self._baseline_variant_name
+            )
         return _build_prompt_experiment_report(
             result=loaded_result,
             comparisons=comparisons,
             fixture_id=fixture.fixture_id,
             fixture_path=resolved_fixture_path,
+            case_ids=tuple(sorted(case.case_id for case in cases)),
             case_count=len(cases),
             n_runs=int(experiment.n_runs),
             observability_dataset=self._observability_dataset,
@@ -809,6 +815,7 @@ def _build_prompt_experiment_report(
     comparisons: tuple[Any, ...],
     fixture_id: str,
     fixture_path: Path,
+    case_ids: tuple[str, ...],
     case_count: int,
     n_runs: int,
     observability_dataset: str,
@@ -898,6 +905,11 @@ def _build_prompt_experiment_report(
         n_runs=n_runs,
         baseline_variant_name=baseline_variant_name,
         variant_summaries=tuple(sorted(variant_summaries, key=lambda item: item.variant_name)),
+        case_diagnostics=_build_prompt_experiment_case_diagnostics(
+            trials=tuple(trial_obj),
+            case_ids=case_ids,
+            variant_names=tuple(sorted(variant_by_name.keys())),
+        ),
         comparisons=comparison_records,
     )
 
@@ -924,6 +936,151 @@ def _summarize_trial_failures_by_variant(
         variant_counts = counts_by_variant[variant_name]
         variant_counts[category] = variant_counts.get(category, 0) + 1
     return counts_by_variant
+
+
+def _build_prompt_experiment_case_diagnostics(
+    *,
+    trials: tuple[Any, ...],
+    case_ids: tuple[str, ...],
+    variant_names: tuple[str, ...],
+) -> tuple[PromptVariantCaseDiagnosticRecord, ...]:
+    """Build compact case-level diagnostic summaries from prompt_eval trials."""
+
+    trial_groups: dict[tuple[str, str], list[Any]] = {
+        (case_id, variant_name): []
+        for case_id in case_ids
+        for variant_name in variant_names
+    }
+    for trial in trials:
+        variant_name = getattr(trial, "variant_name", None)
+        input_id = getattr(trial, "input_id", None)
+        if not isinstance(variant_name, str) or variant_name not in variant_names:
+            raise ExtractionPromptExperimentError(
+                f"prompt_eval returned a trial with unknown variant {variant_name!r}"
+            )
+        if not isinstance(input_id, str) or input_id not in case_ids:
+            raise ExtractionPromptExperimentError(
+                f"prompt_eval returned a trial with unknown input_id {input_id!r}"
+            )
+        trial_groups[(input_id, variant_name)].append(trial)
+
+    diagnostics: list[PromptVariantCaseDiagnosticRecord] = []
+    for case_id in case_ids:
+        for variant_name in variant_names:
+            grouped_trials = trial_groups[(case_id, variant_name)]
+            n_trials = len(grouped_trials)
+            n_errors = sum(1 for trial in grouped_trials if getattr(trial, "error", None))
+            successful_trials = max(0, n_trials - n_errors)
+            scored_trials = [
+                float(score)
+                for trial in grouped_trials
+                for score in [getattr(trial, "score", None)]
+                if isinstance(score, (int, float))
+            ]
+            dimension_means = _mean_dimension_scores(grouped_trials)
+            failures = _summarize_trial_failures_by_variant(
+                trials=tuple(grouped_trials),
+                variant_names=(variant_name,),
+            )[variant_name]
+            diagnostics.append(
+                PromptVariantCaseDiagnosticRecord(
+                    case_id=case_id,
+                    variant_name=variant_name,
+                    n_trials=n_trials,
+                    successful_trials=successful_trials,
+                    n_errors=n_errors,
+                    mean_score=round(sum(scored_trials) / len(scored_trials), 4)
+                    if scored_trials
+                    else None,
+                    dimension_means=dimension_means,
+                    failure_counts=failures,
+                    mean_cost=round(_mean_numeric_attr(grouped_trials, "cost"), 6),
+                    mean_latency_ms=round(_mean_numeric_attr(grouped_trials, "latency_ms"), 4),
+                    total_tokens=sum(
+                        int(tokens)
+                        for trial in grouped_trials
+                        for tokens in [getattr(trial, "tokens_used", 0)]
+                        if isinstance(tokens, (int, float))
+                    ),
+                    example_output=_first_successful_output_payload(grouped_trials),
+                    example_failure=_first_trial_failure_detail(grouped_trials),
+                )
+            )
+    return tuple(diagnostics)
+
+
+def _mean_dimension_scores(trials: list[Any]) -> dict[str, float]:
+    """Average per-dimension scores across all scored trials in one group."""
+
+    totals: dict[str, float] = {}
+    counts: dict[str, int] = {}
+    for trial in trials:
+        dimension_scores = getattr(trial, "dimension_scores", None)
+        if not isinstance(dimension_scores, Mapping):
+            continue
+        for name, value in dimension_scores.items():
+            if not isinstance(name, str) or not isinstance(value, (int, float)):
+                continue
+            totals[name] = totals.get(name, 0.0) + float(value)
+            counts[name] = counts.get(name, 0) + 1
+    return {
+        name: round(totals[name] / counts[name], 4)
+        for name in sorted(totals)
+        if counts[name] > 0
+    }
+
+
+def _mean_numeric_attr(trials: list[Any], attr_name: str) -> float:
+    """Average one numeric trial attribute across all trials in one group."""
+
+    values = [
+        float(value)
+        for trial in trials
+        for value in [getattr(trial, attr_name, None)]
+        if isinstance(value, (int, float))
+    ]
+    if not values:
+        return 0.0
+    return sum(values) / len(values)
+
+
+def _first_trial_failure_detail(trials: list[Any]) -> str | None:
+    """Return the first concrete failure detail from one grouped trial list."""
+
+    for trial in trials:
+        error = getattr(trial, "error", None)
+        if isinstance(error, str) and error.strip():
+            return error.strip()
+        reasoning = getattr(trial, "reasoning", None)
+        if isinstance(reasoning, str):
+            lowered = reasoning.strip().lower()
+            if lowered.startswith("deterministic prompt_eval scoring failed:"):
+                return reasoning.strip()
+    return None
+
+
+def _first_successful_output_payload(trials: list[Any]) -> dict[str, JsonValue] | None:
+    """Return one JSON-safe successful output payload from a grouped trial list.
+
+    The compact repo-local report should show one representative success when a
+    variant is semantically wrong but structurally valid. Normalizing through
+    JSON keeps the payload portable and fail-loud if a future trial starts
+    returning non-serializable structures.
+    """
+
+    for trial in trials:
+        if getattr(trial, "error", None):
+            continue
+        output = getattr(trial, "output", None)
+        if not isinstance(output, Mapping):
+            continue
+        try:
+            normalized = json.loads(json.dumps(output))
+        except (TypeError, ValueError):
+            continue
+        if isinstance(normalized, dict):
+            return cast(dict[str, JsonValue], normalized)
+    return None
 
 
 def _build_variant_call_kwargs(

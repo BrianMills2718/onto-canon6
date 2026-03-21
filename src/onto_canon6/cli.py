@@ -213,7 +213,7 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     prompt_experiment_parser.add_argument(
         "--comparison-method",
-        choices=("bootstrap", "welch"),
+        choices=("bootstrap", "welch", "none"),
         help="Optional comparison-method override. Defaults to config.",
     )
     prompt_experiment_parser.add_argument(

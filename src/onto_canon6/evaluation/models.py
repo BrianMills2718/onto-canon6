@@ -20,7 +20,7 @@ from pydantic import BaseModel, ConfigDict, Field, JsonValue
 from ..pipeline import CandidateAssertionImport, CandidateValidationStatus, ProfileRef, SourceArtifactRef
 
 ReasonablenessLabel = Literal["supported", "partially_supported", "unsupported"]
-PromptEvalComparisonMethod = Literal["bootstrap", "welch"]
+PromptEvalComparisonMethod = Literal["bootstrap", "welch", "none"]
 PromptEvalFailureCategory = Literal[
     "length_truncated",
     "multiple_tool_calls",
@@ -229,6 +229,33 @@ class PromptVariantComparisonRecord(BaseModel):
     detail: str = Field(min_length=1)
 
 
+class PromptVariantCaseDiagnosticRecord(BaseModel):
+    """Compact case-level diagnostic summary for one prompt variant.
+
+    This record keeps the prompt-experiment output compact while still showing
+    which benchmark cases each variant handles well, mishandles semantically,
+    or fails structurally. A representative successful output is included when
+    available so operators can see semantic drift without reopening the raw
+    prompt_eval trial family.
+    """
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    case_id: str = Field(min_length=1)
+    variant_name: str = Field(min_length=1)
+    n_trials: int = Field(ge=0)
+    successful_trials: int = Field(ge=0)
+    n_errors: int = Field(ge=0)
+    mean_score: float | None = Field(default=None, ge=0.0, le=1.0)
+    dimension_means: dict[str, float] = Field(default_factory=dict)
+    failure_counts: dict[PromptEvalFailureCategory, int] = Field(default_factory=dict)
+    mean_cost: float = Field(ge=0.0)
+    mean_latency_ms: float = Field(ge=0.0)
+    total_tokens: int = Field(ge=0)
+    example_output: dict[str, JsonValue] | None = None
+    example_failure: str | None = None
+
+
 class ExtractionPromptExperimentReport(BaseModel):
     """Typed report for one prompt-eval extraction-variant experiment."""
 
@@ -247,4 +274,5 @@ class ExtractionPromptExperimentReport(BaseModel):
     n_runs: int = Field(ge=1)
     baseline_variant_name: str = Field(min_length=1)
     variant_summaries: tuple[PromptVariantSummaryRecord, ...] = ()
+    case_diagnostics: tuple[PromptVariantCaseDiagnosticRecord, ...] = ()
     comparisons: tuple[PromptVariantComparisonRecord, ...] = ()

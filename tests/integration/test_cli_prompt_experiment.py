@@ -9,6 +9,7 @@ import pytest
 from onto_canon6 import cli as cli_module
 from onto_canon6.evaluation import (
     ExtractionPromptExperimentReport,
+    PromptVariantCaseDiagnosticRecord,
     PromptVariantComparisonRecord,
     PromptVariantSummaryRecord,
 )
@@ -29,7 +30,7 @@ class _FakeExtractionPromptExperimentService:
     ) -> ExtractionPromptExperimentReport:
         """Return one stable report without invoking live prompt_eval work."""
 
-        assert comparison_method in {None, "bootstrap", "welch"}
+        assert comparison_method in {None, "bootstrap", "welch", "none"}
         assert routing_policy in {None, "openrouter", "direct"}
         del fixture_path, case_limit, n_runs
         return ExtractionPromptExperimentReport(
@@ -74,6 +75,23 @@ class _FakeExtractionPromptExperimentService:
                     mean_cost=0.011,
                     mean_latency_ms=980.0,
                     total_tokens=940,
+                ),
+            ),
+            case_diagnostics=(
+                PromptVariantCaseDiagnosticRecord(
+                    case_id="psyop_006_context_only_membership_strict_omit",
+                    variant_name="baseline",
+                    n_trials=2,
+                    successful_trials=2,
+                    n_errors=0,
+                    mean_score=0.5,
+                    dimension_means={"exact_f1": 0.5},
+                    failure_counts={},
+                    mean_cost=0.01,
+                    mean_latency_ms=1000.0,
+                    total_tokens=200,
+                    example_output={"candidates": []},
+                    example_failure=None,
                 ),
             ),
             comparisons=(
@@ -121,6 +139,8 @@ def test_cli_runs_extraction_prompt_experiment_and_emits_json(
     assert output["baseline_variant_name"] == "baseline"
     assert output["selection_task"] == "extraction"
     assert output["variant_summaries"][1]["variant_name"] == "hardened"
+    assert output["case_diagnostics"][0]["case_id"] == "psyop_006_context_only_membership_strict_omit"
+    assert output["case_diagnostics"][0]["example_output"] == {"candidates": []}
 
 
 def test_cli_forwards_comparison_method_override(
@@ -168,6 +188,52 @@ def test_cli_forwards_comparison_method_override(
 
     assert exit_code == 0
     assert recorded["comparison_method"] == "bootstrap"
+    assert json.loads(capsys.readouterr().out)["execution_id"] == "exec123"
+
+
+def test_cli_forwards_diagnostic_only_comparison_mode(
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """The CLI should pass through comparison_method=none for diagnostics-only runs."""
+
+    recorded: dict[str, object] = {}
+
+    class _RecordingService(_FakeExtractionPromptExperimentService):
+        def run_prompt_experiment(
+            self,
+            *,
+            fixture_path: object | None = None,
+            case_limit: int | None = None,
+            n_runs: int | None = None,
+            comparison_method: object | None = None,
+            selection_task: object | None = None,
+            routing_policy: object | None = None,
+        ) -> ExtractionPromptExperimentReport:
+            recorded["comparison_method"] = comparison_method
+            return super().run_prompt_experiment(
+                fixture_path=fixture_path,
+                case_limit=case_limit,
+                n_runs=n_runs,
+                comparison_method=comparison_method,
+                selection_task=selection_task,
+                routing_policy=routing_policy,
+            )
+
+    monkeypatch.setattr(cli_module, "ExtractionPromptExperimentService", _RecordingService)
+
+    exit_code = cli_module.main(
+        [
+            "run-extraction-prompt-experiment",
+            "--comparison-method",
+            "none",
+            "--output",
+            "json",
+        ]
+    )
+
+    assert exit_code == 0
+    assert recorded["comparison_method"] == "none"
     assert json.loads(capsys.readouterr().out)["execution_id"] == "exec123"
 
 

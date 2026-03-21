@@ -70,13 +70,25 @@ messages:
       - abbreviation expansions, acronym definitions, alternate names, and
         parenthetical name expansions usually identify the same entity with
         multiple names, not a relationship or a `replace_designation` event
+      - descriptive appositives and role labels usually describe the same
+        named entity, not a separate parent organization; do not turn those
+        descriptive phrases into `belongs_to_organization` fillers unless the
+        text explicitly names a distinct organization that the entity belongs
+        to
       - `hold_command_role` is for a named person holding a role over an
         organization; subordinate-unit text, parent/child organization text,
         and organizational membership text usually belong under
         `belongs_to_organization`
+      - a bare mention that a unit, task force, or organization was
+        established is usually background context, not a reviewable
+        `create_organizational_unit` event; omit it unless the source directly
+        states a concrete creation fact with the needed named roles
       - MOS codes, classifications, labels, and taxonomy terms are usually
         values or aliases, not standalone entities that belong to an
         organization
+      - a named institution, review, or report can be the speaker for
+        `express_concern` when it explicitly highlights persistent challenges,
+        dissatisfaction, or need for improvement
       - if the text only implies sentiment, concern, or dissatisfaction without
         a named speaker, return no opinion candidate rather than inventing a
         person or vague source

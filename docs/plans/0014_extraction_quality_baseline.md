@@ -100,6 +100,40 @@ Those cases proved that the earlier Phase A winner does not automatically
 generalize. The next prompt iteration must target those cases explicitly rather
 than assuming the earlier winner is the stable default.
 
+### Focused v3 Diagnostic Result
+
+The focused diagnostic rerun over cases `006-008` now has two important
+improvements:
+
+1. case diagnostics include one representative successful output payload per
+   case and variant, so semantic drift is visible without reopening the raw
+   prompt-eval trial family;
+2. the revised `compact@2` prompt is the first variant to handle all three
+   focus cases correctly in one bounded run:
+   - omit context-only membership inference;
+   - keep the named institutional concern candidate; and
+   - omit JPOTF-establishment over-extraction.
+
+That does not make `compact@2` the global default yet. It does mean the next
+quality step should expand outward from this focused win rather than keep doing
+generic prompt rewrites.
+
+### Broad v3 Benchmark Result
+
+The broader v3 rerun now shows that `compact@2` is not only a focused-case
+winner:
+
+1. it materially outperformed `baseline` on the full v3 fixture;
+2. that improvement was bootstrap-significant on the current bounded run; and
+3. its remaining failures are now concentrated in a small number of structural
+   drift cases rather than broad semantic collapse.
+
+The lane is still not acceptance-complete because it had two structural trial
+failures on the broader sweep. But the current question is no longer "does this
+prompt work at all?" It is "can we verify it on another real chunk before
+promoting it, and can we reduce the last structural drift cases without losing
+the semantic gains?"
+
 ## Current Evidence
 
 Active run history and supporting evidence live here:
@@ -108,8 +142,12 @@ Active run history and supporting evidence live here:
 2. `docs/runs/2026-03-21_phase_a_prompt_eval_dry_review.md`
 3. `docs/runs/2026-03-21_phase_b_chunk_verification.md`
 4. `docs/runs/2026-03-21_phase_b_focus_prompt_eval.md`
-5. `var/evaluation_runs/expanded_fixture_prompt_eval_2026-03-21_contract_aligned.json`
-6. `var/evaluation_runs/psyop_eval_slice_phase_b_focus_prompt_eval.json`
+5. `docs/runs/2026-03-21_phase_b_focus_prompt_eval_v2.md`
+6. `var/evaluation_runs/expanded_fixture_prompt_eval_2026-03-21_contract_aligned.json`
+7. `var/evaluation_runs/psyop_eval_slice_phase_b_focus_prompt_eval.json`
+8. `var/evaluation_runs/psyop_eval_slice_phase_b_focus_prompt_eval_v2.json`
+9. `docs/runs/2026-03-21_v3_broad_prompt_eval_compact2.md`
+10. `var/evaluation_runs/psyop_eval_slice_v3_prompt_eval_compact2_broad.json`
 
 This plan intentionally does not duplicate the dated campaign chronology. The
 run notes are the history. This file is the active plan and current state.
@@ -118,13 +156,16 @@ run notes are the history. This file is the active plan and current state.
 
 Build in this order:
 
-1. add case-level diagnostics to the prompt-eval output so variant behavior is
-   visible per benchmark case, not only in aggregates;
-2. design one or two targeted prompt variants specifically against the v3
-   cases (`006-008`) instead of another generic prompt rewrite;
-3. rerun the bounded benchmark on the explicit `budget_extraction` lane;
-4. rerun bounded real-chunk verification with the best surviving variant;
-5. only then decide whether broader corpus verification or a larger extraction
+1. use the new case-level diagnostics plus representative outputs to review the
+   broader v3 benchmark case by case, not only through aggregate scores;
+2. add a bounded real-chunk verification path that can use the current
+   best prompt-eval variant without mutating the repo-wide live extraction
+   default;
+3. rerun bounded real-chunk verification with the best surviving variant from
+   that broader sweep;
+4. only then decide whether any prompt wording should be promoted into the
+   main live extraction prompt;
+5. only after that decide whether broader corpus verification or a larger extraction
    architecture change is justified.
 
 ## Known Risks and Uncertainties
