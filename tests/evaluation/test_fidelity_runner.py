@@ -783,20 +783,20 @@ class TestFidelityItemResult:
         )
         assert item.entity_name == "CIA"
 
-    def test_rejects_score_above_one(self) -> None:
-        """Ancestor eval score must be <= 1.0."""
-        with pytest.raises(Exception):
-            FidelityItemResult(
-                entity_name="CIA",
-                fidelity_level=FidelityLevel.TOP_LEVEL,
-                reference_type="GovernmentOrganization",
-                pick="GovernmentOrganization",
-                ancestor_eval_score=1.5,
-                exact_match=True,
-                ancestor_match=True,
-                specificity=1.0,
-                pick_exists=True,
-            )
+    def test_accepts_score_above_one_for_more_specific_picks(self) -> None:
+        """Ancestor eval score can exceed 1.0 for more-specific descendants."""
+        result = FidelityItemResult(
+            entity_name="Brian",
+            fidelity_level=FidelityLevel.MID_LEVEL,
+            reference_type="Human",
+            pick="HumanAdult",
+            ancestor_eval_score=1.33,
+            exact_match=False,
+            ancestor_match=True,
+            specificity=2.0,
+            pick_exists=True,
+        )
+        assert result.ancestor_eval_score == 1.33
 
     def test_allows_empty_pick_for_errors(self) -> None:
         """Pick can be empty string when there's an error."""

@@ -1268,6 +1268,8 @@ def _to_jsonable(value: object) -> Any:
             TextChunkFileRecord,
             TextChunkManifest,
             PreparedExperiment,
+            FidelityExperimentReport,
+            FidelityComparisonReport,
             ResearchAgentWhyGameTransformResult,
             WhyGameImportResult,
         ),

@@ -55,8 +55,12 @@ class FidelityItemResult(BaseModel):
         description="The SUMO type the LLM chose (raw output, stripped)."
     )
     ancestor_eval_score: float = Field(
-        ge=0.0, le=1.0,
-        description="Overall ancestor-aware score from the evaluator.",
+        ge=0.0,
+        description=(
+            "Overall ancestor-aware score from the evaluator. "
+            "Can exceed 1.0 when the LLM picks a more-specific descendant "
+            "of the reference type."
+        ),
     )
     exact_match: bool
     ancestor_match: bool
