@@ -593,6 +593,36 @@ That harness is now the regression guard for prompt changes. The rule is:
 - do not change the repo-default selection task to `budget_extraction`
   until the non-override path is stable.
 
+### D9: Keep extraction directly grounded and defer whole-document synthesis
+
+The `4th PSYOP Group -> USSOCOM` dispute exposed a real design ambiguity:
+some relationships may be reasonable whole-document inferences even when the
+current extracted chunk does not directly state them.
+
+That is valuable, but it is not the current extraction contract.
+
+For this extraction-quality plan, the boundary is explicit:
+
+1. extraction candidates are judged against direct support in the current
+   call input
+2. if the current call input is one chunk, the evidence must come from that
+   chunk
+3. if later we want whole-document or cross-chunk synthesis, that should be
+   an explicit later pass with multi-source provenance rather than a hidden
+   weakening of extraction review
+
+Operational consequence for this plan:
+
+1. `psyop_006_context_only_membership_strict_omit` stays a strict-omit
+   extraction case even if a human might infer the relationship from the
+   broader report
+2. prompt and fixture iteration should optimize for direct-support
+   extraction quality, not for hidden synthesis
+3. a future synthesis slice is allowed and encouraged, but it is out of
+   scope for this plan unless a separate milestone is opened
+
+This decision is captured in ADR-0021.
+
 ## Acceptance Criteria
 
 1. The extraction prompts preserve the now-proven structural contract

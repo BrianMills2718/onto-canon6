@@ -121,6 +121,16 @@ Rejected:
    supports establishment/integration language rather than organizational-form
    usage
 
+Important interpretation:
+
+1. the rejected `4th PSYOP Group -> USSOCOM` relationship may still be a
+   reasonable whole-document inference for a later synthesis layer
+2. it is still a rejection at the current extraction layer because this
+   chunk-level run only claims directly supported candidates from the current
+   input text
+3. `onto-canon6` now treats that distinction explicitly rather than leaving it
+   implicit in review notes alone
+
 This is materially better than the broader first Stage 1 run's `6/16`
 acceptance rate, though it is not directly comparable as a benchmark because
 this is one bounded chunk and not the whole earlier corpus.
@@ -136,6 +146,13 @@ The next useful question is narrower:
    analyst chunk, and
 2. whether the remaining misses justify prompt iteration, stricter reviewer
    policy, or later filler/predicate changes.
+
+More broadly, this run resolved one architectural ambiguity:
+
+- chunk extraction remains directly grounded to the current input
+- later whole-document or cross-chunk synthesis is valuable, but it should be
+  added as a separate explicit pass rather than smuggled into chunk
+  extraction
 
 Until there is stronger evidence to change the repo-wide default task,
 bounded real-document verification should use:
