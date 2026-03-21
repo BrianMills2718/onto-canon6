@@ -1,5 +1,5 @@
 {
-  "fixture_id": "psyop_eval_slice_v1",
+  "fixture_id": "psyop_eval_slice_v2",
   "cases": [
     {
       "case_id": "psyop_001_designation_change",
@@ -240,6 +240,83 @@
           }
         }
       ]
+    },
+    {
+      "case_id": "psyop_003_alias_expansion_parenthetical_only",
+      "profile": {
+        "profile_id": "psyop_seed",
+        "profile_version": "0.1.0"
+      },
+      "source_artifact": {
+        "source_kind": "benchmark_fixture_text",
+        "source_ref": "onto-canon://benchmark/psyop_eval_slice#case=psyop_003_alias_expansion_parenthetical_only",
+        "source_label": "psyop_eval:alias_expansion_parenthetical_only",
+        "source_metadata": {
+          "doc_id": "psyop_eval_slice",
+          "chunk_id": "psyop_003"
+        },
+        "content_text": "USAFRICOM (U.S. Africa Command) appears in the heading as a parenthetical name expansion for the same command."
+      },
+      "expected_candidates": []
+    },
+    {
+      "case_id": "psyop_004_subordinate_unit_belongs_to_organization",
+      "profile": {
+        "profile_id": "psyop_seed",
+        "profile_version": "0.1.0"
+      },
+      "source_artifact": {
+        "source_kind": "benchmark_fixture_text",
+        "source_ref": "onto-canon://benchmark/psyop_eval_slice#case=psyop_004_subordinate_unit_belongs_to_organization",
+        "source_label": "psyop_eval:subordinate_unit_belongs_to_organization",
+        "source_metadata": {
+          "doc_id": "psyop_eval_slice",
+          "chunk_id": "psyop_004"
+        },
+        "content_text": "The 4th POG(A) is a subordinate unit of the 1st Special Forces Command."
+      },
+      "expected_candidates": [
+        {
+          "candidate_id": "cand_psyop_004_belongs_to_organization",
+          "payload": {
+            "predicate": "oc:belongs_to_organization",
+            "roles": {
+              "member": [
+                {
+                  "entity_id": "ent:unit:4th_pog_a",
+                  "name": "4th POG(A)",
+                  "entity_type": "oc:military_unit"
+                }
+              ],
+              "organization": [
+                {
+                  "entity_id": "ent:org:1st_special_forces_command",
+                  "name": "1st Special Forces Command",
+                  "entity_type": "oc:military_organization"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "psyop_005_unattributed_opinion_strict_omit",
+      "profile": {
+        "profile_id": "psyop_seed",
+        "profile_version": "0.1.0"
+      },
+      "source_artifact": {
+        "source_kind": "benchmark_fixture_text",
+        "source_ref": "onto-canon://benchmark/psyop_eval_slice#case=psyop_005_unattributed_opinion_strict_omit",
+        "source_label": "psyop_eval:unattributed_opinion_strict_omit",
+        "source_metadata": {
+          "doc_id": "psyop_eval_slice",
+          "chunk_id": "psyop_005"
+        },
+        "content_text": "Concerns have been raised about the effectiveness of MISO in online influence campaigns."
+      },
+      "expected_candidates": []
     }
   ]
 }

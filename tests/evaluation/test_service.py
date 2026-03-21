@@ -170,11 +170,27 @@ def test_load_benchmark_fixture_reads_local_cases() -> None:
 
     fixture = load_benchmark_fixture(_fixture_path())
 
-    assert fixture.fixture_id == "psyop_eval_slice_v1"
-    assert len(fixture.cases) == 2
+    assert fixture.fixture_id == "psyop_eval_slice_v2"
+    assert len(fixture.cases) == 5
     assert fixture.cases[0].profile.profile_id == "psyop_seed"
     assert fixture.cases[0].source_artifact.content_text is not None
     assert len(fixture.cases[0].expected_candidates) == 4
+
+
+def test_load_benchmark_fixture_covers_targeted_semantic_failure_modes() -> None:
+    """The benchmark fixture should explicitly cover the planned semantic failure modes."""
+
+    fixture = load_benchmark_fixture(_fixture_path())
+    cases_by_id = {case.case_id: case for case in fixture.cases}
+
+    alias_case = cases_by_id["psyop_003_alias_expansion_parenthetical_only"]
+    subordinate_case = cases_by_id["psyop_004_subordinate_unit_belongs_to_organization"]
+    unattributed_case = cases_by_id["psyop_005_unattributed_opinion_strict_omit"]
+
+    assert alias_case.expected_candidates == ()
+    assert len(subordinate_case.expected_candidates) == 1
+    assert subordinate_case.expected_candidates[0].payload["predicate"] == "oc:belongs_to_organization"
+    assert unattributed_case.expected_candidates == ()
 
 
 def test_run_live_benchmark_separates_reasonableness_and_exact_fidelity(
