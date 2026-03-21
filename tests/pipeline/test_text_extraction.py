@@ -142,6 +142,60 @@ def test_extract_candidate_imports_uses_llm_client_boundary(tmp_path: Path, monk
     assert "Mission planning uses the radar system during the exercise." in messages[-1]["content"]
 
 
+def test_extract_candidate_imports_allows_selection_task_override(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The extractor should allow bounded task overrides without config edits."""
+
+    service = TextExtractionService(
+        review_service=_make_review_service(tmp_path),
+        selection_task="budget_extraction",
+    )
+    calls: dict[str, object] = {}
+
+    def fake_get_model(task: str, *, use_performance: bool = True) -> str:
+        calls["selection_task"] = task
+        calls["selection_use_performance"] = use_performance
+        return "fake-structured-model"
+
+    # mock-ok: isolates the llm_client network boundary while proving that the
+    # override reaches both model selection and the structured call contract.
+    def fake_call_llm_structured(
+        model: str,
+        messages: list[dict[str, str]],
+        response_model: type[TextExtractionResponse],
+        **kwargs: object,
+    ) -> tuple[TextExtractionResponse, object]:
+        del model, messages
+        calls["kwargs"] = kwargs
+        return response_model(candidates=[]), SimpleNamespace(resolved_model="fake-structured-model")
+
+    monkeypatch.setattr(
+        extraction_module,
+        "_load_llm_client_api",
+        lambda: extraction_module._LLMClientAPI(
+            get_model=fake_get_model,
+            render_prompt=_render_prompt,
+            call_llm_structured=fake_call_llm_structured,
+        ),
+    )
+
+    imports = service.extract_candidate_imports(
+        source_text="Mission planning uses the radar system during the exercise.",
+        profile_id="default",
+        profile_version="1.0.0",
+        submitted_by="analyst:text-extract",
+        source_ref="text://phase4/mission-planning",
+    )
+
+    assert imports == ()
+    assert calls["selection_task"] == "budget_extraction"
+    call_kwargs = calls["kwargs"]
+    assert isinstance(call_kwargs, dict)
+    assert call_kwargs["task"] == "budget_extraction"
+
+
 def test_main_extraction_prompt_includes_current_winning_guidance() -> None:
     """The live extraction prompt should carry the proven Phase A guidance."""
 

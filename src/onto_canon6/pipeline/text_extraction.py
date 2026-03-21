@@ -290,12 +290,17 @@ class TextExtractionService:
         self,
         *,
         review_service: ReviewService | None = None,
+        selection_task: str | None = None,
     ) -> None:
-        """Create the extractor with config-backed prompt and model defaults."""
+        """Create the extractor with config-backed defaults and an optional task override."""
 
         config = get_config()
         self._review_service = review_service or ReviewService()
-        self._selection_task = config.extraction.selection_task
+        self._selection_task = (
+            selection_task.strip()
+            if selection_task is not None and selection_task.strip()
+            else config.extraction.selection_task
+        )
         self._selection_use_performance = config.extraction.selection_use_performance
         self._prompt_template = config.extraction_prompt_template()
         self._prompt_ref = config.extraction.prompt_ref

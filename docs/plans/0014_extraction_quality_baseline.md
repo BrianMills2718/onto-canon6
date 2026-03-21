@@ -152,6 +152,36 @@ That winning state has now been promoted into the main live extraction
 prompt, so Phase B real-document verification will exercise the proven
 guidance rather than the older default prompt wording.
 
+Phase B also exposed one operational issue immediately: the live
+`extract-text` CLI path was still pinned to the repo-default
+`fast_extraction` task, and on a bounded real Stage 1 chunk that call stayed
+in truthful `waiting` state for more than five minutes without completing.
+That was not a prompt or review-pipeline defect. It was a task-selection
+boundary problem. The CLI now allows `--selection-task` overrides for live
+extraction, and the same real chunk completed successfully on
+`budget_extraction`.
+
+That bounded rerun persisted 10 valid candidates:
+
+- `5` `oc:hold_command_role`
+- `1` `oc:belongs_to_organization`
+- `2` `oc:operation_occurs_in_location`
+- `1` `oc:use_organizational_form`
+- `1` `oc:express_concern`
+
+This is a useful Phase B checkpoint for two reasons:
+
+1. the promoted prompt guidance now survives contact with a real Stage 1
+   chunk on the operational extraction path, not just the prompt-eval
+   fixture; and
+2. the remaining misses are now semantic review questions (`JPOTF` form
+   usage, NDU concern attribution), not basic structural breakage.
+
+The repo should keep `fast_extraction` as the configured default until there
+is stronger evidence to change it globally, but bounded real-document Phase B
+verification should currently use the explicit `--selection-task
+budget_extraction` override.
+
 ## Motivation
 
 The Stage 1 run revealed three failure modes:

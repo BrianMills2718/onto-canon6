@@ -25,10 +25,16 @@ class _FakeDodafMixedExtractionService:
     test proves the pack/profile/runtime boundaries rather than only a mock.
     """
 
-    def __init__(self, *, review_service: ReviewService) -> None:
+    def __init__(
+        self,
+        *,
+        review_service: ReviewService,
+        selection_task: str | None = None,
+    ) -> None:
         """Capture the real review service used by the CLI handler."""
 
         self._review_service = review_service
+        self.selection_task = selection_task
 
     def extract_and_submit(
         self,

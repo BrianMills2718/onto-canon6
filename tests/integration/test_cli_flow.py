@@ -22,10 +22,16 @@ class _FakeTextExtractionService:
     transitions, and overlay application all remain real.
     """
 
-    def __init__(self, *, review_service: ReviewService) -> None:
+    def __init__(
+        self,
+        *,
+        review_service: ReviewService,
+        selection_task: str | None = None,
+    ) -> None:
         """Capture the real review service used by the CLI handler."""
 
         self._review_service = review_service
+        self.selection_task = selection_task
 
     def extract_and_submit(
         self,
@@ -262,6 +268,67 @@ def test_cli_extract_review_and_apply_flow_json_output(
         == proposal_id
     )
     assert bundle_output["candidate_bundles"][0]["epistemic_status"] == "active"
+
+
+def test_cli_extract_text_forwards_selection_task_override(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """The CLI should forward a task override into the extraction service."""
+
+    source_path = tmp_path / "source.txt"
+    source_path.write_text(
+        "Campaign Alpha used aligned messaging across channels.",
+        encoding="utf-8",
+    )
+    review_db_path = tmp_path / "review.sqlite3"
+    overlay_root = tmp_path / "ontology_overlays"
+    recorded: dict[str, object] = {}
+
+    class _RecordingExtractionService(_FakeTextExtractionService):
+        """Capture the forwarded selection-task override."""
+
+        def __init__(
+            self,
+            *,
+            review_service: ReviewService,
+            selection_task: str | None = None,
+        ) -> None:
+            recorded["selection_task"] = selection_task
+            super().__init__(
+                review_service=review_service,
+                selection_task=selection_task,
+            )
+
+    # mock-ok: this test only verifies CLI wiring of the override.
+    monkeypatch.setattr(cli_module, "TextExtractionService", _RecordingExtractionService)
+
+    exit_code = cli_module.main(
+        [
+            "extract-text",
+            "--input",
+            str(source_path),
+            "--profile-id",
+            "psyop_seed",
+            "--profile-version",
+            "0.1.0",
+            "--submitted-by",
+            "analyst:cli-test",
+            "--review-db-path",
+            str(review_db_path),
+            "--overlay-root",
+            str(overlay_root),
+            "--selection-task",
+            "budget_extraction",
+            "--output",
+            "json",
+        ]
+    )
+
+    assert exit_code == 0
+    _ = json.loads(capsys.readouterr().out)
+    assert recorded["selection_task"] == "budget_extraction"
 
 
 def test_cli_fails_loud_on_invalid_candidate_acceptance(

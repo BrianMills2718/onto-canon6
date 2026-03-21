@@ -148,6 +148,10 @@ def _build_parser() -> argparse.ArgumentParser:
         "--source-label",
         help="Optional human-readable source label. Defaults to the input file name.",
     )
+    extract_parser.add_argument(
+        "--selection-task",
+        help="Optional llm_client selection-task override. Defaults to config.",
+    )
     _add_output_arg(extract_parser, default_output=config.cli.default_output_format)
     extract_parser.set_defaults(handler=_handle_extract_text)
 
@@ -727,7 +731,10 @@ def _handle_extract_text(args: argparse.Namespace) -> int:
 
     config = get_config()
     review_service = _build_review_service(args)
-    extractor = TextExtractionService(review_service=review_service)
+    extractor = TextExtractionService(
+        review_service=review_service,
+        selection_task=args.selection_task,
+    )
     input_path = args.input
     source_text = input_path.read_text(encoding="utf-8")
     source_ref = args.source_ref if args.source_ref is not None else str(input_path)
