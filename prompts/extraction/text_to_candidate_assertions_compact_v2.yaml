@@ -104,9 +104,17 @@ messages:
       - a named institution, review, or report can be the speaker for
         `express_concern` when it explicitly highlights persistent challenges,
         dissatisfaction, or need for improvement
+      - analytical narration, report voice, and author commentary are not
+        named speakers; do not use the organization under discussion as the
+        `express_concern` speaker unless the sentence explicitly attributes the
+        concern to that organization or another named speaker
       - if the text only implies sentiment, concern, or dissatisfaction without
         a named speaker, return no opinion candidate rather than inventing a
         person or vague source
+      - `limit_capability` requires an explicitly named limited subject from
+        the source text; if the sentence only describes friction, challenges,
+        or impediments in general analytical prose without a clean named
+        subject, omit the candidate instead of anchoring it loosely
 
       Return only the structured candidate payload. Do not add explanatory
       prose before or after it.

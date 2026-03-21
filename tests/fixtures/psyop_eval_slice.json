@@ -1,5 +1,5 @@
 {
-  "fixture_id": "psyop_eval_slice_v3",
+  "fixture_id": "psyop_eval_slice_v4",
   "cases": [
     {
       "case_id": "psyop_001_designation_change",
@@ -395,6 +395,42 @@
           "chunk_id": "psyop_008"
         },
         "content_text": "A significant innovation during this period was the establishment of Joint PSYOP Task Forces (JPOTF), which allowed for the integration of PSYOP into all phases of campaign planning and execution."
+      },
+      "expected_candidates": []
+    },
+    {
+      "case_id": "psyop_009_report_narration_without_named_speaker_strict_omit",
+      "profile": {
+        "profile_id": "psyop_seed",
+        "profile_version": "0.1.0"
+      },
+      "source_artifact": {
+        "source_kind": "benchmark_fixture_text",
+        "source_ref": "onto-canon://benchmark/psyop_eval_slice#case=psyop_009_report_narration_without_named_speaker_strict_omit",
+        "source_label": "psyop_eval:report_narration_without_named_speaker_strict_omit",
+        "source_metadata": {
+          "doc_id": "psyop_eval_slice",
+          "chunk_id": "psyop_009"
+        },
+        "content_text": "However, the effectiveness of PSYOP was often limited by cultural misunderstandings, insufficient coordination with non-military actors, and the rapid evolution of adversary information tactics."
+      },
+      "expected_candidates": []
+    },
+    {
+      "case_id": "psyop_010_limit_capability_without_named_subject_strict_omit",
+      "profile": {
+        "profile_id": "psyop_seed",
+        "profile_version": "0.1.0"
+      },
+      "source_artifact": {
+        "source_kind": "benchmark_fixture_text",
+        "source_ref": "onto-canon://benchmark/psyop_eval_slice#case=psyop_010_limit_capability_without_named_subject_strict_omit",
+        "source_label": "psyop_eval:limit_capability_without_named_subject_strict_omit",
+        "source_metadata": {
+          "doc_id": "psyop_eval_slice",
+          "chunk_id": "psyop_010"
+        },
+        "content_text": "While the establishment of USSOCOM and the JPOTF model improved unity of effort, bureaucratic friction and differing organizational cultures sometimes impeded rapid decision-making and message approval."
       },
       "expected_candidates": []
     }

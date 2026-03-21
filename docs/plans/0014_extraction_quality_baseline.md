@@ -160,6 +160,61 @@ past pure harness work. The remaining question is prompt generalization across
 more than one explicit real chunk, not whether the bounded operational
 verification path exists.
 
+### Second Real-Chunk Generalization Check
+
+The second explicit real chunk answered that question, and the answer is:
+not yet.
+
+The same bounded compact-v2 operational path ran successfully on the
+analytical prose-heavy chunk `003`, but the semantic outcome was poor:
+
+1. `5` structurally valid candidates;
+2. `0` accepted and `5` rejected after real review;
+3. four rejected `oc:express_concern` candidates that invented `USSOCOM` as a
+   speaker where the narration named no speaker; and
+4. one rejected `oc:limit_capability` candidate whose subject/capability
+   anchoring was looser than the text justified.
+
+That means the current blocker is no longer whether the operational override
+path works on more than one chunk. It does. The blocker is that compact-v2
+still overreaches on prose-heavy analysis sections and should not replace the
+repo-default extraction prompt yet.
+
+### v4 Prompt-Eval Recovery vs Operational Transfer Gap
+
+The next bounded prompt-eval slice did recover the new prose-heavy benchmark
+cases.
+
+After adding two chunk-003-derived strict-omit cases and tightening the compact
+prompt, the `v4` prompt-eval sweep showed:
+
+1. `compact` as the clear winner on the updated fixture;
+2. `compact` returning `candidates: []` on both new strict-omit cases; and
+3. the other variants still over-extracting or failing structurally on at
+   least one of those cases.
+
+But the operational rerun on the same real chunk did not inherit that win. The
+updated extraction-compatible compact prompt still produced `6` candidates and
+all `6` were rejected for the same narrator/speaker and loose capability
+anchoring problems.
+
+That makes the current blocker more specific:
+
+1. the benchmark is now discriminating the right failure mode;
+2. the compact prompt can solve that failure mode in prompt_eval; but
+3. the fix does not yet transfer to the full live extraction path.
+
+Rendered prompt comparison narrowed that transfer gap further:
+
+1. the compact prompt-eval and operational system messages now differ only
+   modestly;
+2. the much larger difference is the user payload, because prompt_eval is
+   scoring isolated sentence-level cases while the operational path sees the
+   full multi-paragraph chunk; and
+3. the next useful question is therefore whether the benchmark needs an
+   explicit chunk-level evaluation slice rather than more small prompt-only
+   edits.
+
 ## Current Evidence
 
 Active run history and supporting evidence live here:
@@ -175,6 +230,9 @@ Active run history and supporting evidence live here:
 9. `docs/runs/2026-03-21_v3_broad_prompt_eval_compact2.md`
 10. `var/evaluation_runs/psyop_eval_slice_v3_prompt_eval_compact2_broad.json`
 11. `docs/runs/2026-03-21_compact2_real_chunk_verification.md`
+12. `docs/runs/2026-03-21_compact2_real_chunk_verification_chunk003.md`
+13. `docs/runs/2026-03-21_v4_prompt_eval_compact3_none.md`
+14. `docs/runs/2026-03-21_compact2_real_chunk_verification_chunk003_rerun.md`
 
 This plan intentionally does not duplicate the dated campaign chronology. The
 run notes are the history. This file is the active plan and current state.
@@ -185,10 +243,11 @@ Build in this order:
 
 1. use the new case-level diagnostics plus representative outputs to review the
    broader v3 benchmark case by case, not only through aggregate scores;
-2. run a second explicit real chunk through the bounded compact-v2 operational
-   override path;
-3. if that second chunk is similarly strong, decide whether compact-v2 should
-   replace the current repo-default live extraction prompt;
+2. decide whether to add an explicit chunk-level evaluation slice so the
+   benchmark can measure transfer from sentence-level cases to real
+   multi-paragraph chunks;
+3. only after that decide whether another operational prompt revision is
+   justified;
 4. only after that decide whether broader corpus verification or a larger
    extraction architecture change is justified.
 
@@ -207,6 +266,13 @@ Build in this order:
    prompt-eval templates are similar but not directly interchangeable because
    the live extraction path and the experiment harness pass different input
    variables.
+6. Prose-heavy analytical sections can still trigger narrator/speaker confusion
+   even when chunk-grounding and structural validity are otherwise good.
+7. Prompt-eval improvements can fail to transfer to the live extraction path
+   when the operational asset or longer chunk context behaves differently from
+   the sentence-level benchmark harness.
+8. Current evidence suggests the longer chunk context is a bigger source of
+   transfer failure than the remaining system-prompt wording differences.
 
 ## Non-Goals
 

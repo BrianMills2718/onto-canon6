@@ -170,8 +170,8 @@ def test_load_benchmark_fixture_reads_local_cases() -> None:
 
     fixture = load_benchmark_fixture(_fixture_path())
 
-    assert fixture.fixture_id == "psyop_eval_slice_v3"
-    assert len(fixture.cases) == 8
+    assert fixture.fixture_id == "psyop_eval_slice_v4"
+    assert len(fixture.cases) == 10
     assert fixture.cases[0].profile.profile_id == "psyop_seed"
     assert fixture.cases[0].source_artifact.content_text is not None
     assert len(fixture.cases[0].expected_candidates) == 4
@@ -189,6 +189,8 @@ def test_load_benchmark_fixture_covers_targeted_semantic_failure_modes() -> None
     context_only_case = cases_by_id["psyop_006_context_only_membership_strict_omit"]
     named_concern_case = cases_by_id["psyop_007_named_institutional_concern"]
     jpotf_case = cases_by_id["psyop_008_jpotf_establishment_not_org_form"]
+    narrator_case = cases_by_id["psyop_009_report_narration_without_named_speaker_strict_omit"]
+    loose_capability_case = cases_by_id["psyop_010_limit_capability_without_named_subject_strict_omit"]
 
     assert alias_case.expected_candidates == ()
     assert len(subordinate_case.expected_candidates) == 1
@@ -198,6 +200,8 @@ def test_load_benchmark_fixture_covers_targeted_semantic_failure_modes() -> None
     assert len(named_concern_case.expected_candidates) == 1
     assert named_concern_case.expected_candidates[0].payload["predicate"] == "oc:express_concern"
     assert jpotf_case.expected_candidates == ()
+    assert narrator_case.expected_candidates == ()
+    assert loose_capability_case.expected_candidates == ()
 
 
 def test_run_live_benchmark_separates_reasonableness_and_exact_fidelity(
