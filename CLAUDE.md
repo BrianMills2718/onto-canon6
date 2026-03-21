@@ -45,9 +45,13 @@ config/
 - **Progressive extraction pipeline** (Plan 0018) is complete and proven on real
   text. 3-pass architecture: open extraction → predicate mapping (78% early exit)
   → entity refinement. 87.8% predicate resolution on Shield AI findings.
-- ADRs 0017-0019 adopted: permissive extraction, progressive disclosure,
-  ancestor-aware evaluation.
-- Predicate Canon bridge and ancestor-aware evaluator operational.
+- ADRs 0017-0023 adopted (permissive extraction, progressive disclosure,
+  ancestor-aware evaluation, scoring alignment, chunk grounding, workstream
+  classification, chunk-level transfer evaluation).
+- Predicate Canon bridge, ancestor-aware evaluator, and Digimon export
+  adapter operational.
+- **Active work**: chunk-level transfer evaluation (Plan 0019), extraction
+  quality Phase B (Plan 0014).
 
 ## Working Rules
 

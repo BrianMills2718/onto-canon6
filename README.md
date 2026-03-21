@@ -6,8 +6,8 @@ Phases 0-15 completed the bootstrap roadmap, not the full successor-parity goal.
 The explicit parity ledger now lives in `docs/plans/0005_v1_capability_parity_matrix.md`.
 Two real non-fixture runs completed (PSYOP Stage 1 + Shield AI WhyGame).
 Post-bootstrap work is now active in one explicit extraction R&D workstream,
-not a hidden Phase 16+ chain. That workstream is tracked by ADRs 0017-0022 and
-Plans 0014, 0016, 0017, and 0018. The canonical successor-core story still
+not a hidden Phase 16+ chain. That workstream is tracked by ADRs 0017-0023 and
+Plans 0014-0019. The canonical successor-core story still
 ends at Phase 15, and the canonical notebook journey stays conservative until
 the extraction work stabilizes more.
 

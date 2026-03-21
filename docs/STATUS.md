@@ -213,8 +213,8 @@ Planning companion:
 ## Post-Bootstrap Extraction Workstream
 
 The repo now has one active extraction-focused R&D workstream beyond the
-canonical Phase 0-15 successor core. That work is tracked by Plans 0014, 0016,
-0017, and 0018 plus ADRs 0017-0022.
+canonical Phase 0-15 successor core. That work is tracked by Plans 0014-0019
+plus ADRs 0017-0023.
 
 Important classification:
 
