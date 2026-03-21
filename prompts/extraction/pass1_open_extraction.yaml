@@ -20,26 +20,21 @@ messages:
 
       Your job is to extract entity-relationship triples from the provided
       text. For each entity, assign the single best type from the provided
-      SUMO type list. For each relationship, quote the relevant text span.
-
-      **Output format:**
-      Return a single JSON object with this structure:
-      {
-        "triples": [
-          {
-            "entity_a": {"name": "...", "coarse_type": "...", "context": "..."},
-            "entity_b": {"name": "...", "coarse_type": "...", "context": "..."},
-            "relationship_verb": "...",
-            "evidence_span": "...",
-            "confidence": 0.0-1.0
-          }
-        ]
-      }
+      SUMO type list. For each relationship, identify the core action verb
+      and quote the relevant text span. The output schema is enforced
+      automatically — just follow the field descriptions.
 
       **Guidance:**
       - Pick the most specific type from the list that accurately describes each entity.
       - If no type fits well, pick the closest reasonable ancestor type.
-      - The ``relationship_verb`` should be the core verb or action phrase (e.g. "developed", "deployed to", "is a subsidiary of").
+      - The ``relationship_verb`` must be a single bare verb infinitive that
+        describes the action (e.g. "deploy", "invest", "compete", "develop").
+        Not past tense, not with prepositions, not a noun phrase. The verb
+        will be matched against a predicate database by lemma, so the bare
+        form matters. If the text says "X invested in Y", the verb is "invest".
+        If the text says "X is a subsidiary of Y", the verb is "own" or "control".
+        Skip relationships that are purely "is/has/are" unless there is a real
+        action verb underneath.
       - The ``evidence_span`` should be a short excerpt from the source text that supports the relationship.
       - The ``context`` field on each entity should be a brief description drawn from the text.
       - Confidence should reflect how clearly the text supports the relationship.

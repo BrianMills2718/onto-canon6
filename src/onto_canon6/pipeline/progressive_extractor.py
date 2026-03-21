@@ -148,6 +148,56 @@ class _RawPass1Response(BaseModel):
     triples: list[_RawTriple] = Field(default_factory=list)
 
 
+# -- json_schema response format for Pass 1 ----------------------------------
+# Schema field descriptions are a prompting surface: they constrain LLM output
+# at decode time.  Design prompt and schema together.
+
+class _SchemaEntity(BaseModel):
+    """Entity schema for json_schema response_format."""
+
+    name: str = Field(description="Canonical name of the entity as it appears in the text.")
+    coarse_type: str = Field(description="Best SUMO type from the provided type list.")
+    context: str = Field(description="One-sentence description of this entity from the text.")
+
+
+class _SchemaTriple(BaseModel):
+    """Triple schema for json_schema response_format."""
+
+    entity_a: _SchemaEntity
+    entity_b: _SchemaEntity
+    relationship_verb: str = Field(
+        description=(
+            "Bare verb infinitive describing the relationship "
+            "(e.g. 'deploy', 'invest', 'compete', 'develop', 'award', 'integrate'). "
+            "Not past tense, not with prepositions attached, not a noun. "
+            "Will be matched against a predicate database by lemma."
+        ),
+    )
+    evidence_span: str = Field(description="Short excerpt from the source text supporting this relationship.")
+    confidence: float = Field(description="How clearly the text supports this relationship, 0.0 to 1.0.")
+
+
+class _SchemaPass1Response(BaseModel):
+    """Top-level response schema for Pass 1 structured output."""
+
+    triples: list[_SchemaTriple]
+
+
+def _pass1_response_format() -> dict[str, Any]:
+    """Build the ``json_schema`` response_format for Pass 1.
+
+    Uses Pydantic's ``model_json_schema()`` to generate the JSON Schema,
+    then wraps it in the litellm ``response_format`` envelope.
+    """
+    return {
+        "type": "json_schema",
+        "json_schema": {
+            "name": "pass1_extraction",
+            "schema": _SchemaPass1Response.model_json_schema(),
+        },
+    }
+
+
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
@@ -332,7 +382,7 @@ async def run_pass1(
             task=task,
             trace_id=trace_id,
             max_budget=max_budget,
-            response_format={"type": "json_object"},
+            response_format=_pass1_response_format(),
         )
         cost = result.cost or 0.0
         raw_content: str = result.content or ""
@@ -545,9 +595,12 @@ def _parse_disambiguation_response(
         logger.error("Pass 2 disambiguation response missing or empty predicate_id")
         return None
 
-    # Verify the chosen predicate is among the candidates
-    candidate_map = {m.predicate_id: m for m in candidates}
-    chosen = candidate_map.get(predicate_id)
+    # Verify the chosen predicate is among the candidates.
+    # Accept either predicate_id or propbank_sense_id since the LLM may
+    # return either format (both are shown in the disambiguation prompt).
+    candidate_by_id = {m.predicate_id: m for m in candidates}
+    candidate_by_sense = {m.propbank_sense_id: m for m in candidates}
+    chosen = candidate_by_id.get(predicate_id) or candidate_by_sense.get(predicate_id)
     if chosen is None:
         logger.error(
             "Pass 2 LLM chose predicate_id '%s' which is not among the candidates",

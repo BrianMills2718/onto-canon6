@@ -118,8 +118,7 @@ class Pass2MappedAssertion(BaseModel):
         description="PropBank sense ID, e.g. 'abandon-01'.",
     )
     process_type: str = Field(
-        min_length=1,
-        description="SUMO process type, e.g. 'Leaving'.",
+        description="SUMO process type, e.g. 'Leaving'. Empty if unmapped.",
     )
     mapped_roles: dict[str, str] = Field(
         description=(
