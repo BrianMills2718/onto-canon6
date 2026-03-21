@@ -1,0 +1,21 @@
+profile:
+  id: progressive_permissive
+  version: "0.1.0"
+
+severity:
+  oc:hard_missing_predicate: soft
+  oc:hard_missing_roles: soft
+  oc:hard_missing_role_fillers: soft
+  oc:hard_invalid_role_filler: soft
+  oc:hard_missing_entity_id: soft
+  oc:soft_noncanonical_entity_id: soft
+  oc:profile_unknown_predicate: soft
+  oc:profile_missing_required_role: soft
+  oc:profile_disallowed_role: soft
+  oc:profile_role_cardinality_violation: soft
+  oc:profile_missing_entity_type: soft
+  oc:profile_role_type_violation: soft
+  oc:profile_missing_value_kind: soft
+  oc:profile_role_value_kind_violation: soft
+  oc:profile_role_type_unknown_relationship: soft
+  oc:profile_type_check_skipped_by_policy: soft

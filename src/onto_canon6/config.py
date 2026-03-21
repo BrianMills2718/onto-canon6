@@ -210,6 +210,17 @@ class WhyGameAdapterConfig(BaseModel):
     register_artifact_by_default: bool
 
 
+class ProgressiveAdapterConfig(BaseModel):
+    """Configurable defaults for the progressive extraction adapter."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    default_profile_id: str = Field(min_length=1)
+    default_profile_version: str = Field(min_length=1)
+    source_kind: str = Field(min_length=1)
+    submitted_by: str = Field(min_length=1)
+
+
 class AdaptersConfig(BaseModel):
     """Adapter defaults for the current successor slice."""
 
@@ -217,6 +228,7 @@ class AdaptersConfig(BaseModel):
 
     whygame: WhyGameAdapterConfig
     research_agent: "ResearchAgentAdapterConfig"
+    progressive: ProgressiveAdapterConfig
 
 
 class ResearchAgentAdapterConfig(BaseModel):

@@ -1,0 +1,19 @@
+profile:
+  id: progressive_permissive
+  version: "0.1.0"
+  name: "Progressive Extraction Permissive"
+  ontology_version: "progressive_permissive@0.1.0"
+  rule_version: "progressive_permissive_rules@0.1.0"
+
+ontology:
+  source: custom
+  mode: open
+  normalization_policy: conservative
+  proposal_policy: reject
+
+validation:
+  type_adapter: "null"
+  type_check_policy: skip
+
+ingestion:
+  allow_heuristic_default: false

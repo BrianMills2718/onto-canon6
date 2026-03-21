@@ -94,5 +94,10 @@ adapters:
     default_profile_version: "0.1.0"
     source_kind: "whygame_hypergraph"
     register_artifact_by_default: true
+  progressive:
+    default_profile_id: "progressive_permissive"
+    default_profile_version: "0.1.0"
+    source_kind: "progressive_extraction"
+    submitted_by: "progressive_extractor"
   research_agent:
     default_relationship_confidence: 0.8

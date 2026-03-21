@@ -355,6 +355,40 @@ def _build_parser() -> argparse.ArgumentParser:
     _add_output_arg(extract_progressive_parser, default_output=config.cli.default_output_format)
     extract_progressive_parser.set_defaults(handler=_handle_extract_progressive)
 
+    submit_progressive_parser = subparsers.add_parser(
+        "submit-progressive",
+        help="Convert a progressive extraction report JSON into candidate assertions and submit them.",
+    )
+    _add_store_args(submit_progressive_parser, include_overlay_root=True)
+    submit_progressive_parser.add_argument(
+        "--input", required=True, type=Path,
+        help="Path to the progressive extraction report JSON file.",
+    )
+    submit_progressive_parser.add_argument(
+        "--source-text", required=True, type=Path,
+        help="Path to the original source text file used for extraction.",
+    )
+    submit_progressive_parser.add_argument(
+        "--source-ref", required=True,
+        help="Stable source reference recorded on imported candidates.",
+    )
+    submit_progressive_parser.add_argument(
+        "--source-label",
+        help="Optional human-readable source label.",
+    )
+    submit_progressive_parser.add_argument(
+        "--profile",
+        default="progressive_permissive",
+        help="Validation profile id. Defaults to progressive_permissive.",
+    )
+    submit_progressive_parser.add_argument(
+        "--profile-version",
+        default="0.1.0",
+        help="Validation profile version. Defaults to 0.1.0.",
+    )
+    _add_output_arg(submit_progressive_parser, default_output=config.cli.default_output_format)
+    submit_progressive_parser.set_defaults(handler=_handle_submit_progressive)
+
     import_whygame_parser = subparsers.add_parser(
         "import-whygame-relationships",
         help="Import one JSON array of WhyGame relationship facts into the review workflow.",
@@ -932,6 +966,35 @@ def _handle_extract_progressive(args: argparse.Namespace) -> int:
         return 1
 
     _emit_output(report, output_format=args.output)
+    return 0
+
+
+def _handle_submit_progressive(args: argparse.Namespace) -> int:
+    """Convert a progressive extraction report into candidate assertions and submit them.
+
+    Reads a previously saved ``ProgressiveExtractionReport`` JSON file, converts
+    it into candidate assertions, and submits them through the review service
+    using the progressive adapter.
+    """
+    from .adapters.progressive_adapter import submit_progressive_report
+
+    review_service = _build_review_service(args)
+    input_path: Path = args.input
+    source_text_path: Path = args.source_text
+    report_data = json.loads(input_path.read_text(encoding="utf-8"))
+    report = ProgressiveExtractionReport.model_validate(report_data)
+    source_text = source_text_path.read_text(encoding="utf-8")
+
+    results = submit_progressive_report(
+        report,
+        review_service=review_service,
+        source_text=source_text,
+        source_ref=args.source_ref,
+        source_label=args.source_label,
+        profile_id=args.profile,
+        profile_version=args.profile_version,
+    )
+    _emit_output(tuple(results), output_format=args.output)
     return 0
 
 
