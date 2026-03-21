@@ -102,10 +102,23 @@ Tradeoffs:
 - Plan 0017 (fidelity experiments) must produce empirical data before the
   pass structure is finalized.
 
+## Empirical Validation (2026-03-21)
+
+Plan 0017 fidelity experiments confirm the progressive disclosure hypothesis:
+
+- **Top-level seeding (50 types)**: 87.5% ancestor match, 12.5% wrong branch
+- **Mid-level (~30 types/branch)**: 62.5% ancestor match, 37.5% wrong branch
+- **Full subtree**: 50.0% ancestor match, 50.0% wrong branch
+
+Key finding: **more types = worse performance**. The LLM gets confused by
+long type lists. Top-level seeding is the optimal starting point, confirming
+the Pass 1 design. The wrong-branch problem escalates with type list length,
+validating the "narrow then refine" approach over "show everything at once."
+
 ## Implementation Notes
 
-See Plan 0018 for the detailed design. Implementation is blocked on
-empirical results from Plan 0017.
+See Plan 0018 for the detailed design. Implementation is now **unblocked** —
+empirical data collected and design decisions resolved.
 
 The name **Predicate Canon** refers to the PropBank/FrameNet/SUMO/VerbNet
 synthesis — the unified linguistic ontology that onto-canon manages. This name
