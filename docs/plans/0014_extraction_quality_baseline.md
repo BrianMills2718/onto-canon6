@@ -1,6 +1,8 @@
 # Extraction Quality Baseline
 
-Status: planned
+Status: active
+
+Last updated: 2026-03-21
 
 ## Purpose
 
@@ -10,6 +12,35 @@ but the failures split into distinct fixable categories. This plan
 addresses them without inventing new architecture.
 
 Driven by Stage 1 friction log entries 5 and 7, not by parity pressure.
+
+## Latest Live Findings (2026-03-21)
+
+The extraction experiment boundary is no longer the primary blocker.
+Today’s bounded live sweep proved that the current prompt-experiment path
+is usable when run explicitly with:
+
+- `--selection-task budget_extraction`
+- `--comparison-method bootstrap`
+- `--case-limit 1`
+- `--n-runs 2`
+
+That run completed with `2/2` successful scored trials for all four
+existing variants (`baseline`, `hardened`, `compact`,
+`single_response_hardened`) and no structural failures. The result was
+still poor semantically:
+
+- `mean_score = 0.275`
+- `structural_usable_rate = 1.0`
+- `count_alignment = 0.25`
+- `exact_f1 = 0.0`
+
+So the next work is not more experiment plumbing. The next work is to
+improve semantic extraction quality on a now-usable harness.
+
+One more conclusion from the same day: changing the repo-default prompt
+experiment task to `budget_extraction` is premature. The explicit override
+works and is the right iteration lane for now, but the default path is not
+yet stable enough to flip globally.
 
 ## Motivation
 
@@ -44,6 +75,10 @@ extraction from producing valid output at all:
    extractor's response parser.
 6. **Provider rate limiting**: OpenRouter key exhaustion during live runs.
    Managed by llm_client retry/rotation, but visible as friction.
+
+As of 2026-03-21, those structural issues are sufficiently bounded for
+iteration on the explicit `budget_extraction` experiment lane. They remain
+important guardrails, but they are no longer the main immediate blocker.
 
 Category 3 is the most interesting semantic failure because the current
 prompt hardcodes a policy: "omit any candidate whose roles would require
@@ -222,9 +257,12 @@ run itself. Both sets appear in the verification report.
 2. **Four prompt variants already exist** in `config/config.yaml`:
    `baseline`, `hardened`, `compact`, `single_response_hardened` — with
    corresponding prompt assets in `prompts/extraction/`. Do not recreate
-   these. After applying D2 changes to the baseline prompt, update the
-   `baseline` variant asset and run the experiment service to compare all
-   four variants.
+   these. A bounded live sweep on 2026-03-21 successfully executed all
+   four variants when explicitly run with `--selection-task
+   budget_extraction --comparison-method bootstrap --n-runs 2
+   --case-limit 1`. Keep using that explicit override as the prompt-
+   iteration harness until the default experiment lane is demonstrably
+   stable.
 
 3. **`LiveExtractionEvaluationService`** (`evaluation/service.py`)
    provides the 3-lane evaluation (reasonableness, structural validation,
@@ -251,6 +289,10 @@ run itself. Both sets appear in the verification report.
    Consider defining a gate policy for the verification run so pass/fail
    is automated, not prose. This is optional — the manual verification
    tables are still the primary acceptance criteria.
+
+The current implication of D5 is simple: use the existing infrastructure
+for all prompt-quality work until a real semantic blocker proves that more
+infrastructure is required.
 
 ### D6: Expand benchmark fixture to cover targeted failure modes
 
@@ -306,32 +348,61 @@ is not blocking — Phase A will measure all 4 existing variants and the
 data will show whether the combination is needed.
 
 The config has `n_runs: 2`; this plan recommends `n_runs: 3` for more
-statistical power. The implementing agent should bump this in config
-before running Phase A.
+statistical power on the expanded fixture. For bounded live viability
+checks, keep `n_runs: 2` as the minimum honest bootstrap shape. Only bump
+to `n_runs: 3` after the expanded fixture is structurally stable.
+
+### D8: Use the bounded budget lane as the semantic-iteration harness
+
+Until the default experiment lane is stable, prompt iteration should use a
+small explicit live command:
+
+```bash
+env LLM_CLIENT_PROJECT=onto-canon6-extraction-sweep-budget5 \
+  LLM_CLIENT_TIMEOUT_POLICY=ban \
+  ./.venv/bin/python -m onto_canon6 run-extraction-prompt-experiment \
+  --case-limit 1 \
+  --n-runs 2 \
+  --comparison-method bootstrap \
+  --selection-task budget_extraction \
+  --output json
+```
+
+That harness is now the regression guard for prompt changes. The rule is:
+
+- if a prompt change cannot keep this harness structurally green, do not
+  broaden the experiment;
+- if the harness stays green but scores stay flat, work on semantic
+  benchmark coverage and prompt semantics, not on runtime plumbing;
+- do not change the repo-default selection task to `budget_extraction`
+  until the non-override path is stable.
 
 ## Acceptance Criteria
 
-1. The main extraction prompt and baseline variant include D2
-   error-check rules (ported from the existing `hardened` variant).
-2. `ExtractedFiller._validate_shape` accepts entity fillers with
-   `entity_type` but no `name` or `entity_id`.
-3. The validation pipeline checks the active profile's
-   `unidentified_entity_fillers` setting and either accepts or rejects
-   candidates accordingly.
-4. The prompt rendering pipeline communicates the active policy to the
-   model.
-5. The benchmark fixture includes cases that exercise all three targeted
+1. The extraction prompts preserve the now-proven structural contract
+   (one structured response, one `candidates` array, no empty-role
+   candidates) while adding semantic guidance for the targeted failure
+   modes.
+2. The benchmark fixture includes cases that exercise all three targeted
    failure modes (alias expansion, subordinate-unit predicate,
    unattributed opinion).
-6. Phase A (prompt experiment via `ExtractionPromptExperimentService`)
-   shows 0 structural failures and no exact_f1 regression on the
-   baseline variant.
-7. Phase B (review-quality verification) shows measurable improvement
-   on the strict profile (see Verification section).
-8. All existing tests continue to pass.
-9. New tests cover: unidentified filler validation by profile policy,
-   prompt negative guidance rendering, and both strict/permissive paths.
-10. Each rejected candidate in Phase B is labeled with a D4 semantic
+3. The bounded live viability sweep in D8 completes with scored trials for
+   all four variants and 0 structural failures. This is the regression
+   guard for future prompt changes.
+4. The expanded Phase A benchmark shows semantic improvement over the
+   2026-03-21 bounded live baseline and over the baseline variant on at
+   least one of `mean_score` or `exact_f1`, without structural
+   regression.
+5. Phase B (review-quality verification) shows measurable improvement on
+   the strict profile (see Verification section).
+6. If the unidentified-filler mechanism is implemented, then
+   `ExtractedFiller._validate_shape`, validation, and prompt rendering all
+   follow D1 and D3 consistently.
+7. All existing tests continue to pass.
+8. New tests cover: benchmark cases for the targeted semantic failures,
+   prompt negative guidance rendering, and any unidentified-filler policy
+   path that is actually implemented.
+9. Each rejected candidate in Phase B is labeled with a D4 semantic
     failure taxonomy label.
 
 ## Verification
@@ -340,12 +411,29 @@ before running Phase A.
 
 Run verification in two phases:
 
+**Phase A0 — Bounded live viability check:**
+
+Run the D8 command exactly. This is not the semantic proof. It is the
+"can we iterate honestly on a real live lane?" check.
+
+This phase is already green as of 2026-03-21:
+
+- all four variants produced scored trials
+- all four variants had `structural_usable_rate = 1.0`
+- all four variants tied semantically (`mean_score = 0.275`,
+  `exact_f1 = 0.0`)
+
+Future prompt edits must preserve that structural viability before moving
+to the expanded benchmark.
+
 **Phase A — Prompt experiment (automated, uses existing infrastructure):**
 
 Use `ExtractionPromptExperimentService` with the benchmark fixture. After
-applying D2 changes to the baseline prompt asset, run all 4 existing
-variants (`baseline`, `hardened`, `compact`, `single_response_hardened`)
-with `n_runs: 3` per config. The service handles:
+expanding the fixture with the D6 semantic cases, run all 4 existing
+variants (`baseline`, `hardened`, `compact`, `single_response_hardened`).
+Use `n_runs: 2` for the first expanded-fixture sweep if needed to keep the
+lane stable; bump to `n_runs: 3` once that expanded sweep is structurally
+green. The service handles:
 
 - multi-run execution with failure classification
 - 3-dimensional scoring (exact_f1, structural_usable_rate, count_alignment)
@@ -370,6 +458,7 @@ targeted failure modes. The implementing agent selects or creates these.
 
 | Guard | Target |
 |---|---|
+| bounded D8 viability sweep | pass |
 | `schema_validation_error` trials | 0 |
 | `multiple_tool_calls` trials | 0 |
 | `length_truncated` trials | 0 |
@@ -381,8 +470,9 @@ guard fails, fix the structural issue before measuring semantic quality.
 
 | Metric | Target |
 |---|---|
-| structural_usable_rate (baseline variant) | >0.80 |
-| exact_f1 does not regress from pre-change baseline | yes |
+| structural_usable_rate (all variants) | >=0.95 |
+| at least one variant exact_f1 | >0.0 |
+| at least one non-baseline variant beats baseline on `mean_score` or `exact_f1` | yes |
 | 0 structural failure trials across all variants | yes |
 
 ### Phase B targets (strict profile — primary success metric)
@@ -398,7 +488,7 @@ The >50% target applies to the strict profile run. Improvement comes from
 prompt fixes reducing alias and predicate errors, not from the permissive
 policy letting more candidates through.
 
-### Phase B targets (permissive profile — unidentified-filler mechanism)
+### Phase B targets (permissive profile — unidentified-filler mechanism, optional)
 
 | Metric | Stage 1 baseline | Target |
 |---|---|---|
@@ -406,7 +496,9 @@ policy letting more candidates through.
 | Opinion candidates with typed unidentified fillers | 0 | >0 |
 
 The permissive run is a separate signal about whether the
-unidentified-filler mechanism works, not about overall acceptance rate.
+unidentified-filler mechanism works, not about overall acceptance rate. It
+is only in scope if Steps 6-8 in Build Order are justified by the
+expanded benchmark and dry review.
 
 ### Measurement notes
 
@@ -414,8 +506,9 @@ The target is a reasonable baseline, not perfection. The review workflow
 handles residual errors.
 
 Before Phase B (which costs money), do a dry review: compare the new
-prompt against the 10 rejected Stage 1 candidate payloads to confirm the
-changes would have prevented the observed errors.
+prompt outputs against the 10 rejected Stage 1 candidate payloads and the
+new D6 fixture cases to confirm the changes would have prevented the
+observed alias and predicate errors.
 
 ### If the targets are not met
 
@@ -430,53 +523,48 @@ have been measured.
 
 ## Build Order
 
-1. **Prompt hardening**: Apply the D2 error-check rules from the
-   existing `hardened` variant to the **main** extraction prompt
-   (`prompts/extraction/text_to_candidate_assertions.yaml`). Do NOT
-   update the `baseline` variant — it serves as the pre-D2 control for
-   Phase A. Phase A compares: baseline (no D2, control) vs hardened
-   (has D2) vs compact vs single_response_hardened. If hardened wins,
-   the implementing agent can promote it to the new operational default
-   after Phase A.
-2. **Filler contract** (two changes in `text_extraction.py`):
+1. **Hold the infrastructure constant**: The current experiment boundary is
+   good enough. Do not add new prompt-eval or llm_client infrastructure
+   unless a real semantic blocker proves it is needed.
+2. **Benchmark fixture expansion first** (D6): Add 2-3 cases to
+   `tests/fixtures/psyop_eval_slice.json` that exercise the targeted
+   semantic failure modes. Do this before broader code changes so prompt
+   iteration has an honest measuring surface.
+3. **Dry review and taxonomy pass**: Compare current live outputs against
+   the 10 rejected Stage 1 candidates and label failures with the D4
+   semantic taxonomy. Confirm which categories remain dominant now that
+   the bounded live lane is structurally green.
+4. **Prompt iteration on the bounded D8 harness**: After each prompt
+   change, rerun the bounded live sweep. Do not broaden the experiment
+   until it stays structurally green.
+5. **Expanded Phase A benchmark**: Run all four variants over the
+   expanded fixture and compare them. This is the first real semantic
+   selection gate.
+6. **Filler contract** (conditional, only if the expanded fixture or dry
+   review still shows unattributed-opinion loss as a material blocker):
    a. Relax `ExtractedFiller._validate_shape` to allow entity fillers with
       `entity_type` but no `name`/`entity_id`.
    b. Update `_pipeline_filler_from_extracted` so unidentified fillers
       bypass `_derive_local_entity_id` and persist with no `entity_id`.
-3. **Profile policy** (three files):
+7. **Profile policy** (conditional, paired with Step 6):
    a. Add `unidentified_entity_fillers: Literal["allow", "reject"]` to the
       profile manifest schema and `LoadedProfile` (`loaders.py`).
    b. Make `_check_entity_ids` in `validation.py` conditional on the
       profile setting.
    c. Default `reject` so existing profiles are unaffected.
-4. **Prompt policy rendering**: Extend `_render_predicate_catalog` or add
-   a new template variable to communicate the active unidentified-filler
-   policy. When `reject`: keep the existing "omit candidates requiring
-   unnamed entities" guidance. When `allow`: tell the model it may produce
-   entity fillers with `entity_type` only.
-5. **Tests**: Cover both strict and permissive validation paths,
-   unidentified filler handling at the extraction boundary, and prompt
-   rendering of the policy.
-6. **Benchmark fixture expansion** (D6): Add 2-3 cases to
-   `tests/fixtures/psyop_eval_slice.json` that exercise the targeted
-   failure modes (alias expansion, subordinate-unit predicate, unattributed
-   opinion). Bump `n_runs` to 3 in `config/config.yaml`.
-7. **Dry review**: Compare the new prompt against the 10 rejected Stage 1
-   candidates. Confirm the prompt changes would have prevented alias
-   self-references and wrong predicate choices.
-8. **Phase A — Prompt experiment**: Run
-   `ExtractionPromptExperimentService` with all 4 variants over the
-   expanded fixture. Compare with
-   `python -m llm_client experiments compare`. Check structural guards
-   and Phase A targets.
-9. **Phase B — Review-quality verification**: Using the best-performing
-   variant from Phase A, extract 4-6 real documents with both strict and
-   permissive profiles. Review candidates, label rejections with D4
-   semantic taxonomy. Measure against Phase B targets.
+8. **Prompt policy rendering** (only if Steps 6-7 happen): Extend
+   `_render_predicate_catalog` or add a new template variable to
+   communicate the active unidentified-filler policy.
+9. **Tests**: Cover the expanded benchmark fixture, prompt rendering, and
+   any unidentified-filler policy path that is actually implemented.
+10. **Phase B — Review-quality verification**: Using the best-performing
+    variant from Phase A, extract 4-6 real documents with the strict
+    profile. Run the permissive profile only if Steps 6-8 were justified by
+    the evidence.
 
-Steps 1-2 can be done together. Steps 3-4 can be done together. Step 5
-covers both. Step 6 prepares the fixture. Step 7 is cheap (no LLM
-calls). Steps 8-9 are the proof.
+Steps 2-5 are the immediate next thin slice. Steps 6-8 are conditional,
+not automatic. The point is to prove whether unidentified fillers are a
+real blocker before adding the policy dimension.
 
 ## Non-Goals
 
