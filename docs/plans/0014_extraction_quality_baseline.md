@@ -148,6 +148,10 @@ the run noisier overall. The repo should treat the `single_response_v2`
 state as the current winning prompt variant, not the discarded follow-up
 experiment.
 
+That winning state has now been promoted into the main live extraction
+prompt, so Phase B real-document verification will exercise the proven
+guidance rather than the older default prompt wording.
+
 ## Motivation
 
 The Stage 1 run revealed three failure modes:

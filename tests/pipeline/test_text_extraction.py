@@ -142,6 +142,31 @@ def test_extract_candidate_imports_uses_llm_client_boundary(tmp_path: Path, monk
     assert "Mission planning uses the radar system during the exercise." in messages[-1]["content"]
 
 
+def test_main_extraction_prompt_includes_current_winning_guidance() -> None:
+    """The live extraction prompt should carry the proven Phase A guidance."""
+
+    messages = _render_prompt(
+        PROJECT_ROOT / "prompts" / "extraction" / "text_to_candidate_assertions.yaml",
+        profile_id="psyop_seed",
+        profile_version="0.1.0",
+        predicate_catalog="- oc:replace_designation",
+        entity_type_catalog="- oc:person",
+        source_kind="raw_text",
+        source_ref="text://phase-b/prompt",
+        source_label="prompt test",
+        source_text="Admiral Eric Olson replaced PSYOP with MISO.",
+    )
+
+    system_prompt = messages[0]["content"]
+    assert "Every `entity` filler must include a reviewer-meaningful `name` and an" in system_prompt
+    assert "`entity_type` chosen from the active ontology catalog" in system_prompt
+    assert "if one sentence explicitly states multiple independent facts" in system_prompt
+    assert "abbreviation expansions, acronym definitions" in system_prompt
+    assert "the `subject` must be the" in system_prompt
+    assert "enduring named entity being renamed" in system_prompt
+    assert "if the text explicitly states both a concern and a concrete lost or" in system_prompt
+
+
 def test_extract_and_submit_persists_extracted_candidates(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,

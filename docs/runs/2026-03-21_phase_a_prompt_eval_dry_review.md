@@ -150,6 +150,9 @@ Move to Phase B real-document verification using the current
 `single_response_v2` winning state, not the later discarded evidence-span
 experiment.
 
+The main live extraction prompt now mirrors that winning guidance, so Phase B
+does not need a separate prompt-selector mechanism first.
+
 The next verification question is no longer “which Phase A prompt is best?”
 It is “does the winning clean variant actually improve acceptance and review
 quality on the real Stage 1 corpus?”

@@ -69,9 +69,11 @@ messages:
       - if you cannot fill at least one role concretely from the source, omit
         that candidate entirely
 
-      Every `entity` filler must include a reviewer-meaningful `name`. Do not
-      emit type-only entity fillers. If you cannot name an entity from the
-      source text, omit that candidate rather than guessing.
+      Every `entity` filler must include a reviewer-meaningful `name` and an
+      `entity_type` chosen from the active ontology catalog. Do not emit
+      type-only entity fillers or named entities with blank `entity_type`. If
+      you cannot name and type an entity from the source text, omit that
+      candidate rather than guessing.
 
       Return only the structured candidate payload. Do not add explanatory
       prose before or after it.
@@ -85,12 +87,35 @@ messages:
 
       - one predicate per candidate assertion
       - split distinct supported facts into separate candidates
+      - if one sentence explicitly states multiple independent facts, emit
+        separate candidates for those facts instead of collapsing them into one
+        broad topic string
       - use multiple evidence spans when support comes from non-adjacent parts
         of the source
       - quote evidence text that is specific enough to locate uniquely in the
         source
       - omit any candidate whose roles would require unnamed entities
       - omit candidates that would require speculation beyond the source
+
+      Use the following error checks before you return a candidate:
+
+      - abbreviation expansions, acronym definitions, alternate names, and
+        parenthetical name expansions usually identify the same entity with
+        multiple names, not a relationship or a `replace_designation` event
+      - `hold_command_role` is for a named person holding a role over an
+        organization; subordinate-unit text, parent/child organization text,
+        and organizational membership text usually belong under
+        `belongs_to_organization`
+      - for a `replace_designation` candidate, the `subject` must be the
+        enduring named entity being renamed, not just the old label string; if
+        the subject entity cannot be named from the source, omit the rename
+        candidate
+      - if the text only implies sentiment, concern, or dissatisfaction
+        without a named speaker, omit that candidate rather than inventing a
+        person or vague source
+      - if the text explicitly states both a concern and a concrete lost or
+        limited capability, emit separate candidates for the concern and the
+        concrete capability effect when the text supports both
 
   - role: user
     content: |
