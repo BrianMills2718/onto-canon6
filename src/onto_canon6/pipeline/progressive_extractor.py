@@ -1169,6 +1169,94 @@ class ProgressiveExtractionError(RuntimeError):
     """
 
 
+_CHUNK_TARGET_CHARS = 3000
+"""Target chunk size in characters for Pass 1 text splitting."""
+
+_CHUNK_OVERLAP_CHARS = 200
+"""Overlap between adjacent chunks to avoid losing context at boundaries."""
+
+
+def _chunk_text(
+    text: str,
+    *,
+    target_chars: int = _CHUNK_TARGET_CHARS,
+    overlap_chars: int = _CHUNK_OVERLAP_CHARS,
+) -> list[str]:
+    """Split *text* into chunks on paragraph boundaries.
+
+    Splits on double-newlines first, then single newlines if a paragraph
+    exceeds *target_chars*.  Adjacent chunks share *overlap_chars* of
+    trailing/leading text so entity references near boundaries aren't lost.
+
+    Returns at least one chunk (the full text) when it is short enough.
+    """
+    if len(text) <= target_chars:
+        return [text]
+
+    paragraphs = text.split("\n\n")
+    chunks: list[str] = []
+    current: list[str] = []
+    current_len = 0
+
+    for para in paragraphs:
+        para_len = len(para) + 2  # account for the \n\n we stripped
+        if current and current_len + para_len > target_chars:
+            chunk_text = "\n\n".join(current)
+            chunks.append(chunk_text)
+            # Overlap: keep last paragraph(s) up to overlap_chars
+            overlap: list[str] = []
+            overlap_len = 0
+            for p in reversed(current):
+                if overlap_len + len(p) > overlap_chars:
+                    break
+                overlap.insert(0, p)
+                overlap_len += len(p)
+            current = overlap + [para]
+            current_len = overlap_len + para_len
+        else:
+            current.append(para)
+            current_len += para_len
+
+    if current:
+        chunks.append("\n\n".join(current))
+
+    return chunks if chunks else [text]
+
+
+def _merge_pass1_results(results: list[Pass1Result]) -> Pass1Result:
+    """Merge Pass 1 results from multiple text chunks.
+
+    Concatenates triples, deduplicates entities by ``(name, coarse_type)``,
+    combines hashes and costs.
+    """
+    all_triples: list[Pass1Triple] = []
+    seen_entities: dict[tuple[str, str], Pass1Entity] = {}
+    total_cost = 0.0
+    hashes: list[str] = []
+    model = results[0].model if results else "unknown"
+    trace_id = results[0].trace_id if results else "unknown"
+
+    for result in results:
+        all_triples.extend(result.triples)
+        for entity in result.entities:
+            key = (entity.name, entity.coarse_type)
+            if key not in seen_entities:
+                seen_entities[key] = entity
+        total_cost += result.cost
+        hashes.append(result.source_text_hash)
+
+    combined_hash = hashlib.sha256("|".join(hashes).encode()).hexdigest()[:16]
+
+    return Pass1Result(
+        triples=all_triples,
+        entities=list(seen_entities.values()),
+        source_text_hash=combined_hash,
+        model=model,
+        cost=total_cost,
+        trace_id=trace_id,
+    )
+
+
 async def run_progressive_extraction(
     text: str,
     *,
@@ -1178,11 +1266,14 @@ async def run_progressive_extraction(
     trace_id: str | None = None,
     max_budget: float = 0.30,
     max_triples: int = 50,
+    chunk_target_chars: int = _CHUNK_TARGET_CHARS,
     _llm_api: _LLMClientAPI | None = None,
 ) -> ProgressiveExtractionReport:
     """Run the full 3-pass progressive extraction pipeline.
 
     Pass 1: Extract entities and relationships with coarse SUMO types.
+            Long texts are split into ~3000-char chunks on paragraph
+            boundaries and processed independently, then merged.
     Pass 2: Map relationship verbs to Predicate Canon entries.
     Pass 3: Refine entity types using narrowed SUMO subtrees.
 
@@ -1230,21 +1321,58 @@ async def run_progressive_extraction(
     budget_pass2 = max_budget * 0.3
     budget_pass3 = max_budget * 0.3
 
-    # --- Pass 1 ---
-    try:
-        pass1_result = await run_pass1(
-            text,
-            model=effective_model,
-            task=task,
-            trace_id=effective_trace_id,
-            max_budget=budget_pass1,
-            max_triples=max_triples,
-            _llm_api=_llm_api,
+    # --- Pass 1 (chunked) ---
+    chunks = _chunk_text(text, target_chars=chunk_target_chars)
+    logger.info(
+        "Pass 1: splitting text (%d chars) into %d chunks (target=%d)",
+        len(text), len(chunks), chunk_target_chars,
+    )
+
+    chunk_results: list[Pass1Result] = []
+    per_chunk_budget = budget_pass1 / max(len(chunks), 1)
+    multi_chunk = len(chunks) > 1
+    for i, chunk in enumerate(chunks):
+        chunk_trace = (
+            f"{effective_trace_id}_chunk{i}" if multi_chunk
+            else effective_trace_id
         )
-    except Exception as exc:
+        try:
+            chunk_result = await run_pass1(
+                chunk,
+                model=effective_model,
+                task=task,
+                trace_id=chunk_trace,
+                max_budget=per_chunk_budget,
+                max_triples=max_triples,
+                _llm_api=_llm_api,
+            )
+            chunk_results.append(chunk_result)
+        except Exception as exc:
+            logger.warning(
+                "Pass 1 chunk %d/%d failed (trace_id=%s): %s",
+                i + 1, len(chunks), effective_trace_id, exc,
+            )
+            # Continue with remaining chunks — permissive extraction.
+
+    if not chunk_results:
         raise ProgressiveExtractionError(
-            f"Pass 1 failed (trace_id={effective_trace_id}): {exc}"
-        ) from exc
+            f"Pass 1 failed on all {len(chunks)} chunks "
+            f"(trace_id={effective_trace_id})"
+        )
+
+    if multi_chunk:
+        pass1_result = _merge_pass1_results(chunk_results)
+        # Restore base trace_id on the merged result.
+        pass1_result = Pass1Result(
+            triples=pass1_result.triples,
+            entities=pass1_result.entities,
+            source_text_hash=pass1_result.source_text_hash,
+            model=pass1_result.model,
+            cost=pass1_result.cost,
+            trace_id=effective_trace_id,
+        )
+    else:
+        pass1_result = chunk_results[0]
 
     # --- Pass 2 ---
     with PredicateCanon(sumo_db_path) as predicate_canon:
@@ -1329,6 +1457,7 @@ def run_progressive_extraction_sync(
     trace_id: str | None = None,
     max_budget: float = 0.30,
     max_triples: int = 50,
+    chunk_target_chars: int = _CHUNK_TARGET_CHARS,
     _llm_api: _LLMClientAPI | None = None,
 ) -> ProgressiveExtractionReport:
     """Synchronous wrapper for :func:`run_progressive_extraction`.
@@ -1345,6 +1474,7 @@ def run_progressive_extraction_sync(
             trace_id=trace_id,
             max_budget=max_budget,
             max_triples=max_triples,
+            chunk_target_chars=chunk_target_chars,
             _llm_api=_llm_api,
         )
     )
