@@ -215,6 +215,34 @@ Rendered prompt comparison narrowed that transfer gap further:
    explicit chunk-level evaluation slice rather than more small prompt-only
    edits.
 
+### Chunk-Level Transfer Gate
+
+That explicit chunk-level gate now exists (ADR-0023, Plan 0019).
+
+The new stable artifact is:
+
+```bash
+python -m onto_canon6 export-chunk-transfer-report ...
+```
+
+The first proof over the compact-v2 family now gives the exact contrast this
+workstream needed:
+
+1. `chunk_002` transfer report:
+   - `8/9` accepted
+   - verdict `positive`
+2. `chunk_003` rerun transfer report:
+   - `0/6` accepted
+   - verdict `negative`
+
+That means the current state is no longer ambiguous:
+
+1. the repo can now distinguish sentence-level prompt-eval recovery from real
+   chunk-level transfer;
+2. compact-v2 is strong enough to succeed on at least one real chunk; but
+3. compact-v2 still should not become the live default because its transfer is
+   mixed, not broadly positive.
+
 ## Current Evidence
 
 Active run history and supporting evidence live here:
@@ -233,6 +261,9 @@ Active run history and supporting evidence live here:
 12. `docs/runs/2026-03-21_compact2_real_chunk_verification_chunk003.md`
 13. `docs/runs/2026-03-21_v4_prompt_eval_compact3_none.md`
 14. `docs/runs/2026-03-21_compact2_real_chunk_verification_chunk003_rerun.md`
+15. `docs/runs/2026-03-21_chunk_transfer_gate_compact2.md`
+16. `var/evaluation_runs/chunk_transfer_reports/2026-03-21_chunk_002_transfer_report.json`
+17. `var/evaluation_runs/chunk_transfer_reports/2026-03-21_chunk_003_transfer_report.json`
 
 This plan intentionally does not duplicate the dated campaign chronology. The
 run notes are the history. This file is the active plan and current state.
@@ -241,14 +272,11 @@ run notes are the history. This file is the active plan and current state.
 
 Build in this order:
 
-1. use the new case-level diagnostics plus representative outputs to review the
-   broader v3 benchmark case by case, not only through aggregate scores;
-2. execute [0019_chunk_level_transfer_evaluation.md](0019_chunk_level_transfer_evaluation.md)
-   so the benchmark can measure transfer from sentence-level cases to real
-   multi-paragraph chunks;
-3. only after that decide whether another operational prompt revision is
+1. use the new chunk-level transfer gate plus case-level diagnostics to review
+   the chunk-003 failure mode directly, not only through aggregate scores;
+2. only after that decide whether another operational prompt revision is
    justified;
-4. only after that decide whether broader corpus verification or a larger
+3. only after that decide whether broader corpus verification or a larger
    extraction architecture change is justified.
 
 ## Known Risks and Uncertainties

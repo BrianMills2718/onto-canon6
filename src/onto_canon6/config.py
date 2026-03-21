@@ -12,7 +12,7 @@ from pathlib import Path
 from typing import Literal
 
 import yaml
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 AcceptancePolicyValue = Literal["record_only", "apply_to_overlay"]
 CLIOutputFormatValue = Literal["json", "text"]
@@ -122,7 +122,34 @@ class EvaluationConfig(BaseModel):
     judge_num_retries: int = Field(ge=0)
     judge_max_budget_usd: float = Field(gt=0)
     judge_max_output_tokens: int = Field(ge=1)
+    chunk_transfer: "ChunkTransferConfig"
     prompt_experiment: "PromptEvalExperimentConfig"
+
+
+class ChunkTransferConfig(BaseModel):
+    """Configurable thresholds for chunk-level transfer verdicts.
+
+    The transfer-report surface deliberately stays narrow: it summarizes one
+    reviewed multi-paragraph chunk and classifies transfer as positive, mixed,
+    or negative from the acceptance rate recorded in the real review workflow.
+    """
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    positive_min_acceptance_rate: float = Field(ge=0.0, le=1.0)
+    negative_max_acceptance_rate: float = Field(ge=0.0, le=1.0)
+    require_review_complete: bool = True
+
+    @model_validator(mode="after")
+    def _validate_threshold_order(self) -> "ChunkTransferConfig":
+        """Require non-contradictory negative and positive acceptance thresholds."""
+
+        if self.negative_max_acceptance_rate > self.positive_min_acceptance_rate:
+            raise ValueError(
+                "negative_max_acceptance_rate must be less than or equal to "
+                "positive_min_acceptance_rate"
+            )
+        return self
 
 
 class PromptEvalVariantConfig(BaseModel):

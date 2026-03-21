@@ -80,6 +80,8 @@ from .pipeline import (
     TextExtractionService,
 )
 from .surfaces import (
+    ChunkTransferReport,
+    ChunkTransferReportService,
     EpistemicReportService,
     GovernedWorkflowBundle,
     GovernedWorkflowBundleService,
@@ -507,6 +509,34 @@ def _build_parser() -> argparse.ArgumentParser:
     list_candidates_parser.add_argument("--profile-version", help="Optional profile-version filter.")
     _add_output_arg(list_candidates_parser, default_output=config.cli.default_output_format)
     list_candidates_parser.set_defaults(handler=_handle_list_candidates)
+
+    export_chunk_transfer_report_parser = subparsers.add_parser(
+        "export-chunk-transfer-report",
+        help="Export one reviewed chunk-level transfer report for a source_ref.",
+    )
+    _add_store_args(export_chunk_transfer_report_parser, include_overlay_root=False)
+    export_chunk_transfer_report_parser.add_argument(
+        "--source-ref",
+        required=True,
+        help="Stable source reference for the reviewed chunk.",
+    )
+    export_chunk_transfer_report_parser.add_argument(
+        "--prompt-template",
+        help="Optional prompt template annotation recorded on the report.",
+    )
+    export_chunk_transfer_report_parser.add_argument(
+        "--prompt-ref",
+        help="Optional prompt reference annotation recorded on the report.",
+    )
+    export_chunk_transfer_report_parser.add_argument(
+        "--selection-task",
+        help="Optional llm_client selection-task annotation recorded on the report.",
+    )
+    _add_output_arg(
+        export_chunk_transfer_report_parser,
+        default_output=config.cli.default_output_format,
+    )
+    export_chunk_transfer_report_parser.set_defaults(handler=_handle_export_chunk_transfer_report)
 
     list_proposals_parser = subparsers.add_parser(
         "list-proposals",
@@ -1100,6 +1130,20 @@ def _handle_list_candidates(args: argparse.Namespace) -> int:
     return 0
 
 
+def _handle_export_chunk_transfer_report(args: argparse.Namespace) -> int:
+    """Export one reviewed chunk-level transfer report."""
+
+    review_service = _build_review_service(args)
+    report = ChunkTransferReportService(review_service=review_service).build_report(
+        source_ref=args.source_ref,
+        prompt_template=args.prompt_template,
+        prompt_ref=args.prompt_ref,
+        selection_task=args.selection_task,
+    )
+    _emit_output(report, output_format=args.output)
+    return 0
+
+
 def _handle_list_proposals(args: argparse.Namespace) -> int:
     """List persisted ontology proposals with optional filters."""
 
@@ -1453,6 +1497,7 @@ def _to_jsonable(value: object) -> Any:
             AssertionDispositionRecord,
             CandidateAssertionRecord,
             CandidateSubmissionResult,
+            ChunkTransferReport,
             CanonicalGraphPromotionResult,
             ExtractionPromptExperimentReport,
             GraphExternalReferenceRecord,
@@ -1506,6 +1551,15 @@ def _to_text(value: object) -> str:
             f"review_status={value.review_status} "
             f"validation_status={value.validation_status} "
             f"predicate={predicate}"
+        )
+    if isinstance(value, ChunkTransferReport):
+        return (
+            f"source_ref={value.source_ref} "
+            f"verdict={value.summary.verdict} "
+            f"accepted={value.summary.accepted_candidates} "
+            f"rejected={value.summary.rejected_candidates} "
+            f"pending={value.summary.pending_candidates} "
+            f"acceptance_rate={value.summary.acceptance_rate:.3f}"
         )
     if isinstance(value, ProposalRecord):
         return (

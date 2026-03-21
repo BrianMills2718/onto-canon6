@@ -36,7 +36,7 @@ chunking:
   max_chunk_chars: 5000
 
 evaluation:
-  sumo_db_path: "../onto-canon/data/sumo_plus.db"
+  sumo_db_path: "data/sumo_plus.db"
   benchmark_fixture: "tests/fixtures/psyop_eval_slice.json"
   observability_dataset: "onto_canon6_live_extraction_benchmark"
   observability_phase: "evaluation"
@@ -47,6 +47,10 @@ evaluation:
   judge_num_retries: 2
   judge_max_budget_usd: 0.25
   judge_max_output_tokens: 1500
+  chunk_transfer:
+    positive_min_acceptance_rate: 0.8
+    negative_max_acceptance_rate: 0.0
+    require_review_complete: true
   prompt_experiment:
     experiment_name: "onto_canon6_extraction_prompt_eval"
     observability_dataset: "onto_canon6_extraction_prompt_eval"

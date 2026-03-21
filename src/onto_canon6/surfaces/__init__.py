@@ -1,5 +1,11 @@
 """Surface exports for inspectable report-oriented views."""
 
+from .chunk_transfer_report import (
+    ChunkTransferCandidateSummary,
+    ChunkTransferReport,
+    ChunkTransferReportService,
+    ChunkTransferReportSummary,
+)
 from .epistemic_report import EpistemicReportService
 from .graph_report import (
     PromotedGraphAssertionBundle,
@@ -25,6 +31,10 @@ from .semantic_report import (
 )
 
 __all__ = [
+    "ChunkTransferCandidateSummary",
+    "ChunkTransferReport",
+    "ChunkTransferReportService",
+    "ChunkTransferReportSummary",
     "EpistemicReportService",
     "GovernedBundleScope",
     "GovernedCandidateBundle",

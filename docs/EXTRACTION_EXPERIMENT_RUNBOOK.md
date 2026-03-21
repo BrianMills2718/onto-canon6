@@ -106,6 +106,42 @@ Use this path when you need to answer:
 3. is it strong enough on a real chunk to justify broader verification or
    promotion into the repo default.
 
+## Chunk-Level Transfer Check
+
+After a chunk has been fully reviewed, use the transfer-report command to
+summarize whether that live chunk run transferred positively, negatively, or
+only mixed from the sentence-level benchmark lane.
+
+Example:
+
+```bash
+cd ~/projects/onto-canon6
+./.venv/bin/python -m onto_canon6 export-chunk-transfer-report \
+  --review-db-path var/real_runs/2026-03-21_compact2_real_chunk_verification/review_state_max10.sqlite3 \
+  --source-ref text://phase-b/2026-03-21/01_stage1_query2/chunk_002_compact2_max10 \
+  --prompt-template prompts/extraction/text_to_candidate_assertions_compact_v2.yaml \
+  --prompt-ref onto_canon6.extraction.text_to_candidate_assertions_compact_v2@2 \
+  --selection-task budget_extraction \
+  --output json
+```
+
+Use this when you need to answer:
+
+1. did this reviewed chunk transfer positively or negatively,
+2. can a live-prompt promotion cite real chunk evidence rather than sentence
+   cases alone, and
+3. is a chunk failure a prompt-quality problem or just an artifact of not
+   having reviewed the output yet.
+
+Important note:
+
+1. the command keys on the exact `source_ref` stored in the review DB;
+2. older runs may use either a `text://...` source ref or a chunk file path
+   string; and
+3. if the command says `no candidates found for source_ref=...`, first inspect
+   the persisted source refs rather than assuming the chunk path string is the
+   stored review provenance.
+
 ## Active-Call Query
 
 In a second shell, inspect the active-call state while the command runs:

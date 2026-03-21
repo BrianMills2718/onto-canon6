@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 import subprocess
 import sys
+from typing import Literal
 
 import pytest
 
@@ -276,6 +277,70 @@ def test_cli_extract_review_and_apply_flow_json_output(
         == proposal_id
     )
     assert bundle_output["candidate_bundles"][0]["epistemic_status"] == "active"
+
+
+def test_cli_export_chunk_transfer_report_json_output(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """The CLI should export one reviewed chunk transfer report."""
+
+    review_db_path = tmp_path / "review.sqlite3"
+    review_service = ReviewService(
+        db_path=review_db_path,
+        permissive_review=True,
+    )
+    source_ref = "chunk://cli-positive"
+    for predicate in (
+        "oc:predicate_a",
+        "oc:predicate_b",
+        "oc:predicate_c",
+        "oc:predicate_d",
+        "oc:predicate_e",
+    ):
+        submission = review_service.submit_candidate_assertion(
+            payload={"predicate": predicate, "roles": {}},
+            profile_id="default",
+            profile_version="1.0.0",
+            submitted_by="analyst:test",
+            source_kind="text_file",
+            source_ref=source_ref,
+            source_label="cli positive chunk",
+            source_text=f"{predicate} evidence text",
+        )
+        decision: Literal["accepted", "rejected"] = (
+            "accepted" if predicate != "oc:predicate_e" else "rejected"
+        )
+        review_service.review_candidate(
+            candidate_id=submission.candidate.candidate_id,
+            decision=decision,
+            actor_id="analyst:reviewer",
+        )
+
+    exit_code = cli_module.main(
+        [
+            "export-chunk-transfer-report",
+            "--review-db-path",
+            str(review_db_path),
+            "--source-ref",
+            source_ref,
+            "--prompt-ref",
+            "onto_canon6.extraction.text_to_candidate_assertions_compact_v2@2",
+            "--selection-task",
+            "budget_extraction",
+            "--output",
+            "json",
+        ]
+    )
+
+    assert exit_code == 0
+    report = json.loads(capsys.readouterr().out)
+    assert report["source_ref"] == source_ref
+    assert report["prompt_ref"] == "onto_canon6.extraction.text_to_candidate_assertions_compact_v2@2"
+    assert report["selection_task"] == "budget_extraction"
+    assert report["summary"]["verdict"] == "positive"
+    assert report["summary"]["accepted_candidates"] == 4
+    assert report["summary"]["rejected_candidates"] == 1
 
 
 def test_cli_extract_text_forwards_selection_task_override(
