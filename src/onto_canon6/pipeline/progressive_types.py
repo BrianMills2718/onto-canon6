@@ -185,3 +185,98 @@ class Pass2Result(BaseModel):
         ge=0,
         description="How many triples had no predicate match.",
     )
+
+
+class EntityRefinement(BaseModel):
+    """Refined type for one entity from Pass 3.
+
+    Records the result of narrowing an entity's coarse Pass 1 type using
+    the role constraint from the predicate's argument slot and the SUMO
+    subtree under the coarse type.  The ``refinement_method`` field
+    indicates which code path produced the result:
+
+    - ``leaf_early_exit``: the coarse type was already a SUMO leaf, so no
+      LLM call was needed.
+    - ``subtree_pick``: the LLM picked from a narrowed candidate list.
+    - ``no_constraint``: no meaningful role constraint existed (constraint
+      was ``Entity`` or absent), so the full coarse-type subtree was shown.
+    """
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    entity_name: str = Field(min_length=1)
+    coarse_type: str = Field(
+        min_length=1,
+        description="The coarse SUMO type assigned in Pass 1.",
+    )
+    refined_type: str = Field(
+        min_length=1,
+        description="The refined SUMO type from Pass 3 (more specific or same).",
+    )
+    role_constraint: str = Field(
+        description="The type constraint from the predicate role slot, or empty if none.",
+    )
+    refinement_method: str = Field(
+        description="How the refined type was determined: 'subtree_pick', 'leaf_early_exit', or 'no_constraint'.",
+    )
+    candidate_count: int = Field(
+        ge=0,
+        description="How many candidate types were shown to the LLM (0 for early exit).",
+    )
+
+
+class Pass3TypedAssertion(BaseModel):
+    """Fully typed assertion from Pass 3.
+
+    Combines a Pass 2 mapped assertion with entity refinement results for
+    each entity that fills a role in the predicate's argument schema.
+    """
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    assertion: Pass2MappedAssertion
+    entity_refinements: list[EntityRefinement]
+
+
+class Pass3Result(BaseModel):
+    """Complete result of Pass 3 entity refinement.
+
+    Contains the typed assertions, a provenance reference back to the
+    Pass 2 result, and diagnostic counts for each refinement code path
+    (leaf early exit, subtree pick via LLM, no constraint).
+    """
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    typed_assertions: list[Pass3TypedAssertion]
+    source_pass2: Pass2Result = Field(
+        description="The Pass 2 result this refinement was derived from.",
+    )
+    model: str = Field(
+        min_length=1,
+        description="The LLM model used for refinement calls.",
+    )
+    cost: float = Field(
+        default=0.0,
+        ge=0.0,
+        description="Total cost in USD for LLM refinement calls.",
+    )
+    trace_id: str = Field(
+        min_length=1,
+        description="Trace ID for observability.",
+    )
+    leaf_early_exit_count: int = Field(
+        default=0,
+        ge=0,
+        description="How many entities were already SUMO leaves (no LLM call).",
+    )
+    subtree_pick_count: int = Field(
+        default=0,
+        ge=0,
+        description="How many entities required an LLM subtree pick.",
+    )
+    no_constraint_count: int = Field(
+        default=0,
+        ge=0,
+        description="How many entities had no meaningful role constraint.",
+    )

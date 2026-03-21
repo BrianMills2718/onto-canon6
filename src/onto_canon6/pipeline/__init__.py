@@ -26,11 +26,14 @@ from .service import ReviewService
 from .store import ReviewStore, ReviewStoreConflictError, ReviewStoreError, ReviewStoreNotFoundError
 from .text_chunking import TextChunkFileRecord, TextChunkManifest, TextChunkRecord, TextChunkingService
 from .progressive_types import (
+    EntityRefinement,
     Pass1Entity,
     Pass1Result,
     Pass1Triple,
     Pass2MappedAssertion,
     Pass2Result,
+    Pass3Result,
+    Pass3TypedAssertion,
 )
 from .text_extraction import (
     candidate_import_from_extracted,
@@ -62,11 +65,14 @@ __all__ = [
     "ExtractionError",
     "OverlayApplicationRecord",
     "OverlayApplicationService",
+    "EntityRefinement",
     "Pass1Entity",
     "Pass1Result",
     "Pass1Triple",
     "Pass2MappedAssertion",
     "Pass2Result",
+    "Pass3Result",
+    "Pass3TypedAssertion",
     "PersistedValidationSnapshot",
     "ProfileRef",
     "ProposalAcceptancePolicy",

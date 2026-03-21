@@ -1,4 +1,4 @@
-"""Progressive disclosure extraction — Passes 1 and 2.
+"""Progressive disclosure extraction — Passes 1, 2, and 3.
 
 Pass 1 (Slice B): open extraction with SUMO seeding. Extracts entities and
 relationships from raw text, assigning coarse SUMO types from the ~50
@@ -8,6 +8,11 @@ Pass 2 (Slice C): predicate mapping with early exit. For each triple from
 Pass 1, normalizes the relationship verb to a lemma, looks it up in the
 Predicate Canon, and either maps it deterministically (single-sense, ~78%
 of cases) or calls an LLM to disambiguate among multiple senses.
+
+Pass 3 (Slice D): entity refinement with narrowed SUMO subtree. For each
+mapped assertion, refines entity types by intersecting the coarse type's
+descendants with the role constraint from the predicate canon.  Leaf types
+bypass the LLM entirely.
 
 All LLM calls go through ``llm_client`` with mandatory ``task=``,
 ``trace_id=``, and ``max_budget=`` kwargs. Prompt templates are YAML/Jinja2
@@ -29,13 +34,17 @@ from pydantic import BaseModel, ConfigDict, Field, ValidationError
 from onto_canon6.evaluation.fidelity_experiment import TOP_LEVEL_TYPES
 
 from onto_canon6.evaluation.predicate_canon import PredicateCanon, PredicateMatch
+from onto_canon6.evaluation.sumo_hierarchy import SUMOHierarchy
 
 from .progressive_types import (
+    EntityRefinement,
     Pass1Entity,
     Pass1Result,
     Pass1Triple,
     Pass2MappedAssertion,
     Pass2Result,
+    Pass3Result,
+    Pass3TypedAssertion,
 )
 
 logger = logging.getLogger(__name__)
@@ -738,6 +747,397 @@ def run_pass2_sync(
     return asyncio.run(
         run_pass2(
             pass1_result,
+            predicate_canon=predicate_canon,
+            model=model,
+            task=task,
+            trace_id=trace_id,
+            max_budget=max_budget,
+            _llm_api=_llm_api,
+        )
+    )
+
+
+# ---------------------------------------------------------------------------
+# Pass 3: Entity Refinement
+# ---------------------------------------------------------------------------
+
+_PASS3_PROMPT_TEMPLATE = "prompts/extraction/pass3_entity_refinement.yaml"
+
+# Role constraints that are too broad to be useful for narrowing.  When a
+# role's type_constraint is in this set, we treat it as unconstrained and
+# show the full coarse-type subtree instead.
+_TRIVIAL_CONSTRAINTS: frozenset[str] = frozenset({"Entity"})
+
+
+def _is_leaf(sumo_hierarchy: SUMOHierarchy, type_name: str) -> bool:
+    """Return True if *type_name* has no children in the SUMO hierarchy.
+
+    A type is a leaf when its subtypes list is empty.  Types not found
+    in the hierarchy are also treated as leaves (no subtree to explore).
+    """
+    return len(sumo_hierarchy.subtypes(type_name)) == 0
+
+
+def _narrow_candidates(
+    sumo_hierarchy: SUMOHierarchy,
+    coarse_type: str,
+    role_constraint: str | None,
+) -> tuple[list[str], str]:
+    """Compute the narrowed candidate type list for entity refinement.
+
+    Returns a ``(candidates, effective_method)`` tuple where:
+
+    - *candidates* is the list of SUMO type names to show the LLM
+      (always includes the coarse_type itself).
+    - *effective_method* is ``"subtree_pick"`` when the role constraint
+      meaningfully narrows the candidates, or ``"no_constraint"`` when
+      the full coarse-type subtree is used.
+
+    The narrowing logic:
+
+    1. Get all descendants of *coarse_type* (including coarse_type itself).
+    2. If *role_constraint* is meaningful (non-trivial, exists in hierarchy):
+       get all descendants of *role_constraint* and intersect with (1).
+    3. If the intersection is non-empty, use it; otherwise fall back to (1).
+    """
+    coarse_descendants = sumo_hierarchy.subtypes(coarse_type)
+    # Always include the coarse type itself as a candidate.
+    coarse_set = {coarse_type} | set(coarse_descendants)
+
+    if (
+        role_constraint is None
+        or role_constraint in _TRIVIAL_CONSTRAINTS
+        or not sumo_hierarchy.type_exists(role_constraint)
+    ):
+        return sorted(coarse_set), "no_constraint"
+
+    # Get the constraint subtree (constraint + its descendants).
+    constraint_descendants = sumo_hierarchy.subtypes(role_constraint)
+    constraint_set = {role_constraint} | set(constraint_descendants)
+
+    intersection = coarse_set & constraint_set
+    if intersection:
+        return sorted(intersection), "subtree_pick"
+
+    # No overlap — fall back to coarse subtree.
+    return sorted(coarse_set), "no_constraint"
+
+
+def _parse_refinement_response(
+    raw_content: str,
+    valid_types: set[str],
+    coarse_type: str,
+) -> str:
+    """Parse the LLM refinement response and extract the refined type.
+
+    Returns the ``refined_type`` from the JSON response if it is a valid
+    type from the candidate list.  Falls back to *coarse_type* when the
+    response is unparseable or the chosen type is not in the valid set.
+    """
+    content = _strip_markdown_fences(raw_content)
+
+    try:
+        data = json.loads(content)
+    except json.JSONDecodeError:
+        logger.error("Pass 3 refinement response is not valid JSON: %.200s", content)
+        return coarse_type
+
+    if not isinstance(data, dict):
+        logger.error(
+            "Pass 3 refinement response is not a JSON object: %s",
+            type(data).__name__,
+        )
+        return coarse_type
+
+    refined = data.get("refined_type")
+    if not isinstance(refined, str) or not refined.strip():
+        logger.error("Pass 3 refinement response missing or empty refined_type")
+        return coarse_type
+
+    refined = refined.strip()
+    if refined not in valid_types:
+        logger.warning(
+            "Pass 3 LLM picked type '%s' not in candidate list, falling back to '%s'",
+            refined,
+            coarse_type,
+        )
+        return coarse_type
+
+    return refined
+
+
+async def _refine_entity(
+    entity_name: str,
+    entity_context: str,
+    coarse_type: str,
+    role_label: str,
+    role_constraint: str | None,
+    sumo_hierarchy: SUMOHierarchy,
+    api: _LLMClientAPI,
+    effective_model: str,
+    task: str,
+    trace_id: str,
+    max_budget: float,
+) -> tuple[EntityRefinement, float]:
+    """Refine a single entity's type using the narrowed SUMO subtree.
+
+    Returns an ``(EntityRefinement, cost)`` tuple.  The cost is 0.0 for
+    early-exit paths (leaf or trivially constrained when the subtree is
+    just the coarse type itself).
+    """
+    # Leaf early exit: coarse type has no children.
+    if _is_leaf(sumo_hierarchy, coarse_type):
+        return EntityRefinement(
+            entity_name=entity_name,
+            coarse_type=coarse_type,
+            refined_type=coarse_type,
+            role_constraint=role_constraint or "",
+            refinement_method="leaf_early_exit",
+            candidate_count=0,
+        ), 0.0
+
+    # Compute narrowed candidate list.
+    candidates, method = _narrow_candidates(
+        sumo_hierarchy, coarse_type, role_constraint,
+    )
+
+    # If the narrowed list is just the coarse type itself, no LLM needed.
+    if len(candidates) == 1 and candidates[0] == coarse_type:
+        return EntityRefinement(
+            entity_name=entity_name,
+            coarse_type=coarse_type,
+            refined_type=coarse_type,
+            role_constraint=role_constraint or "",
+            refinement_method=method,
+            candidate_count=1,
+        ), 0.0
+
+    # Render prompt and call LLM.
+    type_list_str = "\n".join(f"- {t}" for t in candidates)
+    template_vars: dict[str, Any] = {
+        "entity_name": entity_name,
+        "entity_context": entity_context,
+        "coarse_type": coarse_type,
+        "role_label": role_label,
+        "role_constraint": role_constraint or "",
+        "type_list": type_list_str,
+    }
+    messages = api.render_prompt(_PASS3_PROMPT_TEMPLATE, **template_vars)
+
+    try:
+        result = await api.acall_llm(
+            effective_model,
+            messages,
+            task=task,
+            trace_id=trace_id,
+            max_budget=max_budget,
+            response_format={"type": "json_object"},
+        )
+        call_cost: float = result.cost or 0.0
+        raw_content: str = result.content or ""
+    except Exception:
+        logger.error(
+            "Pass 3 LLM refinement failed for entity '%s' (trace_id=%s)",
+            entity_name,
+            trace_id,
+            exc_info=True,
+        )
+        return EntityRefinement(
+            entity_name=entity_name,
+            coarse_type=coarse_type,
+            refined_type=coarse_type,
+            role_constraint=role_constraint or "",
+            refinement_method=method,
+            candidate_count=len(candidates),
+        ), 0.0
+
+    valid_set = set(candidates)
+    refined = _parse_refinement_response(raw_content, valid_set, coarse_type)
+
+    return EntityRefinement(
+        entity_name=entity_name,
+        coarse_type=coarse_type,
+        refined_type=refined,
+        role_constraint=role_constraint or "",
+        refinement_method=method,
+        candidate_count=len(candidates),
+    ), call_cost
+
+
+async def run_pass3(
+    pass2_result: Pass2Result,
+    *,
+    sumo_hierarchy: SUMOHierarchy,
+    predicate_canon: PredicateCanon,
+    model: str | None = None,
+    task: str = "progressive_extraction",
+    trace_id: str,
+    max_budget: float = 0.10,
+    _llm_api: _LLMClientAPI | None = None,
+) -> Pass3Result:
+    """Run Pass 3: entity refinement with narrowed SUMO subtree.
+
+    For each mapped assertion and each entity role:
+
+    1. Get the role's ``type_constraint`` from the Predicate Canon.
+    2. Get descendants of the coarse type (Pass 1) from the SUMO hierarchy.
+    3. Intersect with descendants of the role constraint.
+    4. If the coarse type is a SUMO leaf (no children), early exit.
+    5. Otherwise, show the narrowed type list to the LLM for refinement.
+
+    Entity deduplication: if the same ``(entity_name, coarse_type)`` pair
+    appears in multiple roles, it is refined only once and the result is
+    reused across all assertions that reference that entity.
+
+    Parameters
+    ----------
+    pass2_result:
+        The Pass 2 mapping result to refine.
+    sumo_hierarchy:
+        An already-opened SUMOHierarchy instance (caller manages lifecycle).
+    predicate_canon:
+        An already-opened PredicateCanon instance (caller manages lifecycle).
+    model:
+        LLM model identifier for refinement calls.  Defaults to
+        ``gemini/gemini-2.5-flash-lite``.
+    task:
+        Task tag for ``llm_client`` observability.
+    trace_id:
+        Trace ID for ``llm_client`` observability.
+    max_budget:
+        Maximum spend in USD for all refinement calls in this pass.
+    _llm_api:
+        Override for the llm_client API handle (testing only).
+
+    Returns
+    -------
+    Pass3Result with typed assertions, provenance, and diagnostic counts.
+    """
+    api = _llm_api or _load_llm_client_api()
+    effective_model = model or _DEFAULT_MODEL
+
+    total_cost = 0.0
+    leaf_early_exit_count = 0
+    subtree_pick_count = 0
+    no_constraint_count = 0
+
+    # Deduplication cache: (entity_name, coarse_type) -> EntityRefinement
+    refinement_cache: dict[tuple[str, str], EntityRefinement] = {}
+
+    typed_assertions: list[Pass3TypedAssertion] = []
+
+    for assertion in pass2_result.mapped:
+        role_constraints = predicate_canon.get_role_constraints(
+            assertion.predicate_id,
+        )
+        role_slots = predicate_canon.get_role_slots(assertion.predicate_id)
+        # Build a lookup from arg_position to named_label.
+        arg_to_label: dict[str, str] = {
+            s.arg_position: s.named_label for s in role_slots
+        }
+
+        entity_refinements: list[EntityRefinement] = []
+
+        for arg_pos, entity_name in assertion.mapped_roles.items():
+            # Find the entity's coarse type from the triple.
+            entity_a = assertion.triple.entity_a
+            entity_b = assertion.triple.entity_b
+
+            if entity_name == entity_a.name:
+                coarse_type = entity_a.coarse_type
+                entity_context = entity_a.context
+            elif entity_name == entity_b.name:
+                coarse_type = entity_b.coarse_type
+                entity_context = entity_b.context
+            else:
+                # Entity name not in the triple — use "Entity" as fallback.
+                coarse_type = "Entity"
+                entity_context = ""
+
+            cache_key = (entity_name, coarse_type)
+            if cache_key in refinement_cache:
+                entity_refinements.append(refinement_cache[cache_key])
+                continue
+
+            role_constraint = role_constraints.get(arg_pos)
+            role_label = arg_to_label.get(arg_pos, arg_pos)
+
+            refinement, cost = await _refine_entity(
+                entity_name=entity_name,
+                entity_context=entity_context,
+                coarse_type=coarse_type,
+                role_label=role_label,
+                role_constraint=role_constraint,
+                sumo_hierarchy=sumo_hierarchy,
+                api=api,
+                effective_model=effective_model,
+                task=task,
+                trace_id=trace_id,
+                max_budget=max_budget,
+            )
+            total_cost += cost
+            refinement_cache[cache_key] = refinement
+            entity_refinements.append(refinement)
+
+            # Track counts.
+            if refinement.refinement_method == "leaf_early_exit":
+                leaf_early_exit_count += 1
+            elif refinement.refinement_method == "subtree_pick":
+                subtree_pick_count += 1
+            elif refinement.refinement_method == "no_constraint":
+                no_constraint_count += 1
+
+        typed_assertions.append(
+            Pass3TypedAssertion(
+                assertion=assertion,
+                entity_refinements=entity_refinements,
+            )
+        )
+
+    logger.info(
+        "Pass 3 complete: %d typed assertions, %d refinements "
+        "(%d leaf, %d subtree, %d no_constraint) (trace_id=%s, cost=$%.4f)",
+        len(typed_assertions),
+        len(refinement_cache),
+        leaf_early_exit_count,
+        subtree_pick_count,
+        no_constraint_count,
+        trace_id,
+        total_cost,
+    )
+
+    return Pass3Result(
+        typed_assertions=typed_assertions,
+        source_pass2=pass2_result,
+        model=effective_model,
+        cost=total_cost,
+        trace_id=trace_id,
+        leaf_early_exit_count=leaf_early_exit_count,
+        subtree_pick_count=subtree_pick_count,
+        no_constraint_count=no_constraint_count,
+    )
+
+
+def run_pass3_sync(
+    pass2_result: Pass2Result,
+    *,
+    sumo_hierarchy: SUMOHierarchy,
+    predicate_canon: PredicateCanon,
+    model: str | None = None,
+    task: str = "progressive_extraction",
+    trace_id: str,
+    max_budget: float = 0.10,
+    _llm_api: _LLMClientAPI | None = None,
+) -> Pass3Result:
+    """Synchronous wrapper for :func:`run_pass3`.
+
+    Runs the async implementation in a new event loop.  Prefer the async
+    version when an event loop is already running.
+    """
+    return asyncio.run(
+        run_pass3(
+            pass2_result,
+            sumo_hierarchy=sumo_hierarchy,
             predicate_canon=predicate_canon,
             model=model,
             task=task,

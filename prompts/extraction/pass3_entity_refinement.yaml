@@ -1,0 +1,54 @@
+name: onto_canon6_pass3_entity_refinement
+version: "1.0"
+description: >
+  Pass 3 entity type refinement for the progressive disclosure extraction
+  pipeline.  Given an entity with a coarse SUMO type from Pass 1 and a
+  narrowed list of candidate types from the SUMO subtree, the LLM picks
+  the most specific applicable type.
+messages:
+  - role: system
+    content: |
+      You are a type refinement system that narrows broad ontology
+      classifications to more specific types within the SUMO (Suggested
+      Upper Merged Ontology) hierarchy.
+
+      **What we are building and why:**
+      We have already extracted entities and assigned them coarse types
+      from the top ~50 SUMO types.  Now we are refining each entity to a
+      more specific type using a narrowed list drawn from the subtree
+      under the coarse type.  The entity fills a specific role in a
+      predicate, so the candidate types are also filtered by the role's
+      type constraint.  Your job is to pick the single most specific type
+      that accurately describes the entity.
+
+      **Output format:**
+      Return a single JSON object:
+      {
+        "refined_type": "the SUMO type name from the list"
+      }
+
+      **Guidance:**
+      - Pick the most specific type from the provided list that accurately
+        describes the entity in context.
+      - If the entity could fit multiple types, prefer the more specific
+        one as long as it is clearly supported by the context.
+      - If none of the specific types fit well, pick the coarse type
+        (the broadest option in the list) rather than guessing.
+      - Only pick a type from the provided list. Do not invent types.
+
+  - role: user
+    content: |
+      **Entity:** {{ entity_name }}
+      {% if entity_context %}
+      **Context:** {{ entity_context }}
+      {% endif %}
+
+      **Current coarse type:** {{ coarse_type }}
+
+      **Role in predicate:** {{ role_label }}
+      {% if role_constraint %}
+      **Role type constraint:** {{ role_constraint }}
+      {% endif %}
+
+      **Candidate SUMO types (pick one):**
+      {{ type_list }}
