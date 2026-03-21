@@ -243,8 +243,8 @@ Build in this order:
 
 1. use the new case-level diagnostics plus representative outputs to review the
    broader v3 benchmark case by case, not only through aggregate scores;
-2. decide whether to add an explicit chunk-level evaluation slice so the
-   benchmark can measure transfer from sentence-level cases to real
+2. execute [0019_chunk_level_transfer_evaluation.md](0019_chunk_level_transfer_evaluation.md)
+   so the benchmark can measure transfer from sentence-level cases to real
    multi-paragraph chunks;
 3. only after that decide whether another operational prompt revision is
    justified;

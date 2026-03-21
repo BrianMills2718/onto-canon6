@@ -27,6 +27,7 @@ during the restart review and planning phase.
 20. [0020 - Align Phase A prompt-eval exact scoring to extraction-boundary semantics](0020-align-phase-a-prompt-eval-exact-scoring-to-extraction-boundary-semantics.md)
 21. [0021 - Keep chunk extraction directly grounded and defer document-level synthesis](0021-keep-chunk-extraction-directly-grounded-and-defer-document-level-synthesis.md)
 22. [0022 - Classify post-bootstrap extraction work as an explicit R&D workstream](0022-classify-post-bootstrap-extraction-work-as-an-explicit-r-and-d-workstream.md)
+23. [0023 - Require a chunk-level transfer evaluation slice before live prompt promotion](0023-require-a-chunk-level-transfer-evaluation-slice-before-live-prompt-promotion.md)
 
 ## Notes
 
@@ -39,6 +40,6 @@ during the restart review and planning phase.
 4. `../plans/0005_v1_capability_parity_matrix.md` is the explicit ledger for
    what happened to each major `onto-canon` capability after the current
    Phase 0-15 successor-core bootstrap.
-5. ADRs 0017-0022 describe the active post-bootstrap extraction R&D
+5. ADRs 0017-0023 describe the active post-bootstrap extraction R&D
    workstream. They are real repo-local decisions, but they do not silently
    replace the canonical successor-core roadmap.
