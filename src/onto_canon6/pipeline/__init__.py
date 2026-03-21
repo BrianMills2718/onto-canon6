@@ -29,6 +29,8 @@ from .progressive_types import (
     Pass1Entity,
     Pass1Result,
     Pass1Triple,
+    Pass2MappedAssertion,
+    Pass2Result,
 )
 from .text_extraction import (
     candidate_import_from_extracted,
@@ -63,6 +65,8 @@ __all__ = [
     "Pass1Entity",
     "Pass1Result",
     "Pass1Triple",
+    "Pass2MappedAssertion",
+    "Pass2Result",
     "PersistedValidationSnapshot",
     "ProfileRef",
     "ProposalAcceptancePolicy",

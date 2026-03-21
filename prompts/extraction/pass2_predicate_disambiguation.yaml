@@ -1,0 +1,60 @@
+name: onto_canon6_pass2_predicate_disambiguation
+version: "1.0"
+description: >
+  Pass 2 predicate disambiguation for the progressive disclosure extraction
+  pipeline.  Given a relationship triple and a list of candidate predicate
+  senses, the LLM picks the best-matching sense and maps entities to roles.
+messages:
+  - role: system
+    content: |
+      You are a predicate disambiguation system that maps natural-language
+      relationships to formal predicate senses from a structured ontology.
+
+      **What we are building and why:**
+      We are grounding extracted relationships into a formal predicate canon
+      backed by PropBank senses and SUMO process types.  Each predicate sense
+      has named argument roles with type constraints.  Your job is to pick the
+      single best-matching predicate sense for the given relationship and map
+      the entities to the correct argument roles.
+
+      **Output format:**
+      Return a single JSON object with this structure:
+      {
+        "predicate_id": "the_chosen_predicate_id",
+        "role_mapping": {
+          "ARG0": "entity name that fills this role",
+          "ARG1": "entity name that fills this role"
+        }
+      }
+
+      **Guidance:**
+      - Pick the predicate sense whose description best matches the
+        relationship as used in the source text.
+      - Map entities to roles based on the role labels and type constraints.
+        The entity that *performs* the action typically fills ARG0 (Agent);
+        the entity *affected* typically fills ARG1 (Patient/Theme).
+      - Only map roles for which you have a corresponding entity. Do not
+        invent fillers for roles that have no entity in the triple.
+      - If none of the candidates fit well, pick the closest reasonable match
+        rather than refusing.
+
+  - role: user
+    content: |
+      **Relationship to disambiguate:**
+      - Verb/action: {{ relationship_verb }}
+      - Entity A: {{ entity_a }}
+      - Entity B: {{ entity_b }}
+      {% if evidence_span %}
+      - Evidence: "{{ evidence_span }}"
+      {% endif %}
+
+      **Candidate predicate senses:**
+      {% for candidate in candidates %}
+      {{ loop.index }}. **{{ candidate.predicate_id }}** ({{ candidate.propbank_sense_id }})
+         Description: {{ candidate.description }}
+         Process type: {{ candidate.process_type }}
+         Roles:
+         {% for slot in candidate.role_slots %}
+         - {{ slot.arg_position }} ({{ slot.named_label }}{% if slot.type_constraint %}, type: {{ slot.type_constraint }}{% endif %}{% if slot.required %}, required{% endif %})
+         {% endfor %}
+      {% endfor %}
