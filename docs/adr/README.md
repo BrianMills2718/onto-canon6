@@ -24,6 +24,7 @@ during the restart review and planning phase.
 17. [0017 - Adopt permissive extraction with downstream governance](0017-adopt-permissive-extraction-with-downstream-governance.md)
 18. [0018 - Adopt multi-pass progressive disclosure extraction](0018-adopt-multi-pass-progressive-disclosure-extraction.md)
 19. [0019 - Adopt ancestor-aware evaluation with growing acceptable sets](0019-adopt-ancestor-aware-evaluation-with-growing-acceptable-sets.md)
+20. [0020 - Align Phase A prompt-eval exact scoring to extraction-boundary semantics](0020-align-phase-a-prompt-eval-exact-scoring-to-extraction-boundary-semantics.md)
 
 ## Notes
 

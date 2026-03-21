@@ -191,6 +191,86 @@ def test_score_prompt_eval_trial_rewards_exact_usable_output() -> None:
     assert score.dimension_scores["count_alignment"] == 1.0
 
 
+def test_score_prompt_eval_trial_ignores_reviewer_ids_and_value_normalization_shapes() -> None:
+    """Prompt-eval exact scoring should focus on extraction-boundary semantics."""
+
+    case = BenchmarkCase(
+        case_id="case-psyop-label",
+        profile=ProfileRef(profile_id="psyop_seed", profile_version="0.1.0"),
+        source_artifact=SourceArtifactRef(
+            source_kind="raw_text",
+            source_ref="text://case-psyop-label",
+            source_label="PSYOP label case",
+            source_metadata={},
+            content_text="Psychological Operations continued to use the label PSYOP.",
+        ),
+        expected_candidates=(
+            BenchmarkReferenceCandidate(
+                payload={
+                    "predicate": "oc:uses_designation_label",
+                    "roles": {
+                        "subject": [
+                            {
+                                "entity_id": "ent:operation:psychological_operations",
+                                "name": "Psychological Operations",
+                                "entity_type": "oc:psychological_operation",
+                            }
+                        ],
+                        "label": [
+                            {
+                                "kind": "value",
+                                "value_kind": "string",
+                                "raw": "PSYOP",
+                                "normalized": {
+                                    "value": "PSYOP",
+                                },
+                            }
+                        ],
+                    },
+                }
+            ),
+        ),
+    )
+    output = TextExtractionResponse(
+        candidates=[
+            ExtractedCandidate(
+                predicate="oc:uses_designation_label",
+                roles={
+                    "subject": [
+                        ExtractedFiller(
+                            kind="entity",
+                            entity_type="oc:psychological_operation",
+                            name="Psychological Operations",
+                        )
+                    ],
+                    "label": [
+                        ExtractedFiller(
+                            kind="value",
+                            value_kind="string",
+                            raw="PSYOP",
+                        )
+                    ],
+                },
+                evidence_spans=[
+                    ExtractedEvidenceSpan(text="PSYOP"),
+                ],
+            )
+        ]
+    )
+
+    score = prompt_eval_service_module._score_prompt_eval_trial(
+        output=output,
+        expected=case,
+        eval_score_cls=_FakeEvalScore,
+        overlay_root=PROJECT_ROOT / "var" / "ontology_overlays",
+    )
+
+    assert score.score == 1.0
+    assert score.dimension_scores["exact_f1"] == 1.0
+    assert score.dimension_scores["structural_usable_rate"] == 1.0
+    assert score.dimension_scores["count_alignment"] == 1.0
+
+
 def test_run_prompt_experiment_builds_report_and_variant_comparison(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:

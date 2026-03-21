@@ -16,15 +16,18 @@ for that purpose.
 from __future__ import annotations
 
 import asyncio
+from collections import Counter
 from dataclasses import dataclass
 from importlib import import_module
 import logging
 from pathlib import Path
+import json
 from typing import Any, Awaitable, Callable, Literal, Mapping, Protocol, cast
 
 from ..config import ConfigError, PromptEvalVariantConfig, get_config
-from ..ontology_runtime import load_effective_profile
+from ..ontology_runtime import canonical_assertion_body, load_effective_profile
 from ..pipeline import (
+    CandidateAssertionImport,
     ProfileRef,
     TextExtractionResponse,
     candidate_import_from_extracted,
@@ -33,6 +36,8 @@ from ..pipeline import (
 )
 from .models import (
     BenchmarkCase,
+    BenchmarkReferenceCandidate,
+    CanonicalizationSummary,
     ExtractionPromptExperimentReport,
     PromptEvalComparisonMethod,
     PromptEvalFailureCategory,
@@ -40,7 +45,6 @@ from .models import (
     PromptVariantSummaryRecord,
 )
 from .service import (
-    _score_exact_canonicalization,
     _validate_candidate_imports,
     load_benchmark_fixture,
 )
@@ -436,7 +440,7 @@ def _score_prompt_eval_trial(
             profile=expected.profile,
             overlay_root=overlay_root,
         )
-        _, canonicalization = _score_exact_canonicalization(
+        _, canonicalization = _score_prompt_eval_exact_canonicalization(
             expected_candidates=expected.expected_candidates,
             observed_candidates=candidate_imports,
         )
@@ -475,6 +479,155 @@ def _score_prompt_eval_trial(
             dimension_scores=zero_dimensions,
             reasoning=f"deterministic prompt_eval scoring failed: {exc}",
         )
+
+
+def _score_prompt_eval_exact_canonicalization(
+    *,
+    expected_candidates: tuple[BenchmarkReferenceCandidate, ...],
+    observed_candidates: tuple[CandidateAssertionImport, ...],
+) -> tuple[tuple[bool, ...], CanonicalizationSummary]:
+    """Score prompt-eval exact agreement at the extraction boundary.
+
+    Phase A prompt experiments should compare what the extractor is supposed to
+    emit now, not what later review or identity stages may canonicalize it
+    into. The prompt-eval exact lane therefore ignores reviewer-only entity IDs
+    and downstream normalization shapes while still requiring exact predicate,
+    role-name, entity-type, surface-form, and value-kind agreement.
+    """
+
+    expected_signatures = Counter(
+        _prompt_eval_candidate_signature(reference.payload) for reference in expected_candidates
+    )
+    observed_signatures = Counter(
+        _prompt_eval_candidate_signature(candidate_import.payload) for candidate_import in observed_candidates
+    )
+    matched_counter = expected_signatures & observed_signatures
+    matched = sum(matched_counter.values())
+    expected_count = sum(expected_signatures.values())
+    observed_count = sum(observed_signatures.values())
+    precision = matched / observed_count if observed_count else 0.0
+    recall = matched / expected_count if expected_count else 0.0
+    f1 = 0.0
+    if precision and recall:
+        f1 = 2 * precision * recall / (precision + recall)
+
+    remaining = Counter(expected_signatures)
+    match_flags: list[bool] = []
+    for candidate_import in observed_candidates:
+        signature = _prompt_eval_candidate_signature(candidate_import.payload)
+        if remaining[signature] > 0:
+            remaining[signature] -= 1
+            match_flags.append(True)
+        else:
+            match_flags.append(False)
+
+    return (
+        tuple(match_flags),
+        CanonicalizationSummary(
+            expected=expected_count,
+            observed=observed_count,
+            matched=matched,
+            precision=round(precision, 4),
+            recall=round(recall, 4),
+            f1=round(f1, 4),
+            missing_signatures=tuple((expected_signatures - observed_signatures).elements()),
+            unexpected_signatures=tuple((observed_signatures - expected_signatures).elements()),
+        ),
+    )
+
+
+def _prompt_eval_candidate_signature(payload: Mapping[str, Any]) -> str:
+    """Canonicalize one payload into a prompt-eval exact-match signature.
+
+    This signature keeps the extraction-boundary semantics that the prompts are
+    responsible for: predicate choice, role structure, entity surface forms,
+    entity types, and value kinds/text. It deliberately ignores entity IDs and
+    other post-extraction canonicalization details.
+    """
+
+    body = canonical_assertion_body(payload)
+    predicate = str(body.get("predicate", "")).strip()
+    roles_obj = body.get("roles", {})
+    if not isinstance(roles_obj, Mapping):
+        raise ExtractionPromptExperimentError(
+            "candidate payload roles must be a mapping for prompt-eval exact scoring"
+        )
+    normalized_roles: dict[str, list[Any]] = {}
+    for role_name, fillers in roles_obj.items():
+        if not isinstance(fillers, list):
+            raise ExtractionPromptExperimentError(
+                "candidate role fillers must be lists for prompt-eval exact scoring"
+            )
+        normalized_roles[str(role_name)] = sorted(
+            (_normalize_prompt_eval_filler(filler) for filler in fillers),
+            key=_stable_json,
+        )
+    canonical = {
+        "predicate": predicate,
+        "roles": {role_name: normalized_roles[role_name] for role_name in sorted(normalized_roles)},
+    }
+    return _stable_json(canonical)
+
+
+def _normalize_prompt_eval_filler(filler: Any) -> Any:
+    """Normalize one filler for prompt-eval exact comparison.
+
+    The extraction boundary should not be penalized for reviewer-chosen entity
+    IDs or for richer downstream value-normalization objects when the source
+    surface form already matches exactly.
+    """
+
+    if not isinstance(filler, Mapping):
+        return filler
+
+    kind = str(filler.get("kind", "")).strip()
+    if kind == "entity":
+        normalized: dict[str, Any] = {"kind": "entity"}
+        name = filler.get("name")
+        entity_type = filler.get("entity_type")
+        if name is not None:
+            normalized["name"] = name
+        if entity_type is not None:
+            normalized["entity_type"] = entity_type
+        return normalized
+
+    if kind == "value":
+        normalized = {"kind": "value"}
+        value_kind = filler.get("value_kind")
+        if value_kind is not None:
+            normalized["value_kind"] = value_kind
+        raw = filler.get("raw")
+        if raw not in (None, ""):
+            normalized["value"] = raw
+            return normalized
+        if "normalized" in filler:
+            normalized["value"] = _normalize_json_like(filler.get("normalized"))
+        return normalized
+
+    if kind == "unknown":
+        return {"kind": "unknown", "raw": filler.get("raw")}
+
+    return {
+        str(key): _normalize_json_like(value)
+        for key, value in sorted(filler.items())
+        if key not in {"entity_id", "alias_ids"}
+    }
+
+
+def _normalize_json_like(value: Any) -> Any:
+    """Normalize arbitrary JSON-like data into a stable comparable shape."""
+
+    if isinstance(value, Mapping):
+        return {str(key): _normalize_json_like(item) for key, item in sorted(value.items())}
+    if isinstance(value, list):
+        return sorted((_normalize_json_like(item) for item in value), key=_stable_json)
+    return value
+
+
+def _stable_json(value: Any) -> str:
+    """Serialize normalized JSON deterministically for prompt-eval matching."""
+
+    return json.dumps(value, sort_keys=True, separators=(",", ":"))
 
 
 def _require_single_profile(cases: tuple[BenchmarkCase, ...]) -> ProfileRef:

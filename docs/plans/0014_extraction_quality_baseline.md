@@ -79,6 +79,29 @@ question plus remaining semantic extraction quality work:
 - prompt guardrails alone are not enough to separate the variants on the
   expanded fixture
 
+That benchmark-contract question is now resolved. A third expanded sweep on
+2026-03-21 aligned the Phase A exact lane to extraction-boundary semantics
+instead of reviewer-style canonical payloads. That rerun used the same
+explicit live lane and produced:
+
+- `baseline = 0.34`, `exact_f1 = 0.20`, `structural_usable_rate = 0.70`
+- `compact = 0.3639`, `exact_f1 = 0.2222`, `structural_usable_rate = 0.5556`,
+  `n_errors = 1`
+- `hardened = 0.335`, `exact_f1 = 0.20`, `structural_usable_rate = 0.60`
+- `single_response_hardened = 0.345`, `exact_f1 = 0.20`,
+  `structural_usable_rate = 0.60`
+
+None of the bootstrap comparisons was significant, but the important change
+is that `exact_f1` moved off zero for every successful variant. Phase A is
+now measuring extractor behavior instead of reviewer-only IDs and downstream
+value-normalization shape. The remaining blockers are honest semantic and
+structural ones:
+
+- under-extraction of multi-fact cases like designation change
+- concern/capability structure still collapsing in the truth-shift case
+- one surviving compact-variant structural failure from an unnamed entity
+  filler on `psyop_001_designation_change`
+
 ## Motivation
 
 The Stage 1 run revealed three failure modes:
@@ -124,6 +147,34 @@ thematic analysis where *what* is said matters more than *who* said it).
 Sometimes the content of a claim matters more than who made it.
 
 ## Design Decisions
+
+### D0: Phase A prompt-eval exact scoring uses extraction-boundary semantics
+
+Prompt experiments are supposed to evaluate what the extractor is
+responsible for now: predicate choice, role structure, entity surface form,
+entity type, and value-kind/text. They should not fail exact-match scoring
+because later stages might assign different stable IDs or richer value
+normalization objects.
+
+So the Phase A prompt-eval exact lane is intentionally narrower than the
+later reviewer-style canonicalization lane:
+
+1. `ExtractionPromptExperimentService` uses a prompt-eval-specific exact
+   matcher that:
+   - keeps exact predicate and role-name structure
+   - compares entity fillers by `kind`, `entity_type`, and `name`
+   - compares value fillers by `kind`, `value_kind`, and primary value text
+   - ignores reviewer-only `entity_id` / `alias_ids`
+   - ignores richer downstream normalization shape when the extraction
+     boundary already matches on surface text
+2. `LiveExtractionEvaluationService` keeps the stricter reviewer-style exact
+   canonicalization lane for later evaluation and review-quality checks.
+3. Phase A exact scores and Phase B canonicalization-fidelity scores are
+   therefore related but not identical. The separation is deliberate and
+   follows ADR-0005's lane-separation principle.
+
+This decision is now captured in ADR-0020 and should not be reopened unless
+the extractor boundary itself changes.
 
 ### D1: Allow typed-but-unidentified entity fillers
 
@@ -426,20 +477,23 @@ That harness is now the regression guard for prompt changes. The rule is:
 3. The bounded live viability sweep in D8 completes with scored trials for
    all four variants and 0 structural failures. This is the regression
    guard for future prompt changes.
-4. The expanded Phase A benchmark shows semantic improvement over the
+4. The expanded Phase A benchmark uses the D0 extraction-boundary exact
+   contract and therefore produces non-zero `exact_f1` when predicate/role
+   semantics are genuinely correct even if reviewer IDs differ.
+5. The expanded Phase A benchmark shows semantic improvement over the
    2026-03-21 bounded live baseline and over the baseline variant on at
    least one of `mean_score` or `exact_f1`, without structural
    regression.
-5. Phase B (review-quality verification) shows measurable improvement on
+6. Phase B (review-quality verification) shows measurable improvement on
    the strict profile (see Verification section).
-6. If the unidentified-filler mechanism is implemented, then
+7. If the unidentified-filler mechanism is implemented, then
    `ExtractedFiller._validate_shape`, validation, and prompt rendering all
    follow D1 and D3 consistently.
-7. All existing tests continue to pass.
-8. New tests cover: benchmark cases for the targeted semantic failures,
+8. All existing tests continue to pass.
+9. New tests cover: benchmark cases for the targeted semantic failures,
    prompt negative guidance rendering, and any unidentified-filler policy
    path that is actually implemented.
-9. Each rejected candidate in Phase B is labeled with a D4 semantic
+10. Each rejected candidate in Phase B is labeled with a D4 semantic
     failure taxonomy label.
 
 ## Verification
@@ -479,6 +533,23 @@ green. The service handles:
 
 Compare results with `python -m llm_client experiments compare`.
 
+As of 2026-03-21, three expanded-fixture runs now exist:
+
+1. initial expanded baseline
+2. guardrail + `kind` rerun
+3. contract-aligned rerun using D0 exact scoring
+
+The third run is the current honest baseline for Phase A interpretation:
+
+- `baseline`: `mean_score = 0.34`, `exact_f1 = 0.20`
+- `compact`: `mean_score = 0.3639`, `exact_f1 = 0.2222`, but with
+  `n_errors = 1`
+- `hardened`: `mean_score = 0.335`, `exact_f1 = 0.20`
+- `single_response_hardened`: `mean_score = 0.345`, `exact_f1 = 0.20`
+
+Bootstrap comparisons remain non-significant. So the contract alignment is
+done, but the semantic selection problem is still open.
+
 **Phase B — Review-quality verification (manual or agent-assisted):**
 
 Run live extraction over 4-6 real documents (the 3 Stage 1 docs plus 1-3
@@ -509,6 +580,7 @@ guard fails, fix the structural issue before measuring semantic quality.
 |---|---|
 | structural_usable_rate (all variants) | >=0.95 |
 | at least one variant exact_f1 | >0.0 |
+| D0 extraction-boundary exact lane in place | yes |
 | at least one non-baseline variant beats baseline on `mean_score` or `exact_f1` | yes |
 | 0 structural failure trials across all variants | yes |
 
@@ -577,31 +649,37 @@ have been measured.
 5. **Expanded Phase A benchmark**: Run all four variants over the
    expanded fixture and compare them. This is the first real semantic
    selection gate.
-6. **Filler contract** (conditional, only if the expanded fixture or dry
+6. **Contract-align Phase A exact scoring** (D0): Keep prompt-eval exact
+   matching local to the extraction boundary so Phase A is not confounded
+   by reviewer IDs or downstream normalization shape. This is now done.
+7. **Filler contract** (conditional, only if the expanded fixture or dry
    review still shows unattributed-opinion loss as a material blocker):
    a. Relax `ExtractedFiller._validate_shape` to allow entity fillers with
       `entity_type` but no `name`/`entity_id`.
    b. Update `_pipeline_filler_from_extracted` so unidentified fillers
       bypass `_derive_local_entity_id` and persist with no `entity_id`.
-7. **Profile policy** (conditional, paired with Step 6):
+8. **Profile policy** (conditional, paired with Step 7):
    a. Add `unidentified_entity_fillers: Literal["allow", "reject"]` to the
       profile manifest schema and `LoadedProfile` (`loaders.py`).
    b. Make `_check_entity_ids` in `validation.py` conditional on the
       profile setting.
    c. Default `reject` so existing profiles are unaffected.
-8. **Prompt policy rendering** (only if Steps 6-7 happen): Extend
+9. **Prompt policy rendering** (only if Steps 7-8 happen): Extend
    `_render_predicate_catalog` or add a new template variable to
    communicate the active unidentified-filler policy.
-9. **Tests**: Cover the expanded benchmark fixture, prompt rendering, and
+10. **Tests**: Cover the expanded benchmark fixture, prompt rendering, and
    any unidentified-filler policy path that is actually implemented.
-10. **Phase B — Review-quality verification**: Using the best-performing
+11. **Phase B — Review-quality verification**: Using the best-performing
     variant from Phase A, extract 4-6 real documents with the strict
     profile. Run the permissive profile only if Steps 6-8 were justified by
     the evidence.
 
-Steps 2-5 are the immediate next thin slice. Steps 6-8 are conditional,
-not automatic. The point is to prove whether unidentified fillers are a
-real blocker before adding the policy dimension.
+Steps 2, 4, 5, and 6 are now complete. The immediate next thin slice is
+Step 3: dry review and taxonomy over the current expanded-fixture outputs so
+the next prompt iteration is driven by the remaining semantic failures, not
+by benchmark-contract ambiguity. Steps 7-9 are conditional, not automatic.
+The point is still to prove whether unidentified fillers are a real blocker
+before adding the policy dimension.
 
 ## Non-Goals
 
