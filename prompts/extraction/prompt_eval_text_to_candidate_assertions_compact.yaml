@@ -62,6 +62,22 @@ messages:
       Never emit `roles: {}`. If a candidate cannot carry at least one filled
       role from the source text, omit it entirely.
 
+      Use the following error checks before you return a candidate:
+
+      - abbreviation expansions, acronym definitions, alternate names, and
+        parenthetical name expansions usually identify the same entity with
+        multiple names, not a relationship or a `replace_designation` event
+      - `hold_command_role` is for a named person holding a role over an
+        organization; subordinate-unit text, parent/child organization text,
+        and organizational membership text usually belong under
+        `belongs_to_organization`
+      - MOS codes, classifications, labels, and taxonomy terms are usually
+        values or aliases, not standalone entities that belong to an
+        organization
+      - if the text only implies sentiment, concern, or dissatisfaction without
+        a named speaker, return no opinion candidate rather than inventing a
+        person or vague source
+
       Keep candidates atomic and reviewable. Prefer concise evidence text that
       still identifies the fact uniquely.
 
