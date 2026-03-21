@@ -788,6 +788,19 @@ def _build_parser() -> argparse.ArgumentParser:
     _add_output_arg(export_identity_report_parser, default_output=config.cli.default_output_format)
     export_identity_report_parser.set_defaults(handler=_handle_export_identity_report)
 
+    export_digimon_parser = subparsers.add_parser(
+        "export-digimon",
+        help="Export promoted graph assertions in Digimon-compatible JSONL format.",
+    )
+    _add_store_args(export_digimon_parser, include_overlay_root=False)
+    export_digimon_parser.add_argument(
+        "--output-dir",
+        required=True,
+        type=Path,
+        help="Directory for entities.jsonl and relationships.jsonl output files.",
+    )
+    export_digimon_parser.set_defaults(handler=_handle_export_digimon)
+
     return parser
 
 
@@ -1320,6 +1333,25 @@ def _handle_export_identity_report(args: argparse.Namespace) -> int:
     identity_service = _build_identity_service(args)
     report = IdentityReportService(identity_service=identity_service).build_report()
     _emit_output(report, output_format=args.output)
+    return 0
+
+
+def _handle_export_digimon(args: argparse.Namespace) -> int:
+    """Export promoted graph in Digimon-compatible JSONL format."""
+
+    from .adapters.digimon_export import export_for_digimon, write_digimon_jsonl
+
+    graph_service = _build_graph_service(args)
+    review_service = _build_review_service(args)
+    bundle = export_for_digimon(
+        graph_service=graph_service,
+        review_service=review_service,
+    )
+    entities_path, relationships_path = write_digimon_jsonl(bundle, args.output_dir)
+    print(
+        f"Exported {len(bundle.entities)} entities → {entities_path}\n"
+        f"Exported {len(bundle.relationships)} relationships → {relationships_path}"
+    )
     return 0
 
 
