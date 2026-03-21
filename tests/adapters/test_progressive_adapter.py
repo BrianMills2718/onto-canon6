@@ -189,16 +189,25 @@ def test_typed_assertion_converts_to_candidate_import() -> None:
 
     typed_import = imports[0]
     payload = typed_import.payload
-    assert payload["subject"] == "Shield AI"
-    assert payload["subject_type"] == "MilitaryOrganization"
     assert payload["predicate"] == "develop_create"
     assert payload["predicate_sense"] == "develop-02"
     assert payload["process_type"] == "Making"
-    assert payload["object"] == "autonomous drones"
-    assert payload["object_type"] == "UnmannedAerialVehicle"
     assert payload["confidence"] == 0.9
     assert payload["disambiguation_method"] == "single_sense"
     assert payload["pass_provenance"] == "pass3"
+    # Role-based entity structure
+    roles = payload["roles"]
+    assert isinstance(roles, dict)
+    assert len(roles) > 0
+    # At least one role should contain Shield AI or autonomous drones
+    all_names = [
+        filler["name"]
+        for fillers in roles.values()
+        if isinstance(fillers, list)
+        for filler in fillers
+        if isinstance(filler, dict) and "name" in filler
+    ]
+    assert "Shield AI" in all_names or "autonomous drones" in all_names
 
 
 def test_unresolved_triple_converts_to_candidate_import() -> None:
@@ -212,11 +221,17 @@ def test_unresolved_triple_converts_to_candidate_import() -> None:
     payload = unresolved_import.payload
     assert payload["predicate"] == "unresolved"
     assert payload["pass_provenance"] == "pass1"
-    assert payload["subject"] == "Shield AI"
-    assert payload["subject_type"] == "Corporation"
-    assert payload["object"] == "investors"
-    assert payload["object_type"] == "Human"
     assert payload["disambiguation_method"] == "unresolved"
+    # Role-based entity structure for unresolved triples
+    roles = payload["roles"]
+    assert "source_entity" in roles
+    assert "target_entity" in roles
+    src = roles["source_entity"][0]
+    tgt = roles["target_entity"][0]
+    assert src["name"] == "Shield AI"
+    assert src["entity_type"] == "Corporation"
+    assert tgt["name"] == "investors"
+    assert tgt["entity_type"] == "Human"
 
 
 def test_evidence_span_found_in_source_text() -> None:

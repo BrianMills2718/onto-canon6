@@ -23,7 +23,7 @@ ontology pack are accepted rather than rejected.
 from __future__ import annotations
 
 import logging
-from typing import Sequence
+from typing import Sequence, cast
 
 from pydantic import JsonValue
 
@@ -238,47 +238,89 @@ def _unresolved_triple_to_import(
     )
 
 
+def _entity_filler(
+    name: str,
+    entity_type: str,
+) -> dict[str, JsonValue]:
+    """Build one entity role filler in the canonical graph format."""
+    slug = name.lower().replace(" ", "_").replace("'", "")
+    return {
+        "kind": "entity",
+        "entity_id": f"ent:progressive:{slug}",
+        "entity_type": entity_type,
+        "name": name,
+    }
+
+
 def _build_typed_payload(
     *,
     mapped: Pass2MappedAssertion,
     subject_type: str,
     object_type: str,
 ) -> dict[str, JsonValue]:
-    """Build the ontology-shaped payload dict for a typed assertion.
+    """Build the role-based payload dict for a typed assertion.
 
-    The payload shape is designed so the downstream profile validator can
-    inspect subject, predicate, object, types, confidence, and provenance
-    about which pipeline pass and disambiguation method produced the result.
+    The payload uses the canonical graph's ``predicate`` + ``roles`` format
+    so candidates can be promoted without a separate normalization step.
+    The ``roles`` dict maps predicate argument positions (ARG0, ARG1, etc.)
+    to entity fillers.  Additional provenance fields travel alongside.
     """
     triple = mapped.triple
-    return {
-        "subject": triple.entity_a.name,
-        "subject_type": subject_type,
+    # Build roles from the mapped role assignments (ARG0 → entity_a, etc.)
+    roles: dict[str, list[dict[str, JsonValue]]] = {}
+    for arg_pos, entity_name in mapped.mapped_roles.items():
+        # Determine which entity this maps to and its type
+        if entity_name == triple.entity_a.name:
+            etype = subject_type
+        elif entity_name == triple.entity_b.name:
+            etype = object_type
+        else:
+            etype = subject_type  # fallback
+        roles[arg_pos] = [_entity_filler(entity_name, etype)]
+
+    # Ensure at least source_entity and target_entity roles exist
+    if not roles:
+        roles["source_entity"] = [_entity_filler(triple.entity_a.name, subject_type)]
+        roles["target_entity"] = [_entity_filler(triple.entity_b.name, object_type)]
+
+    result: dict[str, JsonValue] = {
         "predicate": mapped.predicate_id,
         "predicate_sense": mapped.propbank_sense_id,
         "process_type": mapped.process_type,
-        "object": triple.entity_b.name,
-        "object_type": object_type,
         "confidence": triple.confidence,
         "disambiguation_method": mapped.disambiguation_method,
         "pass_provenance": "pass3",
     }
+    # Cast roles to satisfy JsonValue typing — the structure is correct but
+    # too deeply nested for the recursive type alias.
+    result["roles"] = cast(JsonValue, roles)
+    return result
 
 
 def _build_unresolved_payload(triple: Pass1Triple) -> dict[str, JsonValue]:
-    """Build the ontology-shaped payload dict for an unresolved triple.
+    """Build the role-based payload dict for an unresolved triple.
 
     Uses ``predicate="unresolved"`` and ``pass_provenance="pass1"`` to make
-    the lack of predicate mapping explicit in the candidate record.
+    the lack of predicate mapping explicit in the candidate record.  Still
+    includes ``roles`` so the candidate is promotable if later resolved.
     """
     return {
-        "subject": triple.entity_a.name,
-        "subject_type": triple.entity_a.coarse_type,
         "predicate": "unresolved",
+        "roles": {
+            "source_entity": [_entity_filler(
+                triple.entity_a.name, triple.entity_a.coarse_type,
+            )],
+            "target_entity": [_entity_filler(
+                triple.entity_b.name, triple.entity_b.coarse_type,
+            )],
+            "relationship_verb": [{
+                "kind": "value",
+                "value": triple.relationship_verb,
+                "value_kind": "string",
+            }],
+        },
         "predicate_sense": "",
         "process_type": "",
-        "object": triple.entity_b.name,
-        "object_type": triple.entity_b.coarse_type,
         "confidence": triple.confidence,
         "disambiguation_method": "unresolved",
         "pass_provenance": "pass1",
