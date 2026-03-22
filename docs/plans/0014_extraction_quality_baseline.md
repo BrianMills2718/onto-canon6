@@ -243,6 +243,15 @@ That means the current state is no longer ambiguous:
 3. compact-v2 still should not become the live default because its transfer is
    mixed, not broadly positive.
 
+The later `compact3` benchmark improvement did not yet change that operational
+conclusion on chunk 003:
+
+1. the recovered `compact3` chunk-003 transfer report shows `0/4` accepted;
+2. that is a smaller rejected set than the `compact2@2` rerun (`0/6`), but it
+   is still a `negative` transfer result; and
+3. the current bottleneck is now clearly live transfer on the full chunk, not
+   sentence-level prompt-eval discrimination alone.
+
 ## Current Evidence
 
 Active run history and supporting evidence live here:
@@ -264,6 +273,8 @@ Active run history and supporting evidence live here:
 15. `docs/runs/2026-03-21_chunk_transfer_gate_compact2.md`
 16. `var/evaluation_runs/chunk_transfer_reports/2026-03-21_chunk_002_transfer_report.json`
 17. `var/evaluation_runs/chunk_transfer_reports/2026-03-21_chunk_003_transfer_report.json`
+18. `docs/runs/2026-03-22_compact3_chunk003_transfer_recovery.md`
+19. `var/evaluation_runs/chunk_transfer_reports/2026-03-21_chunk_003_transfer_report_compact3.json`
 
 This plan intentionally does not duplicate the dated campaign chronology. The
 run notes are the history. This file is the active plan and current state.
@@ -272,11 +283,15 @@ run notes are the history. This file is the active plan and current state.
 
 Build in this order:
 
-1. use the new chunk-level transfer gate plus case-level diagnostics to review
-   the chunk-003 failure mode directly, not only through aggregate scores;
-2. only after that decide whether another operational prompt revision is
-   justified;
-3. only after that decide whether broader corpus verification or a larger
+1. compare the live `compact2@2` and inferred `compact3@1` chunk-003 outputs
+   directly, using persisted candidate payloads and review outcomes rather
+   than only aggregate prompt-eval scores;
+2. use that comparison to decide whether the remaining transfer gap is driven
+   mainly by prompt wording, prompt render shape, longer chunk context, or
+   model/task behavior;
+3. only after that decide whether another operational prompt revision is
+   justified; and
+4. only after that decide whether broader corpus verification or a larger
    extraction architecture change is justified.
 
 ## Known Risks and Uncertainties
