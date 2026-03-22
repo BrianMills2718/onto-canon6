@@ -2,7 +2,7 @@
 
 Status: active
 
-Last updated: 2026-03-21
+Last updated: 2026-03-22
 Workstream: post-bootstrap extraction R&D (ADR-0022)
 
 ## Purpose
@@ -252,6 +252,37 @@ conclusion on chunk 003:
 3. the current bottleneck is now clearly live transfer on the full chunk, not
    sentence-level prompt-eval discrimination alone.
 
+### Operational-Parity Prompt-Eval Checkpoint
+
+That operational-parity compact lane now exists and has been proved on the
+same frozen full-chunk case that previously showed the live/prompt-eval gap.
+
+The configured `compact_operational_parity` variant now uses:
+
+1. an extraction-compatible prompt asset aligned to live `compact_v3`
+   semantics;
+2. the prompt-eval `Case input` render path that preserves source metadata and
+   full chunk text; and
+3. the live candidate budget (`max_candidates_per_case = 10`).
+
+On the full chunk-003 strict-omit case, the new lane reproduced the live
+failure mode immediately:
+
+1. `compact` still returned `candidates: []` with `mean_score = 1.0`;
+2. `compact_operational_parity` dropped to `mean_score = 0.25`; and
+3. `compact_operational_parity` emitted the same analytical-prose false
+   positives seen in live extraction:
+   - unattributed `oc:express_concern` candidates anchored to `USSOCOM`; and
+   - a loose `oc:limit_capability` candidate for `PSYOP effectiveness`.
+
+This materially changes the confidence model for future prompt experiments:
+
+1. the original prompt-eval `compact` lane is now useful as a narrow
+   small-budget prompt diagnostic, not as an operational-readiness proxy; and
+2. the new operational-parity lane is the correct benchmark surface whenever
+   the question is whether a compact prompt is likely to transfer to the live
+   extraction path.
+
 ## Current Evidence
 
 Active run history and supporting evidence live here:
@@ -280,6 +311,7 @@ Active run history and supporting evidence live here:
 22. `investigations/2026-03-22-full-chunk-compact-observability-reconstruction.md`
 23. `docs/runs/2026-03-22_chunk003_full_focus_prompt_eval.md`
 24. `docs/runs/2026-03-22_chunk003_full_budget10_probe.md`
+25. `docs/runs/2026-03-22_chunk003_full_operational_parity_prompt_eval.md`
 
 This plan intentionally does not duplicate the dated campaign chronology. The
 run notes are the history. This file is the active plan and current state.
@@ -309,13 +341,16 @@ Build in this order:
    extraction as the primary next extraction-quality lever; candidate-budget
    parity is now explicitly part of that gap because the full-chunk
    `compact_budget10` probe reproduced false positives immediately;
-7. build or configure an explicit operational-parity compact prompt-eval lane
-   before trusting future compact prompt-eval wins as operational evidence;
-8. track the compact prompt-eval `multiple_tool_calls` failure as an
+7. treat the new `compact_operational_parity` prompt-eval lane as the default
+   compact operational-readiness proxy on chunk-derived cases and full-chunk
+   probes;
+8. use that lane, not the old budget-1 `compact` lane, when deciding whether
+   another compact prompt revision actually transfers;
+9. track the compact prompt-eval `multiple_tool_calls` failure as an
    experiment-reliability issue distinct from semantic extraction quality;
-9. only after that decide whether another operational prompt revision is
+10. only after that decide whether another operational prompt revision is
    justified; and
-10. only after that decide whether broader corpus verification or a larger
+11. only after that decide whether broader corpus verification or a larger
    extraction architecture change is justified.
 
 ## Known Risks and Uncertainties
@@ -338,8 +373,9 @@ Build in this order:
 7. Prompt-eval improvements can fail to transfer to the live extraction path
    when the operational asset or longer chunk context behaves differently from
    the sentence-level benchmark harness.
-8. Current evidence suggests the longer chunk context is a bigger source of
-   transfer failure than the remaining system-prompt wording differences.
+8. Current evidence suggests candidate-budget parity and longer chunk context
+   are bigger sources of transfer failure than the remaining system-prompt
+   wording differences.
 
 ## Non-Goals
 

@@ -362,6 +362,20 @@ def test_run_prompt_experiment_builds_report_and_variant_comparison(
                 mean_latency_ms=1000.0,
                 total_tokens=700,
             ),
+            "compact_operational_parity": SimpleNamespace(
+                n_trials=len(experiment.inputs) * experiment.n_runs,
+                n_errors=0,
+                mean_score=0.25,
+                std_score=0.02,
+                dimension_means={
+                    "exact_f1": 0.18,
+                    "structural_usable_rate": 0.88,
+                    "count_alignment": 0.55,
+                },
+                mean_cost=0.01,
+                mean_latency_ms=1025.0,
+                total_tokens=760,
+            ),
             "single_response_hardened": SimpleNamespace(
                 n_trials=len(experiment.inputs) * experiment.n_runs,
                 n_errors=0,
@@ -380,7 +394,13 @@ def test_run_prompt_experiment_builds_report_and_variant_comparison(
         return SimpleNamespace(
             experiment_name=experiment.name,
             execution_id="exec123",
-            variants=["baseline", "compact", "hardened", "single_response_hardened"],
+            variants=[
+                "baseline",
+                "compact",
+                "compact_operational_parity",
+                "hardened",
+                "single_response_hardened",
+            ],
             trials=[],
             summary=summary,
         )
@@ -399,7 +419,7 @@ def test_run_prompt_experiment_builds_report_and_variant_comparison(
         return SimpleNamespace(
             experiment_name="onto_canon6_extraction_prompt_eval",
             execution_id=execution_id,
-            variants=["baseline", "compact", "hardened", "single_response_hardened"],
+            variants=["baseline", "compact", "compact_operational_parity", "hardened", "single_response_hardened"],
             trials=[
                 SimpleNamespace(
                     variant_name="baseline",
@@ -493,6 +513,38 @@ def test_run_prompt_experiment_builds_report_and_variant_comparison(
                     output={"candidates": []},
                 ),
                 SimpleNamespace(
+                    variant_name="compact_operational_parity",
+                    input_id="psyop_001_designation_change",
+                    score=0.27,
+                    dimension_scores={
+                        "exact_f1": 0.18,
+                        "structural_usable_rate": 1.0,
+                        "count_alignment": 0.50,
+                    },
+                    cost=0.01,
+                    latency_ms=1020.0,
+                    tokens_used=190,
+                    error=None,
+                    reasoning="ok",
+                    output={"candidates": [{"predicate": "oc:replace_designation"}]},
+                ),
+                SimpleNamespace(
+                    variant_name="compact_operational_parity",
+                    input_id="psyop_002_concerns_about_truth_based_shift",
+                    score=0.2,
+                    dimension_scores={
+                        "exact_f1": 0.08,
+                        "structural_usable_rate": 1.0,
+                        "count_alignment": 0.50,
+                    },
+                    cost=0.01,
+                    latency_ms=1030.0,
+                    tokens_used=195,
+                    error=None,
+                    reasoning="ok",
+                    output={"candidates": [{"predicate": "oc:express_concern"}]},
+                ),
+                SimpleNamespace(
                     variant_name="single_response_hardened",
                     input_id="psyop_001_designation_change",
                     score=0.55,
@@ -568,6 +620,20 @@ def test_run_prompt_experiment_builds_report_and_variant_comparison(
                     mean_latency_ms=1000.0,
                     total_tokens=700,
                 ),
+                "compact_operational_parity": SimpleNamespace(
+                    n_trials=4,
+                    n_errors=0,
+                    mean_score=0.25,
+                    std_score=0.02,
+                    dimension_means={
+                        "exact_f1": 0.18,
+                        "structural_usable_rate": 0.88,
+                        "count_alignment": 0.55,
+                    },
+                    mean_cost=0.01,
+                    mean_latency_ms=1025.0,
+                    total_tokens=760,
+                ),
                 "single_response_hardened": SimpleNamespace(
                     n_trials=4,
                     n_errors=0,
@@ -640,6 +706,7 @@ def test_run_prompt_experiment_builds_report_and_variant_comparison(
     assert [item.variant_name for item in report.variant_summaries] == [
         "baseline",
         "compact",
+        "compact_operational_parity",
         "hardened",
         "single_response_hardened",
     ]
@@ -674,6 +741,7 @@ def test_run_prompt_experiment_builds_report_and_variant_comparison(
         "baseline",
         "hardened",
         "compact",
+        "compact_operational_parity",
         "single_response_hardened",
     ]
     assert experiment.variants[0].kwargs["task"] == "fast_extraction"
@@ -684,10 +752,13 @@ def test_run_prompt_experiment_builds_report_and_variant_comparison(
     assert experiment.variants[2].kwargs["max_budget"] == 0.25
     assert experiment.variants[3].kwargs["task"] == "fast_extraction"
     assert experiment.variants[3].kwargs["max_budget"] == 0.25
+    assert experiment.variants[4].kwargs["task"] == "fast_extraction"
+    assert experiment.variants[4].kwargs["max_budget"] == 0.25
     baseline_messages = experiment.variants[0].messages
     hardened_messages = experiment.variants[1].messages
     compact_messages = experiment.variants[2].messages
-    single_response_messages = experiment.variants[3].messages
+    compact_operational_parity_messages = experiment.variants[3].messages
+    single_response_messages = experiment.variants[4].messages
     assert "Case input:\n{input}" in baseline_messages[-1]["content"]
     assert "Return at most 2 candidates." in baseline_messages[0]["content"]
     assert "Use at most 1 evidence spans per" in baseline_messages[0]["content"]
@@ -708,6 +779,11 @@ def test_run_prompt_experiment_builds_report_and_variant_comparison(
     assert "a bare mention that a unit, task force, or organization was" in compact_messages[0]["content"]
     assert "a named institution, review, or report can be the speaker" in compact_messages[0]["content"]
     assert "Every filler object must include `kind`" in compact_messages[0]["content"]
+    assert "Prefer explicit actor-action-object facts over analytical summaries" in compact_operational_parity_messages[0]["content"]
+    assert "Return at most 10 candidates." in compact_operational_parity_messages[0]["content"]
+    assert "conclusion sections, opinion sections, and summary prose usually" in compact_operational_parity_messages[0]["content"]
+    assert "do not inherit the document's main organization, campaign, or topic as" in compact_operational_parity_messages[0]["content"]
+    assert "Case input:\n{input}" in compact_operational_parity_messages[-1]["content"]
     assert "Return exactly one structured response object" in single_response_messages[0]["content"]
     assert "Return at most 2 candidates." in single_response_messages[0]["content"]
     assert "Use at most 1 evidence spans per" in single_response_messages[0]["content"]
@@ -783,7 +859,7 @@ def test_run_prompt_experiment_allows_bootstrap_override_with_minimal_valid_shap
     prepared_result = SimpleNamespace(
         experiment_name="onto_canon6_extraction_prompt_eval",
         execution_id="exec123",
-        variants=["baseline", "compact", "hardened", "single_response_hardened"],
+        variants=["baseline", "compact", "compact_operational_parity", "hardened", "single_response_hardened"],
         trials=[],
         summary={
             "baseline": SimpleNamespace(
@@ -815,6 +891,16 @@ def test_run_prompt_experiment_allows_bootstrap_override_with_minimal_valid_shap
                 mean_cost=0.009,
                 mean_latency_ms=1000.0,
                 total_tokens=700,
+            ),
+            "compact_operational_parity": SimpleNamespace(
+                n_trials=2,
+                n_errors=0,
+                mean_score=0.25,
+                std_score=0.02,
+                dimension_means={"exact_f1": 0.18},
+                mean_cost=0.01,
+                mean_latency_ms=1025.0,
+                total_tokens=760,
             ),
             "single_response_hardened": SimpleNamespace(
                 n_trials=2,
@@ -904,7 +990,7 @@ def test_run_prompt_experiment_allows_bootstrap_override_with_minimal_valid_shap
 
     assert report.comparisons
     assert all(comparison.method == "bootstrap" for comparison in report.comparisons)
-    assert comparison_methods == ["bootstrap", "bootstrap", "bootstrap"]
+    assert comparison_methods == ["bootstrap", "bootstrap", "bootstrap", "bootstrap"]
 
 
 def test_run_prompt_experiment_allows_diagnostic_only_mode_with_minimal_shape(
@@ -915,7 +1001,7 @@ def test_run_prompt_experiment_allows_diagnostic_only_mode_with_minimal_shape(
     prepared_result = SimpleNamespace(
         experiment_name="onto_canon6_extraction_prompt_eval",
         execution_id="exec123",
-        variants=["baseline", "compact", "hardened", "single_response_hardened"],
+        variants=["baseline", "compact", "compact_operational_parity", "hardened", "single_response_hardened"],
         trials=[
             SimpleNamespace(
                 variant_name="baseline",
@@ -958,6 +1044,16 @@ def test_run_prompt_experiment_allows_diagnostic_only_mode_with_minimal_shape(
                 dimension_means={},
                 mean_cost=0.009,
                 mean_latency_ms=1000.0,
+                total_tokens=0,
+            ),
+            "compact_operational_parity": SimpleNamespace(
+                n_trials=1,
+                n_errors=1,
+                mean_score=None,
+                std_score=None,
+                dimension_means={},
+                mean_cost=0.01,
+                mean_latency_ms=1025.0,
                 total_tokens=0,
             ),
             "single_response_hardened": SimpleNamespace(
@@ -1024,7 +1120,7 @@ def test_run_prompt_experiment_allows_selection_task_override(
     prepared_result = SimpleNamespace(
         experiment_name="onto_canon6_extraction_prompt_eval",
         execution_id="exec123",
-        variants=["baseline", "compact", "hardened", "single_response_hardened"],
+        variants=["baseline", "compact", "compact_operational_parity", "hardened", "single_response_hardened"],
         trials=[],
         summary={
             "baseline": SimpleNamespace(
@@ -1056,6 +1152,16 @@ def test_run_prompt_experiment_allows_selection_task_override(
                 mean_cost=0.009,
                 mean_latency_ms=1000.0,
                 total_tokens=700,
+            ),
+            "compact_operational_parity": SimpleNamespace(
+                n_trials=2,
+                n_errors=0,
+                mean_score=0.25,
+                std_score=0.02,
+                dimension_means={},
+                mean_cost=0.01,
+                mean_latency_ms=1025.0,
+                total_tokens=760,
             ),
             "single_response_hardened": SimpleNamespace(
                 n_trials=2,
@@ -1166,7 +1272,7 @@ def test_run_prompt_experiment_allows_routing_policy_override(
     prepared_result = SimpleNamespace(
         experiment_name="onto_canon6_extraction_prompt_eval",
         execution_id="exec123",
-        variants=["baseline", "compact", "hardened", "single_response_hardened"],
+        variants=["baseline", "compact", "compact_operational_parity", "hardened", "single_response_hardened"],
         trials=[],
         summary={
             "baseline": SimpleNamespace(
@@ -1198,6 +1304,16 @@ def test_run_prompt_experiment_allows_routing_policy_override(
                 mean_cost=0.009,
                 mean_latency_ms=1000.0,
                 total_tokens=700,
+            ),
+            "compact_operational_parity": SimpleNamespace(
+                n_trials=2,
+                n_errors=0,
+                mean_score=0.25,
+                std_score=0.02,
+                dimension_means={},
+                mean_cost=0.01,
+                mean_latency_ms=1025.0,
+                total_tokens=760,
             ),
             "single_response_hardened": SimpleNamespace(
                 n_trials=2,
@@ -1317,7 +1433,7 @@ def test_run_prompt_experiment_fails_loud_when_live_errors_break_welch(
         return SimpleNamespace(
             experiment_name=experiment.name,
             execution_id="exec123",
-            variants=["baseline", "compact", "hardened", "single_response_hardened"],
+            variants=["baseline", "compact", "compact_operational_parity", "hardened", "single_response_hardened"],
             trials=[],
             summary={},
         )
@@ -1333,7 +1449,7 @@ def test_run_prompt_experiment_fails_loud_when_live_errors_break_welch(
         return SimpleNamespace(
             experiment_name="onto_canon6_extraction_prompt_eval",
             execution_id="exec123",
-            variants=["baseline", "compact", "hardened", "single_response_hardened"],
+            variants=["baseline", "compact", "compact_operational_parity", "hardened", "single_response_hardened"],
             trials=[],
             summary={
                 "baseline": SimpleNamespace(
@@ -1365,6 +1481,16 @@ def test_run_prompt_experiment_fails_loud_when_live_errors_break_welch(
                     mean_cost=0.009,
                     mean_latency_ms=1000.0,
                     total_tokens=700,
+                ),
+                "compact_operational_parity": SimpleNamespace(
+                    n_trials=2,
+                    n_errors=0,
+                    mean_score=0.25,
+                    std_score=0.02,
+                    dimension_means={},
+                    mean_cost=0.01,
+                    mean_latency_ms=1025.0,
+                    total_tokens=760,
                 ),
                 "single_response_hardened": SimpleNamespace(
                     n_trials=2,
@@ -1424,7 +1550,7 @@ def test_run_prompt_experiment_fails_loud_when_live_errors_break_bootstrap(
         return SimpleNamespace(
             experiment_name=experiment.name,
             execution_id="exec123",
-            variants=["baseline", "compact", "hardened", "single_response_hardened"],
+            variants=["baseline", "compact", "compact_operational_parity", "hardened", "single_response_hardened"],
             trials=[],
             summary={},
         )
@@ -1440,7 +1566,7 @@ def test_run_prompt_experiment_fails_loud_when_live_errors_break_bootstrap(
         return SimpleNamespace(
             experiment_name="onto_canon6_extraction_prompt_eval",
             execution_id="exec123",
-            variants=["baseline", "compact", "hardened", "single_response_hardened"],
+            variants=["baseline", "compact", "compact_operational_parity", "hardened", "single_response_hardened"],
             trials=[],
             summary={
                 "baseline": SimpleNamespace(
@@ -1472,6 +1598,16 @@ def test_run_prompt_experiment_fails_loud_when_live_errors_break_bootstrap(
                     mean_cost=0.009,
                     mean_latency_ms=1000.0,
                     total_tokens=700,
+                ),
+                "compact_operational_parity": SimpleNamespace(
+                    n_trials=2,
+                    n_errors=0,
+                    mean_score=0.25,
+                    std_score=0.02,
+                    dimension_means={},
+                    mean_cost=0.01,
+                    mean_latency_ms=1025.0,
+                    total_tokens=760,
                 ),
                 "single_response_hardened": SimpleNamespace(
                     n_trials=2,
