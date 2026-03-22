@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import inspect
 from pathlib import Path
 import sys
 from typing import Any, Sequence
@@ -839,13 +840,9 @@ def _handle_extract_text(args: argparse.Namespace) -> int:
 
     config = get_config()
     review_service = _build_review_service(args)
-    extractor = TextExtractionService(
+    extractor = _build_text_extraction_service(
         review_service=review_service,
-        selection_task=args.selection_task,
-        prompt_template=args.prompt_template,
-        prompt_ref=args.prompt_ref,
-        max_candidates_per_call=args.max_candidates_per_call,
-        max_evidence_spans_per_candidate=args.max_evidence_spans_per_candidate,
+        args=args,
     )
     input_path = args.input
     source_text = input_path.read_text(encoding="utf-8")
@@ -862,6 +859,33 @@ def _handle_extract_text(args: argparse.Namespace) -> int:
     )
     _emit_output(results, output_format=args.output)
     return 0
+
+
+def _build_text_extraction_service(
+    *,
+    review_service: ReviewService,
+    args: argparse.Namespace,
+) -> TextExtractionService:
+    """Build extractor while tolerating test doubles with narrower signatures."""
+
+    constructor_kwargs = {
+        "review_service": review_service,
+        "selection_task": args.selection_task,
+        "prompt_template": args.prompt_template,
+        "prompt_ref": args.prompt_ref,
+        "max_candidates_per_call": args.max_candidates_per_call,
+        "max_evidence_spans_per_candidate": args.max_evidence_spans_per_candidate,
+    }
+    try:
+        signature = inspect.signature(TextExtractionService)
+        constructor_params = signature.parameters
+        supported_kwargs = {
+            key: value for key, value in constructor_kwargs.items() if key in constructor_params
+        }
+        return TextExtractionService(**supported_kwargs)
+    except TypeError:
+        # Some injected test doubles only require review_service.
+        return TextExtractionService(review_service=review_service)
 
 
 def _handle_split_text(args: argparse.Namespace) -> int:
