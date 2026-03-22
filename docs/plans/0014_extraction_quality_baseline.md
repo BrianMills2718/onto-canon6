@@ -279,6 +279,7 @@ Active run history and supporting evidence live here:
 21. `docs/runs/2026-03-22_chunk003_context_focus_prompt_eval.md`
 22. `investigations/2026-03-22-full-chunk-compact-observability-reconstruction.md`
 23. `docs/runs/2026-03-22_chunk003_full_focus_prompt_eval.md`
+24. `docs/runs/2026-03-22_chunk003_full_budget10_probe.md`
 
 This plan intentionally does not duplicate the dated campaign chronology. The
 run notes are the history. This file is the active plan and current state.
@@ -305,12 +306,16 @@ Build in this order:
    case now succeeds under `compact`, so chunk length alone no longer explains
    the live transfer gap;
 6. treat prompt/render-path parity between prompt-eval and operational
-   extraction as the primary next extraction-quality lever;
-7. track the compact prompt-eval `multiple_tool_calls` failure as an
+   extraction as the primary next extraction-quality lever; candidate-budget
+   parity is now explicitly part of that gap because the full-chunk
+   `compact_budget10` probe reproduced false positives immediately;
+7. build or configure an explicit operational-parity compact prompt-eval lane
+   before trusting future compact prompt-eval wins as operational evidence;
+8. track the compact prompt-eval `multiple_tool_calls` failure as an
    experiment-reliability issue distinct from semantic extraction quality;
-8. only after that decide whether another operational prompt revision is
+9. only after that decide whether another operational prompt revision is
    justified; and
-9. only after that decide whether broader corpus verification or a larger
+10. only after that decide whether broader corpus verification or a larger
    extraction architecture change is justified.
 
 ## Known Risks and Uncertainties
