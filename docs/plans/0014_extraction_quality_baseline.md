@@ -356,6 +356,39 @@ But the key conclusion remains the same: compact-v4 is not yet a promotable
 live extraction prompt for this chunk, and the prompt-eval operational-parity
 lane still overstates live transfer on the current bounded evidence.
 
+### Post-Fix Parity Checkpoint
+
+The repo then tightened the obvious prompt-eval parity drift:
+
+1. the compact operational-parity prompt asset was brought back into exact
+   system-prompt alignment with the live compact-v4 prompt; and
+2. the full chunk-003 benchmark case was updated to use the real
+   `text_file` source kind, source ref, and source label from the live chunk
+   instead of benchmark fixture placeholders.
+
+After those fixes, the focused full-chunk parity rerun still returned:
+
+1. `compact_operational_parity = 1.0`; and
+2. `candidates: []`
+
+That means the remaining live/prompt-eval gap is no longer explained by the
+obvious parity bugs the repo had already found.
+
+The remaining differences are now narrow:
+
+1. the prompt-eval user message still wraps the live source payload inside a
+   `Case input` block and adds `Case id`; and
+2. the live and prompt-eval calls are still separate provider invocations, so
+   model variance or runtime-path differences may still matter.
+
+So yes, there was an onto-canon6 prompt-eval parity problem worth fixing. But
+after the fix, the evidence no longer supports the stronger claim that this is
+just a generic prompt-eval defect. The repo now needs either:
+
+1. a deeper live-vs-parity call comparison; or
+2. a more literal extract-text-native replay evaluator for certification-grade
+   operational checks.
+
 ## Current Evidence
 
 Active run history and supporting evidence live here:
@@ -387,6 +420,7 @@ Active run history and supporting evidence live here:
 25. `docs/runs/2026-03-22_chunk003_full_operational_parity_prompt_eval.md`
 26. `docs/runs/2026-03-22_chunk003_compact_v4_candidate_prompt_eval.md`
 27. `docs/runs/2026-03-22_compact4_real_chunk_verification_chunk003.md`
+28. `docs/runs/2026-03-22_chunk003_parity_fix_check.md`
 
 This plan intentionally does not duplicate the dated campaign chronology. The
 run notes are the history. This file is the active plan and current state.
@@ -421,18 +455,19 @@ Build in this order:
    probes;
 8. use that lane, not the old budget-1 `compact` lane, when deciding whether
    another compact prompt revision actually transfers;
-9. compare the compact-v4 live chunk-003 output against the full-chunk
-   operational-parity prompt-eval run to explain why prompt-eval reached
+9. compare the compact-v4 live chunk-003 output against the post-fix
+   full-chunk operational-parity run to explain why prompt-eval still reached
    `1.0` while the live rerun stayed `negative`;
 10. treat the remaining gap as an operational-transfer problem, not as proof
     that prompt_eval alone can certify live promotion;
 11. decide whether the next experiment should be:
     - another prompt revision targeting the three remaining live false
-      positives; or
+      positives;
     - a deeper comparison of live-call/runtime differences before changing the
-      prompt again;
+      prompt again; or
+    - an extract-text-native replay evaluator for certification-grade checks;
 12. track the compact prompt-eval `multiple_tool_calls` failure as an
-   experiment-reliability issue distinct from semantic extraction quality;
+    experiment-reliability issue distinct from semantic extraction quality;
 13. only after that decide whether another operational prompt revision is
    justified; and
 14. only after that decide whether broader corpus verification or a larger
