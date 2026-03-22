@@ -283,6 +283,44 @@ This materially changes the confidence model for future prompt experiments:
    the question is whether a compact prompt is likely to transfer to the live
    extraction path.
 
+### Compact-v4 Candidate Prompt Checkpoint
+
+The first prompt revision tested against that honest surface produced a useful
+candidate compact prompt.
+
+The new candidate assets are:
+
+1. `prompts/extraction/text_to_candidate_assertions_compact_v4.yaml`
+2. `prompts/extraction/prompt_eval_text_to_candidate_assertions_compact_operational_parity_v2.yaml`
+
+Those changes did not try to rewrite the whole compact prompt. They only
+tightened the known failure modes:
+
+1. invented or weakly-attributed institutional speakers;
+2. analytical concern extraction from summary prose; and
+3. loose `limit_capability` extraction from evaluative narration.
+
+Focused prompt-eval evidence for that candidate prompt:
+
+1. full chunk-003 strict-omit case:
+   - `compact = 1.0`
+   - `compact_operational_parity = 1.0`
+2. chunk-003 local-context focus cases `011-016`:
+   - `compact = 0.875`
+   - `compact_operational_parity = 0.875`
+
+That is the first compact prompt candidate that:
+
+1. keeps the operational-parity full-chunk checkpoint clean; and
+2. preserves the earlier strong local chunk-003 prompt-eval behavior closely
+   enough to remain a plausible live-run candidate.
+
+One follow-up tightening attempt aimed at the remaining `psyop_016`
+oversight-language miss was intentionally not kept. It overfit the frozen
+cases and reintroduced `limit_capability` false positives on the
+hearts-and-minds narration spans. The repo keeps the smaller first revision as
+the current candidate state.
+
 ## Current Evidence
 
 Active run history and supporting evidence live here:
@@ -312,6 +350,7 @@ Active run history and supporting evidence live here:
 23. `docs/runs/2026-03-22_chunk003_full_focus_prompt_eval.md`
 24. `docs/runs/2026-03-22_chunk003_full_budget10_probe.md`
 25. `docs/runs/2026-03-22_chunk003_full_operational_parity_prompt_eval.md`
+26. `docs/runs/2026-03-22_chunk003_compact_v4_candidate_prompt_eval.md`
 
 This plan intentionally does not duplicate the dated campaign chronology. The
 run notes are the history. This file is the active plan and current state.
@@ -346,11 +385,16 @@ Build in this order:
    probes;
 8. use that lane, not the old budget-1 `compact` lane, when deciding whether
    another compact prompt revision actually transfers;
-9. track the compact prompt-eval `multiple_tool_calls` failure as an
+9. run the compact-v4 candidate prompt on the real chunk-003 operational
+   extraction path through the existing prompt-override workflow;
+10. compare that live chunk-003 output and review outcome against the
+    operational-parity prompt-eval checkpoint before making any broader
+    promotion claim;
+11. track the compact prompt-eval `multiple_tool_calls` failure as an
    experiment-reliability issue distinct from semantic extraction quality;
-10. only after that decide whether another operational prompt revision is
+12. only after that decide whether another operational prompt revision is
    justified; and
-11. only after that decide whether broader corpus verification or a larger
+13. only after that decide whether broader corpus verification or a larger
    extraction architecture change is justified.
 
 ## Known Risks and Uncertainties

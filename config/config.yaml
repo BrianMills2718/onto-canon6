@@ -80,8 +80,8 @@ evaluation:
         max_candidates_per_case: 1
         max_evidence_spans_per_candidate: 1
       - name: "compact_operational_parity"
-        prompt_template: "prompts/extraction/prompt_eval_text_to_candidate_assertions_compact_operational_parity.yaml"
-        prompt_ref: "onto_canon6.extraction.prompt_eval_text_to_candidate_assertions_compact_operational_parity@1"
+        prompt_template: "prompts/extraction/prompt_eval_text_to_candidate_assertions_compact_operational_parity_v2.yaml"
+        prompt_ref: "onto_canon6.extraction.prompt_eval_text_to_candidate_assertions_compact_operational_parity@2"
         max_candidates_per_case: 10
         max_evidence_spans_per_candidate: 1
       - name: "single_response_hardened"
