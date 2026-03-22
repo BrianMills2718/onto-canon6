@@ -275,6 +275,7 @@ Active run history and supporting evidence live here:
 17. `var/evaluation_runs/chunk_transfer_reports/2026-03-21_chunk_003_transfer_report.json`
 18. `docs/runs/2026-03-22_compact3_chunk003_transfer_recovery.md`
 19. `var/evaluation_runs/chunk_transfer_reports/2026-03-21_chunk_003_transfer_report_compact3.json`
+20. `investigations/2026-03-22-compact2-vs-compact3-chunk003-transfer-gap.md`
 
 This plan intentionally does not duplicate the dated campaign chronology. The
 run notes are the history. This file is the active plan and current state.
@@ -286,12 +287,16 @@ Build in this order:
 1. compare the live `compact2@2` and inferred `compact3@1` chunk-003 outputs
    directly, using persisted candidate payloads and review outcomes rather
    than only aggregate prompt-eval scores;
-2. use that comparison to decide whether the remaining transfer gap is driven
+2. freeze the four surviving chunk-003 analytical-prose spans as new
+   evaluation cases, ideally with sentence-only and short-local-context
+   variants, so the repo can distinguish prompt weakness from longer-context
+   transfer effects;
+3. use that comparison to decide whether the remaining transfer gap is driven
    mainly by prompt wording, prompt render shape, longer chunk context, or
    model/task behavior;
-3. only after that decide whether another operational prompt revision is
+4. only after that decide whether another operational prompt revision is
    justified; and
-4. only after that decide whether broader corpus verification or a larger
+5. only after that decide whether broader corpus verification or a larger
    extraction architecture change is justified.
 
 ## Known Risks and Uncertainties
