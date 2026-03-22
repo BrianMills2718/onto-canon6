@@ -79,6 +79,14 @@ Detailed dated run history now lives under `docs/runs/`. Auxiliary proof and
 planning notebooks stay cataloged in `notebooks/README.md` and
 `notebooks/notebook_registry.yaml` rather than being repeated here.
 
+## Local Evaluation Dependency
+
+Ancestor-aware evaluation and progressive extraction use the donor
+`sumo_plus.db` by default via `../onto-canon/data/sumo_plus.db`.
+
+An optional local copy may exist under `data/sumo_plus.db`, but that is
+operator convenience rather than the canonical repo default.
+
 ## Current Scope
 
 Phases 0-15 are complete. The repo now proves:
