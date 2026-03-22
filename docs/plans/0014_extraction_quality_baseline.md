@@ -321,6 +321,41 @@ cases and reintroduced `limit_capability` false positives on the
 hearts-and-minds narration spans. The repo keeps the smaller first revision as
 the current candidate state.
 
+### Compact-v4 Live Chunk-003 Checkpoint
+
+That candidate prompt has now been tested on the real `extract-text`
+operational path with the same bounded settings used for earlier chunk-003
+verification.
+
+The live compact-v4 rerun used:
+
+1. `selection_task = budget_extraction`
+2. `prompt_template = prompts/extraction/text_to_candidate_assertions_compact_v4.yaml`
+3. `prompt_ref = onto_canon6.extraction.text_to_candidate_assertions_compact_v4@1`
+4. `max_candidates_per_call = 10`
+5. `max_evidence_spans_per_candidate = 1`
+
+Operational result:
+
+1. extraction produced `3` structurally valid candidates;
+2. review rejected all `3`;
+3. transfer verdict remained `negative`; and
+4. the failure surface narrowed to:
+   - one analytical `oc:limit_capability`;
+   - one governance-process `oc:express_concern`; and
+   - one generic conclusion `oc:hold_command_role`.
+
+This is still a real improvement over the earlier compact-v2 and compact-v3
+live chunk-003 runs:
+
+1. compact-v2 rerun: `6` rejected candidates;
+2. compact-v3 rerun: `4` rejected candidates; and
+3. compact-v4 rerun: `3` rejected candidates.
+
+But the key conclusion remains the same: compact-v4 is not yet a promotable
+live extraction prompt for this chunk, and the prompt-eval operational-parity
+lane still overstates live transfer on the current bounded evidence.
+
 ## Current Evidence
 
 Active run history and supporting evidence live here:
@@ -351,6 +386,7 @@ Active run history and supporting evidence live here:
 24. `docs/runs/2026-03-22_chunk003_full_budget10_probe.md`
 25. `docs/runs/2026-03-22_chunk003_full_operational_parity_prompt_eval.md`
 26. `docs/runs/2026-03-22_chunk003_compact_v4_candidate_prompt_eval.md`
+27. `docs/runs/2026-03-22_compact4_real_chunk_verification_chunk003.md`
 
 This plan intentionally does not duplicate the dated campaign chronology. The
 run notes are the history. This file is the active plan and current state.
@@ -385,16 +421,21 @@ Build in this order:
    probes;
 8. use that lane, not the old budget-1 `compact` lane, when deciding whether
    another compact prompt revision actually transfers;
-9. run the compact-v4 candidate prompt on the real chunk-003 operational
-   extraction path through the existing prompt-override workflow;
-10. compare that live chunk-003 output and review outcome against the
-    operational-parity prompt-eval checkpoint before making any broader
-    promotion claim;
-11. track the compact prompt-eval `multiple_tool_calls` failure as an
+9. compare the compact-v4 live chunk-003 output against the full-chunk
+   operational-parity prompt-eval run to explain why prompt-eval reached
+   `1.0` while the live rerun stayed `negative`;
+10. treat the remaining gap as an operational-transfer problem, not as proof
+    that prompt_eval alone can certify live promotion;
+11. decide whether the next experiment should be:
+    - another prompt revision targeting the three remaining live false
+      positives; or
+    - a deeper comparison of live-call/runtime differences before changing the
+      prompt again;
+12. track the compact prompt-eval `multiple_tool_calls` failure as an
    experiment-reliability issue distinct from semantic extraction quality;
-12. only after that decide whether another operational prompt revision is
+13. only after that decide whether another operational prompt revision is
    justified; and
-13. only after that decide whether broader corpus verification or a larger
+14. only after that decide whether broader corpus verification or a larger
    extraction architecture change is justified.
 
 ## Known Risks and Uncertainties
