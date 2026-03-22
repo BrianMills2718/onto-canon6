@@ -170,8 +170,8 @@ def test_load_benchmark_fixture_reads_local_cases() -> None:
 
     fixture = load_benchmark_fixture(_fixture_path())
 
-    assert fixture.fixture_id == "psyop_eval_slice_v4"
-    assert len(fixture.cases) == 10
+    assert fixture.fixture_id == "psyop_eval_slice_v5"
+    assert len(fixture.cases) == 16
     assert fixture.cases[0].profile.profile_id == "psyop_seed"
     assert fixture.cases[0].source_artifact.content_text is not None
     assert len(fixture.cases[0].expected_candidates) == 4
@@ -191,6 +191,22 @@ def test_load_benchmark_fixture_covers_targeted_semantic_failure_modes() -> None
     jpotf_case = cases_by_id["psyop_008_jpotf_establishment_not_org_form"]
     narrator_case = cases_by_id["psyop_009_report_narration_without_named_speaker_strict_omit"]
     loose_capability_case = cases_by_id["psyop_010_limit_capability_without_named_subject_strict_omit"]
+    hearts_and_minds_case = cases_by_id["psyop_011_hearts_and_minds_narration_strict_omit"]
+    ethical_questions_case = cases_by_id[
+        "psyop_012_ethical_legal_questions_without_local_speaker_strict_omit"
+    ]
+    narrator_local_context_case = cases_by_id[
+        "psyop_013_local_context_report_narration_without_named_speaker_strict_omit"
+    ]
+    hearts_and_minds_local_context_case = cases_by_id[
+        "psyop_014_local_context_hearts_and_minds_narration_strict_omit"
+    ]
+    loose_capability_local_context_case = cases_by_id[
+        "psyop_015_local_context_limit_capability_without_named_subject_strict_omit"
+    ]
+    ethical_questions_local_context_case = cases_by_id[
+        "psyop_016_local_context_ethical_questions_with_following_scrutiny_strict_omit"
+    ]
 
     assert alias_case.expected_candidates == ()
     assert len(subordinate_case.expected_candidates) == 1
@@ -202,6 +218,12 @@ def test_load_benchmark_fixture_covers_targeted_semantic_failure_modes() -> None
     assert jpotf_case.expected_candidates == ()
     assert narrator_case.expected_candidates == ()
     assert loose_capability_case.expected_candidates == ()
+    assert hearts_and_minds_case.expected_candidates == ()
+    assert ethical_questions_case.expected_candidates == ()
+    assert narrator_local_context_case.expected_candidates == ()
+    assert hearts_and_minds_local_context_case.expected_candidates == ()
+    assert loose_capability_local_context_case.expected_candidates == ()
+    assert ethical_questions_local_context_case.expected_candidates == ()
 
 
 def test_run_live_benchmark_separates_reasonableness_and_exact_fidelity(
