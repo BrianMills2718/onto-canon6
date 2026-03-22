@@ -278,6 +278,7 @@ Active run history and supporting evidence live here:
 20. `investigations/2026-03-22-compact2-vs-compact3-chunk003-transfer-gap.md`
 21. `docs/runs/2026-03-22_chunk003_context_focus_prompt_eval.md`
 22. `investigations/2026-03-22-full-chunk-compact-observability-reconstruction.md`
+23. `docs/runs/2026-03-22_chunk003_full_focus_prompt_eval.md`
 
 This plan intentionally does not duplicate the dated campaign chronology. The
 run notes are the history. This file is the active plan and current state.
@@ -299,14 +300,17 @@ Build in this order:
 4. reconstruct or compare the full operational prompt/render path on chunk 003
    before another broad prompt rewrite; this reconstruction is now complete and
    confirms the same chunk render with only a stronger system prompt;
-5. treat chunking/render strategy and full-chunk operational context as the
-   primary next extraction-quality lever, ahead of another broad prompt
-   rewrite;
-6. track the compact prompt-eval `multiple_tool_calls` failure as an
+5. compare the prompt-eval compact asset/path against the operational
+   extraction compact-v3 asset/path directly; the new full-chunk prompt-eval
+   case now succeeds under `compact`, so chunk length alone no longer explains
+   the live transfer gap;
+6. treat prompt/render-path parity between prompt-eval and operational
+   extraction as the primary next extraction-quality lever;
+7. track the compact prompt-eval `multiple_tool_calls` failure as an
    experiment-reliability issue distinct from semantic extraction quality;
-7. only after that decide whether another operational prompt revision is
+8. only after that decide whether another operational prompt revision is
    justified; and
-8. only after that decide whether broader corpus verification or a larger
+9. only after that decide whether broader corpus verification or a larger
    extraction architecture change is justified.
 
 ## Known Risks and Uncertainties
