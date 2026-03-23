@@ -153,6 +153,104 @@
             }
           }
         }
+      ],
+      "accepted_alternatives": [
+        {
+          "candidate_id": "alt_psyop_001_hold_command_role_short_name",
+          "payload": {
+            "predicate": "oc:hold_command_role",
+            "roles": {
+              "commander": [
+                {
+                  "entity_id": "ent:person:eric_olson",
+                  "name": "Admiral Eric Olson",
+                  "entity_type": "oc:person"
+                }
+              ],
+              "organization": [
+                {
+                  "entity_id": "ent:org:ussocom",
+                  "name": "USSOCOM",
+                  "entity_type": "oc:military_organization"
+                }
+              ],
+              "role_title": [
+                {
+                  "kind": "value",
+                  "value_kind": "string",
+                  "raw": "commander",
+                  "normalized": {
+                    "value": "commander"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "candidate_id": "alt_psyop_001_replace_designation_psyop_subject",
+          "payload": {
+            "predicate": "oc:replace_designation",
+            "roles": {
+              "actor": [
+                {
+                  "entity_id": "ent:person:eric_olson",
+                  "name": "Admiral Eric Olson",
+                  "entity_type": "oc:person"
+                }
+              ],
+              "subject": [
+                {
+                  "entity_id": "ent:operation:psyop",
+                  "name": "PSYOP",
+                  "entity_type": "oc:psychological_operation"
+                }
+              ],
+              "old_designation": [
+                {
+                  "kind": "value",
+                  "value_kind": "string",
+                  "raw": "PSYOP",
+                  "normalized": {
+                    "value": "PSYOP"
+                  }
+                }
+              ],
+              "new_designation": [
+                {
+                  "kind": "value",
+                  "value_kind": "string",
+                  "raw": "Military Information Support Operations",
+                  "normalized": {
+                    "value": "Military Information Support Operations"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "candidate_id": "alt_psyop_001_belongs_to_org_olson_ussocom",
+          "payload": {
+            "predicate": "oc:belongs_to_organization",
+            "roles": {
+              "member": [
+                {
+                  "entity_id": "ent:person:eric_olson",
+                  "name": "Admiral Eric Olson",
+                  "entity_type": "oc:person"
+                }
+              ],
+              "organization": [
+                {
+                  "entity_id": "ent:org:ussocom",
+                  "name": "United States Special Operations Command",
+                  "entity_type": "oc:military_organization"
+                }
+              ]
+            }
+          }
+        }
       ]
     },
     {
@@ -239,6 +337,110 @@
             }
           }
         }
+      ],
+      "accepted_alternatives": [
+        {
+          "candidate_id": "alt_psyop_002_express_concern_psyop_name",
+          "payload": {
+            "predicate": "oc:express_concern",
+            "roles": {
+              "speaker": [
+                {
+                  "entity_id": "ent:community:psyop_miso_critics",
+                  "name": "Critics within the PSYOP/MISO community",
+                  "entity_type": "oc:community"
+                }
+              ],
+              "topic": [
+                {
+                  "kind": "value",
+                  "value_kind": "string",
+                  "raw": "the shift to a 'truth-based' approach neutered the discipline",
+                  "normalized": {
+                    "value": "the shift to a 'truth-based' approach neutered the discipline"
+                  }
+                }
+              ],
+              "subject": [
+                {
+                  "entity_id": "ent:operation:psyop",
+                  "name": "PSYOP",
+                  "entity_type": "oc:psychological_operation"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "candidate_id": "alt_psyop_002_limit_capability_psyop_name",
+          "payload": {
+            "predicate": "oc:limit_capability",
+            "roles": {
+              "topic": [
+                {
+                  "kind": "value",
+                  "value_kind": "string",
+                  "raw": "shift to a truth-based approach",
+                  "normalized": {
+                    "value": "shift to a truth-based approach"
+                  }
+                }
+              ],
+              "subject": [
+                {
+                  "entity_id": "ent:operation:psyop",
+                  "name": "PSYOP",
+                  "entity_type": "oc:psychological_operation"
+                }
+              ],
+              "capability": [
+                {
+                  "kind": "value",
+                  "value_kind": "string",
+                  "raw": "employ deception",
+                  "normalized": {
+                    "value": "employ deception"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "candidate_id": "alt_psyop_002_limit_capability_discipline",
+          "payload": {
+            "predicate": "oc:limit_capability",
+            "roles": {
+              "topic": [
+                {
+                  "kind": "value",
+                  "value_kind": "string",
+                  "raw": "shift to a 'truth-based' approach",
+                  "normalized": {
+                    "value": "shift to a 'truth-based' approach"
+                  }
+                }
+              ],
+              "subject": [
+                {
+                  "entity_id": "ent:operation:the_discipline",
+                  "name": "the discipline",
+                  "entity_type": "oc:psychological_operation"
+                }
+              ],
+              "capability": [
+                {
+                  "kind": "value",
+                  "value_kind": "string",
+                  "raw": "employ deception",
+                  "normalized": {
+                    "value": "employ deception"
+                  }
+                }
+              ]
+            }
+          }
+        }
       ]
     },
     {
@@ -293,6 +495,52 @@
                   "entity_id": "ent:org:1st_special_forces_command",
                   "name": "1st Special Forces Command",
                   "entity_type": "oc:military_organization"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "accepted_alternatives": [
+        {
+          "candidate_id": "alt_psyop_004_belongs_to_org_role_variation",
+          "payload": {
+            "predicate": "oc:belongs_to_organization",
+            "roles": {
+              "subordinate": [
+                {
+                  "entity_id": "ent:unit:4th_pog_a",
+                  "name": "4th POG(A)",
+                  "entity_type": "oc:military_unit"
+                }
+              ],
+              "parent": [
+                {
+                  "entity_id": "ent:org:1st_special_forces_command",
+                  "name": "1st Special Forces Command",
+                  "entity_type": "oc:military_organization"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "candidate_id": "alt_psyop_004_belongs_to_org_type_variation",
+          "payload": {
+            "predicate": "oc:belongs_to_organization",
+            "roles": {
+              "member": [
+                {
+                  "entity_id": "ent:unit:4th_pog_a",
+                  "name": "4th POG(A)",
+                  "entity_type": "oc:organization"
+                }
+              ],
+              "organization": [
+                {
+                  "entity_id": "ent:org:1st_special_forces_command",
+                  "name": "1st Special Forces Command",
+                  "entity_type": "oc:organization"
                 }
               ]
             }
@@ -372,6 +620,58 @@
                   "raw": "better integration with other elements of national power and improved measurement of effectiveness",
                   "normalized": {
                     "value": "better integration with other elements of national power and improved measurement of effectiveness"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "accepted_alternatives": [
+        {
+          "candidate_id": "alt_psyop_007_express_concern_org_type",
+          "payload": {
+            "predicate": "oc:express_concern",
+            "roles": {
+              "speaker": [
+                {
+                  "entity_id": "ent:org:national_defense_university",
+                  "name": "National Defense University",
+                  "entity_type": "oc:organization"
+                }
+              ],
+              "topic": [
+                {
+                  "kind": "value",
+                  "value_kind": "string",
+                  "raw": "better integration with other elements of national power and improved measurement of effectiveness",
+                  "normalized": {
+                    "value": "better integration with other elements of national power and improved measurement of effectiveness"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "candidate_id": "alt_psyop_007_express_concern_broader_topic",
+          "payload": {
+            "predicate": "oc:express_concern",
+            "roles": {
+              "speaker": [
+                {
+                  "entity_id": "ent:org:national_defense_university",
+                  "name": "National Defense University",
+                  "entity_type": "oc:community"
+                }
+              ],
+              "topic": [
+                {
+                  "kind": "value",
+                  "value_kind": "string",
+                  "raw": "successes and persistent challenges in PSYOP",
+                  "normalized": {
+                    "value": "successes and persistent challenges in PSYOP"
                   }
                 }
               ]
