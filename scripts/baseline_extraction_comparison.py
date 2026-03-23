@@ -108,9 +108,25 @@ async def _run_baseline_extraction(
     )
     elapsed = time.monotonic() - start
 
-    if isinstance(result, BaselineExtractionResponse):
-        return result, elapsed, model
-    # Structured output should return the model directly
+    # acall_llm returns LLMCallResult with raw content string.
+    # Parse the JSON content into our response model.
+    import json as _json
+
+    content = getattr(result, "content", None) or ""
+    if isinstance(content, str) and content.strip():
+        try:
+            parsed = BaselineExtractionResponse.model_validate_json(content.strip())
+            return parsed, elapsed, model
+        except Exception:
+            # Try parsing as raw JSON and extracting triples.
+            try:
+                raw = _json.loads(content.strip())
+                if isinstance(raw, dict) and "triples" in raw:
+                    parsed = BaselineExtractionResponse.model_validate(raw)
+                    return parsed, elapsed, model
+            except Exception:
+                pass
+
     return BaselineExtractionResponse(triples=[]), elapsed, model
 
 
