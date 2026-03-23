@@ -47,7 +47,14 @@ class BenchmarkReferenceCandidate(BaseModel):
 
 
 class BenchmarkCase(BaseModel):
-    """One benchmark case with source text and preferred reference candidates."""
+    """One benchmark case with source text and preferred reference candidates.
+
+    ``expected_candidates`` is the golden set used for recall.
+    ``accepted_alternatives`` lists additional reasonable extractions that should
+    not be penalized as false positives when computing precision. An extraction
+    matching either set counts as a true positive for precision; only
+    ``expected_candidates`` count for recall.
+    """
 
     model_config = ConfigDict(extra="forbid", frozen=True)
 
@@ -55,6 +62,7 @@ class BenchmarkCase(BaseModel):
     profile: ProfileRef
     source_artifact: SourceArtifactRef
     expected_candidates: tuple[BenchmarkReferenceCandidate, ...] = ()
+    accepted_alternatives: tuple[BenchmarkReferenceCandidate, ...] = ()
 
 
 class BenchmarkFixture(BaseModel):
@@ -87,13 +95,21 @@ class ReasonablenessReview(BaseModel):
 
 
 class CanonicalizationSummary(BaseModel):
-    """Secondary exact-match summary against preferred canonical payloads."""
+    """Secondary exact-match summary against preferred canonical payloads.
+
+    When ``accepted_alternatives`` are present in the benchmark case, precision
+    credits matches against both the golden set and the alternatives.  Recall is
+    always measured against the golden set only.  ``accepted_alternative_matched``
+    reports how many observed candidates matched an alternative but not the
+    golden set.
+    """
 
     model_config = ConfigDict(extra="forbid", frozen=True)
 
     expected: int = Field(ge=0)
     observed: int = Field(ge=0)
     matched: int = Field(ge=0)
+    accepted_alternative_matched: int = Field(default=0, ge=0)
     precision: float = Field(ge=0.0, le=1.0)
     recall: float = Field(ge=0.0, le=1.0)
     f1: float = Field(ge=0.0, le=1.0)

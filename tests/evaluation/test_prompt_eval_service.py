@@ -301,6 +301,143 @@ def test_score_prompt_eval_trial_rewards_correct_zero_candidate_omit() -> None:
     assert score.dimension_scores["count_alignment"] == 1.0
 
 
+def test_score_prompt_eval_trial_credits_accepted_alternatives() -> None:
+    """Extractions matching accepted_alternatives should not penalize precision.
+
+    An extraction matching an alternative but not the golden set should count
+    as a true positive for precision.  Recall stays against the golden set only.
+    """
+
+    case = BenchmarkCase(
+        case_id="case-alt",
+        profile=ProfileRef(profile_id="default", profile_version="1.0.0"),
+        source_artifact=SourceArtifactRef(
+            source_kind="raw_text",
+            source_ref="text://case-alt",
+            source_label="Alternative test",
+            source_metadata={},
+            content_text="Alpha unit reports to Bravo command. Charlie leads Alpha.",
+        ),
+        expected_candidates=(
+            BenchmarkReferenceCandidate(
+                payload={
+                    "predicate": "oc:belongs_to_organization",
+                    "roles": {
+                        "subordinate": [{"kind": "entity", "entity_type": "oc:org", "name": "Alpha unit"}],
+                        "parent": [{"kind": "entity", "entity_type": "oc:org", "name": "Bravo command"}],
+                    },
+                }
+            ),
+        ),
+        accepted_alternatives=(
+            BenchmarkReferenceCandidate(
+                payload={
+                    "predicate": "oc:hold_command_role",
+                    "roles": {
+                        "commander": [{"kind": "entity", "entity_type": "oc:person", "name": "Charlie"}],
+                        "organization": [{"kind": "entity", "entity_type": "oc:org", "name": "Alpha unit"}],
+                    },
+                }
+            ),
+        ),
+    )
+    # Extractor produces both the golden candidate AND the alternative.
+    output = TextExtractionResponse(
+        candidates=[
+            ExtractedCandidate(
+                predicate="oc:belongs_to_organization",
+                roles={
+                    "subordinate": [ExtractedFiller(kind="entity", entity_type="oc:org", name="Alpha unit")],
+                    "parent": [ExtractedFiller(kind="entity", entity_type="oc:org", name="Bravo command")],
+                },
+                evidence_spans=[ExtractedEvidenceSpan(text="Alpha unit reports to Bravo command")],
+            ),
+            ExtractedCandidate(
+                predicate="oc:hold_command_role",
+                roles={
+                    "commander": [ExtractedFiller(kind="entity", entity_type="oc:person", name="Charlie")],
+                    "organization": [ExtractedFiller(kind="entity", entity_type="oc:org", name="Alpha unit")],
+                },
+                evidence_spans=[ExtractedEvidenceSpan(text="Charlie leads Alpha")],
+            ),
+        ]
+    )
+
+    score = prompt_eval_service_module._score_prompt_eval_trial(
+        output=output,
+        expected=case,
+        eval_score_cls=_FakeEvalScore,
+        overlay_root=PROJECT_ROOT / "var" / "ontology_overlays",
+    )
+
+    # Both candidates are acceptable (1 golden + 1 alternative), so precision = 1.0.
+    # Recall = 1/1 = 1.0 (golden candidate found).
+    # F1 = 1.0.
+    assert score.dimension_scores["exact_f1"] == 1.0
+    # count_alignment: observed=2 vs expected=1 → 1 - 1/2 = 0.5
+    assert score.dimension_scores["count_alignment"] == 0.5
+
+
+def test_score_prompt_eval_trial_without_alternatives_backward_compat() -> None:
+    """Cases without accepted_alternatives should score exactly as before."""
+
+    case = BenchmarkCase(
+        case_id="case-no-alt",
+        profile=ProfileRef(profile_id="default", profile_version="1.0.0"),
+        source_artifact=SourceArtifactRef(
+            source_kind="raw_text",
+            source_ref="text://case-no-alt",
+            source_label="No alternatives",
+            source_metadata={},
+            content_text="Alpha unit reports to Bravo command.",
+        ),
+        expected_candidates=(
+            BenchmarkReferenceCandidate(
+                payload={
+                    "predicate": "oc:belongs_to_organization",
+                    "roles": {
+                        "subordinate": [{"kind": "entity", "entity_type": "oc:org", "name": "Alpha unit"}],
+                        "parent": [{"kind": "entity", "entity_type": "oc:org", "name": "Bravo command"}],
+                    },
+                }
+            ),
+        ),
+        # No accepted_alternatives — default empty tuple.
+    )
+    # Extractor produces the golden candidate PLUS a spurious one.
+    output = TextExtractionResponse(
+        candidates=[
+            ExtractedCandidate(
+                predicate="oc:belongs_to_organization",
+                roles={
+                    "subordinate": [ExtractedFiller(kind="entity", entity_type="oc:org", name="Alpha unit")],
+                    "parent": [ExtractedFiller(kind="entity", entity_type="oc:org", name="Bravo command")],
+                },
+                evidence_spans=[ExtractedEvidenceSpan(text="Alpha unit reports to Bravo command")],
+            ),
+            ExtractedCandidate(
+                predicate="oc:spurious_predicate",
+                roles={
+                    "agent": [ExtractedFiller(kind="entity", entity_type="oc:thing", name="Unknown")],
+                },
+                evidence_spans=[ExtractedEvidenceSpan(text="Alpha unit")],
+            ),
+        ]
+    )
+
+    score = prompt_eval_service_module._score_prompt_eval_trial(
+        output=output,
+        expected=case,
+        eval_score_cls=_FakeEvalScore,
+        overlay_root=PROJECT_ROOT / "var" / "ontology_overlays",
+    )
+
+    # precision = 1/2 = 0.5 (spurious is a real false positive without alternatives)
+    # recall = 1/1 = 1.0
+    # F1 = 2 * 0.5 * 1.0 / 1.5 ≈ 0.6667
+    assert score.dimension_scores["exact_f1"] == pytest.approx(0.6667, abs=0.001)
+
+
 def test_run_prompt_experiment_builds_report_and_variant_comparison(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:

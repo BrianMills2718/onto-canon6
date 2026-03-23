@@ -53,6 +53,25 @@ config/
 - **Active work**: chunk-level transfer evaluation (Plan 0019), extraction
   quality Phase B (Plan 0014).
 
+## Strategic Direction (2026-03-23)
+
+- **Architecture is sound. Bottleneck is extraction quality** (37.5% acceptance
+  on PSYOP Stage 1). Focus on prompt iteration with `prompt_eval`, not new
+  infrastructure.
+- **onto-canon is NOT OSINT-specific** — it's the Data bucket of the ecosystem
+  (general assertion governance layer). OSINT is one consumer.
+- **Extraction evaluation must use LLM-as-judge**, not just golden-set
+  comparison. The golden set is incomplete — the extractor produces reasonable
+  assertions that aren't in the golden set and get scored as wrong. Always
+  report both: golden-set match rate AND LLM-judge reasonableness rate.
+- **Benchmark against a simple baseline** — compare progressive extraction vs
+  bare "extract SPO triples" prompt on same corpus to prove governance value.
+- **Don't force integration yet** — research_v3 and Digimon are stabilizing.
+  Verify Foundation Assertion IR serialization path (see
+  `~/projects/project-meta/vision/FOUNDATION.md`), don't wire the pipeline.
+- **No more phases/ADRs/subsystems** unless justified by extraction quality
+  friction. The 15-phase bootstrap is done. Parity matrix is a ledger, not a queue.
+
 ## Working Rules
 
 - Use the recorded friction from real runs before reopening broad parity chasing

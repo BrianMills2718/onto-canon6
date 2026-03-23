@@ -283,6 +283,7 @@ class LiveExtractionEvaluationService:
         )
         exact_match_flags, canonicalization = _score_exact_canonicalization(
             expected_candidates=case.expected_candidates,
+            accepted_alternatives=case.accepted_alternatives,
             observed_candidates=extraction_run.candidate_imports,
         )
         candidate_evaluations = tuple(
@@ -454,47 +455,71 @@ def _validate_candidate_imports(
 def _score_exact_canonicalization(
     *,
     expected_candidates: tuple[BenchmarkReferenceCandidate, ...],
+    accepted_alternatives: tuple[BenchmarkReferenceCandidate, ...] = (),
     observed_candidates: tuple[CandidateAssertionImport, ...],
 ) -> tuple[tuple[bool, ...], CanonicalizationSummary]:
-    """Score exact preferred-form agreement against the benchmark fixture."""
+    """Score exact preferred-form agreement against the benchmark fixture.
 
-    expected_signatures = Counter(
+    When ``accepted_alternatives`` are provided, matches against either the
+    golden set or the alternatives count as true positives for precision.
+    Recall is always measured against the golden set only.
+    """
+
+    golden_signatures = Counter(
         _candidate_signature(reference.payload) for reference in expected_candidates
+    )
+    alternative_signatures = Counter(
+        _candidate_signature(reference.payload) for reference in accepted_alternatives
     )
     observed_signatures = Counter(
         _candidate_signature(candidate_import.payload) for candidate_import in observed_candidates
     )
-    matched_counter = expected_signatures & observed_signatures
-    matched = sum(matched_counter.values())
-    expected_count = sum(expected_signatures.values())
+
+    golden_matched_counter = golden_signatures & observed_signatures
+    golden_matched = sum(golden_matched_counter.values())
+
+    remaining_observed = observed_signatures - golden_matched_counter
+    alternative_matched_counter = alternative_signatures & remaining_observed
+    alternative_matched = sum(alternative_matched_counter.values())
+
+    total_acceptable_matched = golden_matched + alternative_matched
+    expected_count = sum(golden_signatures.values())
     observed_count = sum(observed_signatures.values())
-    precision = matched / observed_count if observed_count else 0.0
-    recall = matched / expected_count if expected_count else 0.0
+
+    precision = total_acceptable_matched / observed_count if observed_count else 0.0
+    recall = golden_matched / expected_count if expected_count else 0.0
     f1 = 0.0
     if precision and recall:
         f1 = 2 * precision * recall / (precision + recall)
 
-    remaining = Counter(expected_signatures)
+    remaining_golden = Counter(golden_signatures)
+    remaining_alt = Counter(alternative_signatures)
     match_flags: list[bool] = []
     for candidate_import in observed_candidates:
         signature = _candidate_signature(candidate_import.payload)
-        if remaining[signature] > 0:
-            remaining[signature] -= 1
+        if remaining_golden[signature] > 0:
+            remaining_golden[signature] -= 1
+            match_flags.append(True)
+        elif remaining_alt[signature] > 0:
+            remaining_alt[signature] -= 1
             match_flags.append(True)
         else:
             match_flags.append(False)
+
+    truly_unexpected = observed_signatures - (golden_matched_counter + alternative_matched_counter)
 
     return (
         tuple(match_flags),
         CanonicalizationSummary(
             expected=expected_count,
             observed=observed_count,
-            matched=matched,
+            matched=golden_matched,
+            accepted_alternative_matched=alternative_matched,
             precision=round(precision, 4),
             recall=round(recall, 4),
             f1=round(f1, 4),
-            missing_signatures=tuple((expected_signatures - observed_signatures).elements()),
-            unexpected_signatures=tuple((observed_signatures - expected_signatures).elements()),
+            missing_signatures=tuple((golden_signatures - observed_signatures).elements()),
+            unexpected_signatures=tuple(truly_unexpected.elements()),
         ),
     )
 
@@ -556,6 +581,7 @@ def _build_aggregate_summary(
                 "expected": case_report.canonicalization.expected,
                 "observed": case_report.canonicalization.observed,
                 "matched": case_report.canonicalization.matched,
+                "accepted_alternative_matched": case_report.canonicalization.accepted_alternative_matched,
             }
         )
 
@@ -570,7 +596,9 @@ def _build_aggregate_summary(
     expected = int(canonical_counter["expected"])
     observed = int(canonical_counter["observed"])
     matched = int(canonical_counter["matched"])
-    precision = matched / observed if observed else 0.0
+    alt_matched = int(canonical_counter["accepted_alternative_matched"])
+    total_acceptable = matched + alt_matched
+    precision = total_acceptable / observed if observed else 0.0
     recall = matched / expected if expected else 0.0
     f1 = 0.0
     if precision and recall:
@@ -595,6 +623,7 @@ def _build_aggregate_summary(
             expected=expected,
             observed=observed,
             matched=matched,
+            accepted_alternative_matched=alt_matched,
             precision=round(precision, 4),
             recall=round(recall, 4),
             f1=round(f1, 4),

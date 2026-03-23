@@ -448,6 +448,7 @@ def _score_prompt_eval_trial(
         )
         _, canonicalization = _score_prompt_eval_exact_canonicalization(
             expected_candidates=expected.expected_candidates,
+            accepted_alternatives=expected.accepted_alternatives,
             observed_candidates=candidate_imports,
         )
         observed_count = len(candidate_imports)
@@ -493,6 +494,7 @@ def _score_prompt_eval_trial(
 def _score_prompt_eval_exact_canonicalization(
     *,
     expected_candidates: tuple[BenchmarkReferenceCandidate, ...],
+    accepted_alternatives: tuple[BenchmarkReferenceCandidate, ...] = (),
     observed_candidates: tuple[CandidateAssertionImport, ...],
 ) -> tuple[tuple[bool, ...], CanonicalizationSummary]:
     """Score prompt-eval exact agreement at the extraction boundary.
@@ -502,50 +504,82 @@ def _score_prompt_eval_exact_canonicalization(
     into. The prompt-eval exact lane therefore ignores reviewer-only entity IDs
     and downstream normalization shapes while still requiring exact predicate,
     role-name, entity-type, surface-form, and value-kind agreement.
+
+    When ``accepted_alternatives`` are provided, matches against either the
+    golden set or the alternatives count as true positives for precision.
+    Recall is always measured against the golden set (``expected_candidates``)
+    only. This prevents penalizing the extractor for producing reasonable
+    assertions that the golden set didn't anticipate.
     """
 
-    expected_signatures = Counter(
+    golden_signatures = Counter(
         _prompt_eval_candidate_signature(reference.payload) for reference in expected_candidates
     )
+    alternative_signatures = Counter(
+        _prompt_eval_candidate_signature(reference.payload) for reference in accepted_alternatives
+    )
+    # For precision: an observed candidate is a true positive if it matches
+    # either the golden set or the accepted alternatives.
+    acceptable_signatures = golden_signatures + alternative_signatures
     observed_signatures = Counter(
         _prompt_eval_candidate_signature(candidate_import.payload) for candidate_import in observed_candidates
     )
-    matched_counter = expected_signatures & observed_signatures
-    matched = sum(matched_counter.values())
-    expected_count = sum(expected_signatures.values())
+
+    golden_matched_counter = golden_signatures & observed_signatures
+    golden_matched = sum(golden_matched_counter.values())
+
+    # After golden matches are consumed, check remaining against alternatives.
+    remaining_observed = observed_signatures - golden_matched_counter
+    alternative_matched_counter = alternative_signatures & remaining_observed
+    alternative_matched = sum(alternative_matched_counter.values())
+
+    total_acceptable_matched = golden_matched + alternative_matched
+    expected_count = sum(golden_signatures.values())
     observed_count = sum(observed_signatures.values())
+
     if expected_count == 0 and observed_count == 0:
         precision = 1.0
         recall = 1.0
         f1 = 1.0
     else:
-        precision = matched / observed_count if observed_count else 0.0
-        recall = matched / expected_count if expected_count else 0.0
+        # Precision: fraction of observed that are acceptable (golden or alternative).
+        precision = total_acceptable_matched / observed_count if observed_count else 0.0
+        # Recall: fraction of golden set that were found.
+        recall = golden_matched / expected_count if expected_count else 0.0
         f1 = 0.0
         if precision and recall:
             f1 = 2 * precision * recall / (precision + recall)
 
-    remaining = Counter(expected_signatures)
+    # Build per-candidate match flags (true if matched golden OR alternative).
+    remaining_golden = Counter(golden_signatures)
+    remaining_alt = Counter(alternative_signatures)
     match_flags: list[bool] = []
     for candidate_import in observed_candidates:
         signature = _prompt_eval_candidate_signature(candidate_import.payload)
-        if remaining[signature] > 0:
-            remaining[signature] -= 1
+        if remaining_golden[signature] > 0:
+            remaining_golden[signature] -= 1
+            match_flags.append(True)
+        elif remaining_alt[signature] > 0:
+            remaining_alt[signature] -= 1
             match_flags.append(True)
         else:
             match_flags.append(False)
+
+    # Unexpected = observed signatures that match neither golden nor alternative.
+    truly_unexpected = observed_signatures - (golden_matched_counter + alternative_matched_counter)
 
     return (
         tuple(match_flags),
         CanonicalizationSummary(
             expected=expected_count,
             observed=observed_count,
-            matched=matched,
+            matched=golden_matched,
+            accepted_alternative_matched=alternative_matched,
             precision=round(precision, 4),
             recall=round(recall, 4),
             f1=round(f1, 4),
-            missing_signatures=tuple((expected_signatures - observed_signatures).elements()),
-            unexpected_signatures=tuple((observed_signatures - expected_signatures).elements()),
+            missing_signatures=tuple((golden_signatures - observed_signatures).elements()),
+            unexpected_signatures=tuple(truly_unexpected.elements()),
         ),
     )
 
