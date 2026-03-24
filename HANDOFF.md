@@ -32,11 +32,40 @@ onto-canon6 is the **Data bucket** of the ecosystem — a general assertion gove
 
 3. **Strategic direction added to CLAUDE.md** — extraction quality focus, no new infrastructure
 
+4. **Fixture populated with accepted_alternatives** (commit `6d367f8`):
+   - 10 alternatives across 4 cases (entity name/type/role variations)
+   - Strict-omit cases unchanged (0 expected, 0 alternatives)
+
+5. **Baseline comparison run** (commit `210a148`):
+   - grok-4.1-fast on 5 cases: 9 triples, 43% entity coverage
+   - Free-form predicates, no discrimination, fragmented triples
+   - Confirms governance layer adds: ontology alignment, discrimination, structure
+
+6. **Foundation Assertion IR adapter** (commit `fc538bb`):
+   - `adapters/foundation_assertion_export.py` — converts promoted assertions
+   - 6 tests passing. Schema gaps documented (alias_ids, temporal, full provenance)
+
+7. **Model selection finding**: grok-4.1-fast produces empty roles on ~55% of
+   extraction trials. The prompt already addresses all 3 rejection patterns
+   (alias self-refs, vague narratives, predicate misfits). The bottleneck is
+   now model quality for structured output, not prompt wording.
+
+8. **llm_client fix**: Created missing `git_utils.py` stub to restore observability
+   experiment compatibility.
+
 ---
 
 ## What Still Needs to Happen
 
-### 1. Improve extraction prompts using prompt_eval
+### 1. Switch fast_extraction model and re-run prompt_eval
+
+The #1 lever is now model selection, not prompt wording. `grok-4.1-fast`
+fails structurally on ~55% of extraction trials (empty roles). Try
+`gemini/gemini-2.5-flash-lite` or another model with reliable structured
+output. Then re-run prompt_eval to get honest scores with the updated
+fixture (which now has accepted_alternatives).
+
+### 2. Improve extraction prompts using prompt_eval (if model switch helps)
 
 **Goal**: >70% acceptance rate on varied text (not just military docs).
 
