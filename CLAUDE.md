@@ -94,6 +94,27 @@ config/
   triples. Confirms governance layer adds: ontology alignment, discrimination,
   structured multi-role assertions. Script: `scripts/baseline_extraction_comparison.py`.
 
+## Integration Decisions Needed (2026-03-24)
+
+These decisions affect schema design and must be made before any consumer adopts
+onto-canon6 output. Building can wait; deciding cannot.
+
+1. **Entity type CURIE namespacing** — RESOLVED. Extraction already uses `oc:`
+   prefix (e.g., `oc:person`, `oc:military_organization`). Progressive extractor
+   uses `sumo:` for SUMO types. Both are valid CURIE namespaces per Foundation.
+
+2. **Provenance model** — Foundation expects `provenance_refs: [event_ids,
+   artifact_ids]`. onto-canon6 has `source_candidate_id`. Options:
+   (a) adopt Foundation event log inside onto-canon6 (heavy, clean)
+   (b) keep own model, let wrapper add envelope (light, deferred coupling)
+   Decision needed: which path? Affects store schema.
+
+3. **Entity ID stability** — current auto-derived IDs are source-scoped
+   (`ent:auto:sha:type:slug`). Cross-investigation entity resolution needs
+   stable IDs that survive re-extraction. The identity subsystem exists but
+   isn't exported. Decision: do promoted entities get durable IDs at promotion
+   time, or do we rely on the identity subsystem for cross-export resolution?
+
 ## Working Rules
 
 - Use the recorded friction from real runs before reopening broad parity chasing
