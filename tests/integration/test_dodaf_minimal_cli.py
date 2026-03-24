@@ -47,10 +47,11 @@ class _FakeDodafMixedExtractionService:
         source_kind: str = "text_file",
         source_label: str | None = None,
         source_metadata: dict[str, object] | None = None,
+        extraction_goal: str | None = None,
     ) -> tuple[object, ...]:
         """Submit one deterministic mixed-mode DoDAF candidate through the real flow."""
 
-        del source_metadata
+        del source_metadata, extraction_goal
         phrase = "supports activity"
         start_char = source_text.index(phrase)
         end_char = start_char + len(phrase)

@@ -392,6 +392,7 @@ class TextExtractionService:
         self._timeout_seconds = config.extraction.timeout_seconds
         self._num_retries = config.extraction.num_retries
         self._max_budget_usd = config.extraction.max_budget_usd
+        self._default_extraction_goal = config.extraction.default_extraction_goal
 
     @property
     def review_service(self) -> ReviewService:
@@ -428,6 +429,7 @@ class TextExtractionService:
         source_kind: str = "raw_text",
         source_label: str | None = None,
         source_metadata: dict[str, JsonValue] | None = None,
+        extraction_goal: str | None = None,
     ) -> tuple[CandidateAssertionImport, ...]:
         """Extract typed candidate-import records from one raw-text source."""
 
@@ -440,6 +442,7 @@ class TextExtractionService:
             source_kind=source_kind,
             source_label=source_label,
             source_metadata=source_metadata,
+            extraction_goal=extraction_goal,
         ).candidate_imports
 
     def extract_candidate_run(
@@ -453,6 +456,7 @@ class TextExtractionService:
         source_kind: str = "raw_text",
         source_label: str | None = None,
         source_metadata: dict[str, JsonValue] | None = None,
+        extraction_goal: str | None = None,
     ) -> TextExtractionRun:
         """Extract candidate imports and return the resolved run context."""
 
@@ -480,6 +484,7 @@ class TextExtractionService:
             self._selection_task,
             use_performance=self._selection_use_performance,
         )
+        effective_goal = extraction_goal or self._default_extraction_goal or ""
         messages = llm_client_api.render_prompt(
             self._prompt_template,
             profile_id=normalized_profile.profile_id,
@@ -488,6 +493,7 @@ class TextExtractionService:
             entity_type_catalog=render_entity_type_catalog(profile),
             max_candidates_per_case=self._max_candidates_per_call,
             max_evidence_spans_per_candidate=self._max_evidence_spans_per_candidate,
+            extraction_goal=effective_goal,
             source_kind=source_artifact.source_kind,
             source_ref=source_artifact.source_ref,
             source_label=source_artifact.source_label,
@@ -549,6 +555,7 @@ class TextExtractionService:
         source_kind: str = "raw_text",
         source_label: str | None = None,
         source_metadata: dict[str, JsonValue] | None = None,
+        extraction_goal: str | None = None,
     ) -> tuple[CandidateSubmissionResult, ...]:
         """Extract candidate imports and submit them through the review pipeline."""
 
@@ -561,6 +568,7 @@ class TextExtractionService:
             source_kind=source_kind,
             source_label=source_label,
             source_metadata=source_metadata,
+            extraction_goal=extraction_goal,
         )
         return tuple(
             self._review_service.submit_candidate_import(candidate_import=candidate_import)

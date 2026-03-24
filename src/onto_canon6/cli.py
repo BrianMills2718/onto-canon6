@@ -186,6 +186,10 @@ def _build_parser() -> argparse.ArgumentParser:
             "reference max_evidence_spans_per_candidate."
         ),
     )
+    extract_parser.add_argument(
+        "--goal",
+        help="Extraction goal — guides the LLM on what assertions are relevant.",
+    )
     _add_output_arg(extract_parser, default_output=config.cli.default_output_format)
     extract_parser.set_defaults(handler=_handle_extract_text)
 
@@ -856,6 +860,7 @@ def _handle_extract_text(args: argparse.Namespace) -> int:
         source_ref=source_ref,
         source_kind=config.cli.file_source_kind,
         source_label=source_label,
+        extraction_goal=getattr(args, "goal", None),
     )
     _emit_output(results, output_format=args.output)
     return 0

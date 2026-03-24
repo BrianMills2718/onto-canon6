@@ -130,6 +130,11 @@ messages:
 
       Active entity-type catalog:
       {{ entity_type_catalog }}
+      {% if extraction_goal %}
+
+      Extraction goal: {{ extraction_goal }}
+      Use this goal to decide which facts are relevant. Only extract assertions that serve this goal. If a fact is stated in the text but is not relevant to the goal, omit it.
+      {% endif %}
 
       Source kind: {{ source_kind }}
       Source ref: {{ source_ref }}

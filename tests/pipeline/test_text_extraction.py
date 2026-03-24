@@ -136,7 +136,7 @@ def test_extract_candidate_imports_uses_llm_client_boundary(tmp_path: Path, monk
     assert isinstance(call_kwargs, dict)
     assert call_kwargs["task"] == "fast_extraction"
     assert call_kwargs["max_budget"] == 0.25
-    assert call_kwargs["prompt_ref"] == "onto_canon6.extraction.text_to_candidate_assertions@1"
+    assert call_kwargs["prompt_ref"] == "onto_canon6.extraction.single_response_hardened@1"
     assert str(call_kwargs["trace_id"]).startswith("onto_canon6.extract.")
     messages = calls["messages"]
     assert isinstance(messages, list)
@@ -300,6 +300,7 @@ def test_main_extraction_prompt_includes_current_winning_guidance() -> None:
         profile_version="0.1.0",
         predicate_catalog="- oc:replace_designation",
         entity_type_catalog="- oc:person",
+        extraction_goal="",
         source_kind="raw_text",
         source_ref="text://phase-b/prompt",
         source_label="prompt test",
