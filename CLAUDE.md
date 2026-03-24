@@ -62,10 +62,11 @@ config/
   `534a52c`). `single_response_hardened` + gpt-5.4-mini: 13/17 cases pass
   (76%), 1.0 structural rate, f1=0.077 (up from 0.0). Schema errors are now
   legitimate rejections. Promoted as operational prompt.
-- **Provider gap: `minProperties` not enforced.** The JSON schema correctly
-  requires `roles` to have at least 1 property (`minProperties: 1`), but
-  OpenRouter/gpt-5.4-mini doesn't enforce it at decode time. Pydantic catches
-  it at parse time (fail-loud). Not fixable in onto-canon6 — provider limitation.
+- **llm_client gap: no retry on Pydantic ValidationError in structured output.**
+  Providers don't enforce all JSON Schema constraints (e.g., `minProperties`).
+  When the provider returns "valid" JSON that fails Pydantic validation,
+  `call_llm_structured` raises instead of retrying with a repair prompt. This
+  is an llm_client issue — file against `llm_client/execution/structured_runtime.py`.
 - **extraction_goal is now required** — every run must specify what assertions
   are relevant. Broad default: "Extract all factual assertions directly supported
   by the source text." Narrow goals (e.g., "extract organizational command
