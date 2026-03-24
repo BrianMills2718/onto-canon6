@@ -56,8 +56,12 @@ config/
 ## Strategic Direction (2026-03-23)
 
 - **Architecture is sound. Bottleneck is extraction quality** (37.5% acceptance
-  on PSYOP Stage 1). Focus on prompt iteration with `prompt_eval`, not new
-  infrastructure.
+  on PSYOP Stage 1, 80% on Phase B bounded chunks). Focus on prompt iteration
+  with `prompt_eval`, not new infrastructure.
+- **Model selection matters more than prompt wording**: `grok-4.1-fast` produces
+  empty roles on ~55% of extraction trials. The `fast_extraction` task model
+  needs to be one that handles structured output reliably. Try
+  `gemini/gemini-2.5-flash-lite` or another model with better structured output.
 - **onto-canon is NOT OSINT-specific** — it's the Data bucket of the ecosystem
   (general assertion governance layer). OSINT is one consumer.
 - **Extraction evaluation must use LLM-as-judge**, not just golden-set
@@ -71,6 +75,12 @@ config/
   `~/projects/project-meta/vision/FOUNDATION.md`), don't wire the pipeline.
 - **No more phases/ADRs/subsystems** unless justified by extraction quality
   friction. The 15-phase bootstrap is done. Parity matrix is a ledger, not a queue.
+- **Foundation Assertion IR adapter exists** (`adapters/foundation_assertion_export.py`).
+  Schema gaps documented: alias_ids, temporal qualifiers, full provenance_refs.
+- **Baseline comparison done**: bare SPO-triple extraction (no ontology) gets 43%
+  entity coverage with free-form predicates, no discrimination, and fragmented
+  triples. Confirms governance layer adds: ontology alignment, discrimination,
+  structured multi-role assertions. Script: `scripts/baseline_extraction_comparison.py`.
 
 ## Working Rules
 
