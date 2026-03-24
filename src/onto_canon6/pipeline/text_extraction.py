@@ -57,13 +57,34 @@ class ExtractedFiller(BaseModel):
         min_length=1,
         description="Filler kind. Use `entity` for named entities and `value` for concrete literals.",
     )
-    entity_id: str | None = None
-    entity_type: str | None = None
-    name: str | None = None
-    alias_ids: list[str] = Field(default_factory=list)
-    value_kind: str | None = None
-    normalized: JsonValue | None = None
-    raw: str | None = None
+    entity_id: str | None = Field(
+        default=None,
+        description="Optional store-scoped entity ID. The system derives this if absent.",
+    )
+    entity_type: str | None = Field(
+        default=None,
+        description="REQUIRED for entity fillers. Choose from the active entity-type catalog (e.g. oc:person, oc:military_organization). Must not be null when kind=entity.",
+    )
+    name: str | None = Field(
+        default=None,
+        description="REQUIRED for entity fillers. The exact surface form from the source text.",
+    )
+    alias_ids: list[str] = Field(
+        default_factory=list,
+        description="Optional alternate IDs for this entity from other sources.",
+    )
+    value_kind: str | None = Field(
+        default=None,
+        description="REQUIRED for value fillers. The semantic type of the value (e.g. string, time, money).",
+    )
+    normalized: JsonValue | None = Field(
+        default=None,
+        description="Structured normalized form of the value. Required for value fillers unless raw is provided.",
+    )
+    raw: str | None = Field(
+        default=None,
+        description="Raw source text form of the value. Required for value fillers unless normalized is provided.",
+    )
 
     @model_validator(mode="after")
     def _validate_shape(self) -> "ExtractedFiller":
