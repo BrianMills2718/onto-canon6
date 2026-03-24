@@ -484,7 +484,11 @@ class TextExtractionService:
             self._selection_task,
             use_performance=self._selection_use_performance,
         )
-        effective_goal = extraction_goal or self._default_extraction_goal or ""
+        effective_goal = extraction_goal or self._default_extraction_goal
+        if not effective_goal:
+            raise ValueError(
+                "extraction_goal is required — set it per-call or via config.extraction.default_extraction_goal"
+            )
         messages = llm_client_api.render_prompt(
             self._prompt_template,
             profile_id=normalized_profile.profile_id,

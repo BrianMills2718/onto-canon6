@@ -256,7 +256,7 @@ class ExtractionPromptExperimentService:
             "profile_version": profile.profile_version,
             "predicate_catalog": render_predicate_catalog(loaded_profile),
             "entity_type_catalog": render_entity_type_catalog(loaded_profile),
-            "extraction_goal": "",
+            "extraction_goal": get_config().extraction.default_extraction_goal,
             "source_text": "",
             "source_kind": "",
             "source_ref": "",

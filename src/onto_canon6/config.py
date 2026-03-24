@@ -88,9 +88,9 @@ class ExtractionConfig(BaseModel):
         default=None,
         description="Pin a specific model instead of task-based selection. Useful when the default model has structural issues with the extraction schema.",
     )
-    default_extraction_goal: str | None = Field(
-        default=None,
-        description="Default extraction goal when not specified per-call. Guides the LLM on what assertions are relevant.",
+    default_extraction_goal: str = Field(
+        min_length=1,
+        description="Default extraction goal when not specified per-call. Guides the LLM on what assertions are relevant. Must be set explicitly — undirected extraction produces noise.",
     )
     prompt_template: str = Field(min_length=1)
     prompt_ref: str = Field(min_length=1)
