@@ -62,11 +62,12 @@ config/
   `534a52c`). `single_response_hardened` + gpt-5.4-mini: 13/17 cases pass
   (76%), 1.0 structural rate, f1=0.077 (up from 0.0). Schema errors are now
   legitimate rejections. Promoted as operational prompt.
-- **Discrimination is the remaining gap**: strict-omit cases produce 1 candidate
-  each (should be 0). The model extracts from vague narrative and alias text.
-  Some (006: Army membership) are borderline-reasonable. Others (009-011: vague
-  limit_capability) are genuine over-extraction. This is a prompt/policy
-  question, not a schema issue.
+- **extraction_goal is now required** — every run must specify what assertions
+  are relevant. Broad default: "Extract all factual assertions directly supported
+  by the source text." Narrow goals (e.g., "extract organizational command
+  relationships") improve discrimination. The schema rejects extractions that
+  can't fill entity_type (psyop_005 correctly rejected). Alias expansions
+  (psyop_003) still over-extract with broad goals — caller must narrow.
 - **onto-canon is NOT OSINT-specific** — it's the Data bucket of the ecosystem
   (general assertion governance layer). OSINT is one consumer.
 - **Extraction evaluation must use LLM-as-judge**, not just golden-set
