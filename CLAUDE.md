@@ -59,10 +59,14 @@ config/
   on PSYOP Stage 1, 80% on Phase B bounded chunks). Focus on prompt iteration
   with `prompt_eval`, not new infrastructure.
 - **Discriminated union schema enforces entity_type at decode time** (commit
-  `534a52c`). Schema validation errors are now legitimate rejections, not silent
-  nulls. `single_response_hardened` is the best prompt variant for gpt-5.4-mini
-  (4/4 structural, 0 errors). Other variants still have schema failures — the
-  model can't always fill required entity_type from the ontology catalog.
+  `534a52c`). `single_response_hardened` + gpt-5.4-mini: 13/17 cases pass
+  (76%), 1.0 structural rate, f1=0.077 (up from 0.0). Schema errors are now
+  legitimate rejections. Promoted as operational prompt.
+- **Discrimination is the remaining gap**: strict-omit cases produce 1 candidate
+  each (should be 0). The model extracts from vague narrative and alias text.
+  Some (006: Army membership) are borderline-reasonable. Others (009-011: vague
+  limit_capability) are genuine over-extraction. This is a prompt/policy
+  question, not a schema issue.
 - **onto-canon is NOT OSINT-specific** — it's the Data bucket of the ecosystem
   (general assertion governance layer). OSINT is one consumer.
 - **Extraction evaluation must use LLM-as-judge**, not just golden-set
