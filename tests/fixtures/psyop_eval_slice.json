@@ -230,6 +230,48 @@
           }
         },
         {
+          "candidate_id": "alt_psyop_001_replace_designation_miso_subject",
+          "payload": {
+            "predicate": "oc:replace_designation",
+            "roles": {
+              "actor": [
+                {
+                  "entity_id": "ent:person:eric_olson",
+                  "name": "Admiral Eric Olson",
+                  "entity_type": "oc:person"
+                }
+              ],
+              "subject": [
+                {
+                  "entity_id": "ent:operation:miso",
+                  "name": "Military Information Support Operations",
+                  "entity_type": "oc:psychological_operation"
+                }
+              ],
+              "old_designation": [
+                {
+                  "kind": "value",
+                  "value_kind": "string",
+                  "raw": "PSYOP",
+                  "normalized": {
+                    "value": "PSYOP"
+                  }
+                }
+              ],
+              "new_designation": [
+                {
+                  "kind": "value",
+                  "value_kind": "string",
+                  "raw": "Military Information Support Operations",
+                  "normalized": {
+                    "value": "Military Information Support Operations"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
           "candidate_id": "alt_psyop_001_belongs_to_org_olson_ussocom",
           "payload": {
             "predicate": "oc:belongs_to_organization",
@@ -407,6 +449,69 @@
           }
         },
         {
+          "candidate_id": "alt_psyop_002_express_concern_full_clause_topic",
+          "payload": {
+            "predicate": "oc:express_concern",
+            "roles": {
+              "speaker": [
+                {
+                  "entity_id": "ent:community:psyop_miso_critics",
+                  "name": "Critics within the PSYOP/MISO community",
+                  "entity_type": "oc:community"
+                }
+              ],
+              "topic": [
+                {
+                  "kind": "value",
+                  "value_kind": "string",
+                  "raw": "the shift to a 'truth-based' approach neutered the discipline, limiting its ability to employ deception",
+                  "normalized": {
+                    "value": "the shift to a 'truth-based' approach neutered the discipline, limiting its ability to employ deception"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "candidate_id": "alt_psyop_002_limit_capability_swapped_roles",
+          "payload": {
+            "predicate": "oc:limit_capability",
+            "roles": {
+              "subject": [
+                {
+                  "kind": "value",
+                  "value_kind": "string",
+                  "raw": "the shift to a 'truth-based' approach",
+                  "normalized": {
+                    "value": "the shift to a 'truth-based' approach"
+                  }
+                }
+              ],
+              "topic": [
+                {
+                  "kind": "value",
+                  "value_kind": "string",
+                  "raw": "the discipline",
+                  "normalized": {
+                    "value": "the discipline"
+                  }
+                }
+              ],
+              "capability": [
+                {
+                  "kind": "value",
+                  "value_kind": "string",
+                  "raw": "its ability to employ deception",
+                  "normalized": {
+                    "value": "its ability to employ deception"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
           "candidate_id": "alt_psyop_002_limit_capability_discipline",
           "payload": {
             "predicate": "oc:limit_capability",
@@ -518,6 +623,28 @@
                 {
                   "entity_id": "ent:org:1st_special_forces_command",
                   "name": "1st Special Forces Command",
+                  "entity_type": "oc:military_organization"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "candidate_id": "alt_psyop_004_belongs_to_org_article_prefix",
+          "payload": {
+            "predicate": "oc:belongs_to_organization",
+            "roles": {
+              "member": [
+                {
+                  "entity_id": "ent:unit:the_4th_pog_a",
+                  "name": "The 4th POG(A)",
+                  "entity_type": "oc:military_unit"
+                }
+              ],
+              "organization": [
+                {
+                  "entity_id": "ent:org:the_1st_special_forces_command",
+                  "name": "the 1st Special Forces Command",
                   "entity_type": "oc:military_organization"
                 }
               ]
