@@ -58,10 +58,11 @@ config/
 - **Architecture is sound. Bottleneck is extraction quality** (37.5% acceptance
   on PSYOP Stage 1, 80% on Phase B bounded chunks). Focus on prompt iteration
   with `prompt_eval`, not new infrastructure.
-- **Model selection matters more than prompt wording**: `grok-4.1-fast` produces
-  empty roles on ~55% of extraction trials. The `fast_extraction` task model
-  needs to be one that handles structured output reliably. Try
-  `gemini/gemini-2.5-flash-lite` or another model with better structured output.
+- **Discriminated union schema enforces entity_type at decode time** (commit
+  `534a52c`). Schema validation errors are now legitimate rejections, not silent
+  nulls. `single_response_hardened` is the best prompt variant for gpt-5.4-mini
+  (4/4 structural, 0 errors). Other variants still have schema failures — the
+  model can't always fill required entity_type from the ontology catalog.
 - **onto-canon is NOT OSINT-specific** — it's the Data bucket of the ecosystem
   (general assertion governance layer). OSINT is one consumer.
 - **Extraction evaluation must use LLM-as-judge**, not just golden-set
