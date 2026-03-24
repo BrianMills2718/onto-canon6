@@ -62,11 +62,12 @@ config/
   `534a52c`). `single_response_hardened` + gpt-5.4-mini: 13/17 cases pass
   (76%), 1.0 structural rate, f1=0.077 (up from 0.0). Schema errors are now
   legitimate rejections. Promoted as operational prompt.
-- **llm_client gap: no retry on Pydantic ValidationError in structured output.**
-  Providers don't enforce all JSON Schema constraints (e.g., `minProperties`).
-  When the provider returns "valid" JSON that fails Pydantic validation,
-  `call_llm_structured` raises instead of retrying with a repair prompt. This
-  is an llm_client issue — file against `llm_client/execution/structured_runtime.py`.
+- **No LLM provider enforces value-level JSON Schema constraints** (minProperties,
+  minLength, pattern, minimum) at decode time. Only structural constraints (type,
+  required, enum) are enforced. Fix applied to llm_client:
+  `litellm.enable_json_schema_validation = True` + `JSONSchemaValidationError`
+  retryable + repair prompt on retry. Changes pending commit (hook issue in
+  llm_client, see llm_client/BACKLOG.md).
 - **extraction_goal is now required** — every run must specify what assertions
   are relevant. Broad default: "Extract all factual assertions directly supported
   by the source text." Narrow goals (e.g., "extract organizational command
