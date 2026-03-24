@@ -22,8 +22,10 @@ from onto_canon6.pipeline import text_extraction as extraction_module  # noqa: E
 from onto_canon6.config import ConfigError  # noqa: E402
 from onto_canon6.pipeline.text_extraction import (  # noqa: E402
     ExtractedCandidate,
+    ExtractedEntityFiller,
     ExtractedEvidenceSpan,
     ExtractedFiller,
+    ExtractedValueFiller,
     TextExtractionResponse,
     TextExtractionService,
 )
@@ -81,16 +83,14 @@ def test_extract_candidate_imports_uses_llm_client_boundary(tmp_path: Path, monk
                     predicate="oc:uses_system_demo",
                     roles={
                         "subject": [
-                            ExtractedFiller(
-                                kind="entity",
+                            ExtractedEntityFiller(
                                 entity_id="ent:activity:mission_planning",
                                 entity_type="oc:activity",
                                 name="Mission planning",
                             ),
                         ],
                         "object": [
-                            ExtractedFiller(
-                                kind="entity",
+                            ExtractedEntityFiller(
                                 entity_id="ent:system:radar_system",
                                 entity_type="oc:system",
                                 name="radar system",
@@ -344,8 +344,7 @@ def test_extract_and_submit_persists_extracted_candidates(
                         predicate="oc:uses_system_demo",
                         roles={
                             "subject": [
-                                ExtractedFiller(
-                                    kind="entity",
+                                ExtractedEntityFiller(
                                     entity_type="oc:activity",
                                     name="Mission planning",
                                 ),
@@ -420,8 +419,7 @@ def test_extract_and_submit_fails_loud_on_bad_evidence_span(
                         predicate="oc:uses_system_demo",
                         roles={
                             "subject": [
-                                ExtractedFiller(
-                                    kind="entity",
+                                ExtractedEntityFiller(
                                     entity_type="oc:activity",
                                     name="Alpha",
                                 ),
@@ -521,8 +519,7 @@ def test_extraction_response_resolves_offsets_from_exact_text() -> None:
             predicate="oc:uses_system_demo",
             roles={
                 "subject": [
-                    ExtractedFiller(
-                        kind="entity",
+                    ExtractedEntityFiller(
                         entity_type="oc:activity",
                         name="Mission planning",
                     )
@@ -554,8 +551,7 @@ def test_extraction_response_normalizes_raw_only_value_filler() -> None:
             predicate="oc:describe_dissatisfaction",
             roles={
                 "description": [
-                    ExtractedFiller(
-                        kind="value",
+                    ExtractedValueFiller(
                         value_kind="description",
                         raw="transition to a central pillar",
                     )
@@ -666,7 +662,8 @@ def test_extraction_response_normalizes_pipe_delimited_predicate_envelope() -> N
                 {
                     "predicate": (
                         'oc:hold_command_role | roles={"commander":{"kind":"entity",'
-                        '"entity_id":"ent:person:admiral_eric_olson"},'
+                        '"entity_id":"ent:person:admiral_eric_olson",'
+                        '"entity_type":"oc:person","name":"Admiral Eric Olson"},'
                         '"role_title":{"kind":"value","value_kind":"string",'
                         '"normalized":"commander","raw":"commander"}}'
                     ),
@@ -687,3 +684,90 @@ def test_extraction_response_normalizes_pipe_delimited_predicate_envelope() -> N
     assert candidate.predicate == "oc:hold_command_role"
     assert candidate.roles["commander"][0].entity_id == "ent:person:admiral_eric_olson"
     assert candidate.roles["role_title"][0].normalized == "commander"
+
+
+# --- Schema enforcement tests for discriminated union ---
+
+
+def test_json_schema_uses_discriminated_union_for_fillers() -> None:
+    """The JSON schema must use oneOf with kind as discriminator.
+
+    This is the key acceptance criterion: constrained decoding enforces
+    entity_type/name for entity fillers and value_kind for value fillers.
+    """
+
+    schema = TextExtractionResponse.model_json_schema()
+    defs = schema.get("$defs", {})
+
+    entity_schema = defs.get("ExtractedEntityFiller", {})
+    assert "entity_type" in entity_schema.get("required", [])
+    assert "name" in entity_schema.get("required", [])
+
+    value_schema = defs.get("ExtractedValueFiller", {})
+    assert "value_kind" in value_schema.get("required", [])
+
+    unknown_schema = defs.get("ExtractedUnknownFiller", {})
+    assert "raw" in unknown_schema.get("required", [])
+
+
+def test_entity_filler_rejects_null_entity_type() -> None:
+    """Entity filler with null entity_type must raise ValidationError."""
+
+    from pydantic import ValidationError
+
+    with pytest.raises(ValidationError):
+        TextExtractionResponse.model_validate(
+            {
+                "candidates": [
+                    {
+                        "predicate": "oc:test",
+                        "roles": {
+                            "subject": [{"kind": "entity", "entity_type": None, "name": "Alice"}]
+                        },
+                        "evidence_spans": [{"text": "Alice"}],
+                    }
+                ]
+            }
+        )
+
+
+def test_entity_filler_rejects_missing_name() -> None:
+    """Entity filler without name must raise ValidationError."""
+
+    from pydantic import ValidationError
+
+    with pytest.raises(ValidationError):
+        TextExtractionResponse.model_validate(
+            {
+                "candidates": [
+                    {
+                        "predicate": "oc:test",
+                        "roles": {
+                            "subject": [{"kind": "entity", "entity_type": "oc:person"}]
+                        },
+                        "evidence_spans": [{"text": "someone"}],
+                    }
+                ]
+            }
+        )
+
+
+def test_value_filler_rejects_missing_value_kind() -> None:
+    """Value filler without value_kind must raise ValidationError."""
+
+    from pydantic import ValidationError
+
+    with pytest.raises(ValidationError):
+        TextExtractionResponse.model_validate(
+            {
+                "candidates": [
+                    {
+                        "predicate": "oc:test",
+                        "roles": {
+                            "topic": [{"kind": "value", "raw": "something"}]
+                        },
+                        "evidence_spans": [{"text": "something"}],
+                    }
+                ]
+            }
+        )
