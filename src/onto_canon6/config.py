@@ -84,6 +84,10 @@ class ExtractionConfig(BaseModel):
 
     selection_task: str = Field(min_length=1)
     selection_use_performance: bool = False
+    model_override: str | None = Field(
+        default=None,
+        description="Pin a specific model instead of task-based selection. Useful when the default model has structural issues with the extraction schema.",
+    )
     prompt_template: str = Field(min_length=1)
     prompt_ref: str = Field(min_length=1)
     timeout_seconds: int = Field(ge=1)
@@ -191,6 +195,10 @@ class PromptEvalExperimentConfig(BaseModel):
     observability_phase: str = Field(min_length=1)
     selection_task: str = Field(min_length=1)
     selection_use_performance: bool = False
+    model_override: str | None = Field(
+        default=None,
+        description="Pin a specific model for all prompt experiment variants.",
+    )
     n_runs: int = Field(ge=1)
     temperature: float = Field(ge=0.0)
     timeout_seconds: int = Field(ge=1)

@@ -834,7 +834,10 @@ def test_run_prompt_experiment_builds_report_and_variant_comparison(
         ),
     )
 
-    report = ExtractionPromptExperimentService().run_prompt_experiment()
+    service = ExtractionPromptExperimentService()
+    # Clear model_override so the test exercises task-based model selection.
+    object.__setattr__(service, "_model_override", None)
+    report = service.run_prompt_experiment()
 
     assert report.execution_id == "exec123"
     assert report.baseline_variant_name == "baseline"
@@ -1380,7 +1383,10 @@ def test_run_prompt_experiment_allows_selection_task_override(
         ),
     )
 
-    report = ExtractionPromptExperimentService().run_prompt_experiment(
+    service = ExtractionPromptExperimentService()
+    # Clear model_override so the test exercises task-based model selection.
+    object.__setattr__(service, "_model_override", None)
+    report = service.run_prompt_experiment(
         case_limit=1,
         n_runs=2,
         comparison_method="bootstrap",

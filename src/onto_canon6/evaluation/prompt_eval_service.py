@@ -159,6 +159,7 @@ class ExtractionPromptExperimentService:
         self._observability_phase = experiment.observability_phase
         self._selection_task = experiment.selection_task
         self._selection_use_performance = experiment.selection_use_performance
+        self._model_override = experiment.model_override
         self._n_runs = experiment.n_runs
         self._temperature = experiment.temperature
         self._timeout_seconds = experiment.timeout_seconds
@@ -236,10 +237,14 @@ class ExtractionPromptExperimentService:
 
         llm_client_api = _load_llm_client_api()
         prompt_eval_api = _load_prompt_eval_api()
-        selected_model = llm_client_api.get_model(
-            effective_selection_task,
-            use_performance=self._selection_use_performance,
-        )
+        if self._model_override:
+            selected_model = self._model_override
+            logger.info("Using model_override: %s (bypassing task-based selection)", selected_model)
+        else:
+            selected_model = llm_client_api.get_model(
+                effective_selection_task,
+                use_performance=self._selection_use_performance,
+            )
         llm_client_config = _build_llm_client_config_for_routing_policy(routing_policy)
         loaded_profile = load_effective_profile(
             profile.profile_id,
