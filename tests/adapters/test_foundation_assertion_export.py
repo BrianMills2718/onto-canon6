@@ -153,3 +153,31 @@ def test_roundtrip_to_json() -> None:
     roundtripped = FoundationAssertion(**dumped)
     assert roundtripped.assertion_id == result.assertion_id
     assert roundtripped.predicate == result.predicate
+
+
+def test_alias_lookup_enriches_entity_fillers() -> None:
+    """Entity fillers should get alias_ids from the identity subsystem lookup."""
+
+    assertion = _make_assertion()
+    alias_lookup = {
+        "ent:auto:test:org:alpha_unit": ["ent:auto:other:org:alpha_unit_v2"],
+    }
+    result = promoted_assertion_to_foundation(assertion, alias_lookup=alias_lookup)
+
+    sub_filler = result.roles["subordinate"][0]
+    assert "alias_ids" in sub_filler
+    assert "ent:auto:other:org:alpha_unit_v2" in sub_filler["alias_ids"]
+
+    # Parent entity has no aliases — alias_ids should be absent.
+    parent_filler = result.roles["parent"][0]
+    assert "alias_ids" not in parent_filler
+
+
+def test_alias_lookup_none_is_backward_compatible() -> None:
+    """When alias_lookup is None, no alias_ids are added."""
+
+    assertion = _make_assertion()
+    result = promoted_assertion_to_foundation(assertion, alias_lookup=None)
+
+    sub_filler = result.roles["subordinate"][0]
+    assert "alias_ids" not in sub_filler

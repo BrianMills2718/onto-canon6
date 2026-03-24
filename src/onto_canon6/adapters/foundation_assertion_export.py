@@ -27,6 +27,7 @@ from pydantic import BaseModel, ConfigDict, Field, JsonValue
 
 from ..core.graph_models import PromotedGraphAssertionRecord
 from ..core.graph_store import CanonicalGraphStore
+from ..core.identity_store import IdentityStore
 
 logger = logging.getLogger(__name__)
 
@@ -67,16 +68,23 @@ def promoted_assertion_to_foundation(
     assertion: PromotedGraphAssertionRecord,
     *,
     confidence: float | None = None,
+    alias_lookup: dict[str, list[str]] | None = None,
 ) -> FoundationAssertion:
     """Convert one onto-canon6 promoted assertion to Foundation Assertion IR.
 
     The ``normalized_body`` already contains ``predicate`` and ``roles`` in
     the correct shape (``dict[str, list[filler]]``).  This function extracts
     and validates the structure without lossy transformation.
+
+    When ``alias_lookup`` is provided, entity fillers are enriched with
+    ``alias_ids`` from the identity subsystem.  The lookup maps each
+    ``entity_id`` to a list of other entity_ids that belong to the same
+    identity (excluding the entity_id itself).
     """
 
     body = assertion.normalized_body
     raw_roles = body.get("roles", {})
+    _aliases = alias_lookup or {}
 
     # Normalize role fillers to Foundation shape.
     roles: dict[str, list[dict[str, Any]]] = {}
@@ -93,14 +101,19 @@ def promoted_assertion_to_foundation(
                 foundation_filler["kind"] = kind
 
                 if kind == "entity":
-                    if "entity_id" in filler:
-                        foundation_filler["entity_id"] = filler["entity_id"]
+                    entity_id = filler.get("entity_id")
+                    if entity_id:
+                        foundation_filler["entity_id"] = entity_id
                     if "name" in filler:
                         foundation_filler["name"] = filler["name"]
                     if "entity_type" in filler:
                         foundation_filler["entity_type"] = filler["entity_type"]
-                    if "alias_ids" in filler:
-                        foundation_filler["alias_ids"] = filler["alias_ids"]
+                    # Merge alias_ids from payload AND identity subsystem.
+                    payload_aliases = filler.get("alias_ids", [])
+                    identity_aliases = _aliases.get(entity_id, []) if entity_id else []
+                    merged = sorted(set(payload_aliases + identity_aliases))
+                    if merged:
+                        foundation_filler["alias_ids"] = merged
                 elif kind == "value":
                     if "value_kind" in filler:
                         foundation_filler["value_kind"] = filler["value_kind"]
@@ -131,25 +144,62 @@ def promoted_assertion_to_foundation(
     )
 
 
+def _build_alias_lookup(db_path: Path) -> dict[str, list[str]]:
+    """Build entity_id → alias_ids mapping from the identity subsystem.
+
+    For each entity that belongs to an identity, returns the other entity_ids
+    in that same identity (excluding the entity itself).  Entities with no
+    identity membership return an empty list (omitted from the dict).
+    """
+
+    identity_store = IdentityStore(db_path)
+    alias_map: dict[str, list[str]] = {}
+    try:
+        with identity_store.transaction() as conn:
+            identities = identity_store.list_identities(conn)
+            for identity in identities:
+                memberships = identity_store.list_memberships_for_identity(
+                    conn, identity_id=identity.identity_id,
+                )
+                entity_ids = [m.entity_id for m in memberships]
+                if len(entity_ids) < 2:
+                    continue
+                for eid in entity_ids:
+                    alias_map[eid] = sorted(
+                        other for other in entity_ids if other != eid
+                    )
+    except Exception as exc:
+        logger.warning("Could not build alias lookup from identity store: %s", exc)
+    return alias_map
+
+
 def export_foundation_assertions(
     db_path: Path | str,
     *,
     output_path: Path | str | None = None,
+    include_aliases: bool = True,
 ) -> list[FoundationAssertion]:
     """Export all promoted assertions from a review DB as Foundation Assertion IR.
+
+    When ``include_aliases`` is True (default), entity fillers are enriched
+    with ``alias_ids`` from the identity subsystem so consumers can resolve
+    entities across exports without reimplementing dedup.
 
     Returns the list and optionally writes to a JSON file.
     """
 
+    resolved_path = Path(db_path)
     store = CanonicalGraphStore()
-    conn = sqlite3.connect(str(db_path))
+    conn = sqlite3.connect(str(resolved_path))
     try:
         assertions = store.list_promoted_assertions(conn)
     finally:
         conn.close()
 
+    alias_lookup = _build_alias_lookup(resolved_path) if include_aliases else None
+
     foundation_assertions = [
-        promoted_assertion_to_foundation(assertion)
+        promoted_assertion_to_foundation(assertion, alias_lookup=alias_lookup)
         for assertion in assertions
     ]
 
@@ -171,21 +221,19 @@ def export_foundation_assertions(
     return foundation_assertions
 
 
-# Schema gap documentation for future work:
+# Schema gap documentation:
 #
-# 1. Entity names: Present in normalized_body roles (from extraction).
-#    Foundation expects name on EntityRef. ✓ Covered.
+# 1. Entity names: ✓ Present in normalized_body roles.
 #
-# 2. Entity alias_ids: Foundation expects alias_ids on EntityRef.
-#    onto-canon6 has these in the identity subsystem (GraphIdentityMembershipRecord).
-#    Not yet wired into this export. TODO: join with identity store.
+# 2. Entity alias_ids: ✓ WIRED. Identity subsystem joined via _build_alias_lookup().
+#    Entities with identity memberships get alias_ids from sibling entity_ids.
 #
 # 3. Qualifiers (sys:valid_from, sys:valid_to): onto-canon6 does not yet
 #    extract temporal qualifiers. Deferred per ADR (temporal/inference deferred).
 #
 # 4. Confidence: Available from epistemic extension (ConfidenceAssessmentRecord).
-#    Not yet wired. TODO: optional epistemic store join.
+#    Passed as optional kwarg. TODO: optional epistemic store join in export.
 #
 # 5. Provenance refs: Foundation expects event IDs and artifact IDs.
-#    onto-canon6 provides source_candidate_id. To produce full provenance_refs,
-#    join with artifact lineage store. TODO: wire artifact store.
+#    onto-canon6 provides source_candidate_id. Wrapper adds Foundation envelope.
+#    Decision: onto-canon6 does NOT adopt Foundation event log internally.
