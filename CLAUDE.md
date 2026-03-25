@@ -94,6 +94,31 @@ config/
   triples. Confirms governance layer adds: ontology alignment, discrimination,
   structured multi-role assertions. Script: `scripts/baseline_extraction_comparison.py`.
 
+## Composability Principle
+
+onto-canon6 is a composable toolkit, not a monolithic application:
+
+- **Vocabulary is pluggable.** The SUMO/PropBank/FrameNet synthesis (`oc:` prefix,
+  sumo_plus.db) is ONE vocabulary, not THE vocabulary. Packs and profiles are the
+  mechanism for plugging in different vocabularies. Don't hardcode assumptions
+  about specific predicates or entity types outside of pack-specific code.
+- **Extensions are pluggable.** The epistemic engine (confidence, supersession,
+  tension) is ONE extension, not the only use case. A financial signals extension
+  or a temporal reasoning extension would use the same governed assertion
+  lifecycle with different extension-local models. Keep extensions in
+  `extensions/`, not in core.
+- **Extraction is a producer, not core.** The text extraction pipeline is one way
+  to produce candidate assertions. An API import adapter, a manual entry form,
+  or a structured data ingestion pipeline are other producers. Don't couple core
+  governance logic to extraction-specific assumptions.
+- **Resolution strategies are consumer-chosen.** Entity identity, dedup, conflict
+  handling — onto-canon6 provides the infrastructure, consumers choose the
+  strategy (exact match, Q-code, never merge, LLM-assisted).
+
+Don't refactor into separate packages until a second vocabulary/extension/producer
+exists. But don't deepen coupling either — keep boundaries clean so extraction
+happens.
+
 ## Integration Decisions (2026-03-24)
 
 1. **Entity type CURIE namespacing** — RESOLVED. Extraction already uses `oc:`
