@@ -84,14 +84,14 @@ def test_extract_candidate_imports_uses_llm_client_boundary(tmp_path: Path, monk
                     roles={
                         "subject": [
                             ExtractedEntityFiller(
-                                entity_id="ent:activity:mission_planning",
+                                kind="entity", entity_id="ent:activity:mission_planning",
                                 entity_type="oc:activity",
                                 name="Mission planning",
                             ),
                         ],
                         "object": [
                             ExtractedEntityFiller(
-                                entity_id="ent:system:radar_system",
+                                kind="entity", entity_id="ent:system:radar_system",
                                 entity_type="oc:system",
                                 name="radar system",
                             ),
@@ -346,7 +346,7 @@ def test_extract_and_submit_persists_extracted_candidates(
                         roles={
                             "subject": [
                                 ExtractedEntityFiller(
-                                    entity_type="oc:activity",
+                                    kind="entity", entity_type="oc:activity",
                                     name="Mission planning",
                                 ),
                             ],
@@ -421,7 +421,7 @@ def test_extract_and_submit_fails_loud_on_bad_evidence_span(
                         roles={
                             "subject": [
                                 ExtractedEntityFiller(
-                                    entity_type="oc:activity",
+                                    kind="entity", entity_type="oc:activity",
                                     name="Alpha",
                                 ),
                             ],
@@ -521,7 +521,7 @@ def test_extraction_response_resolves_offsets_from_exact_text() -> None:
             roles={
                 "subject": [
                     ExtractedEntityFiller(
-                        entity_type="oc:activity",
+                        kind="entity", entity_type="oc:activity",
                         name="Mission planning",
                     )
                 ],
@@ -553,7 +553,7 @@ def test_extraction_response_normalizes_raw_only_value_filler() -> None:
             roles={
                 "description": [
                     ExtractedValueFiller(
-                        value_kind="description",
+                        kind="value", value_kind="description",
                         raw="transition to a central pillar",
                     )
                 ],
@@ -687,28 +687,20 @@ def test_extraction_response_normalizes_pipe_delimited_predicate_envelope() -> N
     assert candidate.roles["role_title"][0].normalized == "commander"
 
 
-# --- Schema enforcement tests for discriminated union ---
+# --- Schema enforcement tests ---
 
 
-def test_json_schema_uses_discriminated_union_for_fillers() -> None:
-    """The JSON schema must use oneOf with kind as discriminator.
+def test_filler_schema_has_descriptions_for_all_fields() -> None:
+    """Every filler field must have a description for decode-time guidance.
 
-    This is the key acceptance criterion: constrained decoding enforces
-    entity_type/name for entity fillers and value_kind for value fillers.
+    Descriptions are the primary mechanism for correct structured output.
     """
 
     schema = TextExtractionResponse.model_json_schema()
     defs = schema.get("$defs", {})
-
-    entity_schema = defs.get("ExtractedEntityFiller", {})
-    assert "entity_type" in entity_schema.get("required", [])
-    assert "name" in entity_schema.get("required", [])
-
-    value_schema = defs.get("ExtractedValueFiller", {})
-    assert "value_kind" in value_schema.get("required", [])
-
-    unknown_schema = defs.get("ExtractedUnknownFiller", {})
-    assert "raw" in unknown_schema.get("required", [])
+    filler_props = defs.get("ExtractedFiller", {}).get("properties", {})
+    for field_name in ("kind", "entity_type", "name", "value_kind", "raw"):
+        assert "description" in filler_props.get(field_name, {}), f"{field_name} missing description"
 
 
 def test_entity_filler_rejects_null_entity_type() -> None:

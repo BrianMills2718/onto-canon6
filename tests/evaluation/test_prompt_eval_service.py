@@ -157,14 +157,14 @@ def test_score_prompt_eval_trial_rewards_exact_usable_output() -> None:
                 roles={
                     "subject": [
                         ExtractedEntityFiller(
-                            entity_type="oc:activity",
+                            kind="entity", entity_type="oc:activity",
                             name="Mission planning",
                             entity_id="ent:activity:mission_planning",
                         )
                     ],
                     "object": [
                         ExtractedEntityFiller(
-                            entity_type="oc:system",
+                            kind="entity", entity_type="oc:system",
                             name="radar system",
                             entity_id="ent:system:radar_system",
                         )
@@ -238,13 +238,13 @@ def test_score_prompt_eval_trial_ignores_reviewer_ids_and_value_normalization_sh
                 roles={
                     "subject": [
                         ExtractedEntityFiller(
-                            entity_type="oc:psychological_operation",
+                            kind="entity", entity_type="oc:psychological_operation",
                             name="Psychological Operations",
                         )
                     ],
                     "label": [
                         ExtractedValueFiller(
-                            value_kind="string",
+                            kind="value", value_kind="string",
                             raw="PSYOP",
                         )
                     ],
@@ -345,16 +345,16 @@ def test_score_prompt_eval_trial_credits_accepted_alternatives() -> None:
             ExtractedCandidate(
                 predicate="oc:belongs_to_organization",
                 roles={
-                    "subordinate": [ExtractedEntityFiller( entity_type="oc:org", name="Alpha unit")],
-                    "parent": [ExtractedEntityFiller( entity_type="oc:org", name="Bravo command")],
+                    "subordinate": [ExtractedEntityFiller(kind="entity", entity_type="oc:org", name="Alpha unit")],
+                    "parent": [ExtractedEntityFiller(kind="entity", entity_type="oc:org", name="Bravo command")],
                 },
                 evidence_spans=[ExtractedEvidenceSpan(text="Alpha unit reports to Bravo command")],
             ),
             ExtractedCandidate(
                 predicate="oc:hold_command_role",
                 roles={
-                    "commander": [ExtractedEntityFiller( entity_type="oc:person", name="Charlie")],
-                    "organization": [ExtractedEntityFiller( entity_type="oc:org", name="Alpha unit")],
+                    "commander": [ExtractedEntityFiller(kind="entity", entity_type="oc:person", name="Charlie")],
+                    "organization": [ExtractedEntityFiller(kind="entity", entity_type="oc:org", name="Alpha unit")],
                 },
                 evidence_spans=[ExtractedEvidenceSpan(text="Charlie leads Alpha")],
             ),
@@ -408,15 +408,15 @@ def test_score_prompt_eval_trial_without_alternatives_backward_compat() -> None:
             ExtractedCandidate(
                 predicate="oc:belongs_to_organization",
                 roles={
-                    "subordinate": [ExtractedEntityFiller( entity_type="oc:org", name="Alpha unit")],
-                    "parent": [ExtractedEntityFiller( entity_type="oc:org", name="Bravo command")],
+                    "subordinate": [ExtractedEntityFiller(kind="entity", entity_type="oc:org", name="Alpha unit")],
+                    "parent": [ExtractedEntityFiller(kind="entity", entity_type="oc:org", name="Bravo command")],
                 },
                 evidence_spans=[ExtractedEvidenceSpan(text="Alpha unit reports to Bravo command")],
             ),
             ExtractedCandidate(
                 predicate="oc:spurious_predicate",
                 roles={
-                    "agent": [ExtractedEntityFiller( entity_type="oc:thing", name="Unknown")],
+                    "agent": [ExtractedEntityFiller(kind="entity", entity_type="oc:thing", name="Unknown")],
                 },
                 evidence_spans=[ExtractedEvidenceSpan(text="Alpha unit")],
             ),

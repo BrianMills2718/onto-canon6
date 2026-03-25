@@ -20,7 +20,7 @@ import json
 import logging
 from pathlib import Path
 import re
-from typing import Annotated, Any, Literal, Mapping, Protocol, cast
+from typing import Any, Mapping, Protocol, cast
 
 from pydantic import BaseModel, ConfigDict, Field, JsonValue, model_validator
 
@@ -43,24 +43,39 @@ class ExtractionError(RuntimeError):
     """Raised when the text-extraction boundary fails."""
 
 
-class ExtractedEntityFiller(BaseModel):
-    """Entity filler: a named entity from the source text.
+class ExtractedFiller(BaseModel):
+    """Structured filler emitted by the extractor response model.
 
-    The JSON schema enforces ``entity_type`` and ``name`` at decode time so the
-    LLM cannot produce null entity types.  ``entity_id`` stays optional because
-    the system derives source-scoped IDs deterministically.
+    Flat model with strong ``Field(description=...)`` on every field.  Field
+    descriptions are the primary mechanism for correct structured output —
+    they constrain LLM behavior at decode time.  Discriminated unions
+    (``oneOf`` + ``discriminator``) are architecturally correct but current
+    models cannot navigate them (produce empty roles).  This flat model
+    achieves the same outcome via descriptions + post-parse validation.
     """
 
     model_config = ConfigDict(extra="forbid", frozen=True)
 
-    kind: Literal["entity"] = "entity"
-    entity_type: str = Field(
+    kind: str = Field(
         min_length=1,
-        description="Entity type from the active entity-type catalog (e.g. oc:person, oc:military_organization).",
+        description=(
+            "Filler kind. MUST be one of: 'entity' (for named entities from source text), "
+            "'value' (for concrete literals like strings, times, money), or 'unknown' (for raw untyped text)."
+        ),
+    )
+    entity_type: str = Field(
+        default="",
+        description=(
+            "REQUIRED when kind=entity. Entity type from the active entity-type catalog "
+            "(e.g. oc:person, oc:military_organization). Leave empty string for non-entity fillers."
+        ),
     )
     name: str = Field(
-        min_length=1,
-        description="Exact surface form from the source text.",
+        default="",
+        description=(
+            "REQUIRED when kind=entity. Exact surface form from the source text. "
+            "Leave empty string for non-entity fillers."
+        ),
     )
     entity_id: str | None = Field(
         default=None,
@@ -70,61 +85,50 @@ class ExtractedEntityFiller(BaseModel):
         default_factory=list,
         description="Optional alternate IDs for this entity from other sources.",
     )
-
-
-class ExtractedValueFiller(BaseModel):
-    """Value filler: a concrete literal (string, time, money, etc.).
-
-    ``value_kind`` is required at decode time.  At least one of ``normalized``
-    or ``raw`` must be provided (enforced by a post-parse validator since JSON
-    Schema cannot express this cross-field constraint).
-    """
-
-    model_config = ConfigDict(extra="forbid", frozen=True)
-
-    kind: Literal["value"] = "value"
     value_kind: str = Field(
-        min_length=1,
-        description="Semantic type of the value (e.g. string, time, money, quantity).",
+        default="",
+        description=(
+            "REQUIRED when kind=value. Semantic type of the value "
+            "(e.g. string, time, money, quantity). Leave empty string for non-value fillers."
+        ),
     )
     normalized: JsonValue | None = Field(
         default=None,
-        description="Structured normalized form of the value.",
+        description="Structured normalized form of the value. Required for value fillers unless raw is provided.",
     )
     raw: str | None = Field(
         default=None,
-        description="Raw source text form of the value.",
+        description="Raw source text form. Required for value fillers unless normalized is provided. Required for unknown fillers.",
     )
 
     @model_validator(mode="after")
-    def _require_value_content(self) -> "ExtractedValueFiller":
-        """Require at least one of normalized or raw."""
+    def _validate_shape(self) -> "ExtractedFiller":
+        """Require the minimal fields implied by the declared filler kind."""
 
-        if self.normalized is None and (self.raw is None or not self.raw.strip()):
-            raise ValueError("value fillers require normalized or raw")
-        return self
+        normalized_kind = self.kind.strip()
+        if normalized_kind == "entity":
+            if not self.name.strip() and not (self.entity_id and self.entity_id.strip()):
+                raise ValueError("entity fillers require name or entity_id")
+            if not self.entity_type.strip():
+                raise ValueError("entity fillers require entity_type")
+            return self
+        if normalized_kind == "value":
+            if not self.value_kind.strip():
+                raise ValueError("value fillers require value_kind")
+            if self.normalized is None and (self.raw is None or not self.raw.strip()):
+                raise ValueError("value fillers require normalized or raw")
+            return self
+        if normalized_kind == "unknown":
+            if self.raw is None or not self.raw.strip():
+                raise ValueError("unknown fillers require raw")
+            return self
+        raise ValueError(f"unsupported filler kind: {self.kind!r}")
 
 
-class ExtractedUnknownFiller(BaseModel):
-    """Unknown filler: raw text that doesn't cleanly fit entity or value.
-
-    Kept as a permissive ingest path so extraction can surface untyped content
-    for downstream review rather than silently dropping it.
-    """
-
-    model_config = ConfigDict(extra="forbid", frozen=True)
-
-    kind: Literal["unknown"] = "unknown"
-    raw: str = Field(
-        min_length=1,
-        description="Raw text for untyped fillers.",
-    )
-
-
-ExtractedFiller = Annotated[
-    ExtractedEntityFiller | ExtractedValueFiller | ExtractedUnknownFiller,
-    Field(discriminator="kind"),
-]
+# Keep concrete type aliases for backward compatibility with tests that import them.
+ExtractedEntityFiller = ExtractedFiller
+ExtractedValueFiller = ExtractedFiller
+ExtractedUnknownFiller = ExtractedFiller
 
 
 class ExtractedEvidenceSpan(BaseModel):
@@ -170,10 +174,9 @@ class ExtractedCandidate(BaseModel):
         description="Predicate identifier only, without serialized role payloads or extra prose.",
     )
     roles: dict[str, list[ExtractedFiller]] = Field(
-        min_length=1,
         description=(
-            "Required non-empty role mapping. Every candidate must include at least one role, "
-            "and each role must contain one or more fillers."
+            "Role mapping. MUST include at least one role with at least one filler. "
+            "Each role name maps to an array of filler objects."
         ),
     )
     evidence_spans: list[ExtractedEvidenceSpan] = Field(
@@ -633,24 +636,27 @@ def _pipeline_filler_from_extracted(
         dict[str, JsonValue],
         filler.model_dump(exclude_none=True, mode="json"),
     )
-    if isinstance(filler, ExtractedValueFiller):
-        if "normalized" not in filler_payload:
-            raw_value = filler.raw.strip() if filler.raw else ""
-            if not raw_value:
-                raise ValueError("value filler is missing normalized and raw")
-            filler_payload["normalized"] = raw_value
+    # Remove empty-string defaults that are just schema placeholders.
+    for key in ("entity_type", "name", "value_kind"):
+        if key in filler_payload and filler_payload[key] == "":
+            del filler_payload[key]
+    if filler.kind == "value" and "normalized" not in filler_payload:
+        raw_value = filler.raw.strip() if filler.raw else ""
+        if not raw_value:
+            raise ValueError("value filler is missing normalized and raw")
+        filler_payload["normalized"] = raw_value
         return filler_payload
-    if isinstance(filler, ExtractedUnknownFiller):
+    if filler.kind != "entity":
         return filler_payload
-    # ExtractedEntityFiller — derive entity_id if not provided.
+    # Entity — derive entity_id if not provided.
     entity_id = filler.entity_id.strip() if filler.entity_id else ""
     if entity_id:
         filler_payload["entity_id"] = entity_id
         return filler_payload
     filler_payload["entity_id"] = _derive_local_entity_id(
         source_ref=source_ref,
-        name=filler.name,
-        entity_type=filler.entity_type,
+        name=filler.name or "",
+        entity_type=filler.entity_type or None,
     )
     return filler_payload
 
