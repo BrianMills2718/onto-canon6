@@ -64,13 +64,28 @@
 - `minProperties: 1` removed from roles — providers don't enforce it.
   Post-parse validator catches empty roles and triggers retry with repair.
 
-**Fix needed:**
-1. Use `text_to_candidate_assertions.yaml` as operational prompt (not
-   single_response_hardened)
-2. Add `{{ max_candidates_per_case }}` rendering to it (currently only in
-   prompt_eval variants)
-3. Set `max_output_tokens: 4096` on extraction calls to prevent runaway
-4. Re-run e2e: extract → list → review → promote → export
+**Root cause (2026-03-25 investigation):**
+The `roles` field uses `additionalProperties` (free-form dict with arbitrary
+string keys). Models see `"roles": {"type": "object", "additionalProperties": {...}}`
+and produce the empty case `"roles": {}` because no keys are required. The
+predicate catalog in the prompt shows which roles each predicate has, but the
+model doesn't connect prompt guidance to schema structure.
+
+This was NOT happening in Phase B (March 18) — that run used an earlier schema
+and model config. Something in the current pipeline changed the model's behavior.
+
+**Filler fields are now all required** (entity_type, name, value_kind in
+`required[]`) so if the model DOES produce fillers, they'll have types. But
+the model doesn't produce fillers at all because it stops at `roles: {}`.
+
+**Investigation needed (next session):**
+1. Try direct API call (bypass OpenRouter) to rule out routing layer
+2. Try hardcoded role keys in schema (e.g., `properties: {"commander": ...,
+   "organization": ...}` instead of `additionalProperties`) for one predicate
+3. Compare rendered prompts between Phase B (March 18) and now — what changed?
+4. Test with GPT-4o or Claude direct (not via OpenRouter)
+5. Check if `additionalProperties` + `type: object` is a known problem pattern
+   for structured output across providers
 
 ### 2. Prove end-to-end flow
 
