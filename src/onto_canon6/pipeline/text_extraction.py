@@ -63,17 +63,13 @@ class ExtractedFiller(BaseModel):
             "'value' (for concrete literals like strings, times, money), or 'unknown' (for raw untyped text)."
         ),
     )
-    entity_type: str = Field(
-        description=(
-            "Entity type from the active entity-type catalog (e.g. oc:person, oc:military_organization). "
-            "REQUIRED for entity fillers. Use empty string for value/unknown fillers."
-        ),
+    entity_type: str | None = Field(
+        default=None,
+        description="Entity type from the active entity-type catalog (e.g. oc:person, oc:military_organization).",
     )
-    name: str = Field(
-        description=(
-            "Exact surface form from the source text. "
-            "REQUIRED for entity fillers. Use empty string for value/unknown fillers."
-        ),
+    name: str | None = Field(
+        default=None,
+        description="Exact surface form from the source text.",
     )
     entity_id: str | None = Field(
         default=None,
@@ -83,11 +79,9 @@ class ExtractedFiller(BaseModel):
         default_factory=list,
         description="Optional alternate IDs for this entity from other sources.",
     )
-    value_kind: str = Field(
-        description=(
-            "Semantic type of the value (e.g. string, time, money, quantity). "
-            "REQUIRED for value fillers. Use empty string for entity/unknown fillers."
-        ),
+    value_kind: str | None = Field(
+        default=None,
+        description="Semantic type of the value (e.g. string, time, money, quantity).",
     )
     normalized: JsonValue | None = Field(
         default=None,
@@ -98,36 +92,19 @@ class ExtractedFiller(BaseModel):
         description="Raw source text form. Required for value fillers unless normalized is provided. Required for unknown fillers.",
     )
 
-    @model_validator(mode="before")
-    @classmethod
-    def _inject_cross_kind_defaults(cls, data: object) -> object:
-        """Inject empty-string defaults for cross-kind fields.
-
-        The JSON schema requires all fields so the LLM must produce them.
-        But programmatic constructors (tests, adapters) shouldn't need to
-        pass ``value_kind=""`` when building entity fillers.
-        """
-
-        if not isinstance(data, dict):
-            return data
-        for field in ("entity_type", "name", "value_kind"):
-            if field not in data:
-                data[field] = ""
-        return data
-
     @model_validator(mode="after")
     def _validate_shape(self) -> "ExtractedFiller":
         """Require the minimal fields implied by the declared filler kind."""
 
         normalized_kind = self.kind.strip()
         if normalized_kind == "entity":
-            if not self.name.strip() and not (self.entity_id and self.entity_id.strip()):
-                raise ValueError("entity fillers require name or entity_id")
-            if not self.entity_type.strip():
-                raise ValueError("entity fillers require entity_type")
+            if self.entity_id is not None and self.entity_id.strip():
+                return self
+            if self.name is None or not self.name.strip():
+                raise ValueError("entity fillers require entity_id or name")
             return self
         if normalized_kind == "value":
-            if not self.value_kind.strip():
+            if self.value_kind is None or not self.value_kind.strip():
                 raise ValueError("value fillers require value_kind")
             if self.normalized is None and (self.raw is None or not self.raw.strip()):
                 raise ValueError("value fillers require normalized or raw")
@@ -650,10 +627,6 @@ def _pipeline_filler_from_extracted(
         dict[str, JsonValue],
         filler.model_dump(exclude_none=True, mode="json"),
     )
-    # Remove empty-string defaults that are just schema placeholders.
-    for key in ("entity_type", "name", "value_kind"):
-        if key in filler_payload and filler_payload[key] == "":
-            del filler_payload[key]
     if filler.kind == "value" and "normalized" not in filler_payload:
         raw_value = filler.raw.strip() if filler.raw else ""
         if not raw_value:

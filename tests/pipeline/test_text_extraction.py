@@ -703,25 +703,28 @@ def test_filler_schema_has_descriptions_for_all_fields() -> None:
         assert "description" in filler_props.get(field_name, {}), f"{field_name} missing description"
 
 
-def test_entity_filler_rejects_null_entity_type() -> None:
-    """Entity filler with null entity_type must raise ValidationError."""
+def test_entity_filler_accepts_null_entity_type() -> None:
+    """Null entity_type is accepted — descriptions guide the model, validator doesn't enforce.
 
-    from pydantic import ValidationError
+    This matches Phase B behavior: entity_type is optional in the schema.
+    The model SHOULD fill it (guided by description) but the system doesn't
+    reject it if missing — downstream identity/canonicalization handles it.
+    """
 
-    with pytest.raises(ValidationError):
-        TextExtractionResponse.model_validate(
-            {
-                "candidates": [
-                    {
-                        "predicate": "oc:test",
-                        "roles": {
-                            "subject": [{"kind": "entity", "entity_type": None, "name": "Alice"}]
-                        },
-                        "evidence_spans": [{"text": "Alice"}],
-                    }
-                ]
-            }
-        )
+    response = TextExtractionResponse.model_validate(
+        {
+            "candidates": [
+                {
+                    "predicate": "oc:test",
+                    "roles": {
+                        "subject": [{"kind": "entity", "entity_type": None, "name": "Alice"}]
+                    },
+                    "evidence_spans": [{"text": "Alice"}],
+                }
+            ]
+        }
+    )
+    assert response.candidates[0].roles["subject"][0].entity_type is None
 
 
 def test_entity_filler_rejects_missing_name() -> None:
