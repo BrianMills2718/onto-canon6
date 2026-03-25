@@ -58,10 +58,15 @@ config/
 - **Architecture is sound. Bottleneck is extraction quality** (37.5% acceptance
   on PSYOP Stage 1, 80% on Phase B bounded chunks). Focus on prompt iteration
   with `prompt_eval`, not new infrastructure.
-- **Discriminated union schema enforces entity_type at decode time** (commit
-  `534a52c`). `single_response_hardened` + gpt-5.4-mini: 13/17 cases pass
-  (76%), 1.0 structural rate, f1=0.077 (up from 0.0). Schema errors are now
-  legitimate rejections. Promoted as operational prompt.
+- **Flat filler model with strong descriptions** — discriminated unions (oneOf)
+  are architecturally correct but no current model can navigate them (all produce
+  empty roles). Reverted to flat model with `Field(description=...)` enforcing
+  kind-specific requirements + post-parse validator. `minProperties` removed from
+  roles (providers don't enforce it; post-parse validator catches empty roles).
+- **Prompt finding**: `single_response_hardened` produces empty roles on ALL
+  models. Original `text_to_candidate_assertions.yaml` produces correct roles
+  but runaway 1.8MB responses. Next step: add max_candidates rendering +
+  max_output_tokens to original prompt.
 - **No LLM provider enforces value-level JSON Schema constraints** (minProperties,
   minLength, pattern, minimum) at decode time. Only structural constraints (type,
   required, enum) are enforced. Fix applied to llm_client:

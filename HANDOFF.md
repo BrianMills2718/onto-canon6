@@ -49,7 +49,30 @@
 
 ## Next Steps (Priority Order)
 
-### 1. Prove end-to-end flow (highest value, no new code needed)
+### 1. Fix extraction prompt for e2e flow (BLOCKER for everything else)
+
+**Finding from e2e attempt (2026-03-25):**
+- `single_response_hardened` prompt → ALL models produce empty `roles: {}`
+  (gpt-5.4-mini, gemini-3-flash, claude-sonnet-4). Prompt is broken for
+  operational use — likely the minimal guidance doesn't tell the model HOW
+  to fill the roles dict.
+- Original `text_to_candidate_assertions.yaml` → gpt-5.4-mini produces
+  **correct roles with entity fillers** but 1.8MB runaway response (no
+  output token limit, no max_candidates rendering in operational path).
+- Discriminated union (oneOf) reverted to flat model — models can't
+  navigate oneOf. Flat model with descriptions + post-parse validator works.
+- `minProperties: 1` removed from roles — providers don't enforce it.
+  Post-parse validator catches empty roles and triggers retry with repair.
+
+**Fix needed:**
+1. Use `text_to_candidate_assertions.yaml` as operational prompt (not
+   single_response_hardened)
+2. Add `{{ max_candidates_per_case }}` rendering to it (currently only in
+   prompt_eval variants)
+3. Set `max_output_tokens: 4096` on extraction calls to prevent runaway
+4. Re-run e2e: extract → list → review → promote → export
+
+### 2. Prove end-to-end flow
 
 Take a real text file, run through the full pipeline:
 ```bash
