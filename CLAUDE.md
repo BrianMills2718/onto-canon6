@@ -63,10 +63,14 @@ config/
   empty roles). Reverted to flat model with `Field(description=...)` enforcing
   kind-specific requirements + post-parse validator. `minProperties` removed from
   roles (providers don't enforce it; post-parse validator catches empty roles).
-- **Prompt finding**: `single_response_hardened` produces empty roles on ALL
-  models. Original `text_to_candidate_assertions.yaml` produces correct roles
-  but runaway 1.8MB responses. Next step: add max_candidates rendering +
-  max_output_tokens to original prompt.
+- **All models produce `roles: {}` with `additionalProperties` dict schema.**
+  Tested: gpt-5.4-mini, gemini-3-flash, claude-sonnet-4, via OpenRouter and
+  direct. Tested with Phase B-identical schema (only `kind` required). Tested
+  with and without extraction_goal. Models fill predicate + evidence correctly
+  but leave roles empty. Likely a model regression since Phase B (2026-03-18)
+  or an `additionalProperties` handling gap across all providers. Next step:
+  restructure roles to use fixed property names from predicate catalog, or
+  test with an older model version.
 - **No LLM provider enforces value-level JSON Schema constraints** (minProperties,
   minLength, pattern, minimum) at decode time. Only structural constraints (type,
   required, enum) are enforced. Fix applied to llm_client:
