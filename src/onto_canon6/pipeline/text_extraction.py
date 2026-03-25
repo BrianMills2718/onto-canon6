@@ -64,17 +64,15 @@ class ExtractedFiller(BaseModel):
         ),
     )
     entity_type: str = Field(
-        default="",
         description=(
-            "REQUIRED when kind=entity. Entity type from the active entity-type catalog "
-            "(e.g. oc:person, oc:military_organization). Leave empty string for non-entity fillers."
+            "Entity type from the active entity-type catalog (e.g. oc:person, oc:military_organization). "
+            "REQUIRED for entity fillers. Use empty string for value/unknown fillers."
         ),
     )
     name: str = Field(
-        default="",
         description=(
-            "REQUIRED when kind=entity. Exact surface form from the source text. "
-            "Leave empty string for non-entity fillers."
+            "Exact surface form from the source text. "
+            "REQUIRED for entity fillers. Use empty string for value/unknown fillers."
         ),
     )
     entity_id: str | None = Field(
@@ -86,10 +84,9 @@ class ExtractedFiller(BaseModel):
         description="Optional alternate IDs for this entity from other sources.",
     )
     value_kind: str = Field(
-        default="",
         description=(
-            "REQUIRED when kind=value. Semantic type of the value "
-            "(e.g. string, time, money, quantity). Leave empty string for non-value fillers."
+            "Semantic type of the value (e.g. string, time, money, quantity). "
+            "REQUIRED for value fillers. Use empty string for entity/unknown fillers."
         ),
     )
     normalized: JsonValue | None = Field(
@@ -100,6 +97,23 @@ class ExtractedFiller(BaseModel):
         default=None,
         description="Raw source text form. Required for value fillers unless normalized is provided. Required for unknown fillers.",
     )
+
+    @model_validator(mode="before")
+    @classmethod
+    def _inject_cross_kind_defaults(cls, data: object) -> object:
+        """Inject empty-string defaults for cross-kind fields.
+
+        The JSON schema requires all fields so the LLM must produce them.
+        But programmatic constructors (tests, adapters) shouldn't need to
+        pass ``value_kind=""`` when building entity fillers.
+        """
+
+        if not isinstance(data, dict):
+            return data
+        for field in ("entity_type", "name", "value_kind"):
+            if field not in data:
+                data[field] = ""
+        return data
 
     @model_validator(mode="after")
     def _validate_shape(self) -> "ExtractedFiller":
