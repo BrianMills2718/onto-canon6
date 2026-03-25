@@ -83,12 +83,15 @@ config/
 - **Benchmark against a simple baseline** — compare progressive extraction vs
   bare "extract SPO triples" prompt on same corpus to prove governance value.
 - **Don't force integration yet** — research_v3 and Digimon are stabilizing.
-  Verify Foundation Assertion IR serialization path (see
-  `~/projects/project-meta/vision/FOUNDATION.md`), don't wire the pipeline.
+  Foundation Assertion IR adapter exists and is wired. Don't build the full
+  pipeline until a consumer is ready to ingest.
 - **No more phases/ADRs/subsystems** unless justified by extraction quality
   friction. The 15-phase bootstrap is done. Parity matrix is a ledger, not a queue.
-- **Foundation Assertion IR adapter exists** (`adapters/foundation_assertion_export.py`).
-  Schema gaps documented: alias_ids, temporal qualifiers, full provenance_refs.
+- **Foundation Assertion IR adapter operational** (`adapters/foundation_assertion_export.py`).
+  Entity alias_ids wired from identity subsystem. Remaining gaps: temporal
+  qualifiers (deferred by ADR), confidence (epistemic extension optional kwarg),
+  provenance_refs (wrapper adds Foundation envelope — decision: onto-canon6 does
+  NOT adopt Foundation event log internally).
 - **Baseline comparison done**: bare SPO-triple extraction (no ontology) gets 43%
   entity coverage with free-form predicates, no discrimination, and fragmented
   triples. Confirms governance layer adds: ontology alignment, discrimination,

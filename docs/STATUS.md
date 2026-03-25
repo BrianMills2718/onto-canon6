@@ -1,6 +1,6 @@
 # onto-canon6 Status
 
-Updated: 2026-03-21
+Updated: 2026-03-24
 
 ## What Is Proven
 
@@ -210,38 +210,45 @@ Planning companion:
 70. json_schema response_format with field-level descriptions as a prompting
     surface (18.8% → 87.8% resolution via schema + prompt alone);
 
-## Post-Bootstrap Extraction Workstream
+## Post-Bootstrap Extraction Quality Work (2026-03-24)
 
-The repo now has one active extraction-focused R&D workstream beyond the
-canonical Phase 0-15 successor core. That work is tracked by Plans 0014-0019
-plus ADRs 0017-0023.
-
-Important classification:
-
-1. this workstream is real code/test/run evidence, not a speculative branch;
-2. it is not yet a silent Phase 16+ successor extension;
-3. it is not yet folded into the canonical notebook journey by default;
-4. dated chronology belongs in `docs/runs/`, while active plan state belongs
-   in the plan docs above.
+71. discriminated union filler types enforce entity_type and name at JSON
+    Schema decode time — LLMs cannot produce null entity_type on entity
+    fillers. Three concrete models: ExtractedEntityFiller,
+    ExtractedValueFiller, ExtractedUnknownFiller;
+72. goal-conditioned extraction: extraction_goal is required on every run,
+    narrow goals improve discrimination (3/3 strict-omit cases correct with
+    targeted goal);
+73. accepted_alternatives in benchmark scoring: precision no longer penalizes
+    reasonable extractions not in the golden set;
+74. Foundation Assertion IR export adapter with identity subsystem wiring for
+    alias_ids;
+75. baseline comparison script proves governance layer value (bare SPO-triple
+    extraction: 43% entity coverage, no discrimination, fragmented triples);
+76. model_override config for pinning specific models (currently
+    openrouter/openai/gpt-5.4-mini);
+77. single_response_hardened promoted as operational prompt (4/4 structural
+    on gpt-5.4-mini, 0 errors);
+78. composability principle documented: vocabulary, extensions, extraction
+    strategy, and resolution strategies are pluggable.
 
 ## What Is Not Proven Yet
 
 Still missing:
 
-1. extraction quality Phase B: real-document corpus verification beyond
-   single-document benchmarks. Active plan:
-   `docs/plans/0014_extraction_quality_baseline.md`;
-2. broader benchmark coverage and calibration beyond the first local live slice;
-3. the broader v1 concept/belief graph and system-belief layer beyond the
+1. extraction quality with llm_client validation retry fix — pending commit
+   in llm_client (pre-commit hook blocking, see llm_client/BACKLOG.md);
+2. end-to-end flow: text → onto-canon6 → query results (never run);
+3. entity resolution across 2+ extraction runs (identity subsystem exists,
+   never tested on multi-run scenario);
+4. conflict detection on real data (epistemic engine has supersession/tension,
+   never tested cross-investigation);
+5. broader benchmark coverage beyond 17 PSYOP military cases;
+6. the broader v1 concept/belief graph and system-belief layer beyond the
    first promoted-assertion/entity slice;
-4. broader identity recovery beyond the first promoted-entity identity slice;
-5. broader producer-side semantic adapters beyond the first pack-driven
-   canonicalization replacement slice;
-6. any richer interactive surface beyond the new thin MCP slice, such as a UI
-   or a broader MCP tool set;
-7. any recovered DIGIMON adapter path;
-8. temporal/inference recovery and any broader truth-maintenance behavior
-   beyond the explicit Phase 15 slice.
+7. broader producer-side semantic adapters beyond pack-driven canonicalization;
+8. any richer interactive surface beyond the thin MCP slice;
+9. temporal/inference recovery (deferred by ADR).
 
 ## Current Donor Dependencies
 
