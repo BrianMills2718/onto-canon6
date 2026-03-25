@@ -26,8 +26,8 @@ extraction:
   selection_use_performance: false
   model_override: "openrouter/openai/gpt-5.4-mini"
   default_extraction_goal: "Extract all factual assertions directly supported by the source text."
-  prompt_template: "prompts/extraction/prompt_eval_text_to_candidate_assertions_single_response_hardened.yaml"
-  prompt_ref: "onto_canon6.extraction.single_response_hardened@1"
+  prompt_template: "prompts/extraction/text_to_candidate_assertions.yaml"
+  prompt_ref: "onto_canon6.extraction.text_to_candidate_assertions@1"
   timeout_seconds: 60
   num_retries: 2
   max_budget_usd: 0.25
