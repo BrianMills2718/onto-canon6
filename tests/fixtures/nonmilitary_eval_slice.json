@@ -1,0 +1,174 @@
+{
+  "fixture_id": "nonmilitary_eval_slice_v1",
+  "cases": [
+    {
+      "case_id": "finance_001_sec_complaint",
+      "profile": {
+        "profile_id": "general_purpose_open",
+        "profile_version": "0.1.0"
+      },
+      "source_artifact": {
+        "source_kind": "benchmark_fixture_text",
+        "source_ref": "onto-canon://data/nonmilitary/finance_001",
+        "source_label": "sec_enforcement_complaint",
+        "source_metadata": {"domain": "financial_regulation"},
+        "content_text": "The Securities and Exchange Commission filed a complaint against Binance Holdings Ltd. on June 5, 2023, alleging that the company operated an unregistered securities exchange."
+      },
+      "expected_candidates": [
+        {
+          "candidate_id": "cand_finance_001_sec_action",
+          "payload": {
+            "predicate": "gp:acts_on",
+            "roles": {
+              "actor": [{"kind": "entity", "entity_type": "oc:government_organization", "name": "Securities and Exchange Commission"}],
+              "target": [{"kind": "entity", "entity_type": "oc:company", "name": "Binance Holdings Ltd."}]
+            }
+          },
+          "claim_text": "The SEC filed a complaint against Binance."
+        }
+      ],
+      "accepted_alternatives": []
+    },
+    {
+      "case_id": "finance_002_ceo_role",
+      "profile": {
+        "profile_id": "general_purpose_open",
+        "profile_version": "0.1.0"
+      },
+      "source_artifact": {
+        "source_kind": "benchmark_fixture_text",
+        "source_ref": "onto-canon://data/nonmilitary/finance_002",
+        "source_label": "ceo_role_binance",
+        "source_metadata": {"domain": "financial_regulation"},
+        "content_text": "Binance CEO Changpeng Zhao denied the allegations, claiming that the platform complied with applicable regulations. Zhao resigned as CEO in November 2023 as part of a settlement agreement with the Department of Justice."
+      },
+      "expected_candidates": [
+        {
+          "candidate_id": "cand_finance_002_ceo_role",
+          "payload": {
+            "predicate": "gp:holds_role",
+            "roles": {
+              "subject": [{"kind": "entity", "entity_type": "oc:person", "name": "Changpeng Zhao"}],
+              "organization": [{"kind": "entity", "entity_type": "oc:company", "name": "Binance"}],
+              "role_title": [{"kind": "value", "value_kind": "string", "normalized": "CEO"}]
+            }
+          },
+          "claim_text": "Changpeng Zhao is CEO of Binance."
+        }
+      ],
+      "accepted_alternatives": []
+    },
+    {
+      "case_id": "academic_001_climate_study",
+      "profile": {
+        "profile_id": "general_purpose_open",
+        "profile_version": "0.1.0"
+      },
+      "source_artifact": {
+        "source_kind": "benchmark_fixture_text",
+        "source_ref": "onto-canon://data/nonmilitary/academic_001",
+        "source_label": "climate_attribution",
+        "source_metadata": {"domain": "academic_research"},
+        "content_text": "A 2023 study published in Nature by Fischer et al. demonstrated that anthropogenic climate change increased the likelihood of the 2021 Pacific Northwest heat dome by a factor of 150."
+      },
+      "expected_candidates": [
+        {
+          "candidate_id": "cand_academic_001_study",
+          "payload": {
+            "predicate": "gp:produces",
+            "roles": {
+              "actor": [{"kind": "entity", "entity_type": "oc:person", "name": "Fischer et al."}],
+              "object": [{"kind": "entity", "entity_type": "oc:document", "name": "study"}]
+            }
+          },
+          "claim_text": "Fischer et al. published a climate attribution study."
+        }
+      ],
+      "accepted_alternatives": []
+    },
+    {
+      "case_id": "academic_002_ipcc_citation",
+      "profile": {
+        "profile_id": "general_purpose_open",
+        "profile_version": "0.1.0"
+      },
+      "source_artifact": {
+        "source_kind": "benchmark_fixture_text",
+        "source_ref": "onto-canon://data/nonmilitary/academic_002",
+        "source_label": "ipcc_ar6",
+        "source_metadata": {"domain": "academic_research"},
+        "content_text": "The Intergovernmental Panel on Climate Change cited both studies in its AR6 Synthesis Report, concluding that extreme heat events are now 2.8 times more likely than in the pre-industrial period."
+      },
+      "expected_candidates": [
+        {
+          "candidate_id": "cand_academic_002_ipcc",
+          "payload": {
+            "predicate": "gp:states_claim",
+            "roles": {
+              "speaker": [{"kind": "entity", "entity_type": "oc:organization", "name": "Intergovernmental Panel on Climate Change"}],
+              "topic": [{"kind": "entity", "entity_type": "oc:concept", "name": "extreme heat events"}]
+            }
+          },
+          "claim_text": "IPCC concluded extreme heat events are more likely."
+        }
+      ],
+      "accepted_alternatives": []
+    },
+    {
+      "case_id": "finance_003_fine_payment",
+      "profile": {
+        "profile_id": "general_purpose_open",
+        "profile_version": "0.1.0"
+      },
+      "source_artifact": {
+        "source_kind": "benchmark_fixture_text",
+        "source_ref": "onto-canon://data/nonmilitary/finance_003",
+        "source_label": "kraken_fine",
+        "source_metadata": {"domain": "financial_regulation"},
+        "content_text": "Kraken agreed to pay a $30 million fine and shut down its staking service after the SEC determined that the service constituted an unregistered securities offering."
+      },
+      "expected_candidates": [
+        {
+          "candidate_id": "cand_finance_003_fine",
+          "payload": {
+            "predicate": "gp:regulates",
+            "roles": {
+              "regulator": [{"kind": "entity", "entity_type": "oc:government_organization", "name": "SEC"}],
+              "regulated": [{"kind": "entity", "entity_type": "oc:company", "name": "Kraken"}]
+            }
+          },
+          "claim_text": "SEC fined Kraken for unregistered securities offering."
+        }
+      ],
+      "accepted_alternatives": []
+    },
+    {
+      "case_id": "finance_004_coinbase_lawsuit",
+      "profile": {
+        "profile_id": "general_purpose_open",
+        "profile_version": "0.1.0"
+      },
+      "source_artifact": {
+        "source_kind": "benchmark_fixture_text",
+        "source_ref": "onto-canon://data/nonmilitary/finance_004",
+        "source_label": "coinbase_sec",
+        "source_metadata": {"domain": "financial_regulation"},
+        "content_text": "The SEC also charged Coinbase Global Inc. with operating as an unregistered broker-dealer. A federal judge partially dismissed the SEC's claims against Coinbase in March 2024."
+      },
+      "expected_candidates": [
+        {
+          "candidate_id": "cand_finance_004_coinbase",
+          "payload": {
+            "predicate": "gp:acts_on",
+            "roles": {
+              "actor": [{"kind": "entity", "entity_type": "oc:government_organization", "name": "SEC"}],
+              "target": [{"kind": "entity", "entity_type": "oc:company", "name": "Coinbase Global Inc."}]
+            }
+          },
+          "claim_text": "SEC charged Coinbase with operating as unregistered broker-dealer."
+        }
+      ],
+      "accepted_alternatives": []
+    }
+  ]
+}
