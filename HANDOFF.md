@@ -86,6 +86,30 @@ Gap table to plan:
 Each plan should go in `docs/plans/` following the meta-process plan template.
 Plans should be concrete enough for an agent to execute autonomously.
 
+**2026-03-26 progress:**
+- Plan 0020 reviewed and tightened for ecosystem consistency:
+  - Gap 5 now explicitly depends on a DIGIMON import contract, not an assumed
+    graph-builder capability
+  - Gap 6 now calls out Foundation Assertion IR / schema-stability alignment
+  - Gap 8 no longer treats interpreter placement as undecided; `FRAMEWORK.md`
+    already assigns it to Operations (`llm_client`)
+  - Gap 2 now notes that "comparable quality" needs an explicit threshold
+- Real Gap 5 export completed:
+  - `onto-canon6 export-digimon --review-db-path var/e2e_test_2026_03_25/review_combined.sqlite3`
+    wrote 20 entity rows and 16 relationship rows
+  - DIGIMON now has `scripts/import_onto_canon_jsonl.py`, which imported that
+    export into
+    `Digimon_for_KG_application/results/onto_canon_e2e_20260325/er_graph/nx_data.graphml`
+  - Import result: 19 nodes, 16 edges. The only collapsed duplicate was
+    `USSOCOM` (two exported source IDs with the same display name)
+  - NetworkX inspection of the imported graph confirms the expected `USSOCOM`
+    neighborhood: five commanders plus PSYOP-associated units/organizations
+- Remaining Gap 5 work:
+  - exercise a DIGIMON operator/runtime query path against the imported graph
+  - validate weight/confidence semantics on data with non-1.0 confidence values
+  - decide long-term policy for single-endpoint assertions and directionality
+    loss in DIGIMON's undirected graph model
+
 ### 2. Continue with Gap 2 (non-military domain testing)
 
 **Finding from e2e attempt (2026-03-25):**

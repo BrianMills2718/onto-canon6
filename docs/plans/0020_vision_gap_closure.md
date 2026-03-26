@@ -15,6 +15,50 @@ vision-driven (per CLAUDE.md principles).
 This is a tracking plan, not a phase. Individual gaps may be promoted to their
 own plans if scope warrants it. Gaps are ordered by dependency, not priority.
 
+## Review Notes (2026-03-26)
+
+Reviewed for completeness and consistency with ecosystem vision
+(`project-meta/vision/FRAMEWORK.md`, `FOUNDATION.md`, `ECOSYSTEM_STATUS.md`).
+
+### Inline Corrections (applied to gap text above)
+
+1. **Gap 5 import contract.** onto-canon6 adapter could export JSONL, but
+   DIGIMON did not expose a surfaced importer. Thin importer now exists in
+   `Digimon_for_KG_application/Core/Interop/onto_canon_import.py`. Materializes
+   real export into DIGIMON GraphML. Operator-level runtime exercise pending.
+2. **Gap 6 framing.** Should target Foundation Assertion IR, not just pairwise
+   adapter. `ECOSYSTEM_STATUS.md` calls out schema stabilization as prerequisite.
+3. **Gap 8 placement resolved.** `FRAMEWORK.md` places rule engine in Operations
+   (`llm_client`). Open question is fact-store adapter boundary only.
+4. **Gap 2 acceptance.** "Comparable quality" replaced with explicit comparison
+   rule requirement.
+
+### Additional Findings
+
+5. **Missing gap: Multi-modal projection.** FRAMEWORK.md defines four modalities
+   (graph, table, vector, text). Only graph and epistemic addressed here. Table,
+   vector, text deliberately deferred (no consumer) but should be listed as
+   known out-of-scope.
+6. **Gap 8 dependency too strict.** Gap 8 → Gap 7 should be nice-to-have, not
+   hard dependency. ProbLog spike can use any promoted assertions with default
+   confidence=1.0.
+7. **Gap 6 scope may be optimistic (3-5 sessions).** FtM has ~70 entity schemas;
+   SUMO mapping study alone could consume 1-2 sessions.
+8. **Gap 10 uncertainties underdeveloped.** Review gate for extraction results
+   (not code) needs concrete design: LLM-judge, structural validity threshold,
+   or `make summary` as review input.
+9. **Cross-cutting: Assertion confidence alignment.** FOUNDATION.md notes
+   confidence nullable in onto-canon6. Affects Gaps 5 (Digimon weight), 6
+   (research_v3 corroboration mapping), 7 (epistemic confidence source).
+10. **Gap 2 vocabulary question.** Real constraint is predicate catalog coverage
+    for non-military domains, not profile config.
+
+### Dependency Graph Correction
+
+```
+Gap 8 (ProbLog spike)       → standalone (Gap 7 nice-to-have)
+```
+
 ---
 
 ## Gap 1: Human-Readable Predicate Names
@@ -54,8 +98,9 @@ domain-general but has never been tested on non-military text.
 1. E2E extraction proven on at least one non-military text (e.g., financial,
    academic, news article)
 2. Benchmark fixture includes at least 5 non-military cases
-3. Extraction quality is comparable to military text (same structural success
-   rate, entity_type coverage)
+3. Define and meet an explicit comparison rule before declaring success
+   (for example: no worse structural-validity rate than the military slice, or
+   a named benchmark threshold for the selected domain)
 
 ### Uncertainties
 - Which domain? Financial text has different predicate patterns than military.
@@ -129,26 +174,36 @@ Small-Medium (1-2 sessions). Prompt change + schema addition + export update.
 
 ### Current State
 `digimon_export.py` adapter exists, tested on 5-node synthetic fixture.
-Never tested on real promoted assertions.
+Real promoted assertions were exported on 2026-03-26 from
+`var/e2e_test_2026_03_25/review_combined.sqlite3` (20 exported entity rows,
+16 relationship rows). DIGIMON now has a thin JSONL importer that materializes
+that export into native GraphML (19 nodes after merging duplicate `USSOCOM`
+names, 16 edges). Full DIGIMON runtime/operator exercise remains pending.
 
 ### Acceptance Criteria
 1. Export promoted assertions from e2e test DB as Digimon JSONL
-2. Digimon graph builder successfully ingests the JSONL
-3. Digimon query returns correct entities and relationships
+2. DIGIMON importer successfully materializes the JSONL into its native graph
+   artifact format
+3. DIGIMON query/retrieval path returns the expected USSOCOM commander and
+   PSYOP-unit neighborhood from the imported graph
 4. Weight/confidence semantics validated (onto-canon6 probability maps
-   correctly to Digimon weight)
+   correctly to Digimon weight on a non-unity-confidence slice or synthetic
+   control case)
 
 ### Uncertainties
-- Does Digimon's graph builder accept the current JSONL format without
-  modification?
-- Single-argument predicates (one entity only) — how does Digimon handle
-  relationships with one empty endpoint?
-- PropBank predicate IDs vs free-text relation names — does Digimon need
-  a mapping?
+- Does the DIGIMON runtime environment used for operator-level querying have
+  the optional dependencies needed to load and query the imported graph?
+- Single-argument predicates (one entity only) are skipped by the current
+  importer because DIGIMON's persisted graph is binary-edge-only. Is that the
+  correct long-term policy?
+- DIGIMON's persisted graph is undirected, so assertion role direction is not a
+  first-class runtime concept after import. Is that acceptable for the intended
+  retrieval use cases?
 
 ### Dependencies
 E2E pipeline must produce promoted assertions (done). Digimon must be
-runnable (check current state).
+runnable (check current state). Operator-level validation depends on a DIGIMON
+runtime environment with the needed optional dependencies.
 
 ### Estimated Scope
 Small (1 session). Run export, attempt Digimon ingestion, fix any format
@@ -181,7 +236,9 @@ No adapter exists. Convergence plan archived at
 
 ### Dependencies
 research_v3 must produce KnowledgeGraph output. Gap 3 (entity resolution)
-needed for cross-investigation dedup.
+needed for cross-investigation dedup. The adapter should stay aligned with the
+Foundation Assertion IR and onto-canon6 promoted-graph schema stability
+criteria from `ECOSYSTEM_STATUS.md`.
 
 ### Estimated Scope
 Large (3-5 sessions). Entity mapping study + adapter code + conflict policy
@@ -238,8 +295,8 @@ Operations (llm_client).
 - ProbLog's SQLite integration (`sqlite_load`): does it work with
   onto-canon6's schema?
 - Performance: how many facts + rules before it's too slow?
-- Where does the interpreter live? llm_client (as Framework says) or
-  onto-canon6?
+- What is the cleanest fact-store adapter boundary between llm_client's rule
+  engine and onto-canon6 / DIGIMON data stores?
 - Is ProbLog's dependency weight acceptable for the ecosystem?
 
 ### Dependencies
@@ -321,7 +378,7 @@ Gap 4 (temporal qualifiers) → standalone
 Gap 5 (Digimon export)      → standalone
 Gap 6 (research_v3 adapter) → Gap 3
 Gap 7 (epistemic on data)   → standalone (Gap 6 provides natural contradictions)
-Gap 8 (ProbLog spike)       → Gap 7
+Gap 8 (ProbLog spike)       → standalone (Gap 7 nice-to-have)
 Gap 9 (second vocabulary)   → standalone
 Gap 10 (autonomous ops)     → standalone
 ```
