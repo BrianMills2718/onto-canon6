@@ -850,6 +850,20 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     export_digimon_parser.set_defaults(handler=_handle_export_digimon)
 
+    evaluate_rules_parser = subparsers.add_parser(
+        "evaluate-rules",
+        help="Evaluate ProbLog rules over promoted assertions.",
+    )
+    _add_store_args(evaluate_rules_parser, include_overlay_root=False)
+    evaluate_rules_parser.add_argument(
+        "--rules-file",
+        required=True,
+        type=Path,
+        help="Path to a ProbLog rules file (.pl or .problog).",
+    )
+    _add_output_arg(evaluate_rules_parser, default_output=config.cli.default_output_format)
+    evaluate_rules_parser.set_defaults(handler=_handle_evaluate_rules)
+
     import_research_v3_parser = subparsers.add_parser(
         "import-research-v3",
         help="Import claims from a research_v3 graph.yaml into the review pipeline.",
@@ -1451,6 +1465,28 @@ def _handle_export_identity_report(args: argparse.Namespace) -> int:
     _emit_output(report, output_format=args.output)
     return 0
 
+
+
+def _handle_evaluate_rules(args: argparse.Namespace) -> int:
+    """Evaluate ProbLog rules over promoted assertions."""
+    from .extensions.problog_adapter import evaluate_rules
+
+    db_path = Path(args.review_db_path)
+    rules_file = Path(args.rules_file)
+    rules_text = rules_file.read_text(encoding="utf-8")
+
+    result = evaluate_rules(db_path=db_path, rules=rules_text)
+    output = {
+        "input_facts": result.input_facts,
+        "rules_applied": result.rules_applied,
+        "derived_facts": [
+            {"term": f.term, "probability": round(f.probability, 4)}
+            for f in result.derived_facts
+        ],
+        "errors": result.errors,
+    }
+    _emit_output(output, output_format=args.output)
+    return 0
 
 
 def _handle_import_research_v3(args: argparse.Namespace) -> int:
