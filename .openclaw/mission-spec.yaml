@@ -1,0 +1,73 @@
+# onto-canon6 Mission Specification
+#
+# Defines a concrete extraction mission for OpenClaw autonomous operation.
+# The mission runner reads this to know what to extract and how.
+
+mission:
+  name: "psyop-extraction"
+  description: "Extract PSYOP organizational command structure from source documents"
+  version: "0.1.0"
+
+# What to extract
+target:
+  input_pattern: "var/real_runs/*/chunks/*.md"
+  goal: "Extract organizational command relationships and unit subordination"
+  profile_id: "psyop_seed"
+  profile_version: "0.1.0"
+  model: "gemini/gemini-2.5-flash"
+
+# How to run
+execution:
+  # Use Makefile targets as the execution interface
+  extract_command: |
+    make extract INPUT={{chunk_path}} \
+      GOAL="{{goal}}" \
+      PROFILE_ID={{profile_id}} \
+      PROFILE_VERSION={{profile_version}} \
+      DB_PATH={{db_path}}
+
+  # After extraction, run review workflow
+  post_extract:
+    - "make candidates DB_PATH={{db_path}}"
+    - "make summary DB_PATH={{db_path}}"
+
+# Review gate configuration
+review:
+  # The mission runner evaluates extraction results, not code changes
+  gate_type: "data_quality"
+
+  # Review gate reads make summary output to check:
+  check_commands:
+    - command: "make summary DB_PATH={{db_path}}"
+      parse: "extract acceptance rate from output"
+      threshold: "acceptance rate > 0%"
+
+    - command: "make failures DB_PATH={{db_path}} DAYS=1"
+      parse: "count extraction failures"
+      threshold: "failures < total_candidates"
+
+  # What constitutes a passing review
+  pass_criteria:
+    - "At least 1 candidate extracted"
+    - "Structural validity rate >= 70%"
+    - "No unhandled extraction errors"
+
+# Budget and limits
+limits:
+  max_budget_usd: 0.50
+  max_chunks_per_mission: 10
+  max_retries_per_chunk: 2
+  timeout_per_chunk_seconds: 300
+
+# Reporting
+reporting:
+  # Mission runner should commit results with this message pattern
+  commit_message_pattern: "[openclaw] Extract {n_candidates} candidates from {n_chunks} chunks"
+
+  # What to include in the mission report
+  report_fields:
+    - "total_chunks_processed"
+    - "total_candidates_extracted"
+    - "structural_validity_rate"
+    - "entity_type_coverage"
+    - "total_cost_usd"

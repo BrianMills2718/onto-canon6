@@ -1,0 +1,89 @@
+# onto-canon6 OpenClaw Success Criteria
+#
+# Defines what constitutes a "successful" autonomous extraction mission.
+# The mission runner evaluates these criteria after each run.
+
+mission:
+  name: "onto-canon6-extraction"
+  description: "Extract governed assertions from source text via onto-canon6 pipeline"
+  version: "0.1.0"
+
+# Mission parameters — what the runner needs to know
+parameters:
+  input_path:
+    description: "Path to source text file"
+    required: true
+  goal:
+    description: "Extraction goal (what assertions are relevant)"
+    required: true
+    default: "Extract all factual assertions directly supported by the source text."
+  profile_id:
+    description: "Ontology profile to use"
+    required: true
+    default: "psyop_seed"
+  profile_version:
+    description: "Profile version"
+    default: "0.1.0"
+  max_budget_usd:
+    description: "Maximum LLM spend per mission"
+    default: 0.50
+  model:
+    description: "LLM model override"
+    default: "gemini/gemini-2.5-flash"
+
+# Execution steps — what the runner does
+steps:
+  - name: extract
+    command: "make extract INPUT={{input_path}} GOAL='{{goal}}' PROFILE_ID={{profile_id}}"
+    timeout_seconds: 300
+
+  - name: review
+    command: "make candidates"
+    description: "List pending candidates for review gate evaluation"
+
+  - name: summary
+    command: "make summary"
+    description: "Generate extraction stats for review gate"
+
+# Success criteria — what the review gate evaluates
+success_criteria:
+  # Structural validity: extracted candidates should parse correctly
+  structural_validity:
+    metric: "candidates with 0 hard_errors / total candidates"
+    threshold: 0.70
+    description: "At least 70% of candidates must have zero validation hard errors"
+
+  # Non-empty extraction: the mission should produce at least some candidates
+  minimum_candidates:
+    metric: "total candidates extracted"
+    threshold: 1
+    comparison: ">="
+    description: "At least 1 candidate must be extracted (non-empty result)"
+
+  # Entity type coverage: candidates should have recognized entity types
+  entity_type_coverage:
+    metric: "candidates with known entity types / total candidates"
+    threshold: 0.50
+    description: "At least 50% of candidates should use known entity types"
+
+# Review gate — how the mission runner evaluates results
+review_gate:
+  # The review gate reads `make summary` output, not code diffs
+  evaluation_method: "structured_output_check"
+  inputs:
+    - "make summary output (candidate counts, acceptance rates)"
+    - "make failures output (if any extraction errors)"
+  pass_condition: "all success_criteria thresholds met"
+  fail_action: "log failure reason, do not promote, report to operator"
+
+# Cost control
+cost_control:
+  max_budget_per_mission_usd: 0.50
+  max_retries: 2
+  abort_on_repeated_failure: true
+
+# Output expectations
+outputs:
+  - "Candidate assertions in review DB (pending_review status)"
+  - "Extraction summary via make summary"
+  - "Failure diagnostics via make failures (if errors)"

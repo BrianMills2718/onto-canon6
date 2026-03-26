@@ -488,6 +488,28 @@ E2E pipeline must work (done). Mission runner must be operational
 ### Estimated Scope
 Medium (2 sessions). Success criteria + mission spec + test run.
 
+### Status: COMPLETED (2026-03-26)
+
+Created `.openclaw/success-criteria.yaml` and `.openclaw/mission-spec.yaml`:
+
+1. success-criteria.yaml defines measurable criteria:
+   - structural_validity >= 70% (candidates with 0 hard errors)
+   - minimum_candidates >= 1
+   - entity_type_coverage >= 50%
+2. mission-spec.yaml defines concrete extraction mission:
+   - input_pattern, goal, profile, model
+   - Uses Makefile targets as execution interface
+   - Post-extract: candidates + summary
+3. Review gate evaluates extraction results (not code):
+   - Reads `make summary` output for acceptance rates
+   - Reads `make failures` for extraction errors
+   - Pass criteria: at least 1 candidate, >= 70% structural validity
+4. Cost control: /bin/bash.50 per mission, max 2 retries, abort on repeated failure
+
+Design decision: review gate is structured_output_check (not LLM-judge)
+to keep autonomous operation deterministic and cheap. LLM-judge can be
+added as a secondary gate later.
+
 ---
 
 ## Dependency Graph
