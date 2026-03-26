@@ -59,6 +59,8 @@ def test_extract_candidate_imports_uses_llm_client_boundary(tmp_path: Path, monk
     """The extractor should render the prompt and return typed candidate imports."""
 
     service = TextExtractionService(review_service=_make_review_service(tmp_path))
+    # Clear model_override so the test exercises task-based model selection.
+    object.__setattr__(service, "_model_override", None)
     calls: dict[str, object] = {}
 
     def fake_get_model(task: str, *, use_performance: bool = True) -> str:
@@ -153,6 +155,7 @@ def test_extract_candidate_imports_allows_selection_task_override(
         review_service=_make_review_service(tmp_path),
         selection_task="budget_extraction",
     )
+    object.__setattr__(service, "_model_override", None)
     calls: dict[str, object] = {}
 
     def fake_get_model(task: str, *, use_performance: bool = True) -> str:
@@ -447,7 +450,7 @@ def test_extract_and_submit_fails_loud_on_bad_evidence_span(
 
     with pytest.raises(
         ValueError,
-        match="evidence span 0 text did not resolve to a unique exact match in source",
+        match="evidence span 0 text did not resolve to a unique match in source",
     ):
         service.extract_and_submit(
             source_text="Alpha Beta",

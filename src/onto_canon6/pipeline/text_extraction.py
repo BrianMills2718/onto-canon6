@@ -690,58 +690,40 @@ def _resolve_evidence_spans(
 ) -> tuple[EvidenceSpan, ...]:
     """Resolve extractor evidence text into verified pipeline evidence spans.
 
-    Exact quoted text is primary at the producer boundary. When valid offsets
-    are present and match the quoted text, they are reused. Otherwise the
-    runtime finds a unique exact match in the source text and emits the verified
-    offsets explicitly. Ambiguous or missing matches still fail loudly.
+    Uses ``llm_client.utils.evidence_spans`` shared resolver which handles
+    whitespace normalization, markdown table formatting, and other common
+    LLM evidence-quoting issues.  Falls loud on unresolvable spans.
     """
 
-    resolved: list[EvidenceSpan] = []
-    for index, span in enumerate(evidence_spans):
-        if span.start_char is not None and span.end_char is not None:
-            candidate_text = source_text[span.start_char : span.end_char]
-            if candidate_text == span.text:
-                resolved.append(
-                    EvidenceSpan(
-                        start_char=span.start_char,
-                        end_char=span.end_char,
-                        text=span.text,
-                    )
-                )
-                continue
-            logger.warning(
-                "extractor evidence offsets did not match quoted text span_index=%d start=%s end=%s",
-                index,
-                span.start_char,
-                span.end_char,
-            )
-        matches = _find_unique_span_matches(source_text=source_text, span_text=span.text)
-        if len(matches) != 1:
-            raise ValueError(
-                f"evidence span {index} text did not resolve to a unique exact match in source"
-            )
-        start_char, end_char = matches[0]
-        resolved.append(
-            EvidenceSpan(
-                start_char=start_char,
-                end_char=end_char,
-                text=span.text,
-            )
+    try:
+        from llm_client.utils.evidence_spans import resolve_evidence_spans as _resolve
+    except ImportError:
+        raise ImportError(
+            "evidence span resolution requires llm_client with evidence_spans utility; "
+            "run `pip install -e ~/projects/llm_client` in this repo's .venv"
         )
-    return tuple(resolved)
 
-
-def _find_unique_span_matches(*, source_text: str, span_text: str) -> list[tuple[int, int]]:
-    """Return all exact occurrences of one quoted span within the source text."""
-
-    matches: list[tuple[int, int]] = []
-    start = 0
-    while True:
-        found = source_text.find(span_text, start)
-        if found < 0:
-            return matches
-        matches.append((found, found + len(span_text)))
-        start = found + 1
+    span_dicts = [
+        {
+            "text": span.text,
+            "start_char": span.start_char,
+            "end_char": span.end_char,
+        }
+        for span in evidence_spans
+    ]
+    resolved_spans = _resolve(
+        source_text=source_text,
+        spans=span_dicts,
+        strict=True,
+    )
+    return tuple(
+        EvidenceSpan(
+            start_char=rs.start_char,
+            end_char=rs.end_char,
+            text=rs.text,
+        )
+        for rs in resolved_spans
+    )
 
 
 def _trace_id_for_source(*, source_ref: str, text: str) -> str:
