@@ -32,8 +32,10 @@ def _load_fixture() -> list[dict[str, object]]:
 
 def test_phase14_mcp_tools_are_registered() -> None:
     """The thin MCP server should register the expected small tool set."""
+    import asyncio
 
-    registered = set(mcp_server.mcp._tool_manager._tools.keys())
+    tools = asyncio.run(mcp_server.mcp.list_tools())
+    registered = {t.name for t in tools}
     assert EXPECTED_TOOLS.issubset(registered)
     assert len(registered & EXPECTED_TOOLS) == len(EXPECTED_TOOLS)
 
