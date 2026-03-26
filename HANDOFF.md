@@ -76,8 +76,12 @@
 
 ## Next Steps
 
-1. **Extraction quality iteration** — still the #1 bottleneck (37.5% acceptance)
-2. **Prompt experiment analysis** — experiment may still be running (backgrounded)
+1. **Rebuild experiment variants from operational prompt** — the operational
+   prompt works (proven in Gaps 2/4/9). Experiment variants are broken (25%
+   success). Rebuild them from text_to_candidate_assertions.yaml, not separately.
+2. **Switch to direct API calls** — 55% timeout rate via OpenRouter. Direct
+   Gemini API should be more reliable.
 3. **Fuzzy entity resolution** — extend auto_resolution with Levenshtein/embedding
+   matching ("4th PSYOP Group" vs "4th POG(A)")
 4. **ProbLog rule library** — define reusable rules for common inference patterns
 5. **Digimon operator exercise** — install igraph/rapidfuzz in Digimon venv
