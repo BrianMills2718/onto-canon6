@@ -1,101 +1,83 @@
 # Handoff: onto-canon6
 
 **Date**: 2026-03-26
-**From**: Claude Code (vision gap closure sprint)
-**Session**: All 10 Plan 0020 gaps closed in one session
+**From**: Claude Code (Phase 2 — hardening, integration, quality)
+**Session**: 12 Phase 2 commits on top of 12 Phase 1 commits (24 total this day)
 
 ---
 
 ## What This Session Delivered
 
-### All 10 Vision Gaps Closed
+### Phase 1: All 10 Vision Gaps Closed (Plan 0020)
 
 | Gap | Status | Key Result |
 |-----|--------|------------|
-| 1. Predicate names | ALREADY CLOSED | 4,669 senses already have `name` column in sumo_plus.db |
-| 2. Non-military domain | COMPLETED | Financial + academic text: 82% structural validity, 11 candidates |
-| 3. Entity resolution | COMPLETED | auto_resolution.py: exact name match, USSOCOM merged across chunks |
-| 4. Temporal qualifiers | COMPLETED | valid_from/valid_to in extraction, payload, and Foundation IR |
-| 5. Digimon export | COMPLETED | 20 entities → 19 merged nodes, 16 edges in Digimon GraphML |
-| 6. research_v3 adapter | COMPLETED | FtM mapping (15 schemas), 48 claims imported from real investigation |
-| 7. Epistemic on data | COMPLETED | 16 scored, 1 supersession, 19 tensions, 1 weakened |
-| 8. ProbLog spike | COMPLETED | 45 derived facts from 16 inputs, decision: use ProbLog |
-| 9. Second vocabulary | COMPLETED | dodaf_minimal: 7 candidates, 100% validation, dm2: namespace |
-| 10. Autonomous ops | COMPLETED | .openclaw/ with success-criteria.yaml and mission-spec.yaml |
+| 1. Predicate names | ALREADY CLOSED | 4,669 names exist in sumo_plus.db |
+| 2. Non-military domain | COMPLETED | Financial + academic text: 82% structural validity |
+| 3. Entity resolution | COMPLETED | auto_resolution.py: exact name match, USSOCOM merged |
+| 4. Temporal qualifiers | COMPLETED | valid_from/valid_to in extraction + Foundation IR |
+| 5. Digimon export | COMPLETED | 19 merged nodes, 16 edges in GraphML |
+| 6. research_v3 adapter | COMPLETED | FtM mapping (15 schemas), 48 claims imported |
+| 7. Epistemic on data | COMPLETED | 16 scored, 1 supersession, 19 tensions |
+| 8. ProbLog spike | COMPLETED | 45 derived facts, decision: use ProbLog |
+| 9. Second vocabulary | COMPLETED | dodaf_minimal: 7 candidates, 100% validation |
+| 10. Autonomous ops | COMPLETED | .openclaw/ success-criteria + mission-spec |
 
-### Plan 0020 Review Notes
+### Phase 2: Hardening and Integration
 
-6 issues identified and documented (see plan file):
-1. Missing multi-modal projection gap (deliberately deferred)
-2. Gap 8 dependency correction (Gap 7 nice-to-have, not required)
-3. Gap 6 scope caveat (FtM mapping could expand)
-4. Gap 10 review gate design gap (structured_output_check chosen)
-5. Confidence alignment cross-cut
-6. Gap 2 vocabulary question (predicate catalog, not profile config)
-
----
-
-## Commits This Session
-
-```
-2e6a489 Add continuous execution mandate for 24-hour vision gap sprint
-f1ed4a9 [Gap 9] Second vocabulary proof — dodaf_minimal E2E extraction
-b32d38f [Gap 1] Mark as already closed — predicate names exist in sumo_plus.db
-44f5ff2 [Gap 2] Non-military domain testing — financial and academic text proven
-a8a7226 [Gap 3] Automated entity resolution — exact name matching
-d368d0c [Gap 4] Temporal qualifiers — valid_from/valid_to in extraction and export
-49e51df [Gap 7] Epistemic engine on real data — confidence, supersession, tension
-de1cd7b [Gap 8] ProbLog spike — 45 derived facts from 16 inputs, use ProbLog
-84fd99b [Gap 6] research_v3 adapter — FtM entity mapping + claim import
-dc2345a [Gap 10] Autonomous operation — success criteria and mission spec
-```
+| Task | Status | Key Result |
+|------|--------|------------|
+| Tests: auto_resolution | COMPLETED | 13 tests (merge, idempotent, case-insensitive) |
+| Tests: research_v3_import | COMPLETED | 21 tests (mapping, confidence, provenance) |
+| Tests: temporal qualifiers | COMPLETED | 7 tests (model, Foundation IR export) |
+| CLI: import-research-v3 | COMPLETED | 48 claims from real investigation → review DB |
+| CLI: evaluate-rules | COMPLETED | ProbLog over DB: 16 facts → 45 derived |
+| General-purpose pack | COMPLETED | 15 entity types, 10 predicates, open profile |
+| make summary + identity | COMPLETED | Identity and epistemic stats in summary |
+| Non-military benchmark | COMPLETED | 6 cases across 2 domains |
+| E2E integration test | COMPLETED | 3 tests: Digimon, research_v3, Foundation IR |
+| Foundation export bugfix | COMPLETED | Missing db_path and row_factory fixed |
 
 ---
 
-## Key Files Changed
+## New Code
 
-| Purpose | Path |
-|---------|------|
-| Auto entity resolution | `src/onto_canon6/core/auto_resolution.py` (NEW) |
-| research_v3 adapter | `src/onto_canon6/adapters/research_v3_import.py` (NEW) |
-| Temporal fields | `src/onto_canon6/pipeline/text_extraction.py` (MODIFIED) |
-| Temporal prompt | `prompts/extraction/text_to_candidate_assertions.yaml` (MODIFIED) |
-| Foundation IR temporal | `src/onto_canon6/adapters/foundation_assertion_export.py` (MODIFIED) |
-| Auto-resolve CLI | `src/onto_canon6/cli.py` (MODIFIED) |
-| Mission spec | `.openclaw/mission-spec.yaml` (NEW) |
-| Success criteria | `.openclaw/success-criteria.yaml` (NEW) |
-| Vision gap plan | `docs/plans/0020_vision_gap_closure.md` (MODIFIED) |
+| Path | What |
+|------|------|
+| `src/onto_canon6/core/auto_resolution.py` | Automated entity resolution |
+| `src/onto_canon6/adapters/research_v3_import.py` | research_v3 graph.yaml adapter |
+| `src/onto_canon6/extensions/problog_adapter.py` | ProbLog fact-store adapter |
+| `ontology_packs/general_purpose/0.1.0/` | General-purpose ontology pack |
+| `profiles/general_purpose_open/0.1.0/` | Open profile for general extraction |
+| `.openclaw/` | OpenClaw success criteria + mission spec |
+| `scripts/show_summary.py` | Enhanced summary with identity/epistemic stats |
+| `scripts/e2e_integration_test.py` | E2E consumer integration tests |
+| `tests/core/test_auto_resolution.py` | 13 tests |
+| `tests/adapters/test_research_v3_import.py` | 21 tests |
+| `tests/pipeline/test_temporal_qualifiers.py` | 7 tests |
+| `tests/fixtures/nonmilitary_eval_slice.json` | 6-case benchmark fixture |
+
+## CLI Commands Added
+
+| Command | Purpose |
+|---------|---------|
+| `auto-resolve-identities` | Group entities by name match |
+| `import-research-v3` | Import graph.yaml claims to review pipeline |
+| `evaluate-rules` | Evaluate ProbLog rules over promoted assertions |
 
 ---
 
-## Environment Facts
+## Environment
 
 - Model: `gemini/gemini-2.5-flash` (stable, used for all extractions)
-- ProbLog: installed in shared venv (pip install problog)
-- No pre-commit hook issues this session
-- All tests pass (full suite except notebook_process, digimon_export, cli_flow)
+- ProbLog: installed in shared venv
+- All tests pass (~300+ tests)
+- E2E integration test passes (3/3)
 
----
+## Next Steps
 
-## Next Steps (Post-Gap-Closure)
-
-1. **Extraction quality iteration** — the #1 bottleneck per CLAUDE.md strategic
-   direction. Use prompt_eval to improve acceptance rates.
-2. **Submit research_v3 imports to review pipeline** — adapter produces
-   CandidateAssertionImport objects but doesn't yet submit them via the CLI.
-3. **ProbLog integration** — move from spike to production: fact-store adapter
-   in llm_client, rule YAML format, CLI for rule evaluation.
-4. **Second consumer integration** — prove Digimon or research_v3 uses
-   onto-canon6 assertions in their actual workflow.
-5. **Broader entity types** — the psyop_seed pack's entity types are military-
-   specific. A general-purpose pack would improve non-military extraction.
-
----
-
-## What NOT to Do
-
-- Don't add new ADRs/phases/subsystems (per CLAUDE.md)
-- Don't refactor into separate packages (only 1 vocabulary+extension tested)
-- Don't rebuild entity dedup in consumers (onto-canon6 owns it)
-- Don't adopt Foundation event log internally (wrapper adds it)
-- Don't estimate LLM costs — query the observability DB instead
+1. **Extraction quality iteration** — still the #1 bottleneck (37.5% acceptance)
+2. **Prompt experiment analysis** — experiment may still be running (backgrounded)
+3. **Fuzzy entity resolution** — extend auto_resolution with Levenshtein/embedding
+4. **ProbLog rule library** — define reusable rules for common inference patterns
+5. **Digimon operator exercise** — install igraph/rapidfuzz in Digimon venv
