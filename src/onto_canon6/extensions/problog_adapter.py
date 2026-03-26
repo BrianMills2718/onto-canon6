@@ -61,10 +61,14 @@ def load_facts_from_db(
     conn = sqlite3.connect(str(db_path))
     conn.row_factory = sqlite3.Row
 
-    assertions = conn.execute(
-        "SELECT assertion_id, predicate, normalized_body_json, source_candidate_id "
-        "FROM promoted_graph_assertions"
-    ).fetchall()
+    try:
+        assertions = conn.execute(
+            "SELECT assertion_id, predicate, normalized_body_json, source_candidate_id "
+            "FROM promoted_graph_assertions"
+        ).fetchall()
+    except sqlite3.OperationalError:
+        conn.close()
+        return []  # Table doesn't exist yet
 
     # Load confidence scores if available
     confidences: dict[str, float] = {}
