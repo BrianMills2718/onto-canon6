@@ -1,5 +1,8 @@
 # Phase 8 Artifact Lineage Shape
 
+Status: Complete (bootstrap phase)
+
+
 This note makes the Phase 8 slice explicit before implementation begins.
 
 ## Goal

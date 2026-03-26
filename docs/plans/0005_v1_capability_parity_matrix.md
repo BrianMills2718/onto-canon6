@@ -1,6 +1,6 @@
 # onto-canon v1 Capability Parity Matrix
 
-Updated: 2026-03-18
+Updated: 2026-03-26
 
 ## Purpose
 
@@ -44,16 +44,16 @@ From this point forward:
 | Agent-facing operational surface | `canon_mcp_server.py`, 35 MCP tools | Narrow FastMCP surface recovered as a thin wrapper over successor services; broad v1 tool coverage remains intentionally unrecovered | Retained, narrowed | Phase 14 |
 | External adapters | DIGIMON and WhyGame adapters in v1 | Narrow WhyGame relationship adapter recovered through an explicit successor-local contract; DIGIMON still deferred | Retained, narrowed | Phase 14 for WhyGame, Phase 15+ or later extension for DIGIMON |
 | Cross-channel corroboration | Planned `canon_find_corroborations` in v1 status doc | Narrow deterministic corroboration groups recovered over promoted assertions | Retained, narrowed | Phase 15 complete |
-| Temporal extraction and inference integration | Phase 4 plan in v1 status doc | Explicitly deferred from the current successor scope rather than silently omitted | Deferred | Later roadmap extension only if workflow pressure justifies it |
+| Temporal extraction and inference integration | Phase 4 plan in v1 status doc | Temporal qualifiers (valid_from/valid_to) implemented in extraction, payload storage, and Foundation IR export. Temporal inference remains deferred. | Partially recovered | Plan 0020 Gap 4. Inference deferred. |
 | Repair and recanonicalization flows over bad stored assertions | v1 repair pipeline and SUMO repair tools | Narrow promoted-assertion repair flow recovered through explicit recanonicalization events and revalidation before persistence; broader graph-wide repair remains deferred | Retained, narrowed | Phase 13 and Phase 15 |
 | Direct concept/belief CRUD (add, update, query) | `canon_add_concept`, `canon_add_belief`, `canon_add_evidence`, `canon_update_belief`, `canon_get_beliefs` | Not yet recovered; governed review workflow is the only ingestion path | Deferred | Extension point exists (services layer); add when consumer integration requires escape hatch or bulk ingestion. **Uncertainty**: will the governed workflow be usable for bulk ingestion (e.g., 10K research_v3 findings), or will a fast path be required? |
 | Concept/entity browsing and search | `canon_list_concepts`, `canon_search_concepts`, `canon_get_evidence_for_concept`, `canon_search_evidence` | Not yet recovered; only candidate/proposal listing exists | Deferred | Required for any agent to use onto-canon6 as a queryable knowledge base. **Uncertainty**: should browsing surface be MCP-only, or also CLI? |
-| DIGIMON bidirectional adapter | `canon_import_digimon_graph`, `canon_export_digimon_graph` | Not yet recovered; WhyGame adapter recovered in Phase 14 | Deferred | Required for ecosystem integration (DIGIMON is a named consumer). Build after research_v3 integration is proven. **Uncertainty**: v1 adapter had weight-semantics mismatch (TF-IDF vs probability); successor adapter must resolve this. |
+| DIGIMON bidirectional adapter | `canon_import_digimon_graph`, `canon_export_digimon_graph` | Export adapter operational (`digimon_export.py`), tested on real data (20 entities, 16 relationships → 19 merged nodes in GraphML). DIGIMON-side importer also built. Import adapter not yet built. | Retained, narrowed (export only) | Plan 0020 Gap 5 complete. Import adapter deferred. |
 | Lead/investigation management | `canon_create_lead`, `canon_list_leads` | Not recovered; not in original parity matrix (silently dropped) | Deferred | Lightweight investigation tracking. May be replaced by a richer consumer-side concept. **Uncertainty**: does this belong in onto-canon6 or in research_v3? |
-| Concept dedup and merge tools | `canon_merge_concepts`, `canon_prune_orphans` | Not recovered; identity subsystem exists but no merge/prune surface | Deferred | Required at scale when multiple extraction runs produce overlapping entities. **Uncertainty**: merge policy (automatic vs human-reviewed) is undecided. |
+| Concept dedup and merge tools | `canon_merge_concepts`, `canon_prune_orphans` | Automated entity resolution by exact name match (`auto_resolution.py`). CLI: `auto-resolve-identities`. Proven: USSOCOM merged across 2 chunks. Fuzzy matching deferred. | Partially recovered | Plan 0020 Gap 3. Fuzzy matching and manual merge surface deferred. |
 | Frame ontology interactive browsing | `canon_frame_lookup`, `canon_compress_predicates`, `canon_list_proposed_frames`, `canon_review_proposed_frame` | Not recovered; Predicate Canon bridge reads data but no interactive surface | Deferred | Low priority unless consumers need interactive frame exploration. |
 | Multi-consumer query federation | Not in v1 | Not started | Vision (beyond v1) | Multiple consumers querying the same assertion store with different resolution strategies. **Uncertainty**: requires multi-tenant identity model not yet designed. |
-| Cross-investigation entity resolution at scale | Not in v1 (Q-codes were partial) | Not started | Vision (beyond v1) | Reliable entity identity across hundreds of investigations. **Uncertainty**: depends on identity subsystem maturity and a chosen resolution strategy. |
+| Cross-investigation entity resolution at scale | Not in v1 (Q-codes were partial) | Exact-name auto-resolution works across source chunks. Q-code and fuzzy matching not started. | Vision (beyond v1), partially started | Exact-name proven. Q-code/fuzzy/LLM-assisted strategies deferred. |
 | Streaming/incremental ingestion | Not in v1 | Not started | Vision (beyond v1) | Real-time assertion ingestion from continuous sources. Architecture must not prevent this. **Uncertainty**: requires async pipeline design not yet specified. |
 
 ## Open Uncertainties
@@ -77,9 +77,10 @@ They must be revisited when the relevant capability moves from deferred to activ
    is named. No trigger condition is defined. This should be resolved before
    extraction is treated as a separate project.
 
-4. **DIGIMON weight semantics.** v1 adapter clamped TF-IDF weights to [0.005,
-   0.995] as probability. This is semantically wrong. The successor adapter
-   must define how DIGIMON edge weights map to onto-canon6 belief confidence.
+4. **DIGIMON weight semantics.** The export adapter maps onto-canon6
+   confidence (0-1 probability) directly to DIGIMON edge weight. Default
+   confidence=1.0 maps to weight=1.0. Non-unity confidence propagates
+   correctly. Import direction not yet built.
 
 5. **Temporal extraction and inference.** Explicitly deferred from current scope.
    The architecture (extension-based epistemics) does not prevent adding it later,

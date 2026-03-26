@@ -1,5 +1,8 @@
 # Phase 10 Governed Bundle Shape
 
+Status: Complete (bootstrap phase)
+
+
 This note locks the first product-facing workflow before or alongside
 implementation.
 

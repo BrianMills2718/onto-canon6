@@ -1,63 +1,64 @@
-# Consumer Integration Notes (2026-03-25)
+# Consumer Integration Notes (2026-03-26)
 
-Notes from cross-project strategic review for agents working on onto-canon6.
+Notes for agents working on onto-canon6 consumer integration.
 
-## First Consumer: research_v3
+## research_v3 — Primary Consumer
 
-research_v3 (`~/projects/research_v3/`) produces `InvestigationMemo` with
-`Finding` objects. Each Finding has:
-- `claim`: str — factual assertion text
-- `source_urls`: list[str] — provenance URLs
+research_v3 produces two output formats:
+
+### Path A: graph.yaml (KnowledgeGraph with Claims) — ADAPTER BUILT
+
+The `graph.yaml` output contains a `KnowledgeGraph` with:
+- `entities`: dict of FtM entity dicts (schema, properties)
+- `claims`: list of `Claim` objects (statement, entity_refs, claim_type,
+  source, corroboration_status, confidence)
+
+**Adapter**: `src/onto_canon6/adapters/research_v3_import.py`
+**CLI**: `onto-canon6 import-research-v3 --input graph.yaml`
+**Tested**: 48 claims from Booz Allen lobbying investigation imported.
+
+Entity type mapping: FtM schema → oc: type (15 schemas mapped).
+Confidence: corroboration_status × confidence_label → float score.
+Provenance: source URL, retrieval timestamp, source_type preserved.
+
+### Path B: InvestigationMemo with Findings — ADAPTER NOT BUILT
+
+The `InvestigationMemo` (from `loop_models.py`) contains `Finding` objects:
+- `claim`: str — factual statement
+- `source_urls`: list[str]
 - `confidence`: float (0-1)
 - `corroborated`: bool
 - `tags`: list[str]
 
-### Integration Path (simplest)
+This is the structured output from the investigation loop. No adapter exists
+yet. Simpler than Path A (no FtM entities, no entity_refs).
 
-Feed each Finding.claim as evidence text through the extraction pipeline:
-1. Create evidence record with source_url provenance
-2. Run extraction on the claim text (canon6_commit_canonicalization or equivalent)
-3. Map Finding.confidence → belief probability
-4. Map Finding.corroborated → epistemic_level (observed/inferred)
+**Integration path when needed**: Feed Finding.claim as evidence text through
+the extraction pipeline. Map confidence directly. Map corroborated → epistemic
+confidence boost.
 
-onto-canon6's extraction pipeline handles entity extraction, SUMO typing,
-and predicate canonicalization. The adapter does NOT need to do entity work.
+## DIGIMON — Secondary Consumer
 
-### Integration Prerequisite (ROADMAP 2.0)
+**Export adapter**: `src/onto_canon6/adapters/digimon_export.py`
+**CLI**: `onto-canon6 export-digimon --output-dir path/`
+**Tested**: 20 entities + 16 relationships → 19 merged nodes in Digimon GraphML.
+**DIGIMON importer**: `Digimon_for_KG_application/Core/Interop/onto_canon_import.py`
 
-Feed 5 research_v3 findings into onto-canon6, verify:
-- Entities extracted correctly from claim text
-- Beliefs stored with correct provenance (source_urls)
-- Confidence/epistemic_level mapped correctly
+Weight mapping: onto-canon6 confidence (0-1) → Digimon edge weight directly.
+Default confidence=1.0 → weight=1.0.
 
-### Open Questions for Integration
+Import direction (DIGIMON → onto-canon6) not built. Deferred until a use case
+requires importing DIGIMON analysis results back into the assertion store.
 
-1. **Bulk ingestion**: Can the governed review workflow handle 61 findings
-   from one investigation without manual review of each? May need a
-   trusted-source fast path (see Open Uncertainties in parity matrix).
+## Open Questions
 
-2. **Confidence mapping**: research_v3 confidence (0-1 float) maps directly
-   to onto-canon6 probability. But should low-confidence findings (< 0.3)
-   be treated differently (e.g., skip promotion)?
+1. **Bulk ingestion**: Can the governed review workflow handle 61+ findings
+   from one investigation? May need a trusted-source fast path (bulk accept
+   + promote) for high-confidence corroborated claims.
 
-3. **Tags → vocabulary**: research_v3 Finding.tags are free-text categories.
-   Should these map to onto-canon6 domain pack concepts, or stay as metadata?
+2. **Consumer-side adoption**: Adapters exist but neither consumer has wired
+   them into their actual workflow. Next step is proving consumer-side usage.
 
-4. **Batch vs streaming**: Should the adapter feed all findings from one
-   investigation as a batch (with cross-finding context), or one at a time?
-
-## Second Consumer: DIGIMON (deferred)
-
-DIGIMON adapter is deferred in the parity matrix. Build after research_v3
-integration is proven. Key uncertainty: DIGIMON edge weights are TF-IDF
-(can exceed 1.0), not probabilities. The adapter must define the mapping.
-
-## Consumer-Ready MCP Surface Gap
-
-Current 8-tool MCP surface is extraction/review focused. For agents to use
-onto-canon6 as a queryable knowledge base, need at minimum:
-- list/search entities
-- get beliefs for entity
-- add evidence (direct)
-
-These are documented as deferred in the parity matrix.
+3. **Entity resolution across investigations**: auto_resolution.py does
+   exact-name matching. Cross-investigation resolution (where entity names
+   vary) needs fuzzy matching or Q-code resolution.

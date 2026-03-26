@@ -1,5 +1,8 @@
 # Phase 9 Epistemic Shape
 
+Status: Complete (bootstrap phase)
+
+
 This note makes the Phase 9 slice explicit before or alongside implementation.
 
 ## Goal

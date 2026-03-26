@@ -96,9 +96,9 @@ config/
   report both: golden-set match rate AND LLM-judge reasonableness rate.
 - **Benchmark against a simple baseline** — compare progressive extraction vs
   bare "extract SPO triples" prompt on same corpus to prove governance value.
-- **Don't force integration yet** — research_v3 and Digimon are stabilizing.
-  Foundation Assertion IR adapter exists and is wired. Don't build the full
-  pipeline until a consumer is ready to ingest.
+- **Integration adapters are built and proven** — research_v3 import (48 claims),
+  Digimon export (19 nodes), Foundation IR (16 assertions). Next step is
+  consumer-side adoption, not more adapter work.
 - **No more phases/ADRs/subsystems** unless justified by extraction quality
     friction or consumer integration needs. The 15-phase bootstrap is done.
     The parity matrix is the capability vision ledger — all planned capabilities
