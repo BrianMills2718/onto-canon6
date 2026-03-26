@@ -137,6 +137,15 @@ class ExtractionConfig(BaseModel):
             "Candidates with a label below this are filtered out."
         ),
     )
+    max_predicates_in_prompt: int | None = Field(
+        default=None,
+        description=(
+            "Maximum predicates to include in the extraction prompt. "
+            "When set, predicates are ranked by keyword relevance to the "
+            "source text and only the top N are rendered (ODKE+ snippet pattern). "
+            "None means render all predicates (default)."
+        ),
+    )
 
 
 class ChunkingConfig(BaseModel):

@@ -605,7 +605,7 @@ class TextExtractionService:
             self._prompt_template,
             profile_id=normalized_profile.profile_id,
             profile_version=normalized_profile.profile_version,
-            predicate_catalog=render_predicate_catalog(profile),
+            predicate_catalog=render_predicate_catalog(profile, source_text=source_text, max_predicates=get_config().extraction.max_predicates_in_prompt),
             entity_type_catalog=render_entity_type_catalog(profile),
             max_candidates_per_case=self._max_candidates_per_call,
             max_evidence_spans_per_candidate=self._max_evidence_spans_per_candidate,
@@ -1102,18 +1102,73 @@ def _trace_id_for_source(*, source_ref: str, text: str) -> str:
     return f"{get_config().project.package_name}.extract.{digest}"
 
 
-def render_predicate_catalog(profile: LoadedProfile) -> str:
+def _rank_predicates_by_relevance(
+    rules: list[tuple[str, object]],
+    source_text: str,
+    max_predicates: int,
+) -> list[tuple[str, object]]:
+    """Rank predicates by keyword overlap with source text.
+
+    Simple heuristic: score each predicate by how many of its keywords
+    (from predicate ID, role names, and description) appear in the source text.
+    Returns the top N predicates by score, preserving all if tied.
+    """
+    source_lower = source_text.lower()
+    source_words = set(source_lower.split())
+
+    scored: list[tuple[float, int, tuple[str, object]]] = []
+    for idx, (pred_id, rule) in enumerate(rules):
+        # Extract keywords from predicate ID (e.g., "oc:hold_command_role" → ["hold", "command", "role"])
+        pred_words = set(pred_id.replace(":", "_").replace("-", "_").split("_"))
+        # Add role names as keywords
+        if hasattr(rule, "allowed_roles") and rule.allowed_roles:
+            for role_name in rule.allowed_roles:
+                pred_words.update(role_name.replace("_", " ").split())
+
+        # Score by word overlap
+        overlap = len(pred_words & source_words)
+        # Boost: check if any multi-word predicate phrase appears in source
+        pred_phrase = pred_id.split(":")[-1].replace("_", " ")
+        if pred_phrase in source_lower:
+            overlap += 5
+
+        scored.append((-overlap, idx, (pred_id, rule)))
+
+    scored.sort()
+    selected = [item[2] for item in scored[:max_predicates]]
+
+    if len(selected) < len(rules):
+        logger.info(
+            "dynamic predicate filtering: %d/%d predicates selected (max=%d)",
+            len(selected), len(rules), max_predicates,
+        )
+
+    return selected
+
+
+def render_predicate_catalog(
+    profile: LoadedProfile,
+    source_text: str | None = None,
+    max_predicates: int | None = None,
+) -> str:
     """Render the active predicate catalog with role constraints.
 
-    The first real extraction run showed that role names alone are not enough
-    guidance for the model. This catalog now carries the role-level contract as
-    well so the extractor can choose entity types and value kinds that the
-    runtime will actually accept.
+    When ``source_text`` is provided and ``max_predicates`` is set, predicates
+    are ranked by keyword relevance to the source text and only the top N are
+    included. This implements the ODKE+ "ontology snippet" pattern — sending
+    only relevant predicates reduces prompt size and improves extraction focus.
+
+    When ``source_text`` is None or ``max_predicates`` is None, all predicates
+    are rendered (original behavior).
     """
 
     rules = sorted(profile.predicate_rules.items())
     if not rules:
         return "none provided"
+
+    # Dynamic filtering: rank predicates by relevance to source text
+    if source_text is not None and max_predicates is not None and len(rules) > max_predicates:
+        rules = _rank_predicates_by_relevance(rules, source_text, max_predicates)
     lines = []
     for predicate_id, rule in rules:
         if not rule.allowed_roles:
