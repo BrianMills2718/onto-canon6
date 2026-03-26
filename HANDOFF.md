@@ -1,8 +1,8 @@
 # Handoff: onto-canon6
 
-**Date**: 2026-03-25 (final)
-**From**: Claude Code (strategic review + implementation + audit + e2e proof, 2 days)
-**Session**: 38 onto-canon6 commits, plus llm_client and project-meta fixes
+**Date**: 2026-03-26 (final)
+**From**: Claude Code (strategic review + implementation + audit + e2e proof + planning, 2.5 days)
+**Session**: 47 onto-canon6 commits, plus llm_client and project-meta fixes
 
 ---
 
@@ -56,7 +56,12 @@ switch to gemini-2.5-flash (stable). model_override wired into extraction
 service. Shared evidence span resolver built in llm_client. Makefile
 targets working: extract → candidates → accept → promote → summary.
 
-### 1. (NEW) Create clear plans for all 10 vision gaps
+### ~~1. Create clear plans for all 10 vision gaps~~ DONE
+
+Plan 0020 (`docs/plans/0020_vision_gap_closure.md`) covers all 10 gaps with
+acceptance criteria, uncertainties, dependencies, and priority ordering.
+
+### 1. (NEW) Review Plan 0020 and start Gap 5 (Digimon real-data export)
 
 Brian wants unambiguous plans for each gap between the vision and current
 state. Each plan must identify uncertainties explicitly, be consistent with
@@ -81,7 +86,7 @@ Gap table to plan:
 Each plan should go in `docs/plans/` following the meta-process plan template.
 Plans should be concrete enough for an agent to execute autonomously.
 
-### 2. Run e2e on longer documents and non-military text
+### 2. Continue with Gap 2 (non-military domain testing)
 
 **Finding from e2e attempt (2026-03-25):**
 - `single_response_hardened` prompt → ALL models produce empty `roles: {}`
