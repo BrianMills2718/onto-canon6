@@ -335,6 +335,18 @@ E2E pipeline must work (done). dodaf_minimal pack exists (done).
 Small (1 session). Select DoDAF text, run extraction with dodaf profile,
 compare to psyop_seed extraction.
 
+### Status: COMPLETED (2026-03-26)
+
+All acceptance criteria met:
+1. E2E extraction with dodaf_minimal_strict on DoDAF OV-2 text: 7 candidates
+   extracted, all using dodaf:operational_node_exchanges_information predicate
+2. Predicate catalog rendered correctly: dm2:OperationalNode, dm2:InformationElement
+   entity types, source_node/target_node/information_element roles
+3. Validation used dodaf pack rules: 0 hard errors, 0 soft violations,
+   0 unknown type checks across all 7 candidates (100% pass rate)
+4. Both vocabularies coexist: dodaf_minimal_strict uses dm2: namespace,
+   psyop_seed uses oc: namespace, same runtime/review/promotion pipeline
+
 ---
 
 ## Gap 10: Autonomous Operation (OpenClaw)
