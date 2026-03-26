@@ -686,10 +686,131 @@ class TextExtractionService:
             source_metadata=source_metadata,
             extraction_goal=extraction_goal,
         )
+        candidate_imports = list(extraction_run.candidate_imports)
+
+        # Optional post-extraction quality filter via LLM judge
+        config = get_config()
+        if config.extraction.enable_judge_filter and candidate_imports:
+            candidate_imports = _apply_judge_filter(
+                candidate_imports=candidate_imports,
+                source_text=source_text,
+                min_label=config.extraction.judge_filter_min_label,
+                config=config,
+            )
+
         return tuple(
             self._review_service.submit_candidate_import(candidate_import=candidate_import)
-            for candidate_import in extraction_run.candidate_imports
+            for candidate_import in candidate_imports
         )
+
+
+
+_JUDGE_LABEL_ORDER = ["unsupported", "partially_supported", "supported"]
+
+
+def _apply_judge_filter(
+    *,
+    candidate_imports: list[CandidateAssertionImport],
+    source_text: str,
+    min_label: str,
+    config: "AppConfig",
+) -> list[CandidateAssertionImport]:
+    """Filter candidates using LLM judge for reasonableness.
+
+    Calls the judge prompt on all candidates and drops those below
+    the minimum label threshold. Returns the filtered list.
+    """
+    try:
+        from llm_client import call_llm_structured
+        import uuid
+    except ImportError:
+        logger.warning("llm_client not available — skipping judge filter")
+        return candidate_imports
+
+    min_idx = _JUDGE_LABEL_ORDER.index(min_label) if min_label in _JUDGE_LABEL_ORDER else 0
+
+    # Build judge input
+    candidate_summaries = []
+    for ci in candidate_imports:
+        summary = {
+            "predicate": ci.payload.get("predicate", "unknown"),
+            "claim_text": ci.claim_text or "",
+            "roles": ci.payload.get("roles", {}),
+        }
+        candidate_summaries.append(summary)
+
+    try:
+        eval_config = config.evaluation
+        prompt_template = eval_config.judge_prompt_template
+        trace_id = f"judge_filter_{uuid.uuid4().hex[:12]}"
+
+        from llm_client import render_prompt
+        rendered = render_prompt(
+            prompt_template,
+            case_id="extraction_filter",
+            source_ref="live_extraction",
+            source_text=source_text[:4000],  # Limit source text length
+            candidate_assertions_json=json.dumps(candidate_summaries, indent=2),
+        )
+
+        response = call_llm_structured(
+            messages=rendered,
+            response_format={
+                "type": "json_schema",
+                "json_schema": {
+                    "name": "judge_result",
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "judgments": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "candidate_index": {"type": "integer"},
+                                        "label": {
+                                            "type": "string",
+                                            "enum": ["supported", "partially_supported", "unsupported"],
+                                        },
+                                    },
+                                    "required": ["candidate_index", "label"],
+                                },
+                            },
+                        },
+                        "required": ["judgments"],
+                    },
+                },
+            },
+            task=eval_config.judge_selection_task,
+            trace_id=trace_id,
+            max_budget=eval_config.judge_max_budget_usd,
+        )
+
+        judgments = json.loads(response.content).get("judgments", [])
+        label_map = {j["candidate_index"]: j["label"] for j in judgments}
+
+        filtered = []
+        for i, ci in enumerate(candidate_imports):
+            label = label_map.get(i, "supported")  # Default pass if judge didn't evaluate
+            label_idx = _JUDGE_LABEL_ORDER.index(label) if label in _JUDGE_LABEL_ORDER else 2
+            if label_idx >= min_idx:
+                filtered.append(ci)
+            else:
+                logger.info(
+                    "judge filter rejected candidate: predicate=%s label=%s claim=%s",
+                    ci.payload.get("predicate"), label,
+                    (ci.claim_text or "")[:60],
+                )
+
+        logger.info(
+            "judge filter: %d/%d candidates passed (min_label=%s)",
+            len(filtered), len(candidate_imports), min_label,
+        )
+        return filtered
+
+    except Exception as exc:
+        logger.warning("judge filter failed, passing all candidates: %s", exc)
+        return candidate_imports
 
 
 def candidate_import_from_extracted(

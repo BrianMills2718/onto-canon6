@@ -111,6 +111,23 @@ class ExtractionConfig(BaseModel):
         gt=0,
         description="Maximum spend in USD for coreference resolution LLM calls.",
     )
+    enable_judge_filter: bool = Field(
+        default=False,
+        description=(
+            "Enable post-extraction LLM judge filter. When True, each "
+            "extracted candidate is evaluated for reasonableness by the "
+            "judge prompt. Candidates below judge_filter_min_label are "
+            "auto-rejected before submission to the review queue."
+        ),
+    )
+    judge_filter_min_label: str = Field(
+        default="partially_supported",
+        description=(
+            "Minimum judge label for a candidate to pass the filter. "
+            "Labels: supported > partially_supported > unsupported. "
+            "Candidates with a label below this are filtered out."
+        ),
+    )
 
 
 class ChunkingConfig(BaseModel):
