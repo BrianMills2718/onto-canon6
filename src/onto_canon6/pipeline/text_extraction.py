@@ -698,10 +698,119 @@ class TextExtractionService:
                 config=config,
             )
 
-        return tuple(
+        submissions = tuple(
             self._review_service.submit_candidate_import(candidate_import=candidate_import)
             for candidate_import in candidate_imports
         )
+
+        # Apply review_mode policy after submission
+        review_mode = config.pipeline.review_mode
+        if review_mode in ("auto", "llm") and submissions:
+            self._apply_review_mode(submissions, review_mode, source_text, config, submitted_by)
+
+        return submissions
+
+
+    def _apply_review_mode(
+        self,
+        submissions: tuple,
+        review_mode: str,
+        source_text: str,
+        config: "AppConfig",
+        submitted_by: str,
+    ) -> None:
+        """Auto-accept and/or auto-promote based on review_mode config.
+
+        - ``auto``: accept all valid candidates, promote all accepted.
+        - ``llm``: run LLM-judge, accept supported, reject unsupported, promote accepted.
+        """
+        from .service import ReviewService
+        from ..core import CanonicalGraphService
+
+        graph_service = CanonicalGraphService(db_path=self._review_service.store.db_path)
+
+        for sub in submissions:
+            candidate = sub.candidate
+            cid = candidate.candidate_id
+
+            if review_mode == "llm":
+                # LLM-judge decides accept/reject
+                label = self._judge_candidate(candidate, source_text, config)
+                if label == "unsupported":
+                    try:
+                        self._review_service.review_candidate(
+                            candidate_id=cid, decision="rejected", actor_id=f"{submitted_by}:llm_judge",
+                        )
+                    except Exception:
+                        pass
+                    continue
+                # supported or partially_supported → accept
+                decision = "accepted"
+            else:
+                # auto mode → accept everything valid
+                decision = "accepted"
+
+            try:
+                self._review_service.review_candidate(
+                    candidate_id=cid, decision=decision, actor_id=f"{submitted_by}:auto",
+                )
+                graph_service.promote_candidate(
+                    candidate_id=cid, promoted_by=f"{submitted_by}:auto",
+                )
+            except Exception as exc:
+                logger.warning("auto-review failed for %s: %s", cid, exc)
+
+    def _judge_candidate(self, candidate: object, source_text: str, config: "AppConfig") -> str:
+        """Run LLM-judge on a single candidate, return label."""
+        try:
+            import litellm
+            from llm_client import render_prompt
+
+            claim = getattr(candidate, "claim_text", "") or ""
+            pred = ""
+            if hasattr(candidate, "normalized_payload"):
+                pred = candidate.normalized_payload.get("predicate", "")
+
+            rendered = render_prompt(
+                config.evaluation.judge_prompt_template,
+                case_id="auto_review",
+                source_ref="auto",
+                source_text=source_text[:3000],
+                candidate_assertions_json=json.dumps([{"predicate": pred, "claim_text": claim}]),
+            )
+            response = litellm.completion(
+                model=config.extraction.model_override or "gemini/gemini-2.5-flash",
+                messages=rendered,
+                response_format={
+                    "type": "json_schema",
+                    "json_schema": {
+                        "name": "judge",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "candidate_judgments": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "label": {"type": "string", "enum": ["supported", "partially_supported", "unsupported"]},
+                                        },
+                                        "required": ["label"],
+                                    },
+                                },
+                            },
+                            "required": ["candidate_judgments"],
+                        },
+                    },
+                },
+                max_tokens=500,
+            )
+            result = json.loads(response.choices[0].message.content)
+            judgments = result.get("candidate_judgments", [])
+            return judgments[0]["label"] if judgments else "supported"
+        except Exception as exc:
+            logger.warning("judge failed, defaulting to supported: %s", exc)
+            return "supported"
 
 
 
