@@ -46,6 +46,50 @@ From this point forward:
 | Cross-channel corroboration | Planned `canon_find_corroborations` in v1 status doc | Narrow deterministic corroboration groups recovered over promoted assertions | Retained, narrowed | Phase 15 complete |
 | Temporal extraction and inference integration | Phase 4 plan in v1 status doc | Explicitly deferred from the current successor scope rather than silently omitted | Deferred | Later roadmap extension only if workflow pressure justifies it |
 | Repair and recanonicalization flows over bad stored assertions | v1 repair pipeline and SUMO repair tools | Narrow promoted-assertion repair flow recovered through explicit recanonicalization events and revalidation before persistence; broader graph-wide repair remains deferred | Retained, narrowed | Phase 13 and Phase 15 |
+| Direct concept/belief CRUD (add, update, query) | `canon_add_concept`, `canon_add_belief`, `canon_add_evidence`, `canon_update_belief`, `canon_get_beliefs` | Not yet recovered; governed review workflow is the only ingestion path | Deferred | Extension point exists (services layer); add when consumer integration requires escape hatch or bulk ingestion. **Uncertainty**: will the governed workflow be usable for bulk ingestion (e.g., 10K research_v3 findings), or will a fast path be required? |
+| Concept/entity browsing and search | `canon_list_concepts`, `canon_search_concepts`, `canon_get_evidence_for_concept`, `canon_search_evidence` | Not yet recovered; only candidate/proposal listing exists | Deferred | Required for any agent to use onto-canon6 as a queryable knowledge base. **Uncertainty**: should browsing surface be MCP-only, or also CLI? |
+| DIGIMON bidirectional adapter | `canon_import_digimon_graph`, `canon_export_digimon_graph` | Not yet recovered; WhyGame adapter recovered in Phase 14 | Deferred | Required for ecosystem integration (DIGIMON is a named consumer). Build after research_v3 integration is proven. **Uncertainty**: v1 adapter had weight-semantics mismatch (TF-IDF vs probability); successor adapter must resolve this. |
+| Lead/investigation management | `canon_create_lead`, `canon_list_leads` | Not recovered; not in original parity matrix (silently dropped) | Deferred | Lightweight investigation tracking. May be replaced by a richer consumer-side concept. **Uncertainty**: does this belong in onto-canon6 or in research_v3? |
+| Concept dedup and merge tools | `canon_merge_concepts`, `canon_prune_orphans` | Not recovered; identity subsystem exists but no merge/prune surface | Deferred | Required at scale when multiple extraction runs produce overlapping entities. **Uncertainty**: merge policy (automatic vs human-reviewed) is undecided. |
+| Frame ontology interactive browsing | `canon_frame_lookup`, `canon_compress_predicates`, `canon_list_proposed_frames`, `canon_review_proposed_frame` | Not recovered; Predicate Canon bridge reads data but no interactive surface | Deferred | Low priority unless consumers need interactive frame exploration. |
+| Multi-consumer query federation | Not in v1 | Not started | Vision (beyond v1) | Multiple consumers querying the same assertion store with different resolution strategies. **Uncertainty**: requires multi-tenant identity model not yet designed. |
+| Cross-investigation entity resolution at scale | Not in v1 (Q-codes were partial) | Not started | Vision (beyond v1) | Reliable entity identity across hundreds of investigations. **Uncertainty**: depends on identity subsystem maturity and a chosen resolution strategy. |
+| Streaming/incremental ingestion | Not in v1 | Not started | Vision (beyond v1) | Real-time assertion ingestion from continuous sources. Architecture must not prevent this. **Uncertainty**: requires async pipeline design not yet specified. |
+
+## Open Uncertainties
+
+Uncertainties documented here are design questions that are explicitly unresolved.
+They must be revisited when the relevant capability moves from deferred to active.
+
+1. **Bulk ingestion vs governed review.** The governed workflow (candidate →
+   review → promotion) is the right default. But will it scale to bulk
+   ingestion (10K+ assertions from a research_v3 run)? If not, a trusted-source
+   fast path is needed. The architecture must not prevent adding one.
+
+2. **Entity resolution strategy.** The identity subsystem provides infrastructure
+   (aliases, merges, external refs) but no default resolution strategy. Each
+   consumer chooses their own. This is architecturally clean but means no
+   cross-consumer entity resolution exists by default. Undecided: should there
+   be a default strategy?
+
+3. **Where extraction eventually lives.** CLAUDE.md and ECOSYSTEM_STATUS.md say
+   extraction "will move out" of onto-canon6 once stabilized. No destination
+   is named. No trigger condition is defined. This should be resolved before
+   extraction is treated as a separate project.
+
+4. **DIGIMON weight semantics.** v1 adapter clamped TF-IDF weights to [0.005,
+   0.995] as probability. This is semantically wrong. The successor adapter
+   must define how DIGIMON edge weights map to onto-canon6 belief confidence.
+
+5. **Temporal extraction and inference.** Explicitly deferred from current scope.
+   The architecture (extension-based epistemics) does not prevent adding it later,
+   but no design exists. If a consumer needs temporal reasoning, this is the
+   largest unresolved design question.
+
+6. **Schema stability definition.** The convergence plan with research_v3 lists
+   "onto-canon6 schema stabilization" as a prerequisite. No criteria define what
+   "stable enough" means. Propose: stable = no breaking changes to the promoted
+   graph schema (entities, assertions, identity records) for 30 days.
 
 ## Notes
 

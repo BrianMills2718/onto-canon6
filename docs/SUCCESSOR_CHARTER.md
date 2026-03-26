@@ -224,7 +224,36 @@ Do not inherit:
 
 ## Long-Term Plan
 
-The long-term plan is phased and thin-slice driven.
+The long-term plan is phased and thin-slice driven, but guided by a complete
+vision of what the system should eventually become.
+
+### Guiding Principles
+
+1. **Document the full vision, design for it, defer implementation.** Every
+   capability the system should eventually have must be explicitly documented
+   in the parity matrix or capability vision — even if implementation is years
+   away. Undocumented capabilities get silently dropped. Deferred is fine;
+   invisible is not.
+
+2. **Never box out the long-term vision.** Every architectural decision must be
+   evaluated against: "does this prevent us from later adding X?" If yes, add
+   an extension point even if the implementation is deferred. The review-only
+   workflow is the right default, but it must not prevent bulk ingestion or
+   direct CRUD from being added later.
+
+3. **Document uncertainties explicitly.** Every deferred capability, open design
+   question, or unresolved tradeoff must state what is uncertain and why. An
+   uncertainty that is written down can be revisited; one that is implicit gets
+   rediscovered from scratch. Uncertainties belong in the parity matrix, in
+   ADRs, and in this charter — not only in conversation.
+
+4. **Implementation priority is consumer-driven, scope is vision-driven.** The
+   order in which deferred capabilities get built should be informed by real
+   consumer integration and observed friction. But the *scope* of what will
+   eventually be built is defined by the long-term vision, not by what
+   consumers have complained about so far.
+
+### Authoritative Documents
 
 The roadmap in `docs/plans/0001_successor_roadmap.md` is the authoritative
 phase document for:
@@ -235,11 +264,13 @@ phase document for:
 4. explicit unresolved questions.
 
 The parity matrix in `docs/plans/0005_v1_capability_parity_matrix.md` is the
-authoritative companion for:
+authoritative capability ledger for:
 
 1. which major `onto-canon` capabilities are already recovered;
 2. which are intentionally narrowed or replaced;
-3. which are still deferred.
+3. which are still deferred;
+4. which capabilities beyond v1 are part of the long-term vision;
+5. what uncertainties remain for each deferred capability.
 
 ### Post-Bootstrap Extraction Workstream
 
@@ -473,10 +504,14 @@ The current priority is:
    highest-friction missing capability or product gap;
 3. run the post-bootstrap extraction workstream as an explicit bounded R&D
    track rather than a hidden new phase chain;
-4. justify any later roadmap extension from observed usage pressure rather than
-   from parity-chasing alone.
+4. justify implementation priority from consumer need and observed friction,
+   while keeping the full long-term capability vision documented and
+   architecturally unblocked.
 
-The parity matrix remains the capability ledger, not an automatic work queue.
+The parity matrix is the capability vision ledger. Every capability that the
+system should eventually have must appear there — even capabilities that no
+consumer has requested yet. Deferred capabilities must not be silently dropped;
+they remain visible until explicitly abandoned with rationale.
 
 ## Drift Conditions
 

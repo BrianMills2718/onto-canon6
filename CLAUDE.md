@@ -100,7 +100,9 @@ config/
   Foundation Assertion IR adapter exists and is wired. Don't build the full
   pipeline until a consumer is ready to ingest.
 - **No more phases/ADRs/subsystems** unless justified by extraction quality
-  friction. The 15-phase bootstrap is done. Parity matrix is a ledger, not a queue.
+    friction or consumer integration needs. The 15-phase bootstrap is done.
+    The parity matrix is the capability vision ledger — all planned capabilities
+    must be documented there, even if deferred. Uncertainties must be explicit.
 - **Foundation Assertion IR adapter operational** (`adapters/foundation_assertion_export.py`).
   Entity alias_ids wired from identity subsystem. Remaining gaps: temporal
   qualifiers (deferred by ADR), confidence (epistemic extension optional kwarg),
@@ -157,8 +159,16 @@ happens.
 
 ## Working Rules
 
-- Use the recorded friction from real runs before reopening broad parity chasing
-  or another roadmap extension.
+- The parity matrix is the capability vision ledger. Every capability the system
+  should eventually have must appear there, even if deferred. Deferred
+  capabilities must not be silently dropped. Uncertainties must be documented
+  explicitly in the parity matrix and the charter.
+- Architectural decisions must not box out the long-term vision. If a design
+  choice prevents a deferred capability from being added later, add an
+  extension point now.
+- Implementation priority is driven by consumer need and extraction quality
+  friction. But the scope of what will eventually be built is defined by the
+  vision, not by current friction alone.
 - Keep the current scope narrow and explicit: reviewed assertions, overlays,
   promoted graph state, stable identity, semantic canonicalization, and the thin
   CLI/MCP surfaces that prove those slices.
