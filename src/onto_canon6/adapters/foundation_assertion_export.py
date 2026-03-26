@@ -196,8 +196,9 @@ def export_foundation_assertions(
     """
 
     resolved_path = Path(db_path)
-    store = CanonicalGraphStore()
+    store = CanonicalGraphStore(resolved_path)
     conn = sqlite3.connect(str(resolved_path))
+    conn.row_factory = sqlite3.Row
     try:
         assertions = store.list_promoted_assertions(conn)
     finally:
