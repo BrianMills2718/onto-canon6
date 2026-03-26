@@ -223,8 +223,9 @@ def test_psyop_profile_rejects_incompatible_entity_type() -> None:
         profile=profile,
     )
 
-    assert [finding.code for finding in outcome.hard_errors] == ["oc:profile_role_type_violation"]
-    assert not outcome.soft_violations
+    # role_type_violation is soft (reviewer decides, not auto-reject)
+    assert not outcome.hard_errors
+    assert [finding.code for finding in outcome.soft_violations] == ["oc:profile_role_type_violation"]
 
 
 def test_psyop_profile_rejects_wrong_value_kind() -> None:

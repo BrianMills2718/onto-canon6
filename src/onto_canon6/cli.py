@@ -647,6 +647,25 @@ def _build_parser() -> argparse.ArgumentParser:
     _add_output_arg(promote_candidate_parser, default_output=config.cli.default_output_format)
     promote_candidate_parser.set_defaults(handler=_handle_promote_candidate)
 
+    accept_all_parser = subparsers.add_parser(
+        "accept-all",
+        help="Accept all pending candidates in one batch.",
+    )
+    _add_store_args(accept_all_parser, include_overlay_root=False)
+    accept_all_parser.add_argument("--actor-id", default="agent:batch", help="Actor id.")
+    _add_output_arg(accept_all_parser, default_output=config.cli.default_output_format)
+    accept_all_parser.set_defaults(handler=_handle_accept_all)
+
+    promote_all_parser = subparsers.add_parser(
+        "promote-all",
+        help="Promote all accepted candidates to the graph in one batch.",
+    )
+    _add_store_args(promote_all_parser, include_overlay_root=False)
+    promote_all_parser.add_argument("--actor-id", default="agent:batch", help="Actor id.")
+    _add_output_arg(promote_all_parser, default_output=config.cli.default_output_format)
+    promote_all_parser.set_defaults(handler=_handle_promote_all)
+
+
     list_promoted_parser = subparsers.add_parser(
         "list-promoted-assertions",
         help="List promoted graph assertions.",
@@ -1587,6 +1606,59 @@ def _handle_import_rv3_memo(args: argparse.Namespace) -> int:
         "candidates": results,
     }
     _emit_output(summary, output_format=args.output)
+    return 0
+
+
+def _handle_accept_all(args: argparse.Namespace) -> int:
+    """Accept all pending candidates in batch."""
+    review_service = _build_review_service(args)
+    store = review_service.store
+    with store.transaction() as conn:
+        pending = conn.execute(
+            "SELECT candidate_id FROM candidate_assertions WHERE review_status = 'pending_review'"
+        ).fetchall()
+
+    accepted = 0
+    skipped = 0
+    for row in pending:
+        cid = row[0] if isinstance(row, tuple) else row["candidate_id"]
+        try:
+            review_service.review_candidate(
+                candidate_id=cid,
+                decision="accepted",
+                actor_id=args.actor_id,
+            )
+            accepted += 1
+        except Exception:
+            skipped += 1
+
+    _emit_output({"accepted": accepted, "skipped": skipped, "total_pending": len(pending)}, output_format=args.output)
+    return 0
+
+
+def _handle_promote_all(args: argparse.Namespace) -> int:
+    """Promote all accepted candidates to graph in batch."""
+    from .core import CanonicalGraphService
+
+    review_service = _build_review_service(args)
+    graph_service = CanonicalGraphService(db_path=review_service.store.db_path)
+    store = review_service.store
+    with store.transaction() as conn:
+        accepted = conn.execute(
+            "SELECT candidate_id FROM candidate_assertions WHERE review_status = 'accepted'"
+        ).fetchall()
+
+    promoted = 0
+    skipped = 0
+    for row in accepted:
+        cid = row[0] if isinstance(row, tuple) else row["candidate_id"]
+        try:
+            graph_service.promote_candidate(candidate_id=cid, promoted_by=args.actor_id)
+            promoted += 1
+        except Exception:
+            skipped += 1
+
+    _emit_output({"promoted": promoted, "skipped": skipped, "total_accepted": len(accepted)}, output_format=args.output)
     return 0
 
 

@@ -17,6 +17,7 @@ paths:
 pipeline:
   default_acceptance_policy: "record_only"
   permissive_review: false
+  review_mode: "human"  # human | auto | llm
 
 ontology_runtime:
   overlay_pack_suffix: "__overlay"

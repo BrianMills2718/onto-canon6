@@ -57,6 +57,15 @@ class PipelineConfig(BaseModel):
 
     default_acceptance_policy: AcceptancePolicyValue
     permissive_review: bool = False
+    review_mode: Literal["human", "auto", "llm"] = Field(
+        default="human",
+        description=(
+            "Review mode for extracted candidates. "
+            "'human': manual accept/reject (default). "
+            "'auto': auto-accept all structurally valid candidates and auto-promote. "
+            "'llm': run LLM-judge, accept supported candidates, quarantine unsupported."
+        ),
+    )
 
 
 class OntologyRuntimeConfig(BaseModel):

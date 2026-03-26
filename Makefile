@@ -116,6 +116,17 @@ endif
 		--review-db-path $(DB_PATH) \
 		--candidate-id $(ID) --actor-id $(SUBMITTED_BY)
 
+accept-all:  ## Accept all pending candidates in batch
+	@$(CLI) accept-all 		--review-db-path $(DB_PATH) 		--output $(OUTPUT)
+
+promote-all:  ## Promote all accepted candidates to graph
+	@$(CLI) promote-all 		--review-db-path $(DB_PATH) 		--output $(OUTPUT)
+
+govern:  ## Full auto pipeline: accept-all → promote-all → auto-resolve
+	@$(CLI) accept-all --review-db-path $(DB_PATH) --output $(OUTPUT)
+	@$(CLI) promote-all --review-db-path $(DB_PATH) --output $(OUTPUT)
+	@$(CLI) auto-resolve-identities --review-db-path $(DB_PATH) --output $(OUTPUT)
+
 export:  ## Export governed bundle
 	@$(CLI) export-governed-bundle \
 		--review-db-path $(DB_PATH) \
