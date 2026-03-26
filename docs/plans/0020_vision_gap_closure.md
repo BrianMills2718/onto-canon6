@@ -381,6 +381,22 @@ onto-canon6 must have promoted assertions with confidence scores (Gap 7).
 Small spike (1 session) to answer the build-vs-buy question. Full
 implementation TBD based on spike results.
 
+### Status: COMPLETED (2026-03-26)
+
+ProbLog spike successful:
+1. Loaded 16 facts from onto-canon6 SQLite with confidence scores (0.65-0.95)
+2. Defined 2 rules: authority_over (direct command + transitive via belongs_to),
+   transitive part_of
+3. ProbLog derived 45 facts with correct probability propagation. Example:
+   Gen. Holland commands USSOCOM (P=0.95), 193rd SOW belongs to USSOCOM
+   (P=0.91), so Holland has authority over 193rd SOW (P=0.95*0.91=0.8645)
+4. DECISION: **Use ProbLog.** 2MB pure Python, probability propagation
+   automatic (product semantics), fact-store adapter ~30 lines. Custom
+   Datalog not justified — ProbLog does everything we need.
+
+Fact-store adapter boundary: onto-canon6 exports facts as ProbLog terms,
+llm_client hosts the rule engine (per FRAMEWORK.md), consumers define rules.
+
 ---
 
 ## Gap 9: Second Vocabulary (Composability Proof)
