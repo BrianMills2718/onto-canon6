@@ -550,25 +550,29 @@ Consumer-driven priority, per CLAUDE.md:
 Ran prompt_eval experiment: 5 variants × 4 cases × 1 run = 20 LLM calls.
 Model: gemini/gemini-2.5-flash via litellm.
 
-### Raw Results
-- 11/20 calls timed out (600s connection timeout, 55% failure rate)
-- 26 empty-roles instances (model produces `roles: {}` for some predicates)
-- 20 candidates dropped due to structural issues (empty roles)
-- Case psyop_001: mean_score=0.0, zero usable candidates across all variants
+### Full Results (re-run completed)
+5 variants × 4 cases = 20 variant-case pairs:
+- **psyop_001** (designation change): 0/5 variants produce candidates
+- **psyop_002** (concerns about shift): 0/5 variants produce candidates
+- **psyop_003** (alias expansion): 5/5 variants score 1.0 (simplest case)
+- **psyop_004** (subordinate unit): 0/5 variants produce candidates
+- **Overall: 5/20 pairs scored > 0 (25%), mean=0.278, max=1.0**
+
+First run also showed: 11/20 connection timeouts (600s), 26 empty-roles.
 
 ### Root Cause Analysis
-1. **API reliability** is the primary bottleneck, not prompt quality. 55%
-   connection timeout rate means most experiment runs fail before the model
-   even produces output.
-2. **Empty roles** is a known issue (documented in CLAUDE.md): the model sees
-   `additionalProperties` in the roles schema and produces `{}` because no
-   keys are required. This was previously diagnosed in the 2026-03-25 session.
-3. **The operational prompt (text_to_candidate_assertions.yaml) works** — it
-   produced valid candidates in Gap 2, Gap 4, and Gap 9 testing. The problem
-   is specific to the prompt_eval experiment variants and API reliability.
+1. **Experiment variants produce empty candidates on 3/4 cases.** Only
+   psyop_003 (a simple parenthetical alias) works. The complex assertion
+   extraction cases (designation change, organizational belonging) fail.
+2. **The operational prompt works.** `text_to_candidate_assertions.yaml`
+   successfully extracted in Gap 2 (financial), Gap 4 (temporal), Gap 9
+   (dodaf). The problem is specific to experiment variants.
+3. **API reliability compounds the problem.** 55% timeout rate on first run
+   (600s connection timeouts via OpenRouter/litellm).
 
 ### Action Items
-1. Switch to direct API calls (bypass OpenRouter) for reliability
-2. Add connection retry with backoff in llm_client
-3. Focus prompt iteration on the operational prompt that works, not the
-   experiment variants that have known empty-roles issues
+1. Focus prompt iteration on the operational prompt (the one that works)
+2. Rebuild experiment variants from the operational prompt, not separately
+3. Switch to direct API calls (bypass OpenRouter) for reliability
+4. Consider model upgrade: gemini-2.5-flash is cheap but may lack capacity
+   for complex multi-role assertions
