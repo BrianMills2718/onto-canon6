@@ -97,6 +97,20 @@ class ExtractionConfig(BaseModel):
     timeout_seconds: int = Field(ge=1)
     num_retries: int = Field(ge=0)
     max_budget_usd: float = Field(gt=0)
+    enable_coreference: bool = Field(
+        default=False,
+        description=(
+            "Enable post-extraction coreference resolution. When True, "
+            "entity and propositional coreference are resolved via an "
+            "additional LLM pass after extraction. Opt-in to avoid "
+            "extra cost on pipelines that don't need it."
+        ),
+    )
+    coreference_max_budget_usd: float = Field(
+        default=0.10,
+        gt=0,
+        description="Maximum spend in USD for coreference resolution LLM calls.",
+    )
 
 
 class ChunkingConfig(BaseModel):

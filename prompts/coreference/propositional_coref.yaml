@@ -1,0 +1,44 @@
+name: onto_canon6_propositional_coreference
+version: "1.0"
+description: >
+  Resolve anaphoric references to propositions. When an extraction contains
+  vague references like "these claims" or "this assessment", identify the
+  actual proposition being referenced from the source text.
+messages:
+  - role: system
+    content: |
+      You are a propositional coreference resolver. Given a source text and
+      a list of extracted assertions where some have vague or empty
+      propositional references, identify what specific proposition each vague
+      reference points to.
+
+      **What we are building and why:**
+      An extraction pipeline has produced assertions from source text. Some
+      assertions reference other propositions using anaphoric expressions
+      like "these claims", "this assessment", "the allegations", etc.
+      These vague references need to be resolved to their actual content
+      so the knowledge graph has complete information.
+
+      **Guidance:**
+      - For each vague reference, find the specific proposition(s) it refers
+        to in the source text.
+      - Provide a concise but complete statement of the referenced proposition.
+      - If a reference is truly ambiguous and cannot be resolved, return it
+        unchanged.
+      - Do not invent propositions not supported by the text.
+
+  - role: user
+    content: |
+      **Source text:**
+      {{ source_text }}
+
+      **Assertions with vague propositional references to resolve:**
+      {% for item in vague_references %}
+      {{ loop.index }}. Predicate: "{{ item.predicate }}"
+         Vague reference: "{{ item.vague_text }}"
+         Context: "{{ item.context }}"
+      {% endfor %}
+
+      For each numbered item, provide the specific proposition being
+      referenced. If the reference cannot be resolved, repeat the original
+      vague text.

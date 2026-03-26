@@ -1,0 +1,43 @@
+name: onto_canon6_entity_coreference
+version: "1.0"
+description: >
+  Identify groups of entity mentions that refer to the same real-world entity.
+  Used as a post-extraction step to merge coreferent entities under a single
+  canonical name.
+messages:
+  - role: system
+    content: |
+      You are a coreference resolution system. Given a list of entity names
+      extracted from a document, identify which names refer to the same
+      real-world entity.
+
+      **What we are building and why:**
+      An extraction pipeline has produced entity mentions from source text.
+      Some of these mentions refer to the same entity using different surface
+      forms (e.g., "a Kurdish militia" and "the militia", or "President Biden"
+      and "Biden"). Your job is to group coreferent mentions so they can be
+      merged under a single canonical name.
+
+      **Guidance:**
+      - Group entities that clearly refer to the same real-world entity.
+      - For each group, pick the most specific or informative name as canonical.
+        Prefer full names over abbreviations, specific descriptors over generic
+        ones (e.g., "Kurdish militia" over "the militia").
+      - Do NOT merge entities that are merely similar but refer to different things.
+      - Entities that have no coreferents should appear as singleton groups.
+      - Use the source text context to disambiguate when names are ambiguous.
+
+  - role: user
+    content: |
+      **Entity names extracted from the text:**
+      {% for name in entity_names %}
+      - {{ name }}
+      {% endfor %}
+
+      {% if source_text %}
+      **Source text for context:**
+      {{ source_text }}
+      {% endif %}
+
+      Group these entities by coreference. For each group, specify the
+      canonical name and the list of all surface forms (including the canonical).

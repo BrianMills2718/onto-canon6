@@ -51,6 +51,11 @@ from .text_extraction import (
     TextExtractionResponse,
     TextExtractionService,
 )
+from .coreference import (
+    resolve_coreferences,
+    resolve_entity_coreferences,
+    resolve_propositional_coreferences,
+)
 
 __all__ = [
     "CandidateAssertionRecord",
@@ -104,4 +109,7 @@ __all__ = [
     "TextExtractionRun",
     "TextExtractionResponse",
     "TextExtractionService",
+    "resolve_coreferences",
+    "resolve_entity_coreferences",
+    "resolve_propositional_coreferences",
 ]
