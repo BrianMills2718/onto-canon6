@@ -178,6 +178,15 @@ class ExtractedCandidate(BaseModel):
         default=None,
         description="Optional short natural-language gloss to help reviewers inspect the candidate.",
     )
+    claim_level: str = Field(
+        default="instance",
+        description=(
+            "Whether this assertion is about a specific instance/event "
+            "(e.g., 'these raids killed 40 fighters') or about a general "
+            "type/category (e.g., 'raids are war crimes'). "
+            "MUST be one of: 'type' or 'instance'."
+        ),
+    )
     valid_from: str | None = Field(
         default=None,
         description=(

@@ -134,6 +134,7 @@ class _RawTriple(BaseModel):
     relationship_verb: str = ""
     evidence_span: str = ""
     confidence: float = 0.5
+    claim_level: str = "instance"
 
 
 class _RawPass1Response(BaseModel):
@@ -175,6 +176,12 @@ class _SchemaTriple(BaseModel):
     )
     evidence_span: str = Field(description="Short excerpt from the source text supporting this relationship.")
     confidence: float = Field(description="How clearly the text supports this relationship, 0.0 to 1.0.")
+    claim_level: str = Field(
+        description=(
+            "Whether this triple is about a specific instance/event "
+            "('instance') or a general type/category ('type')."
+        ),
+    )
 
 
 class _SchemaPass1Response(BaseModel):
@@ -241,6 +248,7 @@ def _coerce_triple(raw: _RawTriple) -> Pass1Triple | None:
             relationship_verb=raw.relationship_verb.strip(),
             evidence_span=raw.evidence_span.strip(),
             confidence=confidence,
+            claim_level=raw.claim_level if raw.claim_level in ("type", "instance") else "instance",
         )
     except ValidationError:
         logger.warning("Failed to validate triple: %s", raw, exc_info=True)

@@ -38,6 +38,8 @@ messages:
       - The ``evidence_span`` should be a short excerpt from the source text that supports the relationship.
       - The ``context`` field on each entity should be a brief description drawn from the text.
       - Confidence should reflect how clearly the text supports the relationship.
+      - Classify each triple as claim_level "type" if it is about a general
+        category or universal rule, or "instance" if about a specific event or situation.
       - Partial results are fine — we prefer incomplete coverage over hallucinated relationships.
       - Do not invent entities or relationships not supported by the text.
 

@@ -40,6 +40,9 @@ messages:
         be true, include `valid_from` and/or `valid_to` as ISO 8601 date
         strings (YYYY, YYYY-MM, or YYYY-MM-DD). Leave null when no temporal
         information is present in the source text
+      - classify each candidate as `claim_level: "type"` if it is about a
+        general category or universal rule, or `claim_level: "instance"` if
+        it is about a specific event, entity, or situation
 
       The assertion payload is expected to use these filler shapes:
 

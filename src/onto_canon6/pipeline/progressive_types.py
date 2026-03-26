@@ -64,6 +64,13 @@ class Pass1Triple(BaseModel):
         le=1.0,
         description="LLM self-assessed confidence (0-1).",
     )
+    claim_level: str = Field(
+        default="instance",
+        description=(
+            "Whether this triple is about a specific instance/event "
+            "or about a general type/category. 'type' or 'instance'."
+        ),
+    )
 
 
 class Pass1Result(BaseModel):
