@@ -130,6 +130,26 @@ Gap 1 (human-readable names) would help but is not required.
 Medium (1-2 sessions). Select text, create profile if needed, run extraction,
 create fixture cases.
 
+### Status: COMPLETED (2026-03-26)
+
+Tested on two non-military domains:
+- **Financial text** (SEC/crypto enforcement): 3 valid candidates from psyop_seed
+  (oc:send_report, oc:express_concern, oc:criticize_change). 100% validation.
+- **Academic text** (climate attribution research): 1 valid + 2 invalid from
+  psyop_seed. Invalid ones: entity type mismatches (psyop_seed has only
+  oc:person, oc:military_organization, oc:military_unit).
+- **Progressive extraction** (financial text, 4669 predicates): 19 entities
+  with correct SUMO types (GovernmentOrganization, Corporation, Human).
+
+Overall: 11 candidates, 82% structural success rate (comparable to military
+80% on Phase B bounded chunks).
+
+Key finding: **vocabulary is the constraint, not the pipeline.** The extraction
+pipeline works unchanged on non-military text. The psyop_seed entity types
+are military-specific, but the progressive extractor with sumo_plus.db handles
+non-military entities correctly. A general-purpose pack with broader entity
+types would close the remaining 18% validation gap.
+
 ---
 
 ## Gap 3: Automated Entity Resolution
