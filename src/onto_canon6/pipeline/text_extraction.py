@@ -949,15 +949,36 @@ def candidate_import_from_extracted(
     if candidate.valid_to is not None:
         payload["valid_to"] = candidate.valid_to
     claim_text = candidate.claim_text.strip() if candidate.claim_text is not None else None
+    resolved_spans = _resolve_evidence_spans(
+        source_text=source_artifact.content_text or "",
+        evidence_spans=tuple(candidate.evidence_spans),
+    )
+
+    # Evidence grounding check: flag candidates where no spans resolved
+    attempted = len(candidate.evidence_spans)
+    resolved = len(resolved_spans)
+    if attempted > 0 and resolved == 0:
+        logger.warning(
+            "GROUNDING FAILURE: candidate predicate=%s has %d evidence spans "
+            "but none resolved against source text — possible hallucination",
+            candidate.predicate, attempted,
+        )
+        payload["_grounding_status"] = "ungrounded"
+    elif attempted > 0:
+        payload["_grounding_status"] = "grounded"
+        if resolved < attempted:
+            payload["_grounding_partial"] = True
+            logger.info(
+                "partial grounding: %d/%d evidence spans resolved for predicate=%s",
+                resolved, attempted, candidate.predicate,
+            )
+
     return CandidateAssertionImport(
         profile=profile,
         payload=payload,
         submitted_by=submitted_by,
         source_artifact=source_artifact,
-        evidence_spans=_resolve_evidence_spans(
-            source_text=source_artifact.content_text or "",
-            evidence_spans=tuple(candidate.evidence_spans),
-        ),
+        evidence_spans=resolved_spans,
         claim_text=claim_text if claim_text else None,
     )
 
