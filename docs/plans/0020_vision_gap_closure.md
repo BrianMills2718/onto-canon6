@@ -86,6 +86,21 @@ None — standalone. Improves extraction quality indirectly.
 ### Estimated Scope
 Small (1-2 sessions). One LLM batch pass + schema migration + test.
 
+### Status: ALREADY CLOSED (discovered 2026-03-26)
+
+All 4,669 predicate senses in sumo_plus.db already have human-readable names
+in the `name` column (e.g., `promote_raise_rank`, `build_construct`,
+`covet_wish_crave`). These are stored alongside PropBank IDs in the
+`propbank_sense_id` column. Pack-level predicates (oc:, dodaf:) also have
+human-readable IDs with `preferred_label` in predicate_types.jsonl.
+
+The PredicateCanon bridge exposes these names as `predicate_id` in
+`PredicateInfo` and `PredicateMatch` models. No additional LLM pass needed.
+
+Remaining consideration: the `is_static` flag and potential table rename
+(`event_types` → `predicates`) noted as uncertainties are already addressed —
+the table IS named `predicates` and the `is_static` column exists.
+
 ---
 
 ## Gap 2: Non-Military Domain Testing
