@@ -1,0 +1,14 @@
+{"child_id":"oc:person","parent_id":"oc:entity"}
+{"child_id":"oc:organization","parent_id":"oc:entity"}
+{"child_id":"oc:government_organization","parent_id":"oc:organization"}
+{"child_id":"oc:company","parent_id":"oc:organization"}
+{"child_id":"oc:institution","parent_id":"oc:organization"}
+{"child_id":"oc:legal_entity","parent_id":"oc:entity"}
+{"child_id":"oc:location","parent_id":"oc:entity"}
+{"child_id":"oc:event","parent_id":"oc:entity"}
+{"child_id":"oc:document","parent_id":"oc:entity"}
+{"child_id":"oc:financial_entity","parent_id":"oc:entity"}
+{"child_id":"oc:product","parent_id":"oc:entity"}
+{"child_id":"oc:concept","parent_id":"oc:entity"}
+{"child_id":"oc:role","parent_id":"oc:entity"}
+{"child_id":"oc:regulation","parent_id":"oc:entity"}

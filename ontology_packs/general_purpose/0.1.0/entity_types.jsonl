@@ -1,0 +1,15 @@
+{"type_id":"oc:entity","preferred_label":"Entity","category":"entity","status":"active"}
+{"type_id":"oc:person","preferred_label":"Person","category":"entity","status":"active"}
+{"type_id":"oc:organization","preferred_label":"Organization","category":"entity","status":"active"}
+{"type_id":"oc:government_organization","preferred_label":"Government Organization","category":"entity","status":"active"}
+{"type_id":"oc:company","preferred_label":"Company","category":"entity","status":"active"}
+{"type_id":"oc:legal_entity","preferred_label":"Legal Entity","category":"entity","status":"active"}
+{"type_id":"oc:location","preferred_label":"Location","category":"entity","status":"active"}
+{"type_id":"oc:event","preferred_label":"Event","category":"entity","status":"active"}
+{"type_id":"oc:document","preferred_label":"Document","category":"entity","status":"active"}
+{"type_id":"oc:financial_entity","preferred_label":"Financial Entity","category":"entity","status":"active"}
+{"type_id":"oc:product","preferred_label":"Product","category":"entity","status":"active"}
+{"type_id":"oc:concept","preferred_label":"Concept","category":"entity","status":"active"}
+{"type_id":"oc:role","preferred_label":"Role","category":"entity","status":"active"}
+{"type_id":"oc:institution","preferred_label":"Institution","category":"entity","status":"active"}
+{"type_id":"oc:regulation","preferred_label":"Regulation","category":"entity","status":"active"}

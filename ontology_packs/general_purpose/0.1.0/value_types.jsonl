@@ -1,0 +1,4 @@
+{"value_type_id":"gp.value_type.string","preferred_label":"String","category":"value","status":"active"}
+{"value_type_id":"gp.value_type.number","preferred_label":"Number","category":"value","status":"active"}
+{"value_type_id":"gp.value_type.date","preferred_label":"Date","category":"value","status":"active"}
+{"value_type_id":"gp.value_type.currency","preferred_label":"Currency Amount","category":"value","status":"active"}

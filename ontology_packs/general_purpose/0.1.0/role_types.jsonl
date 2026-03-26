@@ -1,0 +1,12 @@
+{"role_id":"gp.role.actor","runtime_name":"actor","preferred_label":"actor","status":"active"}
+{"role_id":"gp.role.target","runtime_name":"target","preferred_label":"target","status":"active"}
+{"role_id":"gp.role.subject","runtime_name":"subject","preferred_label":"subject","status":"active"}
+{"role_id":"gp.role.object","runtime_name":"object","preferred_label":"object","status":"active"}
+{"role_id":"gp.role.location","runtime_name":"location","preferred_label":"location","status":"active"}
+{"role_id":"gp.role.time","runtime_name":"time","preferred_label":"time","status":"active"}
+{"role_id":"gp.role.organization","runtime_name":"organization","preferred_label":"organization","status":"active"}
+{"role_id":"gp.role.role_title","runtime_name":"role_title","preferred_label":"role title","status":"active"}
+{"role_id":"gp.role.topic","runtime_name":"topic","preferred_label":"topic","status":"active"}
+{"role_id":"gp.role.speaker","runtime_name":"speaker","preferred_label":"speaker","status":"active"}
+{"role_id":"gp.role.regulator","runtime_name":"regulator","preferred_label":"regulator","status":"active"}
+{"role_id":"gp.role.regulated","runtime_name":"regulated","preferred_label":"regulated entity","status":"active"}

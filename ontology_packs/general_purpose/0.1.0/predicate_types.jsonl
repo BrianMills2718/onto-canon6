@@ -1,0 +1,10 @@
+{"predicate_id":"gp:asserts_relationship","family":"relation","preferred_label":"asserts relationship","description":"A general relationship between two or more entities.","status":"active"}
+{"predicate_id":"gp:holds_role","family":"state","preferred_label":"holds role","description":"A person holds a role within an organization.","status":"active"}
+{"predicate_id":"gp:belongs_to","family":"relation","preferred_label":"belongs to","description":"An entity belongs to or is part of another entity.","status":"active"}
+{"predicate_id":"gp:acts_on","family":"event","preferred_label":"acts on","description":"An actor performs an action on or against a target.","status":"active"}
+{"predicate_id":"gp:states_claim","family":"event","preferred_label":"states claim","description":"A speaker makes a statement or claim about a topic.","status":"active"}
+{"predicate_id":"gp:produces","family":"event","preferred_label":"produces","description":"An entity produces, creates, or generates something.","status":"active"}
+{"predicate_id":"gp:located_in","family":"relation","preferred_label":"located in","description":"An entity is located in a place.","status":"active"}
+{"predicate_id":"gp:occurs_at","family":"event","preferred_label":"occurs at","description":"An event occurs at a time or place.","status":"active"}
+{"predicate_id":"gp:transacts_with","family":"event","preferred_label":"transacts with","description":"An entity engages in a transaction with another.","status":"active"}
+{"predicate_id":"gp:regulates","family":"event","preferred_label":"regulates","description":"A regulatory body takes action regarding a regulated entity.","status":"active"}
