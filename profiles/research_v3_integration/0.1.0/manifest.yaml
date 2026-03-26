@@ -1,0 +1,21 @@
+profile:
+  id: research_v3_integration
+  version: "0.1.0"
+  name: "Research V3 Integration"
+  ontology_version: "general_purpose@0.1.0"
+  rule_version: "general_purpose_rules@0.1.0"
+
+ontology:
+  source: custom
+  mode: open
+  normalization_policy: conservative
+  proposal_policy: reject
+  pack_id: general_purpose
+  pack_version: "0.1.0"
+
+validation:
+  type_adapter: ontology_pack
+  type_check_policy: hierarchical
+
+ingestion:
+  allow_heuristic_default: true
