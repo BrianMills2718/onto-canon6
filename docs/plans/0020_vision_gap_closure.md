@@ -305,6 +305,25 @@ criteria from `ECOSYSTEM_STATUS.md`.
 Large (3-5 sessions). Entity mapping study + adapter code + conflict policy
 + integration test.
 
+### Status: COMPLETED (2026-03-26)
+
+Adapter implemented: `adapters/research_v3_import.py`
+Tested on real data: Booz Allen Hamilton lobbying investigation (48 claims).
+
+1. Entity mapping: FtM Person → oc:person, Company → oc:company,
+   PublicBody → oc:government_organization (15 schemas mapped)
+2. Claim translation: corroboration_status → confidence score.
+   corroborated=0.90, partially_corroborated=0.70, unverified=0.50.
+   Combined with confidence label (high/medium/low) via averaging.
+3. Provenance preserved: source URLs, retrieval timestamps, source_type
+   all stored in source_metadata
+4. 48 claims from real investigation → 48 CandidateAssertionImport objects
+5. Entity types in output: oc:company, oc:government_organization, oc:person
+
+Remaining: submit-progressive CLI integration to ingest imports into review DB.
+Conflict handling (contradicting assertions): deferred — needs Gap 3 entity
+resolution to detect cross-investigation entity overlap first.
+
 ---
 
 ## Gap 7: Epistemic Engine on Real Data
