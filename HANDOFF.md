@@ -56,7 +56,32 @@ switch to gemini-2.5-flash (stable). model_override wired into extraction
 service. Shared evidence span resolver built in llm_client. Makefile
 targets working: extract → candidates → accept → promote → summary.
 
-### 1. (NEW) Run e2e on longer documents and non-military text
+### 1. (NEW) Create clear plans for all 10 vision gaps
+
+Brian wants unambiguous plans for each gap between the vision and current
+state. Each plan must identify uncertainties explicitly, be consistent with
+`~/projects/.claude/CLAUDE.md`, and follow the principle: "document the full
+vision, design for it, defer implementation."
+
+Gap table to plan:
+
+| # | Gap | Current State | Uncertainties |
+|---|-----|---------------|---------------|
+| 1 | Human-readable predicate names | Not generated | LLM pass over 4,669 senses? Manual? |
+| 2 | Non-military domain testing | Only PSYOP text | Which domain? Financial? Academic? |
+| 3 | Automated entity resolution | Manual create-identity | What matching strategy? Name-only? Q-code? LLM? |
+| 4 | Temporal qualifiers | Deferred by ADR | When to un-defer? Which consumer needs them? |
+| 5 | Digimon real-data export test | Adapter exists, untested | Does Digimon's graph builder accept the format? |
+| 6 | research_v3 → onto-canon6 adapter | Not started | Entity mapping: FtM → SUMO compatible? |
+| 7 | Epistemic engine on real data | Built, untested | What triggers tension? What data has contradictions? |
+| 8 | Custom logic / ProbLog spike | Not started | ProbLog vs custom Datalog? Integration with SQLite facts? |
+| 9 | Second vocabulary (composability proof) | Designed, 1 vocab tested | Which vocabulary? DoDAF already has a minimal pack |
+| 10 | Autonomous operation (OpenClaw) | Not started | success-criteria.yaml format? What makes a "successful" extraction mission? |
+
+Each plan should go in `docs/plans/` following the meta-process plan template.
+Plans should be concrete enough for an agent to execute autonomously.
+
+### 2. Run e2e on longer documents and non-military text
 
 **Finding from e2e attempt (2026-03-25):**
 - `single_response_hardened` prompt → ALL models produce empty `roles: {}`
