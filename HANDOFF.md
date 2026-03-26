@@ -13,7 +13,7 @@
 | 2. Non-military domain testing | Closed | Financial + academic slices exercised |
 | 3. Automated entity resolution | Closed, narrow | Exact-name auto-resolution only |
 | 4. Temporal qualifiers | Closed | Extraction + Foundation IR export |
-| 5. DIGIMON export/import/query | Partially closed | Export, import, and operator query proven; non-unity weight semantics still open |
+| 5. DIGIMON export/import/query | Closed | Export, import, operator query, and non-unity weight semantics all proven |
 | 6. research_v3 adapter | Closed, adapter-level | `graph.yaml` import proven on real data |
 | 7. Epistemic engine on real data | Closed, narrow | Real-data tension/supersession proof exists |
 | 8. ProbLog spike | Closed, spike-level | Build-vs-buy answered: use ProbLog |

@@ -107,9 +107,12 @@ def export_for_digimon(
         all_entities = _list_all_entities(conn)
         entity_name_map = _build_entity_name_map(assertions)
         filler_map = _build_filler_map(conn, store, assertions)
+        epistemic_confidence = _load_epistemic_confidence(conn)
 
     digimon_entities = _convert_entities(all_entities, entity_name_map)
-    digimon_relationships = _convert_relationships(assertions, filler_map, entity_name_map)
+    digimon_relationships = _convert_relationships(
+        assertions, filler_map, entity_name_map, epistemic_confidence,
+    )
 
     bundle = DigimonExportBundle(
         entities=digimon_entities,
@@ -278,10 +281,26 @@ def _convert_entities(
     return result
 
 
+def _load_epistemic_confidence(conn: sqlite3.Connection) -> dict[str, float]:
+    """Load epistemic confidence scores keyed by candidate_id.
+
+    Returns an empty dict if the epistemic tables don't exist yet.
+    """
+    try:
+        rows = conn.execute(
+            "SELECT candidate_id, confidence_score "
+            "FROM epistemic_confidence_assessments"
+        ).fetchall()
+        return {str(row["candidate_id"]): float(row["confidence_score"]) for row in rows}
+    except Exception:
+        return {}
+
+
 def _convert_relationships(
     assertions: Sequence[PromotedGraphAssertionRecord],
     filler_map: dict[str, tuple[PromotedGraphRoleFillerRecord, ...]],
     name_map: dict[str, str],
+    epistemic_confidence: dict[str, float] | None = None,
 ) -> list[DigimonRelationshipRecord]:
     """Convert promoted assertions to Digimon relationship records.
 
@@ -317,8 +336,19 @@ def _convert_relationships(
         src_name = name_map.get(src_entity_id, src_entity_id) if src_entity_id else ""
         tgt_name = name_map.get(tgt_entity_id, tgt_entity_id) if tgt_entity_id else ""
 
-        confidence = assertion.normalized_body.get("confidence")
-        weight = float(confidence) if isinstance(confidence, (int, float)) else 1.0
+        # Prefer epistemic confidence (from epistemic_confidence_assessments table),
+        # fall back to payload confidence, default to 1.0
+        epistemic_conf = (
+            epistemic_confidence.get(assertion.source_candidate_id)
+            if epistemic_confidence else None
+        )
+        payload_conf = assertion.normalized_body.get("confidence")
+        if epistemic_conf is not None:
+            weight = float(epistemic_conf)
+        elif isinstance(payload_conf, (int, float)):
+            weight = float(payload_conf)
+        else:
+            weight = 1.0
 
         result.append(
             DigimonRelationshipRecord(
