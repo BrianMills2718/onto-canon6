@@ -69,6 +69,10 @@ config/
   Root cause of prior empty-roles failures: `gemini-3-flash-preview` regressed
   on structured output between 2026-03-21 and 2026-03-25. OpenRouter routing
   models (gpt-5.4-mini) also failed. Stable Gemini model works.
+- **Observability gap closed**: llm_client now stores the raw model response on
+  validation failure (not just the error message). Query with:
+  `SELECT response, error FROM llm_calls WHERE error IS NOT NULL AND task='fast_extraction'`
+  to diagnose whether the model or our processing caused failures.
 - **Shared evidence span resolver** in `llm_client/utils/evidence_spans.py`.
   Handles whitespace normalization, ambiguous matches (disambiguation via hints),
   markdown table formatting. Used by onto-canon6, available to all projects.
