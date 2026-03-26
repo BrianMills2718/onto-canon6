@@ -159,6 +159,19 @@ schema:  ## Print the extraction JSON schema
 	from onto_canon6.pipeline import TextExtractionResponse; \
 	print(json.dumps(TextExtractionResponse.model_json_schema(), indent=2))"
 
+# ─── Domain: Diagnostics ─────────────────────────────────────────────────────
+
+.PHONY: failures diagnose
+
+failures:  ## Show recent extraction failures with raw response + validation errors (DAYS=1)
+	@$(PYTHON) scripts/show_extraction_failures.py --days $(DAYS) --limit $(LIMIT)
+
+diagnose:  ## Diagnose a specific trace (TRACE= required)
+ifndef TRACE
+	$(error TRACE is required. Usage: make diagnose TRACE=extraction_abc123)
+endif
+	@$(PYTHON) scripts/show_extraction_failures.py --trace $(TRACE)
+
 # ─── Help ────────────────────────────────────────────────────────────────────
 
 .PHONY: help
