@@ -66,7 +66,7 @@ summary:  ## Quick extraction stats from review DB
 	accepted = conn.execute(\"SELECT COUNT(*) FROM candidate_assertions WHERE review_status='accepted'\").fetchone()[0]; \
 	rejected = conn.execute(\"SELECT COUNT(*) FROM candidate_assertions WHERE review_status='rejected'\").fetchone()[0]; \
 	pending = conn.execute(\"SELECT COUNT(*) FROM candidate_assertions WHERE review_status='pending_review'\").fetchone()[0]; \
-	promoted = conn.execute('SELECT COUNT(*) FROM promoted_assertions').fetchone()[0] if conn.execute(\"SELECT name FROM sqlite_master WHERE type='table' AND name='promoted_assertions'\").fetchone() else 0; \
+	promoted = conn.execute('SELECT COUNT(*) FROM promoted_graph_assertions').fetchone()[0] if conn.execute(\"SELECT name FROM sqlite_master WHERE type='table' AND name='promoted_graph_assertions'\").fetchone() else 0; \
 	print(f'Candidates: {total} (accepted={accepted}, rejected={rejected}, pending={pending})'); \
 	print(f'Promoted:   {promoted}'); \
 	rate = f'{100*accepted/total:.0f}%' if total else 'n/a'; \
@@ -98,7 +98,7 @@ endif
 candidates:  ## List pending candidates
 	@$(CLI) list-candidates \
 		--review-db-path $(DB_PATH) \
-		--filter-status pending_review \
+		--review-status pending_review \
 		--output $(OUTPUT)
 
 accept:  ## Accept a candidate (ID= required)
@@ -107,7 +107,7 @@ ifndef ID
 endif
 	@$(CLI) review-candidate \
 		--review-db-path $(DB_PATH) \
-		--candidate-id $(ID) --decision accept \
+		--candidate-id $(ID) --decision accepted \
 		--actor-id $(SUBMITTED_BY)
 
 reject:  ## Reject a candidate (ID= required)
@@ -116,7 +116,7 @@ ifndef ID
 endif
 	@$(CLI) review-candidate \
 		--review-db-path $(DB_PATH) \
-		--candidate-id $(ID) --decision reject \
+		--candidate-id $(ID) --decision rejected \
 		--actor-id $(SUBMITTED_BY)
 
 promote:  ## Promote accepted candidate to graph (ID= required)
@@ -125,7 +125,7 @@ ifndef ID
 endif
 	@$(CLI) promote-candidate \
 		--review-db-path $(DB_PATH) \
-		--candidate-id $(ID) --promoted-by $(SUBMITTED_BY)
+		--candidate-id $(ID) --actor-id $(SUBMITTED_BY)
 
 export:  ## Export governed bundle
 	@$(CLI) export-governed-bundle \
