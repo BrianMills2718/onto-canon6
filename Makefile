@@ -70,7 +70,7 @@ status:  ## Show git status
 
 # ─── Domain: Extraction ──────────────────────────────────────────────────────
 
-.PHONY: extract candidates accept reject promote export export-foundation
+.PHONY: extract candidates accept reject promote export export-foundation auto-resolve import-rv3 evaluate-rules
 
 extract:  ## Extract assertions from text (INPUT= required, GOAL= optional)
 ifndef INPUT
@@ -128,6 +128,29 @@ export-foundation:  ## Export as Foundation Assertion IR
 	import json; \
 	assertions = export_foundation_assertions('$(DB_PATH)'); \
 	print(json.dumps([a.model_dump(exclude_none=True) for a in assertions], indent=2))"
+
+auto-resolve:  ## Run automated entity resolution on promoted entities
+	@$(CLI) auto-resolve-identities \
+		--review-db-path $(DB_PATH) \
+		--output $(OUTPUT)
+
+import-rv3:  ## Import research_v3 graph.yaml (INPUT= required)
+ifndef INPUT
+	$(error INPUT is required. Usage: make import-rv3 INPUT=path/to/graph.yaml)
+endif
+	@$(CLI) import-research-v3 \
+		--input $(INPUT) \
+		--review-db-path $(DB_PATH) --overlay-root $(OVERLAY_ROOT) \
+		--output $(OUTPUT)
+
+evaluate-rules:  ## Evaluate ProbLog rules (RULES= required)
+ifndef RULES
+	$(error RULES is required. Usage: make evaluate-rules RULES=path/to/rules.pl)
+endif
+	@$(CLI) evaluate-rules \
+		--review-db-path $(DB_PATH) \
+		--rules-file $(RULES) \
+		--output $(OUTPUT)
 
 # ─── Domain: Experiment ──────────────────────────────────────────────────────
 
