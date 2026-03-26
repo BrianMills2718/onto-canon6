@@ -1,87 +1,59 @@
 # Handoff: onto-canon6
 
 **Date**: 2026-03-26
-**From**: Claude Code (Phase 2 — hardening, integration, quality)
-**Session**: 12 Phase 2 commits on top of 12 Phase 1 commits (24 total this day)
+**Scope**: documentation/status cleanup, Gap 5 DIGIMON validation, dependency install
 
----
+## What Is Actually Proven
 
-## What This Session Delivered
+### Plan 0020 status
 
-### Phase 1: All 10 Vision Gaps Closed (Plan 0020)
+| Gap | Status | Notes |
+|---|---|---|
+| 1. Predicate names | Closed | Already existed in `sumo_plus.db` |
+| 2. Non-military domain testing | Closed | Financial + academic slices exercised |
+| 3. Automated entity resolution | Closed, narrow | Exact-name auto-resolution only |
+| 4. Temporal qualifiers | Closed | Extraction + Foundation IR export |
+| 5. DIGIMON export/import/query | Partially closed | Export, import, and operator query proven; non-unity weight semantics still open |
+| 6. research_v3 adapter | Closed, adapter-level | `graph.yaml` import proven on real data |
+| 7. Epistemic engine on real data | Closed, narrow | Real-data tension/supersession proof exists |
+| 8. ProbLog spike | Closed, spike-level | Build-vs-buy answered: use ProbLog |
+| 9. Second vocabulary | Closed | `dodaf_minimal` exercised through E2E extraction |
+| 10. OpenClaw autonomous operation | Partially closed | Repo-local spec exists; runtime proof still missing |
 
-| Gap | Status | Key Result |
-|-----|--------|------------|
-| 1. Predicate names | ALREADY CLOSED | 4,669 names exist in sumo_plus.db |
-| 2. Non-military domain | COMPLETED | Financial + academic text: 82% structural validity |
-| 3. Entity resolution | COMPLETED | auto_resolution.py: exact name match, USSOCOM merged |
-| 4. Temporal qualifiers | COMPLETED | valid_from/valid_to in extraction + Foundation IR |
-| 5. Digimon export | COMPLETED | 19 merged nodes, 16 edges in GraphML |
-| 6. research_v3 adapter | COMPLETED | FtM mapping (15 schemas), 48 claims imported |
-| 7. Epistemic on data | COMPLETED | 16 scored, 1 supersession, 19 tensions |
-| 8. ProbLog spike | COMPLETED | 45 derived facts, decision: use ProbLog |
-| 9. Second vocabulary | COMPLETED | dodaf_minimal: 7 candidates, 100% validation |
-| 10. Autonomous ops | COMPLETED | .openclaw/ success-criteria + mission-spec |
+### Real DIGIMON proof completed this session
 
-### Phase 2: Hardening and Integration
+- Missing DIGIMON runtime deps were installed in the project venv (`igraph`, `rapidfuzz`, `loguru`, `unidecode`).
+- Real promoted assertions were exported from `var/e2e_test_2026_03_25/review_combined.sqlite3`.
+- Export result: `20` entity rows, `16` relationship rows.
+- DIGIMON import result: `results/onto_canon_e2e_20260325/er_graph/nx_data.graphml` with `19` merged nodes and `16` edges.
+- DIGIMON runtime proof: `relationship.onehop` over seed `USSOCOM` returned the expected neighborhood, including the commanders and PSYOP-connected units.
 
-| Task | Status | Key Result |
-|------|--------|------------|
-| Tests: auto_resolution | COMPLETED | 13 tests (merge, idempotent, case-insensitive) |
-| Tests: research_v3_import | COMPLETED | 21 tests (mapping, confidence, provenance) |
-| Tests: temporal qualifiers | COMPLETED | 7 tests (model, Foundation IR export) |
-| CLI: import-research-v3 | COMPLETED | 48 claims from real investigation → review DB |
-| CLI: evaluate-rules | COMPLETED | ProbLog over DB: 16 facts → 45 derived |
-| General-purpose pack | COMPLETED | 15 entity types, 10 predicates, open profile |
-| make summary + identity | COMPLETED | Identity and epistemic stats in summary |
-| Non-military benchmark | COMPLETED | 6 cases across 2 domains |
-| E2E integration test | COMPLETED | 3 tests: Digimon, research_v3, Foundation IR |
-| Foundation export bugfix | COMPLETED | Missing db_path and row_factory fixed |
+## Key Context For The Next Agent
 
----
+- `model_override` in config is `gemini/gemini-2.5-flash`. This is the working model. `gemini-3-flash-preview` regressed.
+- Evidence span resolution is intentionally `strict=False`; bad spans are skipped, not fatal.
+- The Makefile path is real and useful: `make extract`, `make candidates`, `make accept`, `make promote`, `make summary`, `make failures`, `make diagnose`.
+- `llm_client` `main` now has the observability columns `schema_hash`, `response_format_type`, and `validation_errors`.
+- Pre-commit hook bugs:
+  - `MP-026`: `project-meta` `validate_plan.py`
+  - `MP-027`: `llm_client`, fixed earlier in this session lineage
 
-## New Code
+## What Was Corrected In Docs
 
-| Path | What |
-|------|------|
-| `src/onto_canon6/core/auto_resolution.py` | Automated entity resolution |
-| `src/onto_canon6/adapters/research_v3_import.py` | research_v3 graph.yaml adapter |
-| `src/onto_canon6/extensions/problog_adapter.py` | ProbLog fact-store adapter |
-| `ontology_packs/general_purpose/0.1.0/` | General-purpose ontology pack |
-| `profiles/general_purpose_open/0.1.0/` | Open profile for general extraction |
-| `.openclaw/` | OpenClaw success criteria + mission spec |
-| `scripts/show_summary.py` | Enhanced summary with identity/epistemic stats |
-| `scripts/e2e_integration_test.py` | E2E consumer integration tests |
-| `tests/core/test_auto_resolution.py` | 13 tests |
-| `tests/adapters/test_research_v3_import.py` | 21 tests |
-| `tests/pipeline/test_temporal_qualifiers.py` | 7 tests |
-| `tests/fixtures/nonmilitary_eval_slice.json` | 6-case benchmark fixture |
+- `README.md` now points to Plans `0014`, `0019`, and `0020` as the active plan surface, and treats `0001` as historical bootstrap record.
+- `docs/SUCCESSOR_CHARTER.md` now distinguishes the historical roadmap from the active gap-closure plan.
+- `docs/plans/0001_successor_roadmap.md` is marked as a completed historical baseline rather than an active plan.
+- `docs/STATUS.md` no longer claims that OpenClaw runtime proof and full consumer-side adoption are already complete.
+- `docs/plans/0020_vision_gap_closure.md` now marks Gap 5 and Gap 10 as partial rather than fully closed.
+- `CLAUDE.md` and `AGENTS.md` no longer say "all 10 vision gaps are closed."
 
-## CLI Commands Added
+## Highest-Value Next Steps
 
-| Command | Purpose |
-|---------|---------|
-| `auto-resolve-identities` | Group entities by name match |
-| `import-research-v3` | Import graph.yaml claims to review pipeline |
-| `evaluate-rules` | Evaluate ProbLog rules over promoted assertions |
-
----
-
-## Environment
-
-- Model: `gemini/gemini-2.5-flash` (stable, used for all extractions)
-- ProbLog: installed in shared venv
-- All tests pass (~300+ tests)
-- E2E integration test passes (3/3)
-
-## Next Steps
-
-1. **Rebuild experiment variants from operational prompt** — the operational
-   prompt works (proven in Gaps 2/4/9). Experiment variants are broken (25%
-   success). Rebuild them from text_to_candidate_assertions.yaml, not separately.
-2. **Switch to direct API calls** — 55% timeout rate via OpenRouter. Direct
-   Gemini API should be more reliable.
-3. **Fuzzy entity resolution** — extend auto_resolution with Levenshtein/embedding
-   matching ("4th PSYOP Group" vs "4th POG(A)")
-4. **ProbLog rule library** — define reusable rules for common inference patterns
-5. **Digimon operator exercise** — install igraph/rapidfuzz in Digimon venv
+1. Prove consumer-side adoption, not just repo-local adapters:
+   `research_v3 -> onto-canon6` from the consumer side, and a DIGIMON-side runbook or command path that uses the imported graph in normal workflow.
+2. Prove Gap 10 for real:
+   run OpenClaw against onto-canon6 and show that repo-local `.openclaw` contracts are actually consumed by the mission runner.
+3. Close the last Gap 5 semantic question:
+   validate DIGIMON weight handling on a non-unity-confidence slice.
+4. Upgrade entity resolution from exact-match only:
+   use `rapidfuzz` rather than hand-rolling fuzzy matching.

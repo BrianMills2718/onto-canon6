@@ -1,6 +1,6 @@
 # onto-canon6 Successor Charter
 
-Updated: 2026-03-21
+Updated: 2026-03-26
 
 ## Purpose
 
@@ -16,9 +16,10 @@ It exists to keep the project from repeating the drift that happened across
 5. what now counts as drift.
 
 This charter summarizes the accepted ADR direction. The detailed supporting ADR
-record still exists in `onto-canon5/docs/adr/` and the active implementation
-plan lives in this repo's roadmap, the explicit v1 capability parity matrix,
-and the post-bootstrap extraction workstream docs.
+record still exists in `onto-canon5/docs/adr/`. The bootstrap implementation
+record lives in this repo's roadmap, the long-term capability ledger lives in
+the parity matrix, and the active post-bootstrap closure work lives in the
+vision-gap and extraction workstream plans.
 
 ## The Successor Goal
 
@@ -256,7 +257,7 @@ vision of what the system should eventually become.
 ### Authoritative Documents
 
 The roadmap in `docs/plans/0001_successor_roadmap.md` is the authoritative
-phase document for:
+historical bootstrap phase document for:
 
 1. build items;
 2. success criteria;
@@ -272,17 +273,24 @@ authoritative capability ledger for:
 4. which capabilities beyond v1 are part of the long-term vision;
 5. what uncertainties remain for each deferred capability.
 
+The active post-bootstrap closure plan is
+`docs/plans/0020_vision_gap_closure.md`. It is the authoritative tracking
+document for ecosystem-vision gaps, current closure state, and remaining proof
+requirements that sit beyond the Phase 0-15 bootstrap.
+
 ### Post-Bootstrap Extraction Workstream
 
 The currently active extraction-focused work is **not** a silent Phase 16+
 extension of the successor roadmap.
 
-Instead, the repo now treats it as one explicit post-bootstrap R&D workstream:
+Instead, the repo now treats it as explicit post-bootstrap workstreams:
 
 1. `docs/plans/0014_extraction_quality_baseline.md`
-2. `docs/plans/0016_permissive_extraction_implementation.md`
-3. `docs/plans/0017_ancestor_aware_evaluator_and_fidelity_experiments.md`
-4. `docs/plans/0018_progressive_disclosure_extraction_design.md`
+2. `docs/plans/0019_chunk_level_transfer_evaluation.md`
+3. `docs/plans/0020_vision_gap_closure.md`
+
+Plans 0016-0018 remain important historical design records for the extraction
+workstream, but they are no longer the shortest path to current status.
 
 Its governing ADRs are 0017 through 0022.
 

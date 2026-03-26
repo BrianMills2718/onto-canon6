@@ -5,11 +5,11 @@
 Phases 0-15 completed the bootstrap roadmap, not the full successor-parity goal.
 The explicit parity ledger now lives in `docs/plans/0005_v1_capability_parity_matrix.md`.
 Two real non-fixture runs completed (PSYOP Stage 1 + Shield AI WhyGame).
-Post-bootstrap work is now active in one explicit extraction R&D workstream,
-not a hidden Phase 16+ chain. That workstream is tracked by ADRs 0017-0023 and
-Plans 0014-0019. The canonical successor-core story still
-ends at Phase 15, and the canonical notebook journey stays conservative until
-the extraction work stabilizes more.
+Post-bootstrap work is now active in explicit extraction-quality and
+gap-closure workstreams, not a hidden Phase 16+ chain. The active plan surface
+is Plans 0014, 0019, and 0020. The canonical successor-core story still ends
+at Phase 15, and the canonical notebook journey stays conservative until the
+post-bootstrap work stabilizes more.
 
 This repo starts from the first proved slice instead of trying to port an
 entire prior runtime. The current scope is intentionally narrow:
@@ -63,13 +63,13 @@ High-signal reading order:
 
 - `docs/SUCCESSOR_CHARTER.md`
 - `docs/STATUS.md`
-- `docs/plans/0001_successor_roadmap.md`
 - `docs/plans/0005_v1_capability_parity_matrix.md`
+- `docs/plans/0020_vision_gap_closure.md`
+- `docs/plans/0001_successor_roadmap.md` (historical bootstrap baseline)
 - `docs/plans/0013_llm_observability_and_prompt_eval_adoption.md`
 - `docs/plans/0014_extraction_quality_baseline.md`
-- `docs/plans/0016_permissive_extraction_implementation.md`
-- `docs/plans/0017_ancestor_aware_evaluator_and_fidelity_experiments.md`
-- `docs/plans/0018_progressive_disclosure_extraction_design.md`
+- `docs/plans/0019_chunk_level_transfer_evaluation.md`
+- `docs/AUDIT_2026_03_26.md`
 - `docs/EXTRACTION_EXPERIMENT_RUNBOOK.md`
 - `notebooks/README.md`
 - `notebooks/notebook_registry.yaml`
@@ -139,9 +139,10 @@ Not in scope yet:
 - broader producer-side semantic adapters beyond the first pack-driven
   canonicalization replacement slice
 - domain-specific query helpers
-- richer external producer integrations
+- richer external producer integrations beyond the proved research_v3 and
+  DIGIMON bridges
 - broader MCP surface expansion
-- DIGIMON recovery
+- consumer-side adoption of the proved DIGIMON and research_v3 integrations
 - temporal/inference recovery beyond the explicit Phase 15 deferral
 
 ## Layout

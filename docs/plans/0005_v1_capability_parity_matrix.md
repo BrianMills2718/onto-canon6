@@ -72,10 +72,12 @@ They must be revisited when the relevant capability moves from deferred to activ
    cross-consumer entity resolution exists by default. Undecided: should there
    be a default strategy?
 
-3. **Where extraction eventually lives.** CLAUDE.md and ECOSYSTEM_STATUS.md say
-   extraction "will move out" of onto-canon6 once stabilized. No destination
-   is named. No trigger condition is defined. This should be resolved before
-   extraction is treated as a separate project.
+3. **Extraction packaging boundary.** The current extraction pipeline lives in
+   onto-canon6 and is an active, first-class producer. No move is planned
+   until a concrete shared producer boundary exists and a real consumer or
+   maintenance burden justifies the split. If extraction ever moves, the target
+   package and trigger condition should be decided explicitly rather than
+   implied.
 
 4. **DIGIMON weight semantics.** The export adapter maps onto-canon6
    confidence (0-1 probability) directly to DIGIMON edge weight. Default

@@ -1,7 +1,7 @@
 # onto-canon6 Successor Roadmap
 
-Status: Active  
-Updated: 2026-03-21
+Status: Completed (historical bootstrap baseline)
+Updated: 2026-03-26
 
 ## Purpose
 
@@ -19,9 +19,9 @@ The canonical end-to-end workflow notebook now lives in
 `notebooks/00_master_governed_text_to_reviewed_assertions.ipynb`, with phase
 contracts kept in `notebooks/notebook_registry.yaml`.
 
-Phases 0-15 remain the canonical successor-core roadmap. The newer
-extraction-focused work under Plans 0014, 0016, 0017, and 0018 is tracked as a
-post-bootstrap R&D workstream, not as a silent Phase 16+ extension.
+Phases 0-15 remain the canonical successor-core roadmap. Active post-bootstrap
+work now lives outside this historical roadmap in Plans 0014, 0019, and 0020,
+not as a silent Phase 16+ extension.
 
 ## Phase Exit Rule
 

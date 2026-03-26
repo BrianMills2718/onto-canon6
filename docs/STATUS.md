@@ -226,7 +226,7 @@ Planning companion:
 75. baseline comparison script proves governance layer value (bare SPO-triple
     extraction: 43% entity coverage, no discrimination, fragmented triples);
 76. model_override config for pinning specific models (currently
-    openrouter/openai/gpt-5.4-mini);
+    `gemini/gemini-2.5-flash` after `gemini-3-flash-preview` regressed);
 77. single_response_hardened promoted as operational prompt (4/4 structural
     on gpt-5.4-mini, 0 errors);
 78. composability principle documented: vocabulary, extensions, extraction
@@ -245,10 +245,11 @@ Planning companion:
     fields in extraction, payload storage, and Foundation IR export
     (`sys:valid_from`, `sys:valid_to`). Proven: SEC complaint 2023-06-05,
     Zhao tenure end 2023-11 (Plan 0020 Gap 4);
-83. Digimon real-data export: 20 entities + 16 relationships from e2e test
-    DB exported as JSONL and ingested into Digimon GraphML (19 merged nodes,
-    USSOCOM deduplicated). Graph queries return correct USSOCOM command
-    structure (Plan 0020 Gap 5);
+83. DIGIMON real-data export and query-path proof: 20 entities + 16
+    relationships from the e2e test DB exported as JSONL, imported into
+    DIGIMON GraphML (19 merged nodes, USSOCOM deduplicated), and queried
+    through DIGIMON's `relationship.onehop` operator to recover the expected
+    USSOCOM command neighborhood (Plan 0020 Gap 5);
 84. research_v3 import adapter: FtM entity types mapped to onto-canon6 types
     (15 schemas), corroboration status to confidence scores. 48 claims from
     real Booz Allen lobbying investigation imported into review pipeline
@@ -260,19 +261,21 @@ Planning companion:
 86. ProbLog rule evaluation: 16 facts from onto-canon6 SQLite → 45 derived
     facts with probability propagation. Product semantics: P(authority_over)
     = P(commands) × P(belongs_to). Decision: use ProbLog (Plan 0020 Gap 8);
-87. OpenClaw mission specification: `.openclaw/success-criteria.yaml` with
-    measurable criteria (structural validity >= 70%, min 1 candidate),
-    `.openclaw/mission-spec.yaml` with Makefile execution interface and
-    data quality review gate (Plan 0020 Gap 10);
+87. repo-local OpenClaw mission artifacts drafted: `.openclaw/success-criteria.yaml`
+    with measurable criteria and `.openclaw/mission-spec.yaml` with a
+    Makefile-oriented execution contract. This proves the repo-side
+    specification exists, not yet that the OpenClaw runner consumes it
+    correctly (Plan 0020 Gap 10);
 88. general-purpose ontology pack: 15 entity types (person, organization,
     company, government_org, legal_entity, location, event, etc.) and 10
     generic predicates with open profile (general_purpose_open);
 89. enhanced observability: `make summary` reports identity resolution stats
     (total, multi-member, auto-resolved) and epistemic stats (confidence
     scores, averages);
-90. E2E consumer integration test: extraction → auto-resolve → Digimon
-    export, research_v3 → import → review pipeline, Foundation IR export —
-    all 3 paths proven on real data.
+90. consumer-path building blocks proven separately: extraction → review →
+    promotion → DIGIMON export/import/query; research_v3 graph.yaml →
+    onto-canon6 candidate import; Foundation IR export over promoted
+    assertions. Full consumer-side adoption is still pending.
 
 ## What Is Not Proven Yet
 
@@ -281,17 +284,21 @@ Still missing:
 1. extraction quality improvement — API reliability (55% timeout rate in
    experiment) and empty-roles issue are the primary bottlenecks, not prompt
    quality. Operational prompt works; experiment variants need rework;
-2. end-to-end flow: text → onto-canon6 → query results (never run);
-3. entity resolution across 2+ extraction runs (identity subsystem exists,
-   never tested on multi-run scenario);
-4. conflict detection on real data (epistemic engine has supersession/tension,
-   never tested cross-investigation);
+2. one-command consumer-side adoption flow; the stitched proof exists, but no
+   consumer currently runs the full path as part of its own normal workflow;
+3. entity resolution across 2+ independent extraction runs with fuzzy or
+   external-reference strategies; exact-name auto-resolution is proven, broader
+   resolution is not;
+4. cross-investigation conflict detection on real data; single-run tension
+   detection is proven, but contradiction policy across multiple investigations
+   is not;
 5. broader benchmark coverage beyond 17 PSYOP military cases;
 6. the broader v1 concept/belief graph and system-belief layer beyond the
    first promoted-assertion/entity slice;
 7. broader producer-side semantic adapters beyond pack-driven canonicalization;
 8. any richer interactive surface beyond the thin MCP slice;
-9. temporal/inference recovery (deferred by ADR).
+9. OpenClaw mission-runner consumption of repo-local `.openclaw` contracts;
+10. temporal/inference recovery (deferred by ADR).
 
 ## Current Donor Dependencies
 

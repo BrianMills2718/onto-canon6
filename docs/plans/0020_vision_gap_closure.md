@@ -2,7 +2,7 @@
 
 Status: active
 
-Last updated: 2026-03-25
+Last updated: 2026-03-26
 Workstream: post-bootstrap capability completion
 
 ## Purpose
@@ -15,6 +15,10 @@ vision-driven (per CLAUDE.md principles).
 This is a tracking plan, not a phase. Individual gaps may be promoted to their
 own plans if scope warrants it. Gaps are ordered by dependency, not priority.
 
+Unless a gap section has been fully rewritten, the `Current State` subsection
+captures the baseline state at the moment the gap was opened. The per-gap
+`Status` block is authoritative for present closure state.
+
 ## Review Notes (2026-03-26)
 
 Reviewed for completeness and consistency with ecosystem vision
@@ -22,10 +26,12 @@ Reviewed for completeness and consistency with ecosystem vision
 
 ### Inline Corrections (applied to gap text above)
 
-1. **Gap 5 import contract.** onto-canon6 adapter could export JSONL, but
-   DIGIMON did not expose a surfaced importer. Thin importer now exists in
-   `Digimon_for_KG_application/Core/Interop/onto_canon_import.py`. Materializes
-   real export into DIGIMON GraphML. Operator-level runtime exercise pending.
+1. **Gap 5 import contract.** onto-canon6 adapter exports JSONL and DIGIMON now
+   exposes a surfaced importer in
+   `Digimon_for_KG_application/Core/Interop/onto_canon_import.py`. Real export
+   materializes into DIGIMON GraphML and is queryable through DIGIMON's
+   operator/runtime path. Remaining open item is weight semantics on a
+   non-unity-confidence slice.
 2. **Gap 6 framing.** Should target Foundation Assertion IR, not just pairwise
    adapter. `ECOSYSTEM_STATUS.md` calls out schema stabilization as prerequisite.
 3. **Gap 8 placement resolved.** `FRAMEWORK.md` places rule engine in Operations
@@ -239,7 +245,10 @@ Real promoted assertions were exported on 2026-03-26 from
 `var/e2e_test_2026_03_25/review_combined.sqlite3` (20 exported entity rows,
 16 relationship rows). DIGIMON now has a thin JSONL importer that materializes
 that export into native GraphML (19 nodes after merging duplicate `USSOCOM`
-names, 16 edges). Full DIGIMON runtime/operator exercise remains pending.
+names, 16 edges). DIGIMON's runtime/operator path is also proven on this
+artifact: `relationship.onehop` returns the expected USSOCOM commanders and
+subordinate-unit neighborhood. Weight/confidence validation remains incomplete
+because this slice only exports unit-confidence edges.
 
 ### Acceptance Criteria
 1. Export promoted assertions from e2e test DB as Digimon JSONL
@@ -262,20 +271,35 @@ names, 16 edges). Full DIGIMON runtime/operator exercise remains pending.
   retrieval use cases?
 
 ### Dependencies
-E2E pipeline must produce promoted assertions (done). Digimon must be
-runnable (check current state). Operator-level validation depends on a DIGIMON
-runtime environment with the needed optional dependencies.
+E2E pipeline must produce promoted assertions (done). DIGIMON must be
+runnable with its optional graph/runtime dependencies installed. Non-unity
+confidence validation depends on a real or synthetic slice with varied
+assertion confidence values.
 
 ### Estimated Scope
 Small (1 session). Run export, attempt Digimon ingestion, fix any format
 issues.
+
+### Status: PARTIALLY COMPLETED (2026-03-26)
+
+Acceptance criteria 1-3 are met:
+1. Real promoted assertions exported from the e2e review DB
+2. DIGIMON importer materialized the export into GraphML
+3. DIGIMON operator query recovered the expected USSOCOM neighborhood
+
+Acceptance criterion 4 remains open:
+4. Weight/confidence semantics are not fully validated on a non-unity slice
 
 ---
 
 ## Gap 6: research_v3 → onto-canon6 Adapter
 
 ### Current State
-No adapter exists. Convergence plan archived at
+An onto-canon6-side adapter now exists in
+`src/onto_canon6/adapters/research_v3_import.py` and is proven at the
+import-contract level on a real `graph.yaml` investigation export. Remaining
+work is consumer-side adoption, conflict-policy hardening, and longer-term
+Foundation/schema alignment. Earlier convergence planning is archived at
 `project-meta/vision/archive/2026-03-22/ONTO_CANON_RESEARCH_V3_CONVERGENCE.md`.
 
 ### Acceptance Criteria
@@ -462,8 +486,12 @@ All acceptance criteria met:
 ## Gap 10: Autonomous Operation (OpenClaw)
 
 ### Current State
-Not started. onto-canon6 has CLI and Makefile but no
-`.openclaw/success-criteria.yaml` or mission spec.
+Repo-local `.openclaw/success-criteria.yaml` and `.openclaw/mission-spec.yaml`
+now exist, but OpenClaw runtime consumption is not yet proven. The
+`project-meta/ops/openclaw/README.md` documents auto-loading
+`.openclaw/success-criteria.yaml`, but `project-meta/ops/openclaw/run_task.py`
+does not yet reference these files directly. This gap is therefore at the
+specification stage, not the execution-proof stage.
 
 ### Acceptance Criteria
 1. `.openclaw/success-criteria.yaml` exists with measurable criteria
@@ -488,27 +516,17 @@ E2E pipeline must work (done). Mission runner must be operational
 ### Estimated Scope
 Medium (2 sessions). Success criteria + mission spec + test run.
 
-### Status: COMPLETED (2026-03-26)
+### Status: PARTIALLY COMPLETED (2026-03-26)
 
-Created `.openclaw/success-criteria.yaml` and `.openclaw/mission-spec.yaml`:
+Acceptance criteria 1-2 are met at the specification level:
+1. `.openclaw/success-criteria.yaml` exists with measurable criteria
+2. `.openclaw/mission-spec.yaml` defines a concrete extraction mission
 
-1. success-criteria.yaml defines measurable criteria:
-   - structural_validity >= 70% (candidates with 0 hard errors)
-   - minimum_candidates >= 1
-   - entity_type_coverage >= 50%
-2. mission-spec.yaml defines concrete extraction mission:
-   - input_pattern, goal, profile, model
-   - Uses Makefile targets as execution interface
-   - Post-extract: candidates + summary
-3. Review gate evaluates extraction results (not code):
-   - Reads `make summary` output for acceptance rates
-   - Reads `make failures` for extraction errors
-   - Pass criteria: at least 1 candidate, >= 70% structural validity
-4. Cost control: /bin/bash.50 per mission, max 2 retries, abort on repeated failure
-
-Design decision: review gate is structured_output_check (not LLM-judge)
-to keep autonomous operation deterministic and cheap. LLM-judge can be
-added as a secondary gate later.
+Acceptance criteria 3-4 remain open:
+3. OpenClaw has not yet been shown launching an onto-canon6 extraction mission
+   that consumes these repo-local contracts end to end
+4. The review gate design is documented, but not yet proven in the mission
+   runner against extraction-result artifacts
 
 ---
 

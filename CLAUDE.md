@@ -50,8 +50,9 @@ config/
   classification, chunk-level transfer evaluation).
 - Predicate Canon bridge, ancestor-aware evaluator, and Digimon export
   adapter operational.
-- **Active work**: chunk-level transfer evaluation (Plan 0019), extraction
-  quality Phase B (Plan 0014).
+- **Active work**: extraction quality hardening (Plan 0014), chunk-level
+  transfer evaluation (Plan 0019), and vision-gap closure / consumer adoption
+  hardening (Plan 0020).
 
 ## Strategic Direction (2026-03-23)
 
@@ -78,10 +79,10 @@ config/
   markdown table formatting. Used by onto-canon6, available to all projects.
 - **No LLM provider enforces value-level JSON Schema constraints** (minProperties,
   minLength, pattern, minimum) at decode time. Only structural constraints (type,
-  required, enum) are enforced. Fix applied to llm_client:
-  `litellm.enable_json_schema_validation = True` + `JSONSchemaValidationError`
-  retryable + repair prompt on retry. Changes pending commit (hook issue in
-  llm_client, see llm_client/BACKLOG.md).
+  required, enum) are enforced. llm_client now has post-generation validation
+  and observability columns for `schema_hash`, `response_format_type`, and
+  `validation_errors`; the current repo should assume those fields exist on
+  llm_client `main`.
 - **extraction_goal is now required** — every run must specify what assertions
   are relevant. Broad default: "Extract all factual assertions directly supported
   by the source text." Narrow goals (e.g., "extract organizational command
@@ -97,17 +98,18 @@ config/
 - **Benchmark against a simple baseline** — compare progressive extraction vs
   bare "extract SPO triples" prompt on same corpus to prove governance value.
 - **Integration adapters are built and proven** — research_v3 import (48 claims),
-  Digimon export (19 nodes), Foundation IR (16 assertions). Next step is
-  consumer-side adoption, not more adapter work.
+  Digimon export/import/query (19 merged nodes, operator query proven), and
+  Foundation IR (16 assertions). Next step is consumer-side adoption and
+  long-tail hardening, not more net-new adapter surfaces.
 - **No more phases/ADRs/subsystems** unless justified by extraction quality
     friction or consumer integration needs. The 15-phase bootstrap is done.
     The parity matrix is the capability vision ledger — all planned capabilities
     must be documented there, even if deferred. Uncertainties must be explicit.
 - **Foundation Assertion IR adapter operational** (`adapters/foundation_assertion_export.py`).
-  Entity alias_ids wired from identity subsystem. Remaining gaps: temporal
-  qualifiers (deferred by ADR), confidence (epistemic extension optional kwarg),
-  provenance_refs (wrapper adds Foundation envelope — decision: onto-canon6 does
-  NOT adopt Foundation event log internally).
+  Entity alias_ids and temporal qualifiers are wired from the promoted-graph /
+  identity stack. Remaining alignment work is mainly confidence semantics and
+  provenance envelope shape; onto-canon6 does NOT adopt the Foundation event log
+  internally.
 - **Baseline comparison done**: bare SPO-triple extraction (no ontology) gets 43%
   entity coverage with free-form predicates, no discrimination, and fragmented
   triples. Confirms governance layer adds: ontology alignment, discrimination,
@@ -192,8 +194,11 @@ happens.
 ## Continuous Execution Mandate (2026-03-26)
 
 **DO NOT STOP.** This project is in continuous autonomous execution.
-All 10 vision gaps (Plan 0020) are closed. Phase 2 focuses on hardening,
-integration, and extraction quality. The agent must:
+Plan 0020 is in late-stage verification, not unconditional closure. Several
+gaps now have real proofs, but the remaining open items include Gap 5
+confidence/weight semantics on a non-unity slice, full consumer-side adoption,
+and Gap 10 OpenClaw runtime proof. Phase 2 focuses on hardening, integration,
+and extraction quality. The agent must:
 
 1. **Never pause to ask** — log uncertainties and continue.
 2. **Commit at every milestone** — each completed task gets its own commit.
@@ -209,14 +214,12 @@ integration, and extraction quality. The agent must:
 
 | Phase | Work | Notes |
 |-------|------|-------|
-| 2a | Tests for auto_resolution, research_v3_import, temporal qualifiers | No new code without tests |
-| 2b | research_v3 CLI integration, general-purpose pack | Wire adapters into pipeline |
-| 2c | ProbLog fact-store adapter + CLI | Move spike to production |
-| 2d | Extraction quality experiment | #1 bottleneck, use prompt_eval |
-| 2e | Non-military benchmark fixture | Reusable domain test cases |
-| 2f | Identity stats in make summary | Observability |
-| 2g | E2E consumer integration test | Prove full pipeline flows |
-| 2h | Final: tests, docs, commit | Cleanup |
+| 2a | Consumer-side adoption proof | Prove research_v3 and DIGIMON are used from the consumer side, not only by repo-local adapters |
+| 2b | OpenClaw runtime proof | Prove the runner actually consumes repo-local success criteria and mission specs |
+| 2c | Extraction quality experiment | #1 bottleneck, use prompt_eval |
+| 2d | Non-military benchmark growth | Reusable domain test cases beyond the first slice |
+| 2e | Fuzzy identity resolution | Extend exact-match auto resolution with a real library-backed strategy |
+| 2f | Final: tests, docs, commit | Cleanup |
 
 ### Known Environment Facts
 
