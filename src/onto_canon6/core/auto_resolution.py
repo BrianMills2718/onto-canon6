@@ -1,13 +1,12 @@
 """Automated entity resolution over promoted graph entities.
 
 Groups promoted entities by matching display names and creates stable
-identities for each group. Entities with identical normalized names
-(case-insensitive, whitespace-collapsed) are grouped under the same
-identity.
+identities for each group.
 
-Resolution strategy is configurable:
-- ``exact``: case-insensitive exact name match (default)
-- Future: fuzzy, Q-code, LLM-assisted
+Resolution strategies:
+- ``exact``: case-insensitive exact name match (default, zero false positives)
+- ``fuzzy``: rapidfuzz token_sort_ratio with configurable threshold and
+  same-entity-type guard (requires rapidfuzz)
 
 Auto-resolved identities are created with ``created_by="auto:resolution"``
 so they can be distinguished from manual identity assignments.
@@ -27,9 +26,10 @@ from .identity_service import IdentityConflictError, IdentityService
 
 logger = logging.getLogger(__name__)
 
-ResolutionStrategy = Literal["exact"]
+ResolutionStrategy = Literal["exact", "fuzzy"]
 
 ACTOR_ID = "auto:resolution"
+DEFAULT_FUZZY_THRESHOLD = 85
 
 
 @dataclass(frozen=True)
@@ -48,6 +48,7 @@ def auto_resolve_identities(
     *,
     db_path: Path,
     strategy: ResolutionStrategy = "exact",
+    fuzzy_threshold: int = DEFAULT_FUZZY_THRESHOLD,
 ) -> ResolutionResult:
     """Run automated entity resolution over all promoted entities.
 
@@ -55,12 +56,16 @@ def auto_resolve_identities(
     stable identities for each group. The first entity in each group
     becomes the canonical member; subsequent entities become aliases.
 
+    For ``fuzzy`` strategy, entities with token_sort_ratio >= threshold
+    AND the same entity_type are grouped together. The entity_type guard
+    prevents false positives (e.g., "USSOCOM" the org vs "USSOCOM Commander"
+    the person).
+
     Entities that already have an identity membership are skipped.
     """
     graph_service = CanonicalGraphService(db_path=db_path)
     identity_service = IdentityService(db_path=db_path)
 
-    # Get all promoted assertions to build entity name map
     store = graph_service._store  # noqa: SLF001
     with store.transaction() as conn:
         assertions = store.list_promoted_assertions(conn)
@@ -70,18 +75,20 @@ def auto_resolve_identities(
         ).fetchall()
 
     entity_ids = [str(row[0]) for row in all_entities]
+    entity_types = {str(row[0]): str(row[1]) if row[1] else "" for row in all_entities}
     name_map = _build_entity_name_map(assertions)
 
-    # Group by normalized name
-    groups = _group_by_name(entity_ids, name_map, strategy)
+    if strategy == "fuzzy":
+        groups = _group_by_fuzzy(entity_ids, name_map, entity_types, fuzzy_threshold)
+    else:
+        groups = _group_by_name(entity_ids, name_map, strategy)
 
     identities_created = 0
     aliases_attached = 0
     already_resolved = 0
 
-    for _normalized_name, group_entity_ids in sorted(groups.items()):
+    for _key, group_entity_ids in sorted(groups.items()):
         if len(group_entity_ids) < 2:
-            # Single entity — still create identity for completeness
             canonical_id = group_entity_ids[0]
             display = name_map.get(canonical_id, canonical_id)
             try:
@@ -99,7 +106,6 @@ def auto_resolve_identities(
                 already_resolved += 1
             continue
 
-        # Multi-entity group: first becomes canonical, rest become aliases
         canonical_id = group_entity_ids[0]
         display = name_map.get(canonical_id, canonical_id)
         try:
@@ -118,7 +124,6 @@ def auto_resolve_identities(
             already_resolved += 1
             continue
 
-        # Attach aliases
         for alias_entity_id in group_entity_ids[1:]:
             try:
                 identity_service.attach_entity_alias(
@@ -181,15 +186,72 @@ def _group_by_name(
     name_map: dict[str, str],
     strategy: ResolutionStrategy,
 ) -> dict[str, list[str]]:
-    """Group entity IDs by normalized display name."""
+    """Group entity IDs by normalized display name (exact match)."""
     groups: dict[str, list[str]] = defaultdict(list)
     for entity_id in entity_ids:
         display_name = name_map.get(entity_id, entity_id)
-        if strategy == "exact":
-            key = _normalize_name(display_name)
-        else:
-            key = _normalize_name(display_name)
+        key = _normalize_name(display_name)
         groups[key].append(entity_id)
+    return dict(groups)
+
+
+def _group_by_fuzzy(
+    entity_ids: list[str],
+    name_map: dict[str, str],
+    entity_types: dict[str, str],
+    threshold: int,
+) -> dict[str, list[str]]:
+    """Group entity IDs by fuzzy name similarity with entity_type guard.
+
+    Uses rapidfuzz token_sort_ratio for similarity scoring. Two entities
+    are grouped only if:
+    1. Their normalized names score >= threshold on token_sort_ratio
+    2. They share the same entity_type (false-positive guard)
+
+    Uses union-find for transitive closure of fuzzy matches.
+    """
+    from rapidfuzz import fuzz
+
+    normalized = {eid: _normalize_name(name_map.get(eid, eid)) for eid in entity_ids}
+
+    # Union-find
+    parent: dict[str, str] = {eid: eid for eid in entity_ids}
+
+    def find(x: str) -> str:
+        while parent[x] != x:
+            parent[x] = parent[parent[x]]
+            x = parent[x]
+        return x
+
+    def union(a: str, b: str) -> None:
+        ra, rb = find(a), find(b)
+        if ra != rb:
+            parent[ra] = rb
+
+    # Pairwise comparison (O(n^2) but entity counts are small)
+    for i, eid_a in enumerate(entity_ids):
+        for eid_b in entity_ids[i + 1:]:
+            type_a = entity_types.get(eid_a, "")
+            type_b = entity_types.get(eid_b, "")
+
+            # Entity type guard: only merge same-type entities
+            if type_a and type_b and type_a != type_b:
+                continue
+
+            score = fuzz.token_sort_ratio(normalized[eid_a], normalized[eid_b])
+            if score >= threshold:
+                union(eid_a, eid_b)
+                logger.debug(
+                    "fuzzy match score=%d: %s ↔ %s",
+                    score, normalized[eid_a], normalized[eid_b],
+                )
+
+    # Collect groups
+    groups: dict[str, list[str]] = defaultdict(list)
+    for eid in entity_ids:
+        root = find(eid)
+        groups[root].append(eid)
+
     return dict(groups)
 
 

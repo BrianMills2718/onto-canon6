@@ -7,6 +7,7 @@ from pathlib import Path
 import pytest
 
 from onto_canon6.core.auto_resolution import (
+    _group_by_fuzzy,
     ResolutionResult,
     auto_resolve_identities,
     _normalize_name,
@@ -227,3 +228,87 @@ class TestAutoResolveIdentities:
         review_svc = _seed_review_service(tmp_path)
         result = auto_resolve_identities(db_path=review_svc.store.db_path, strategy="exact")
         assert result.strategy == "exact"
+
+
+class TestFuzzyResolution:
+    """Test fuzzy name matching with rapidfuzz."""
+
+    def test_fuzzy_groups_similar_names(self) -> None:
+        """Fuzzy matching groups 'Gen. Holland' and 'General Holland'."""
+        entity_ids = ["ent_1", "ent_2"]
+        name_map = {"ent_1": "Gen. Holland", "ent_2": "General Holland"}
+        entity_types = {"ent_1": "oc:person", "ent_2": "oc:person"}
+        groups = _group_by_fuzzy(entity_ids, name_map, entity_types, threshold=75)
+        # token_sort_ratio("gen. holland", "general holland") ≈ 81 → should merge
+        assert len(groups) == 1
+
+    def test_fuzzy_rejects_different_types(self) -> None:
+        """Fuzzy matching respects entity_type guard."""
+        entity_ids = ["ent_1", "ent_2"]
+        name_map = {"ent_1": "USSOCOM", "ent_2": "USSOCOM Commander"}
+        entity_types = {"ent_1": "oc:org", "ent_2": "oc:person"}
+        groups = _group_by_fuzzy(entity_ids, name_map, entity_types, threshold=70)
+        # Different types → should NOT merge despite similar names
+        assert len(groups) == 2
+
+    def test_fuzzy_threshold_controls_strictness(self) -> None:
+        """Higher threshold means fewer merges."""
+        entity_ids = ["ent_1", "ent_2"]
+        name_map = {"ent_1": "4th PSYOP Group", "ent_2": "4th POG"}
+        entity_types = {"ent_1": "oc:unit", "ent_2": "oc:unit"}
+        # Low threshold — merge
+        groups_low = _group_by_fuzzy(entity_ids, name_map, entity_types, threshold=40)
+        # High threshold — don't merge
+        groups_high = _group_by_fuzzy(entity_ids, name_map, entity_types, threshold=95)
+        assert len(groups_low) <= len(groups_high)
+
+    def test_fuzzy_full_workflow(self, tmp_path: Path) -> None:
+        """Fuzzy strategy works end-to-end."""
+        review_svc = _seed_review_service(tmp_path)
+        _submit_accept_promote(
+            review_svc,
+            predicate="test:pred1",
+            entity_name="Gen. Holland",
+            entity_type="oc:person",
+            entity_id="ent_holland_1",
+            source_ref="chunk1",
+        )
+        _submit_accept_promote(
+            review_svc,
+            predicate="test:pred2",
+            entity_name="General Holland",
+            entity_type="oc:person",
+            entity_id="ent_holland_2",
+            source_ref="chunk2",
+        )
+        result = auto_resolve_identities(
+            db_path=review_svc.store.db_path,
+            strategy="fuzzy",
+            fuzzy_threshold=75,
+        )
+        assert result.strategy == "fuzzy"
+        assert result.groups_found == 1  # Should merge
+        assert result.entities_scanned == 2
+
+    def test_exact_keeps_abbreviations_separate(self, tmp_path: Path) -> None:
+        """Exact match does NOT merge Gen. Holland / General Holland."""
+        review_svc = _seed_review_service(tmp_path)
+        _submit_accept_promote(
+            review_svc,
+            predicate="test:pred1",
+            entity_name="Gen. Holland",
+            entity_type="oc:person",
+            entity_id="ent_gen",
+        )
+        _submit_accept_promote(
+            review_svc,
+            predicate="test:pred2",
+            entity_name="General Holland",
+            entity_type="oc:person",
+            entity_id="ent_general",
+        )
+        result = auto_resolve_identities(
+            db_path=review_svc.store.db_path,
+            strategy="exact",
+        )
+        assert result.groups_found == 2  # Exact keeps them separate

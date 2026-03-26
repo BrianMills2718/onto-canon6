@@ -823,8 +823,14 @@ def _build_parser() -> argparse.ArgumentParser:
     auto_resolve_parser.add_argument(
         "--strategy",
         default="exact",
-        choices=["exact"],
-        help="Resolution strategy. Currently only exact name match.",
+        choices=["exact", "fuzzy"],
+        help="Resolution strategy: exact (case-insensitive name match) or fuzzy (rapidfuzz token_sort_ratio with entity-type guard).",
+    )
+    auto_resolve_parser.add_argument(
+        "--fuzzy-threshold",
+        type=int,
+        default=85,
+        help="Minimum token_sort_ratio for fuzzy matching (0-100). Default: 85.",
     )
     _add_output_arg(auto_resolve_parser, default_output=config.cli.default_output_format)
     auto_resolve_parser.set_defaults(handler=_handle_auto_resolve_identities)
@@ -1527,7 +1533,7 @@ def _handle_auto_resolve_identities(args: argparse.Namespace) -> int:
     from .core.auto_resolution import auto_resolve_identities
 
     db_path = Path(args.review_db_path)
-    result = auto_resolve_identities(db_path=db_path, strategy=args.strategy)
+    result = auto_resolve_identities(db_path=db_path, strategy=args.strategy, fuzzy_threshold=args.fuzzy_threshold)
     output = {
         "entities_scanned": result.entities_scanned,
         "groups_found": result.groups_found,
