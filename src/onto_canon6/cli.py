@@ -899,6 +899,42 @@ def _build_parser() -> argparse.ArgumentParser:
     _add_output_arg(import_research_v3_parser, default_output=config.cli.default_output_format)
     import_research_v3_parser.set_defaults(handler=_handle_import_research_v3)
 
+    # ── import-rv3-memo ──────────────────────────────────────────────────
+    import_rv3_memo_parser = subparsers.add_parser(
+        "import-rv3-memo",
+        help="Import findings from a research_v3 loop memo.yaml into the review pipeline.",
+    )
+    _add_store_args(import_rv3_memo_parser, include_overlay_root=True)
+    import_rv3_memo_parser.add_argument(
+        "--input",
+        required=True,
+        type=Path,
+        help="Path to the research_v3 memo.yaml file.",
+    )
+    import_rv3_memo_parser.add_argument(
+        "--limit",
+        type=int,
+        default=None,
+        help="Maximum number of findings to import.",
+    )
+    import_rv3_memo_parser.add_argument(
+        "--profile-id",
+        default="research_v3_integration",
+        help="Ontology profile for imported candidates. Defaults to research_v3_integration.",
+    )
+    import_rv3_memo_parser.add_argument(
+        "--profile-version",
+        default="0.1.0",
+        help="Profile version. Defaults to 0.1.0.",
+    )
+    import_rv3_memo_parser.add_argument(
+        "--submitted-by",
+        default="adapter:research_v3_memo",
+        help="Actor id recorded for the imported candidates.",
+    )
+    _add_output_arg(import_rv3_memo_parser, default_output=config.cli.default_output_format)
+    import_rv3_memo_parser.set_defaults(handler=_handle_import_rv3_memo)
+
     return parser
 
 
@@ -1517,6 +1553,32 @@ def _handle_import_research_v3(args: argparse.Namespace) -> int:
             "claim_text": result.candidate.claim_text,
             "validation_status": result.candidate.validation_status,
         })
+
+    summary = {
+        "imported": len(results),
+        "source": str(input_path),
+        "profile_id": args.profile_id,
+        "candidates": results,
+    }
+    _emit_output(summary, output_format=args.output)
+    return 0
+
+
+def _handle_import_rv3_memo(args: argparse.Namespace) -> int:
+    """Import research_v3 memo findings into the review pipeline."""
+    from .adapters.research_v3_import import import_and_submit_memo
+
+    input_path = Path(args.input)
+    review_service = _build_review_service(args)
+
+    results = import_and_submit_memo(
+        input_path,
+        review_service,
+        limit=args.limit,
+        profile_id=args.profile_id,
+        profile_version=args.profile_version,
+        submitted_by=args.submitted_by,
+    )
 
     summary = {
         "imported": len(results),

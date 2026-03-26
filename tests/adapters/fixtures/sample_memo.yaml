@@ -1,0 +1,40 @@
+question: What is the relationship between lobbying spending and federal contract awards in the defense AI sector?
+goal: Determine whether lobbying expenditures by defense AI companies correlate with federal contract awards.
+success_criteria:
+  - Identify the top defense AI companies by lobbying spend
+  - Document case studies linking lobbying to contract outcomes
+  - Map revolving-door connections between DoD and contractors
+key_findings:
+  - claim: "Acme Defense spent $4.2 million on lobbying in 2024, a 35% increase from the prior year, while receiving $890 million in AI-related defense contracts."
+    source_urls:
+      - https://example.com/acme-lobbying-report
+      - https://example.com/usaspending-acme
+    confidence: 0.85
+    corroborated: true
+    tags:
+      - lobbying
+      - defense contracts
+      - AI
+  - claim: "Three former DoD officials joined Acme Defense's board between 2022 and 2024, each within 12 months of leaving government service."
+    source_urls:
+      - https://example.com/revolving-door-report
+    confidence: 0.7
+    corroborated: false
+    tags:
+      - revolving door
+      - personnel
+  - claim: "Industry-wide, defense AI contract awards grew 62% from 2022 to 2024, outpacing overall defense spending growth of 8%."
+    source_urls:
+      - https://example.com/defense-ai-growth
+      - https://example.com/budget-analysis
+    confidence: 0.9
+    corroborated: true
+    tags:
+      - defense spending
+      - AI industry trends
+open_questions:
+  - What specific contract vehicles were used for AI awards?
+  - Are there GAO reports on AI procurement irregularities?
+synthesis: "Initial research suggests a strong correlation between lobbying spend and contract awards in the defense AI sector."
+confidence: 0.6
+round_number: 3

@@ -143,6 +143,12 @@ endif
 		--review-db-path $(DB_PATH) --overlay-root $(OVERLAY_ROOT) \
 		--output $(OUTPUT)
 
+import-rv3-memo:  ## Import research_v3 loop memo (INPUT= required, LIMIT= optional)
+ifndef INPUT
+	$(error INPUT is required. Usage: make import-rv3-memo INPUT=path/to/memo.yaml LIMIT=10)
+endif
+	@$(CLI) import-rv3-memo 		--input $(INPUT) 		$(if $(LIMIT),--limit $(LIMIT),) 		--review-db-path $(DB_PATH) --overlay-root $(OVERLAY_ROOT) 		--output $(OUTPUT)
+
 evaluate-rules:  ## Evaluate ProbLog rules (RULES= required)
 ifndef RULES
 	$(error RULES is required. Usage: make evaluate-rules RULES=path/to/rules.pl)

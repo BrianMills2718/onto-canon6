@@ -24,10 +24,18 @@ from .whygame_models import (
     WhyGameRelationshipFact,
     WhyGameRelationshipRoles,
 )
+from .research_v3_import import (
+    import_and_submit_memo,
+    import_research_v3_graph,
+    import_research_v3_memo,
+)
 from .whygame_service import WhyGameAdapterError, WhyGameImportService
 
 __all__ = [
     "convert_to_candidate_imports",
+    "import_and_submit_memo",
+    "import_research_v3_graph",
+    "import_research_v3_memo",
     "DigimonEntityRecord",
     "DigimonExportBundle",
     "DigimonRelationshipRecord",

@@ -211,9 +211,142 @@ def _extract_entity_name(entity_data: dict[str, Any]) -> str:
 
 
 __all__ = [
+    "import_and_submit_memo",
+    "import_research_v3_memo",
+    "load_research_v3_memo",
     "FTM_TO_OC_TYPE",
     "import_research_v3_graph",
     "load_research_v3_graph",
     "map_corroboration_to_confidence",
     "map_ftm_entity_type",
 ]
+
+
+# ── memo.yaml import ────────────────────────────────────────────────────────
+
+
+def load_research_v3_memo(memo_path: Path) -> dict[str, Any]:
+    """Load a research_v3 loop memo.yaml file."""
+    with memo_path.open("r", encoding="utf-8") as f:
+        return yaml.safe_load(f) or {}
+
+
+def import_research_v3_memo(
+    memo_path: Path,
+    *,
+    limit: int | None = None,
+    profile_id: str = "research_v3_integration",
+    profile_version: str = "0.1.0",
+    submitted_by: str = "adapter:research_v3_memo",
+) -> list[CandidateAssertionImport]:
+    """Import findings from a research_v3 loop memo.yaml.
+
+    Converts each Finding (claim, source_urls, confidence, corroborated, tags)
+    into a CandidateAssertionImport with full provenance mapping.
+
+    Unlike import_research_v3_graph() which expects FtM entities and structured
+    claims, this handles the simplified loop output format where each finding
+    is a self-contained claim with confidence and source URLs.
+    """
+    memo_data = load_research_v3_memo(memo_path)
+    findings = memo_data.get("key_findings", [])
+    question = memo_data.get("question", "")
+
+    if limit is not None:
+        findings = findings[:limit]
+
+    imports: list[CandidateAssertionImport] = []
+
+    for i, finding in enumerate(findings):
+        claim = finding.get("claim", "")
+        if not claim:
+            continue
+
+        confidence = finding.get("confidence", 0.5)
+        corroborated = finding.get("corroborated", False)
+        tags = finding.get("tags", [])
+        source_urls = finding.get("source_urls", [])
+
+        # Truncate claim for label
+        claim_preview = claim[:60] + "..." if len(claim) > 60 else claim
+
+        source_artifact = SourceArtifactRef(
+            source_kind="research_v3_memo",
+            source_ref=f"{memo_path.name}:finding_{i}",
+            source_label=f"Finding {i}: {claim_preview}",
+            content_text=claim,
+            source_metadata={
+                "confidence": confidence,
+                "corroboration_status": "corroborated" if corroborated else "unverified",
+                "tags": tags,
+                "source_urls": source_urls,
+                "investigation_question": question,
+            },
+        )
+
+        # Minimal assertion payload — the extraction pipeline fills the real
+        # ontology-grounded structure later.  We include enough for the
+        # candidate to pass validation as a self-contained record.
+        payload: dict[str, Any] = {
+            "predicate": "rv3:asserts",
+            "roles": {
+                "content": [{
+                    "kind": "value",
+                    "entity_type": "string",
+                    "value": claim,
+                }],
+            },
+            "confidence": confidence,
+            "research_v3_corroboration": (
+                "corroborated" if corroborated else "unverified"
+            ),
+        }
+
+        imports.append(CandidateAssertionImport(
+            profile=ProfileRef(
+                profile_id=profile_id,
+                profile_version=profile_version,
+            ),
+            payload=payload,
+            submitted_by=submitted_by,
+            source_artifact=source_artifact,
+            evidence_spans=(),
+            claim_text=claim,
+        ))
+
+    logger.info(
+        "research_v3 memo import: %d findings → %d candidate imports from %s",
+        len(memo_data.get("key_findings", [])),
+        len(imports),
+        memo_path,
+    )
+    return imports
+
+
+def import_and_submit_memo(
+    memo_path: Path,
+    review_service: Any,
+    **kwargs: Any,
+) -> list[dict[str, Any]]:
+    """Import memo findings and submit to the review pipeline.
+
+    Returns a list of dicts with candidate_id, claim_text, and
+    validation_status for each submitted candidate.
+    """
+    imports = import_research_v3_memo(memo_path, **kwargs)
+    results: list[dict[str, Any]] = []
+    for candidate_import in imports:
+        result = review_service.submit_candidate_import(
+            candidate_import=candidate_import,
+        )
+        results.append({
+            "candidate_id": result.candidate.candidate_id,
+            "claim_text": result.candidate.claim_text,
+            "validation_status": result.candidate.validation_status,
+        })
+    logger.info(
+        "research_v3 memo submit: %d candidates submitted from %s",
+        len(results),
+        memo_path,
+    )
+    return results
