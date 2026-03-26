@@ -133,6 +133,13 @@ def promoted_assertion_to_foundation(
     qualifiers: dict[str, Any] = {}
     if confidence is not None:
         qualifiers["sys:confidence"] = confidence
+    # Temporal qualifiers from extraction payload
+    valid_from = assertion.normalized_body.get("valid_from")
+    valid_to = assertion.normalized_body.get("valid_to")
+    if valid_from is not None:
+        qualifiers["sys:valid_from"] = valid_from
+    if valid_to is not None:
+        qualifiers["sys:valid_to"] = valid_to
 
     return FoundationAssertion(
         assertion_id=assertion.assertion_id,
@@ -228,8 +235,9 @@ def export_foundation_assertions(
 # 2. Entity alias_ids: ✓ WIRED. Identity subsystem joined via _build_alias_lookup().
 #    Entities with identity memberships get alias_ids from sibling entity_ids.
 #
-# 3. Qualifiers (sys:valid_from, sys:valid_to): onto-canon6 does not yet
-#    extract temporal qualifiers. Deferred per ADR (temporal/inference deferred).
+# 3. Qualifiers (sys:valid_from, sys:valid_to): Temporal qualifiers are now
+#    extracted when present in source text and exported as sys:valid_from/to.
+#    Assertions without temporal info export with empty qualifiers (not failure).
 #
 # 4. Confidence: Available from epistemic extension (ConfidenceAssessmentRecord).
 #    Passed as optional kwarg. TODO: optional epistemic store join in export.

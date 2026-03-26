@@ -36,6 +36,10 @@ messages:
         source character-for-character
       - optionally include a short `claim_text` gloss that helps a reviewer
         understand the candidate quickly
+      - if the source text mentions when an assertion became true or ceased to
+        be true, include `valid_from` and/or `valid_to` as ISO 8601 date
+        strings (YYYY, YYYY-MM, or YYYY-MM-DD). Leave null when no temporal
+        information is present in the source text
 
       The assertion payload is expected to use these filler shapes:
 

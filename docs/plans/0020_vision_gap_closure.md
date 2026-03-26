@@ -215,6 +215,20 @@ None — additive to existing extraction.
 ### Estimated Scope
 Small-Medium (1-2 sessions). Prompt change + schema addition + export update.
 
+### Status: COMPLETED (2026-03-26)
+
+All acceptance criteria met:
+1. Extraction prompt asks for temporal qualifiers (`valid_from`, `valid_to`)
+   as ISO 8601 date strings when present in source text
+2. Temporal values stored in assertion payload (flows through to DB)
+3. Foundation IR export includes temporal qualifiers as `sys:valid_from`,
+   `sys:valid_to` when present
+4. Assertions without temporal info export with null qualifiers (not failure)
+
+Proven on financial text: SEC complaint dated 2023-06-05, Zhao CEO tenure
+ended 2023-11, settlement dated 2023-11. Model correctly extracts dates
+from source text into ISO format.
+
 ---
 
 ## Gap 5: Digimon Real-Data Export Test

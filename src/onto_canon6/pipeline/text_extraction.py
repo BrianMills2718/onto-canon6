@@ -178,6 +178,22 @@ class ExtractedCandidate(BaseModel):
         default=None,
         description="Optional short natural-language gloss to help reviewers inspect the candidate.",
     )
+    valid_from: str | None = Field(
+        default=None,
+        description=(
+            "Temporal start qualifier. If the source text mentions when this assertion "
+            "became true (a date, year, or time period), include it here as an ISO 8601 "
+            "date string (YYYY, YYYY-MM, or YYYY-MM-DD). Null when no temporal info in source."
+        ),
+    )
+    valid_to: str | None = Field(
+        default=None,
+        description=(
+            "Temporal end qualifier. If the source text mentions when this assertion "
+            "ceased to be true, include it here as an ISO 8601 date string. "
+            "Null when no end date in source or when the assertion is still current."
+        ),
+    )
 
     @model_validator(mode="before")
     @classmethod
@@ -600,6 +616,10 @@ def candidate_import_from_extracted(
             for role_name, fillers in candidate.roles.items()
         },
     }
+    if candidate.valid_from is not None:
+        payload["valid_from"] = candidate.valid_from
+    if candidate.valid_to is not None:
+        payload["valid_to"] = candidate.valid_to
     claim_text = candidate.claim_text.strip() if candidate.claim_text is not None else None
     return CandidateAssertionImport(
         profile=profile,
