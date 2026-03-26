@@ -815,6 +815,20 @@ def _build_parser() -> argparse.ArgumentParser:
     _add_output_arg(list_identities_parser, default_output=config.cli.default_output_format)
     list_identities_parser.set_defaults(handler=_handle_list_identities)
 
+    auto_resolve_parser = subparsers.add_parser(
+        "auto-resolve-identities",
+        help="Automatically group promoted entities by matching display names.",
+    )
+    _add_store_args(auto_resolve_parser, include_overlay_root=False)
+    auto_resolve_parser.add_argument(
+        "--strategy",
+        default="exact",
+        choices=["exact"],
+        help="Resolution strategy. Currently only exact name match.",
+    )
+    _add_output_arg(auto_resolve_parser, default_output=config.cli.default_output_format)
+    auto_resolve_parser.set_defaults(handler=_handle_auto_resolve_identities)
+
     export_identity_report_parser = subparsers.add_parser(
         "export-identity-report",
         help="Export the stable identity report over the current identity slice.",
@@ -1406,6 +1420,25 @@ def _handle_export_identity_report(args: argparse.Namespace) -> int:
     identity_service = _build_identity_service(args)
     report = IdentityReportService(identity_service=identity_service).build_report()
     _emit_output(report, output_format=args.output)
+    return 0
+
+
+
+def _handle_auto_resolve_identities(args: argparse.Namespace) -> int:
+    """Run automated entity resolution over promoted entities."""
+    from .core.auto_resolution import auto_resolve_identities
+
+    db_path = Path(args.review_db_path)
+    result = auto_resolve_identities(db_path=db_path, strategy=args.strategy)
+    output = {
+        "entities_scanned": result.entities_scanned,
+        "groups_found": result.groups_found,
+        "identities_created": result.identities_created,
+        "aliases_attached": result.aliases_attached,
+        "already_resolved": result.already_resolved,
+        "strategy": result.strategy,
+    }
+    _emit_output(output, output_format=args.output)
     return 0
 
 

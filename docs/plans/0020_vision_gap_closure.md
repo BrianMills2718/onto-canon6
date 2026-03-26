@@ -177,6 +177,18 @@ E2E pipeline must work (done). Gap 2 would test resolution across domains.
 ### Estimated Scope
 Medium (2-3 sessions). Matching logic + CLI integration + tests.
 
+### Status: COMPLETED (2026-03-26)
+
+Implemented auto_resolution.py with exact name matching strategy. CLI command
+`auto-resolve-identities` added. Tested on e2e data:
+- 20 entities scanned, 19 groups found (USSOCOM merged from 2 chunks)
+- 18 identities created, 1 multi-member identity (USSOCOM canonical + alias)
+- Resolution strategy configurable via --strategy flag (currently: exact)
+- Auto-resolved identities created with `created_by="auto:resolution"`
+
+USSOCOM from chunk 9efd089a and chunk f82d1997 correctly merged into single
+identity gid_c6476dce with canonical + alias memberships.
+
 ---
 
 ## Gap 4: Temporal Qualifiers
