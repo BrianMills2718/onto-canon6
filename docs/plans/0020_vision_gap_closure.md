@@ -1,0 +1,342 @@
+# Vision Gap Closure
+
+Status: active
+
+Last updated: 2026-03-25
+Workstream: post-bootstrap capability completion
+
+## Purpose
+
+Close the 10 identified gaps between the ecosystem vision (project-meta/vision/)
+and onto-canon6's current state. Each gap has acceptance criteria, uncertainties,
+and dependencies. Implementation priority is consumer-driven; scope is
+vision-driven (per CLAUDE.md principles).
+
+This is a tracking plan, not a phase. Individual gaps may be promoted to their
+own plans if scope warrants it. Gaps are ordered by dependency, not priority.
+
+---
+
+## Gap 1: Human-Readable Predicate Names
+
+### Current State
+4,669 predicate senses in sumo_plus.db use PropBank IDs (e.g., `fund-01`).
+The Framework says predicates should be "identified by human-readable names."
+
+### Acceptance Criteria
+1. Every predicate sense has a human-readable name (e.g., `fund_ongoing_support`)
+2. Names are generated, not hand-written (one LLM pass over 4,669 senses)
+3. Names are stored alongside PropBank IDs (additive, not replacing)
+4. Extraction prompts reference human-readable names in the predicate catalog
+
+### Uncertainties
+- Which LLM and prompt produces good names? Needs prompt_eval comparison.
+- Do we rename the `event_types` table to `predicates`? (Mentioned in
+  ECOSYSTEM_STATUS.md planned extensions)
+- Do we add `is_static` flag at the same time? (Distinguishes events from
+  static relations)
+
+### Dependencies
+None — standalone. Improves extraction quality indirectly.
+
+### Estimated Scope
+Small (1-2 sessions). One LLM batch pass + schema migration + test.
+
+---
+
+## Gap 2: Non-Military Domain Testing
+
+### Current State
+All testing uses 17 PSYOP military cases. The system claims to be
+domain-general but has never been tested on non-military text.
+
+### Acceptance Criteria
+1. E2E extraction proven on at least one non-military text (e.g., financial,
+   academic, news article)
+2. Benchmark fixture includes at least 5 non-military cases
+3. Extraction quality is comparable to military text (same structural success
+   rate, entity_type coverage)
+
+### Uncertainties
+- Which domain? Financial text has different predicate patterns than military.
+- Does the `psyop_seed` profile work for non-military text, or do we need a
+  new profile/pack?
+- Is the predicate catalog (military-focused) adequate for other domains?
+
+### Dependencies
+Gap 1 (human-readable names) would help but is not required.
+
+### Estimated Scope
+Medium (1-2 sessions). Select text, create profile if needed, run extraction,
+create fixture cases.
+
+---
+
+## Gap 3: Automated Entity Resolution
+
+### Current State
+Identity resolution works (proven: USSOCOM across 2 chunks) but requires
+manual `create-identity-for-entity` and `attach-identity-alias` CLI calls.
+
+### Acceptance Criteria
+1. After extraction + promotion, entities with matching names across
+   source-scoped IDs are automatically grouped into identity candidates
+2. Resolution strategy is configurable (exact name match, fuzzy, Q-code)
+3. Auto-resolved identities are flagged as `auto` for optional human review
+4. `make summary` reports identity resolution stats
+
+### Uncertainties
+- Exact name match is naive — "4th PSYOP Group" vs "4th POG(A)" are the same
+  entity but different names. How aggressive should fuzzy matching be?
+- Should auto-resolution happen at promotion time or as a separate pass?
+- Q-code resolution requires Wikidata API calls — cost and reliability?
+
+### Dependencies
+E2E pipeline must work (done). Gap 2 would test resolution across domains.
+
+### Estimated Scope
+Medium (2-3 sessions). Matching logic + CLI integration + tests.
+
+---
+
+## Gap 4: Temporal Qualifiers
+
+### Current State
+Foundation expects `sys:valid_from` and `sys:valid_to` on assertions.
+Deferred by ADR — onto-canon6 does not extract temporal bounds.
+
+### Acceptance Criteria
+1. Extraction prompt asks for temporal qualifiers when present in source text
+2. Temporal values stored in assertion payload (`sys:valid_from`, `sys:valid_to`)
+3. Foundation IR export includes temporal qualifiers when present
+4. Assertions without temporal info export with null qualifiers (not failure)
+
+### Uncertainties
+- Do we extract temporal qualifiers in the same LLM call as assertions, or
+  as a separate enrichment pass?
+- What temporal precision is useful? Year? Month? Exact date?
+- Which consumer needs temporal qualifiers first? Digimon? research_v3?
+
+### Dependencies
+None — additive to existing extraction.
+
+### Estimated Scope
+Small-Medium (1-2 sessions). Prompt change + schema addition + export update.
+
+---
+
+## Gap 5: Digimon Real-Data Export Test
+
+### Current State
+`digimon_export.py` adapter exists, tested on 5-node synthetic fixture.
+Never tested on real promoted assertions.
+
+### Acceptance Criteria
+1. Export promoted assertions from e2e test DB as Digimon JSONL
+2. Digimon graph builder successfully ingests the JSONL
+3. Digimon query returns correct entities and relationships
+4. Weight/confidence semantics validated (onto-canon6 probability maps
+   correctly to Digimon weight)
+
+### Uncertainties
+- Does Digimon's graph builder accept the current JSONL format without
+  modification?
+- Single-argument predicates (one entity only) — how does Digimon handle
+  relationships with one empty endpoint?
+- PropBank predicate IDs vs free-text relation names — does Digimon need
+  a mapping?
+
+### Dependencies
+E2E pipeline must produce promoted assertions (done). Digimon must be
+runnable (check current state).
+
+### Estimated Scope
+Small (1 session). Run export, attempt Digimon ingestion, fix any format
+issues.
+
+---
+
+## Gap 6: research_v3 → onto-canon6 Adapter
+
+### Current State
+No adapter exists. Convergence plan archived at
+`project-meta/vision/archive/2026-03-22/ONTO_CANON_RESEARCH_V3_CONVERGENCE.md`.
+
+### Acceptance Criteria
+1. research_v3 KnowledgeGraph (YAML) can be exported to onto-canon6
+2. Entity mapping: research_v3 Entity (FtM-backed) → onto-canon6 entity type
+3. Claim translation: corroboration_status → onto-canon6 epistemic level
+4. Provenance preserved: source URLs, retrieval timestamps survive export
+5. At least 5 entities from a real research_v3 investigation imported and
+   promoted in onto-canon6
+
+### Uncertainties
+- FtM entity types → SUMO types: is the mapping feasible? How many FtM
+  schemas map cleanly to SUMO types?
+- Conflict handling: what happens when a new investigation contradicts
+  existing onto-canon6 assertions? (Policy decision needed)
+- Round-trip: should research_v3 be able to re-import its own exports?
+- Does research_v3 output currently include structured KnowledgeGraph YAML,
+  or is it unstructured text? (Need to check current state)
+
+### Dependencies
+research_v3 must produce KnowledgeGraph output. Gap 3 (entity resolution)
+needed for cross-investigation dedup.
+
+### Estimated Scope
+Large (3-5 sessions). Entity mapping study + adapter code + conflict policy
++ integration test.
+
+---
+
+## Gap 7: Epistemic Engine on Real Data
+
+### Current State
+Built: confidence assessments, supersession, disposition (active/weakened/
+retracted), corroboration groups, tension detection. 298 tests pass.
+Never tested on real extraction data.
+
+### Acceptance Criteria
+1. Confidence scores assigned to at least 10 real promoted assertions
+2. At least 1 supersession recorded (new assertion replaces old)
+3. At least 1 tension detected (conflicting assertions identified)
+4. Epistemic report exports correctly via CLI and Foundation IR
+
+### Uncertainties
+- What triggers supersession? Manual only, or automatic when a newer
+  extraction contradicts an older one?
+- Confidence source: LLM-assigned at extraction time? Post-extraction judge?
+- What constitutes "tension"? Same predicate with different fillers?
+  Same entities with contradictory predicates?
+
+### Dependencies
+E2E pipeline with multiple runs producing overlapping/contradictory
+assertions. Gap 6 (research_v3 adapter) would provide natural contradictions
+from different investigation runs.
+
+### Estimated Scope
+Medium (2-3 sessions). Manual confidence assignment, fabricate a
+contradiction scenario, verify tension detection.
+
+---
+
+## Gap 8: Custom Logic / ProbLog Spike
+
+### Current State
+Not started. Framework describes rules-as-data with Datalog or ProbLog
+interpreter. ECOSYSTEM_STATUS lists it as a planned extension under
+Operations (llm_client).
+
+### Acceptance Criteria
+1. Spike: one concrete rule (e.g., "if A funds B and B attacks C then A is
+   proxy_war_participant against C") evaluated over test facts
+2. Facts loaded from onto-canon6 SQLite (not hardcoded)
+3. Probability propagation works (confidence on input facts affects output)
+4. Decision: ProbLog or custom Datalog? Documented with rationale.
+
+### Uncertainties
+- ProbLog's SQLite integration (`sqlite_load`): does it work with
+  onto-canon6's schema?
+- Performance: how many facts + rules before it's too slow?
+- Where does the interpreter live? llm_client (as Framework says) or
+  onto-canon6?
+- Is ProbLog's dependency weight acceptable for the ecosystem?
+
+### Dependencies
+onto-canon6 must have promoted assertions with confidence scores (Gap 7).
+
+### Estimated Scope
+Small spike (1 session) to answer the build-vs-buy question. Full
+implementation TBD based on spike results.
+
+---
+
+## Gap 9: Second Vocabulary (Composability Proof)
+
+### Current State
+`dodaf_minimal` pack exists with strict and mixed profiles. Never tested
+with the full extraction pipeline (only Phase 7 bootstrap validation proof).
+
+### Acceptance Criteria
+1. E2E extraction using `dodaf_minimal` profile on DoDAF-relevant text
+2. Different predicate catalog renders correctly in extraction prompt
+3. Validation uses dodaf_minimal pack rules (not psyop_seed)
+4. Both vocabularies can coexist in the same DB (different profile_id)
+
+### Uncertainties
+- Is `dodaf_minimal` complete enough for real extraction? It was designed
+  as a "second pack proof" with minimal predicates.
+- What text would exercise DoDAF predicates? Military systems architecture
+  documents?
+- Can we extract with two different profiles on the same source text and
+  compare results?
+
+### Dependencies
+E2E pipeline must work (done). dodaf_minimal pack exists (done).
+
+### Estimated Scope
+Small (1 session). Select DoDAF text, run extraction with dodaf profile,
+compare to psyop_seed extraction.
+
+---
+
+## Gap 10: Autonomous Operation (OpenClaw)
+
+### Current State
+Not started. onto-canon6 has CLI and Makefile but no
+`.openclaw/success-criteria.yaml` or mission spec.
+
+### Acceptance Criteria
+1. `.openclaw/success-criteria.yaml` exists with measurable criteria
+2. Mission spec defines: what text to extract, what goal, what acceptance
+   threshold
+3. OpenClaw can launch an extraction mission on onto-canon6 and produce
+   reviewed commits
+4. Review gate evaluates extraction results (not just code changes)
+
+### Uncertainties
+- What does a "successful" extraction mission look like? N candidates
+  extracted with >X% structural validity?
+- Should the mission runner call `make extract` or the CLI directly?
+- Review gate: how does gpt-5.2-pro review extraction results vs code
+  changes?
+- Cost control: extraction calls cost money — per-mission budget?
+
+### Dependencies
+E2E pipeline must work (done). Mission runner must be operational
+(Phase 1 complete, Phase 1.5 in progress).
+
+### Estimated Scope
+Medium (2 sessions). Success criteria + mission spec + test run.
+
+---
+
+## Dependency Graph
+
+```
+Gap 1 (predicate names)     → standalone
+Gap 2 (domain testing)      → standalone (Gap 1 nice-to-have)
+Gap 3 (entity resolution)   → standalone
+Gap 4 (temporal qualifiers) → standalone
+Gap 5 (Digimon export)      → standalone
+Gap 6 (research_v3 adapter) → Gap 3
+Gap 7 (epistemic on data)   → standalone (Gap 6 provides natural contradictions)
+Gap 8 (ProbLog spike)       → Gap 7
+Gap 9 (second vocabulary)   → standalone
+Gap 10 (autonomous ops)     → standalone
+```
+
+## Implementation Priority (recommended)
+
+Consumer-driven priority, per CLAUDE.md:
+
+1. **Gap 5** (Digimon export) — smallest scope, proves cross-project flow
+2. **Gap 2** (domain testing) — validates generality claim
+3. **Gap 3** (entity resolution) — unblocks Gap 6
+4. **Gap 9** (second vocabulary) — proves composability
+5. **Gap 1** (predicate names) — improves extraction quality
+6. **Gap 6** (research_v3 adapter) — biggest integration value
+7. **Gap 7** (epistemic on data) — validates epistemic engine
+8. **Gap 4** (temporal qualifiers) — additive
+9. **Gap 8** (ProbLog spike) — exploratory
+10. **Gap 10** (autonomous ops) — depends on mission runner maturity
