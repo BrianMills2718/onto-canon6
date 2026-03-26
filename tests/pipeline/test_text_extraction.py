@@ -770,3 +770,117 @@ def test_value_filler_rejects_missing_value_kind() -> None:
                 ]
             }
         )
+
+
+def test_empty_roles_candidate_filtered_not_crashed() -> None:
+    """Candidates with empty roles should be filtered out, not crash the parse.
+
+    Providers do not enforce minProperties at decode time, so the LLM can
+    produce candidates with ``"roles": {}``.  The response parser should
+    recover valid candidates from the same response.
+    """
+
+    response = TextExtractionResponse.model_validate(
+        {
+            "candidates": [
+                {
+                    "predicate": "oc:hold_command_role",
+                    "roles": {},
+                    "evidence_spans": [{"text": "some text"}],
+                },
+                {
+                    "predicate": "oc:lead_organization",
+                    "roles": {
+                        "leader": [
+                            {
+                                "kind": "entity",
+                                "entity_type": "oc:person",
+                                "name": "General Smith",
+                            }
+                        ]
+                    },
+                    "evidence_spans": [{"text": "General Smith"}],
+                },
+            ]
+        }
+    )
+
+    assert len(response.candidates) == 1
+    assert response.candidates[0].predicate == "oc:lead_organization"
+
+
+def test_all_empty_roles_candidates_yield_empty_list() -> None:
+    """When all candidates have empty roles, the response should have zero candidates."""
+
+    response = TextExtractionResponse.model_validate(
+        {
+            "candidates": [
+                {
+                    "predicate": "oc:hold_command_role",
+                    "roles": {},
+                    "evidence_spans": [{"text": "some text"}],
+                },
+            ]
+        }
+    )
+
+    assert len(response.candidates) == 0
+
+
+def test_filler_value_field_drift_normalized_to_name() -> None:
+    """LLM field drift: ``value`` should be normalized to ``name`` for entity fillers."""
+
+    response = TextExtractionResponse.model_validate(
+        {
+            "candidates": [
+                {
+                    "predicate": "oc:hold_command_role",
+                    "roles": {
+                        "commander": [
+                            {
+                                "kind": "entity",
+                                "entity_type": "oc:person",
+                                "value": "Admiral Eric Olson",
+                            }
+                        ]
+                    },
+                    "evidence_spans": [{"text": "Admiral Eric Olson"}],
+                }
+            ]
+        }
+    )
+
+    assert len(response.candidates) == 1
+    filler = response.candidates[0].roles["commander"][0]
+    assert filler.name == "Admiral Eric Olson"
+    assert filler.entity_type == "oc:person"
+
+
+def test_extra_fields_ignored_in_permissive_parsing() -> None:
+    """Extra fields from provider drift should be silently ignored, not rejected."""
+
+    response = TextExtractionResponse.model_validate(
+        {
+            "candidates": [
+                {
+                    "predicate": "oc:hold_command_role",
+                    "roles": {
+                        "commander": [
+                            {
+                                "kind": "entity",
+                                "entity_type": "oc:person",
+                                "name": "Admiral Eric Olson",
+                                "confidence": 0.95,
+                            }
+                        ]
+                    },
+                    "evidence_spans": [{"text": "Admiral Eric Olson"}],
+                    "model_notes": "high confidence",
+                }
+            ],
+            "metadata": {"model": "gemini-2.5-flash"},
+        }
+    )
+
+    assert len(response.candidates) == 1
+    assert response.candidates[0].roles["commander"][0].name == "Admiral Eric Olson"

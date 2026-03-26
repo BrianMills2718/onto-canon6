@@ -52,9 +52,14 @@ class ExtractedFiller(BaseModel):
     (``oneOf`` + ``discriminator``) are architecturally correct but current
     models cannot navigate them (produce empty roles).  This flat model
     achieves the same outcome via descriptions + post-parse validation.
+
+    Uses ``extra="ignore"`` for permissive parsing of provider responses.
+    Some models return unexpected fields (e.g., ``value`` instead of ``name``).
+    The strict JSON schema constrains generation; the permissive parser
+    handles edge cases without crashing the entire extraction.
     """
 
-    model_config = ConfigDict(extra="forbid", frozen=True)
+    model_config = ConfigDict(extra="ignore", frozen=True)
 
     kind: str = Field(
         min_length=1,
@@ -91,6 +96,28 @@ class ExtractedFiller(BaseModel):
         default=None,
         description="Raw source text form. Required for value fillers unless normalized is provided. Required for unknown fillers.",
     )
+
+    @model_validator(mode="before")
+    @classmethod
+    def _normalize_field_name_drift(cls, data: object) -> object:
+        """Normalize known provider field-name drift in filler objects.
+
+        Some models return ``value`` instead of ``name`` for entity fillers.
+        This boundary normalizes the known drift so downstream validators
+        see the canonical field names.
+        """
+
+        if not isinstance(data, Mapping):
+            return data
+        normalized = dict(data)
+        # Provider drift: LLM uses "value" instead of "name" for entity text
+        if "value" in normalized and "name" not in normalized:
+            normalized["name"] = normalized.pop("value")
+            logger.warning(
+                "normalized filler field drift: 'value' -> 'name' for kind=%s",
+                normalized.get("kind", "unknown"),
+            )
+        return normalized
 
     @model_validator(mode="after")
     def _validate_shape(self) -> "ExtractedFiller":
@@ -158,7 +185,7 @@ class ExtractedEvidenceSpan(BaseModel):
 class ExtractedCandidate(BaseModel):
     """One candidate assertion emitted by the structured extraction model."""
 
-    model_config = ConfigDict(extra="forbid", frozen=True)
+    model_config = ConfigDict(extra="ignore", frozen=True)
 
     predicate: str = Field(
         min_length=1,
@@ -259,26 +286,88 @@ class ExtractedCandidate(BaseModel):
 
     @model_validator(mode="after")
     def _validate_roles(self) -> "ExtractedCandidate":
-        """Reject empty role maps and blank role names."""
+        """Check role maps for structural issues.
+
+        Logs warnings instead of raising so that one bad candidate does not
+        crash the entire extraction response.  ``TextExtractionResponse``
+        filters out structurally invalid candidates after parsing.
+        """
+
+        issues: list[str] = []
+        if not self.roles:
+            issues.append("empty roles")
+        else:
+            for role_name, fillers in self.roles.items():
+                if not role_name.strip():
+                    issues.append("blank role name")
+                if not fillers:
+                    issues.append(f"role {role_name!r} has no fillers")
+        if issues:
+            logger.warning(
+                "candidate predicate=%s has structural issues: %s — will be filtered",
+                self.predicate,
+                "; ".join(issues),
+            )
+        return self
+
+    @property
+    def has_valid_roles(self) -> bool:
+        """Return True if this candidate has at least one role with fillers."""
 
         if not self.roles:
-            raise ValueError("candidate roles must not be empty")
-        for role_name, fillers in self.roles.items():
-            if not role_name.strip():
-                raise ValueError("candidate role names must not be blank")
-            if not fillers:
-                raise ValueError(f"candidate role {role_name!r} must not be empty")
-        return self
+            return False
+        return all(
+            role_name.strip() and fillers
+            for role_name, fillers in self.roles.items()
+        )
 
 
 class TextExtractionResponse(BaseModel):
-    """Structured extractor response for one raw-text source."""
+    """Structured extractor response for one raw-text source.
 
-    model_config = ConfigDict(extra="forbid", frozen=True)
+    Parses permissively: candidates with empty or invalid roles are filtered
+    out with a warning rather than crashing the entire extraction.  This
+    follows the "parse permissively" guideline — the strict JSON schema
+    constrains generation; the response parser recovers partial results.
+    """
+
+    model_config = ConfigDict(extra="ignore", frozen=True)
 
     candidates: list[ExtractedCandidate] = Field(
         description="Single required candidate array for the extractor response. Use an empty array when no candidates are supported.",
     )
+
+    @model_validator(mode="after")
+    def _filter_invalid_candidates(self) -> "TextExtractionResponse":
+        """Drop candidates with structural issues instead of failing the parse.
+
+        Providers do not enforce value-level JSON Schema constraints
+        (minProperties, minLength) at decode time, so the LLM can produce
+        candidates with empty roles.  Rather than losing the entire response,
+        filter out bad candidates and log what was dropped.
+        """
+
+        valid = []
+        dropped = 0
+        for candidate in self.candidates:
+            if candidate.has_valid_roles:
+                valid.append(candidate)
+            else:
+                dropped += 1
+                logger.warning(
+                    "dropped candidate with invalid roles: predicate=%s roles_count=%d",
+                    candidate.predicate,
+                    len(candidate.roles),
+                )
+        if dropped:
+            logger.info(
+                "filtered %d/%d candidates with invalid roles",
+                dropped,
+                dropped + len(valid),
+            )
+            # Reconstruct with only valid candidates (frozen model requires reconstruction)
+            object.__setattr__(self, "candidates", valid)
+        return self
 
 
 class TextExtractionRun(BaseModel):
