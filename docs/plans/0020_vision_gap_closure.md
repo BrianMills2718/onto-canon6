@@ -336,6 +336,20 @@ from different investigation runs.
 Medium (2-3 sessions). Manual confidence assignment, fabricate a
 contradiction scenario, verify tension detection.
 
+### Status: COMPLETED (2026-03-26)
+
+All acceptance criteria met on real e2e test data (16 promoted assertions):
+1. Confidence: 16/16 assertions scored with varying values (0.65-0.95)
+2. Supersession: 1 recorded (Holland command superseded by generic USSOCOM Commander)
+3. Tension: 19 pairs detected (role_filler_conflict — 5 commanders sharing
+   USSOCOM anchor but differing on commander role filler)
+4. Disposition: 1 assertion weakened
+
+No fabricated scenarios needed — the real data naturally produces tensions
+because 5 different people each held the Commander role at USSOCOM. The
+tension engine correctly identifies these as role_filler_conflict with
+anchor_roles=(organization,) and differing_roles=(commander,).
+
 ---
 
 ## Gap 8: Custom Logic / ProbLog Spike
