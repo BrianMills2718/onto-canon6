@@ -345,6 +345,7 @@ class TextExtractionService:
             else config.extraction.selection_task
         )
         self._selection_use_performance = config.extraction.selection_use_performance
+        self._model_override = config.extraction.model_override
         if (prompt_template is None) != (prompt_ref is None):
             raise ConfigError(
                 "prompt_template and prompt_ref overrides must be provided together"
@@ -474,10 +475,13 @@ class TextExtractionService:
             normalized_profile.profile_version,
             overlay_root=self._review_service.overlay_root,
         )
-        selected_model = llm_client_api.get_model(
-            self._selection_task,
-            use_performance=self._selection_use_performance,
-        )
+        if self._model_override:
+            selected_model = self._model_override
+        else:
+            selected_model = llm_client_api.get_model(
+                self._selection_task,
+                use_performance=self._selection_use_performance,
+            )
         effective_goal = extraction_goal or self._default_extraction_goal
         if not effective_goal:
             raise ValueError(

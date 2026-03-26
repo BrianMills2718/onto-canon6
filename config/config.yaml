@@ -24,6 +24,7 @@ ontology_runtime:
 extraction:
   selection_task: "fast_extraction"
   selection_use_performance: false
+  model_override: "gemini/gemini-2.5-flash"
   default_extraction_goal: "Extract all factual assertions directly supported by the source text."
   prompt_template: "prompts/extraction/text_to_candidate_assertions.yaml"
   prompt_ref: "onto_canon6.extraction.text_to_candidate_assertions@1"
