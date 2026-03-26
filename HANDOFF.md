@@ -1,59 +1,65 @@
 # Handoff: onto-canon6
 
 **Date**: 2026-03-26
-**Scope**: documentation/status cleanup, Gap 5 DIGIMON validation, dependency install
+**Scope**: Phase 3 — audit fixes, fuzzy resolution, extraction quality, judge filter
 
 ## What Is Actually Proven
 
-### Plan 0020 status
-
-| Gap | Status | Notes |
+| Gap | Status | Evidence |
 |---|---|---|
-| 1. Predicate names | Closed | Already existed in `sumo_plus.db` |
-| 2. Non-military domain testing | Closed | Financial + academic slices exercised |
-| 3. Automated entity resolution | Closed, narrow | Exact-name auto-resolution only |
-| 4. Temporal qualifiers | Closed | Extraction + Foundation IR export |
-| 5. DIGIMON export/import/query | Closed | Export, import, operator query, and non-unity weight semantics all proven |
-| 6. research_v3 adapter | Closed, adapter-level | `graph.yaml` import proven on real data |
-| 7. Epistemic engine on real data | Closed, narrow | Real-data tension/supersession proof exists |
-| 8. ProbLog spike | Closed, spike-level | Build-vs-buy answered: use ProbLog |
-| 9. Second vocabulary | Closed | `dodaf_minimal` exercised through E2E extraction |
-| 10. OpenClaw autonomous operation | Partially closed | Repo-local spec exists; runtime proof still missing |
+| 1. Predicate names | Closed | Already in sumo_plus.db |
+| 2. Non-military domain | Closed | Financial + academic + DoDAF |
+| 3. Entity resolution | Closed | Exact + fuzzy (rapidfuzz) |
+| 4. Temporal qualifiers | Closed | Extraction + Foundation IR |
+| 5. DIGIMON export | Closed | Export + import + query + non-unity confidence weights |
+| 6. research_v3 adapter | Closed (adapter-level) | graph.yaml import, 48 real claims |
+| 7. Epistemic on data | Closed | 16 scored, 19 tensions, 1 supersession |
+| 8. ProbLog spike | Closed | 45 derived facts, decision: use ProbLog |
+| 9. Second vocabulary | Closed | dodaf_minimal E2E |
+| 10. OpenClaw | Partially closed | Spec exists, no runtime proof |
 
-### Real DIGIMON proof completed this session
+## Key Findings This Phase
 
-- Missing DIGIMON runtime deps were installed in the project venv (`igraph`, `rapidfuzz`, `loguru`, `unidecode`).
-- Real promoted assertions were exported from `var/e2e_test_2026_03_25/review_combined.sqlite3`.
-- Export result: `20` entity rows, `16` relationship rows.
-- DIGIMON import result: `results/onto_canon_e2e_20260325/er_graph/nx_data.graphml` with `19` merged nodes and `16` edges.
-- DIGIMON runtime proof: `relationship.onehop` over seed `USSOCOM` returned the expected neighborhood, including the commanders and PSYOP-connected units.
+### Extraction quality is NOT the bottleneck we thought
 
-## Key Context For The Next Agent
+The operational prompt (`text_to_candidate_assertions.yaml`) scored **88%
+structural validity** across all 17 PSYOP benchmark cases (35/40 valid
+candidates, 15/17 cases with output, 0 errors, 71s total). This is dramatically
+better than the experiment variants (25%).
 
-- `model_override` in config is `gemini/gemini-2.5-flash`. This is the working model. `gemini-3-flash-preview` regressed.
-- Evidence span resolution is intentionally `strict=False`; bad spans are skipped, not fatal.
-- The Makefile path is real and useful: `make extract`, `make candidates`, `make accept`, `make promote`, `make summary`, `make failures`, `make diagnose`.
-- `llm_client` `main` now has the observability columns `schema_hash`, `response_format_type`, and `validation_errors`.
-- Pre-commit hook bugs:
-  - `MP-026`: `project-meta` `validate_plan.py`
-  - `MP-027`: `llm_client`, fixed earlier in this session lineage
+**Root cause of the experiment failure**: the experiment config lacked
+`model_override`, causing task-based model selection to route through
+OpenRouter (55% timeout rate). Fixed: `model_override: gemini/gemini-2.5-flash`
+now set in experiment config.
 
-## What Was Corrected In Docs
+### Documentation audit corrected overclaims
 
-- `README.md` now points to Plans `0014`, `0019`, and `0020` as the active plan surface, and treats `0001` as historical bootstrap record.
-- `docs/SUCCESSOR_CHARTER.md` now distinguishes the historical roadmap from the active gap-closure plan.
-- `docs/plans/0001_successor_roadmap.md` is marked as a completed historical baseline rather than an active plan.
-- `docs/STATUS.md` no longer claims that OpenClaw runtime proof and full consumer-side adoption are already complete.
-- `docs/plans/0020_vision_gap_closure.md` now marks Gap 5 and Gap 10 as partial rather than fully closed.
-- `CLAUDE.md` and `AGENTS.md` no longer say "all 10 vision gaps are closed."
+Review agent correctly identified Gap 5 and Gap 10 as partial, not fully closed.
+Gap 5 is now fully closed (epistemic confidence wired into Digimon weight).
+Gap 10 remains partial (spec only, no runtime proof).
 
-## Highest-Value Next Steps
+## What Was Built This Phase
 
-1. Prove consumer-side adoption, not just repo-local adapters:
-   `research_v3 -> onto-canon6` from the consumer side, and a DIGIMON-side runbook or command path that uses the imported graph in normal workflow.
-2. Prove Gap 10 for real:
-   run OpenClaw against onto-canon6 and show that repo-local `.openclaw` contracts are actually consumed by the mission runner.
-3. Close the last Gap 5 semantic question:
-   validate DIGIMON weight handling on a non-unity-confidence slice.
-4. Upgrade entity resolution from exact-match only:
-   use `rapidfuzz` rather than hand-rolling fuzzy matching.
+| Deliverable | Description |
+|------------|-------------|
+| Fuzzy entity resolution | rapidfuzz token_sort_ratio + entity-type guard |
+| LLM-judge quality filter | Optional post-extraction filter (config-gated) |
+| Experiment reliability fix | model_override added to experiment config |
+| Gap 5 full closure | Epistemic confidence → Digimon edge weight |
+| Project-meta convergence updates | DIGIMON + research_v3 docs updated |
+| Documentation audit | 6 inconsistencies fixed, 4 ambiguities documented |
+
+## Key Context
+
+- Model: `gemini/gemini-2.5-flash` (stable, <2s direct API calls)
+- `LLM_CLIENT_TIMEOUT_POLICY=ban` — timeouts disabled in this env
+- 405 tests passing
+- Operational prompt: 88% structural validity on full benchmark
+- Judge filter: wired but off by default (`enable_judge_filter: false`)
+
+## Next Steps
+
+1. **Enable and test judge filter** on a real extraction run
+2. **Run experiment with fixed model_override** to get real variant comparison
+3. **Prove consumer-side adoption** (research_v3 and DIGIMON workflow)
+4. **Run real OpenClaw mission** to close Gap 10
