@@ -6,13 +6,16 @@ import json
 from pathlib import Path
 
 import pytest
+from unittest.mock import patch
 
 from onto_canon6 import cli as cli_module
 from onto_canon6.core import CanonicalGraphService
 from onto_canon6.pipeline import ReviewService
 
 
+@patch("onto_canon6.core.identity_service.sanitize_qcode", side_effect=lambda qid, label=None: qid)
 def test_cli_identity_flow_creates_aliases_and_external_reference_state(
+    _mock_sanitize: object,
     tmp_path: Path,
     capsys: pytest.CaptureFixture[str],
 ) -> None:

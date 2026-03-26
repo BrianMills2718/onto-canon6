@@ -5,6 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
+from unittest.mock import patch
 
 from onto_canon6.core import (
     CanonicalGraphService,
@@ -182,7 +183,10 @@ def test_attach_alias_membership_groups_two_promoted_entities_under_one_identity
     }
 
 
-def test_external_references_are_explicitly_attached_or_unresolved(tmp_path: Path) -> None:
+@patch("onto_canon6.core.identity_service.sanitize_qcode", side_effect=lambda qid, label=None: qid)
+def test_external_references_are_explicitly_attached_or_unresolved(
+    _mock_sanitize: object, tmp_path: Path,
+) -> None:
     """External reference state should be explicit instead of hidden strings."""
 
     review_service = _seed_review_service(tmp_path)

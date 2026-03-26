@@ -30,6 +30,7 @@ from .identity_store import (
     IdentityStoreError,
     IdentityStoreNotFoundError,
 )
+from .qcode_validator import sanitize_qcode
 
 logger = logging.getLogger(__name__)
 
@@ -264,6 +265,21 @@ class IdentityService:
                 raise ValueError("unresolved external references require unresolved_note")
             if normalized_external_id is not None:
                 raise ValueError("unresolved external references must not set external_id")
+
+        # Validate Wikidata Q-codes before persisting — hallucinated QIDs are
+        # worse than no QID at all.
+        if (
+            normalized_provider == "wikidata"
+            and reference_status == "attached"
+            and normalized_external_id is not None
+        ):
+            validated = sanitize_qcode(normalized_external_id, normalized_reference_label)
+            if validated is None:
+                raise ValueError(
+                    f"Wikidata Q-code validation failed for {normalized_external_id!r}"
+                    f" (label={normalized_reference_label!r}) — refusing to persist"
+                    f" a potentially hallucinated QID"
+                )
 
         try:
             with self._store.transaction() as conn:
