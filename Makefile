@@ -59,18 +59,7 @@ errors:  ## Error breakdown (DAYS=7)
 	@$(PYTHON) -m llm_client cost --group-by model --days $(DAYS) --project $(PROJECT)
 
 summary:  ## Quick extraction stats from review DB
-	@$(PYTHON) -c "\
-	import sqlite3; \
-	conn = sqlite3.connect('$(DB_PATH)'); \
-	total = conn.execute('SELECT COUNT(*) FROM candidate_assertions').fetchone()[0]; \
-	accepted = conn.execute(\"SELECT COUNT(*) FROM candidate_assertions WHERE review_status='accepted'\").fetchone()[0]; \
-	rejected = conn.execute(\"SELECT COUNT(*) FROM candidate_assertions WHERE review_status='rejected'\").fetchone()[0]; \
-	pending = conn.execute(\"SELECT COUNT(*) FROM candidate_assertions WHERE review_status='pending_review'\").fetchone()[0]; \
-	promoted = conn.execute('SELECT COUNT(*) FROM promoted_graph_assertions').fetchone()[0] if conn.execute(\"SELECT name FROM sqlite_master WHERE type='table' AND name='promoted_graph_assertions'\").fetchone() else 0; \
-	print(f'Candidates: {total} (accepted={accepted}, rejected={rejected}, pending={pending})'); \
-	print(f'Promoted:   {promoted}'); \
-	rate = f'{100*accepted/total:.0f}%' if total else 'n/a'; \
-	print(f'Acceptance: {rate}')"
+	@$(PYTHON) scripts/show_summary.py --db-path $(DB_PATH)
 
 # ─── Shared: Git ─────────────────────────────────────────────────────────────
 
