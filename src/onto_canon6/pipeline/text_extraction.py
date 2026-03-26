@@ -714,7 +714,7 @@ def _resolve_evidence_spans(
     resolved_spans = _resolve(
         source_text=source_text,
         spans=span_dicts,
-        strict=True,
+        strict=False,
     )
     return tuple(
         EvidenceSpan(
