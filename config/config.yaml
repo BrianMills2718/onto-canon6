@@ -1,53 +1,48 @@
 project:
-  name: "onto-canon6"
-  package_name: "onto_canon6"
-  version: "0.1.0"
-
+  name: onto-canon6
+  package_name: onto_canon6
+  version: 0.1.0
 paths:
-  adr_root: "docs/adr"
-  notebooks_root: "notebooks"
-  notebook_registry_path: "notebooks/notebook_registry.yaml"
-  local_profiles_root: "profiles"
-  local_ontology_packs_root: "ontology_packs"
-  donor_profiles_root: "../onto-canon5/profiles"
-  donor_ontology_packs_root: "../onto-canon5/ontology_packs"
-  review_db_path: "var/review_state.sqlite3"
-  overlay_root: "var/ontology_overlays"
-
+  adr_root: docs/adr
+  notebooks_root: notebooks
+  notebook_registry_path: notebooks/notebook_registry.yaml
+  local_profiles_root: profiles
+  local_ontology_packs_root: ontology_packs
+  donor_profiles_root: ../onto-canon5/profiles
+  donor_ontology_packs_root: ../onto-canon5/ontology_packs
+  review_db_path: var/review_state.sqlite3
+  overlay_root: var/ontology_overlays
 pipeline:
-  default_acceptance_policy: "record_only"
+  default_acceptance_policy: record_only
   permissive_review: false
-  review_mode: "human"  # human | auto | llm
-
+  review_mode: human
 ontology_runtime:
-  overlay_pack_suffix: "__overlay"
-
+  overlay_pack_suffix: __overlay
 extraction:
-  selection_task: "fast_extraction"
+  selection_task: fast_extraction
   selection_use_performance: false
-  model_override: "gemini/gemini-2.5-flash"
-  default_extraction_goal: "Extract all factual assertions directly supported by the source text."
-  prompt_template: "prompts/extraction/text_to_candidate_assertions.yaml"
-  prompt_ref: "onto_canon6.extraction.text_to_candidate_assertions@1"
+  model_override: gemini/gemini-2.5-flash
+  default_extraction_goal: Extract all factual assertions directly supported by the
+    source text.
+  prompt_template: prompts/extraction/text_to_candidate_assertions.yaml
+  prompt_ref: onto_canon6.extraction.text_to_candidate_assertions@1
   timeout_seconds: 60
   num_retries: 2
   max_budget_usd: 0.25
   enable_judge_filter: false
-  judge_filter_min_label: "partially_supported"
-
+  judge_filter_min_label: partially_supported
 chunking:
   target_max_chars: 4000
   min_chunk_chars: 1200
   max_chunk_chars: 5000
-
 evaluation:
-  sumo_db_path: "../onto-canon/data/sumo_plus.db"
-  benchmark_fixture: "tests/fixtures/psyop_eval_slice.json"
-  observability_dataset: "onto_canon6_live_extraction_benchmark"
-  observability_phase: "evaluation"
-  judge_selection_task: "judging"
-  judge_prompt_template: "prompts/evaluation/judge_candidate_reasonableness.yaml"
-  judge_prompt_ref: "onto_canon6.evaluation.judge_candidate_reasonableness@1"
+  sumo_db_path: ../onto-canon/data/sumo_plus.db
+  benchmark_fixture: tests/fixtures/psyop_eval_slice.json
+  observability_dataset: onto_canon6_live_extraction_benchmark
+  observability_phase: evaluation
+  judge_selection_task: judging
+  judge_prompt_template: prompts/evaluation/judge_candidate_reasonableness.yaml
+  judge_prompt_ref: onto_canon6.evaluation.judge_candidate_reasonableness@1
   judge_timeout_seconds: 60
   judge_num_retries: 2
   judge_max_budget_usd: 0.25
@@ -57,62 +52,59 @@ evaluation:
     negative_max_acceptance_rate: 0.0
     require_review_complete: true
   prompt_experiment:
-    experiment_name: "onto_canon6_extraction_prompt_eval"
-    observability_dataset: "onto_canon6_extraction_prompt_eval"
-    observability_phase: "evaluation"
-    selection_task: "fast_extraction"
+    experiment_name: onto_canon6_extraction_prompt_eval
+    observability_dataset: onto_canon6_extraction_prompt_eval
+    observability_phase: evaluation
+    selection_task: fast_extraction
     selection_use_performance: false
-    model_override: "gemini/gemini-2.5-flash"
+    model_override: gemini/gemini-2.5-flash
     n_runs: 2
     temperature: 0.0
     timeout_seconds: 60
     num_retries: 2
     max_budget_usd: 0.25
-    baseline_variant_name: "baseline"
-    comparison_method: "welch"
+    baseline_variant_name: baseline
+    comparison_method: welch
     comparison_confidence: 0.95
     max_candidates_per_case: 2
     max_evidence_spans_per_candidate: 1
     variants:
-      - name: "baseline"
-        prompt_template: "prompts/extraction/prompt_eval_text_to_candidate_assertions_baseline.yaml"
-        prompt_ref: "onto_canon6.extraction.prompt_eval_text_to_candidate_assertions_baseline@1"
-      - name: "hardened"
-        prompt_template: "prompts/extraction/prompt_eval_text_to_candidate_assertions_hardened.yaml"
-        prompt_ref: "onto_canon6.extraction.prompt_eval_text_to_candidate_assertions_hardened@1"
-      - name: "compact"
-        prompt_template: "prompts/extraction/prompt_eval_text_to_candidate_assertions_compact.yaml"
-        prompt_ref: "onto_canon6.extraction.prompt_eval_text_to_candidate_assertions_compact@3"
-        max_candidates_per_case: 1
-        max_evidence_spans_per_candidate: 1
-      - name: "compact_operational_parity"
-        prompt_template: "prompts/extraction/prompt_eval_text_to_candidate_assertions_compact_operational_parity_v2.yaml"
-        prompt_ref: "onto_canon6.extraction.prompt_eval_text_to_candidate_assertions_compact_operational_parity@2"
-        max_candidates_per_case: 10
-        max_evidence_spans_per_candidate: 1
-      - name: "single_response_hardened"
-        prompt_template: "prompts/extraction/prompt_eval_text_to_candidate_assertions_single_response_hardened.yaml"
-        prompt_ref: "onto_canon6.extraction.prompt_eval_text_to_candidate_assertions_single_response_hardened@1"
-        max_candidates_per_case: 2
-        max_evidence_spans_per_candidate: 1
-
+    - name: baseline
+      prompt_template: prompts/extraction/prompt_eval_text_to_candidate_assertions_baseline.yaml
+      prompt_ref: onto_canon6.extraction.prompt_eval_text_to_candidate_assertions_baseline@1
+    - name: hardened
+      prompt_template: prompts/extraction/prompt_eval_text_to_candidate_assertions_hardened.yaml
+      prompt_ref: onto_canon6.extraction.prompt_eval_text_to_candidate_assertions_hardened@1
+    - name: compact
+      prompt_template: prompts/extraction/prompt_eval_text_to_candidate_assertions_compact.yaml
+      prompt_ref: onto_canon6.extraction.prompt_eval_text_to_candidate_assertions_compact@3
+      max_candidates_per_case: 1
+      max_evidence_spans_per_candidate: 1
+    - name: compact_operational_parity
+      prompt_template: prompts/extraction/prompt_eval_text_to_candidate_assertions_compact_operational_parity_v2.yaml
+      prompt_ref: onto_canon6.extraction.prompt_eval_text_to_candidate_assertions_compact_operational_parity@2
+      max_candidates_per_case: 10
+      max_evidence_spans_per_candidate: 1
+    - name: single_response_hardened
+      prompt_template: prompts/extraction/prompt_eval_text_to_candidate_assertions_single_response_hardened.yaml
+      prompt_ref: onto_canon6.extraction.prompt_eval_text_to_candidate_assertions_single_response_hardened@1
+      max_candidates_per_case: 2
+      max_evidence_spans_per_candidate: 1
 cli:
-  default_output_format: "json"
-  file_source_kind: "text_file"
-
+  default_output_format: json
+  file_source_kind: text_file
 mcp:
-  transport: "stdio"
-
+  transport: stdio
 adapters:
   whygame:
-    default_profile_id: "whygame_minimal_strict"
-    default_profile_version: "0.1.0"
-    source_kind: "whygame_hypergraph"
+    default_profile_id: whygame_minimal_strict
+    default_profile_version: 0.1.0
+    source_kind: whygame_hypergraph
     register_artifact_by_default: true
   progressive:
-    default_profile_id: "progressive_permissive"
-    default_profile_version: "0.1.0"
-    source_kind: "progressive_extraction"
-    submitted_by: "progressive_extractor"
+    default_profile_id: progressive_permissive
+    default_profile_version: 0.1.0
+    source_kind: progressive_extraction
+    submitted_by: progressive_extractor
   research_agent:
     default_relationship_confidence: 0.8
