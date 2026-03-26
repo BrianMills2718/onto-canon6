@@ -1,8 +1,8 @@
 # Handoff: onto-canon6
 
-**Date**: 2026-03-25
-**From**: Claude Code (strategic review + implementation + audit, ~12 hours across 2 days)
-**Session**: 26 onto-canon6 commits, plus llm_client and project-meta fixes
+**Date**: 2026-03-25 (final)
+**From**: Claude Code (strategic review + implementation + audit + e2e proof, 2 days)
+**Session**: 38 onto-canon6 commits, plus llm_client and project-meta fixes
 
 ---
 
@@ -49,7 +49,14 @@
 
 ## Next Steps (Priority Order)
 
-### 1. Fix extraction prompt for e2e flow (BLOCKER for everything else)
+### ~~1. Fix extraction prompt for e2e flow~~ DONE (2026-03-25)
+
+E2E pipeline proven. Root cause: gemini-3-flash-preview regressed. Fix:
+switch to gemini-2.5-flash (stable). model_override wired into extraction
+service. Shared evidence span resolver built in llm_client. Makefile
+targets working: extract → candidates → accept → promote → summary.
+
+### 1. (NEW) Run e2e on longer documents and non-military text
 
 **Finding from e2e attempt (2026-03-25):**
 - `single_response_hardened` prompt → ALL models produce empty `roles: {}`
