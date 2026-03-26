@@ -59,6 +59,7 @@ evaluation:
     observability_phase: "evaluation"
     selection_task: "fast_extraction"
     selection_use_performance: false
+    model_override: "gemini/gemini-2.5-flash"
     n_runs: 2
     temperature: 0.0
     timeout_seconds: 60
