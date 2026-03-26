@@ -850,6 +850,35 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     export_digimon_parser.set_defaults(handler=_handle_export_digimon)
 
+    import_research_v3_parser = subparsers.add_parser(
+        "import-research-v3",
+        help="Import claims from a research_v3 graph.yaml into the review pipeline.",
+    )
+    _add_store_args(import_research_v3_parser, include_overlay_root=True)
+    import_research_v3_parser.add_argument(
+        "--input",
+        required=True,
+        type=Path,
+        help="Path to the research_v3 graph.yaml file.",
+    )
+    import_research_v3_parser.add_argument(
+        "--profile-id",
+        default="progressive_permissive",
+        help="Ontology profile for imported candidates. Defaults to progressive_permissive.",
+    )
+    import_research_v3_parser.add_argument(
+        "--profile-version",
+        default="0.1.0",
+        help="Profile version. Defaults to 0.1.0.",
+    )
+    import_research_v3_parser.add_argument(
+        "--submitted-by",
+        default="adapter:research_v3",
+        help="Actor id recorded for the imported candidates.",
+    )
+    _add_output_arg(import_research_v3_parser, default_output=config.cli.default_output_format)
+    import_research_v3_parser.set_defaults(handler=_handle_import_research_v3)
+
     return parser
 
 
@@ -1422,6 +1451,39 @@ def _handle_export_identity_report(args: argparse.Namespace) -> int:
     _emit_output(report, output_format=args.output)
     return 0
 
+
+
+def _handle_import_research_v3(args: argparse.Namespace) -> int:
+    """Import research_v3 claims into the review pipeline."""
+    from .adapters.research_v3_import import import_research_v3_graph
+
+    input_path = Path(args.input)
+    review_service = _build_review_service(args)
+
+    imports = import_research_v3_graph(
+        graph_path=input_path,
+        profile_id=args.profile_id,
+        profile_version=args.profile_version,
+        submitted_by=args.submitted_by,
+    )
+
+    results = []
+    for candidate_import in imports:
+        result = review_service.submit_candidate_import(candidate_import=candidate_import)
+        results.append({
+            "candidate_id": result.candidate.candidate_id,
+            "claim_text": result.candidate.claim_text,
+            "validation_status": result.candidate.validation_status,
+        })
+
+    summary = {
+        "imported": len(results),
+        "source": str(input_path),
+        "profile_id": args.profile_id,
+        "candidates": results,
+    }
+    _emit_output(summary, output_format=args.output)
+    return 0
 
 
 def _handle_auto_resolve_identities(args: argparse.Namespace) -> int:
