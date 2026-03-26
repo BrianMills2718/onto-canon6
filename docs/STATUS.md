@@ -1,6 +1,6 @@
 # onto-canon6 Status
 
-Updated: 2026-03-24
+Updated: 2026-03-26
 
 ## What Is Proven
 
@@ -230,14 +230,57 @@ Planning companion:
 77. single_response_hardened promoted as operational prompt (4/4 structural
     on gpt-5.4-mini, 0 errors);
 78. composability principle documented: vocabulary, extensions, extraction
-    strategy, and resolution strategies are pluggable.
+    strategy, and resolution strategies are pluggable;
+79. second vocabulary proof: `dodaf_minimal` pack with `dm2:OperationalNode`
+    and `dm2:InformationElement` entity types, 7 candidates extracted with
+    100% validation using the same runtime and review pipeline (Plan 0020
+    Gap 9);
+80. non-military domain testing: financial (SEC/crypto, 82% structural
+    validity) and academic (climate research) text extraction with psyop_seed
+    and general_purpose_open profiles (Plan 0020 Gap 2);
+81. automated entity resolution: `auto_resolution.py` groups promoted entities
+    by normalized display name, creates identities with canonical/alias
+    memberships, proven on USSOCOM across 2 source chunks (Plan 0020 Gap 3);
+82. temporal qualifiers: `valid_from` and `valid_to` as optional ISO 8601
+    fields in extraction, payload storage, and Foundation IR export
+    (`sys:valid_from`, `sys:valid_to`). Proven: SEC complaint 2023-06-05,
+    Zhao tenure end 2023-11 (Plan 0020 Gap 4);
+83. Digimon real-data export: 20 entities + 16 relationships from e2e test
+    DB exported as JSONL and ingested into Digimon GraphML (19 merged nodes,
+    USSOCOM deduplicated). Graph queries return correct USSOCOM command
+    structure (Plan 0020 Gap 5);
+84. research_v3 import adapter: FtM entity types mapped to onto-canon6 types
+    (15 schemas), corroboration status to confidence scores. 48 claims from
+    real Booz Allen lobbying investigation imported into review pipeline
+    (Plan 0020 Gap 6);
+85. epistemic engine on real data: 16 assertions scored with varying
+    confidence (0.65-0.95), 1 supersession recorded, 19 tension pairs
+    detected (5 USSOCOM commanders → role_filler_conflict), 1 assertion
+    weakened (Plan 0020 Gap 7);
+86. ProbLog rule evaluation: 16 facts from onto-canon6 SQLite → 45 derived
+    facts with probability propagation. Product semantics: P(authority_over)
+    = P(commands) × P(belongs_to). Decision: use ProbLog (Plan 0020 Gap 8);
+87. OpenClaw mission specification: `.openclaw/success-criteria.yaml` with
+    measurable criteria (structural validity >= 70%, min 1 candidate),
+    `.openclaw/mission-spec.yaml` with Makefile execution interface and
+    data quality review gate (Plan 0020 Gap 10);
+88. general-purpose ontology pack: 15 entity types (person, organization,
+    company, government_org, legal_entity, location, event, etc.) and 10
+    generic predicates with open profile (general_purpose_open);
+89. enhanced observability: `make summary` reports identity resolution stats
+    (total, multi-member, auto-resolved) and epistemic stats (confidence
+    scores, averages);
+90. E2E consumer integration test: extraction → auto-resolve → Digimon
+    export, research_v3 → import → review pipeline, Foundation IR export —
+    all 3 paths proven on real data.
 
 ## What Is Not Proven Yet
 
 Still missing:
 
-1. extraction quality with llm_client validation retry fix — pending commit
-   in llm_client (pre-commit hook blocking, see llm_client/BACKLOG.md);
+1. extraction quality improvement — API reliability (55% timeout rate in
+   experiment) and empty-roles issue are the primary bottlenecks, not prompt
+   quality. Operational prompt works; experiment variants need rework;
 2. end-to-end flow: text → onto-canon6 → query results (never run);
 3. entity resolution across 2+ extraction runs (identity subsystem exists,
    never tested on multi-run scenario);
