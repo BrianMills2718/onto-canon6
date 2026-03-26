@@ -541,3 +541,34 @@ Consumer-driven priority, per CLAUDE.md:
 8. **Gap 4** (temporal qualifiers) — additive
 9. **Gap 8** (ProbLog spike) — exploratory
 10. **Gap 10** (autonomous ops) — depends on mission runner maturity
+
+
+---
+
+## Extraction Quality Experiment Results (2026-03-26)
+
+Ran prompt_eval experiment: 5 variants × 4 cases × 1 run = 20 LLM calls.
+Model: gemini/gemini-2.5-flash via litellm.
+
+### Raw Results
+- 11/20 calls timed out (600s connection timeout, 55% failure rate)
+- 26 empty-roles instances (model produces `roles: {}` for some predicates)
+- 20 candidates dropped due to structural issues (empty roles)
+- Case psyop_001: mean_score=0.0, zero usable candidates across all variants
+
+### Root Cause Analysis
+1. **API reliability** is the primary bottleneck, not prompt quality. 55%
+   connection timeout rate means most experiment runs fail before the model
+   even produces output.
+2. **Empty roles** is a known issue (documented in CLAUDE.md): the model sees
+   `additionalProperties` in the roles schema and produces `{}` because no
+   keys are required. This was previously diagnosed in the 2026-03-25 session.
+3. **The operational prompt (text_to_candidate_assertions.yaml) works** — it
+   produced valid candidates in Gap 2, Gap 4, and Gap 9 testing. The problem
+   is specific to the prompt_eval experiment variants and API reliability.
+
+### Action Items
+1. Switch to direct API calls (bypass OpenRouter) for reliability
+2. Add connection retry with backoff in llm_client
+3. Focus prompt iteration on the operational prompt that works, not the
+   experiment variants that have known empty-roles issues
