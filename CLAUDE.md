@@ -188,3 +188,44 @@ happens.
   `config/config.yaml`.
 - No examples in prompts without approval. Rules and goal-oriented guidance
   are fine.
+
+## Continuous Execution Mandate (2026-03-26)
+
+**DO NOT STOP.** This project is in a 24-hour autonomous execution sprint
+closing all 10 vision gaps from Plan 0020. The agent must:
+
+1. **Never pause to ask** — log uncertainties in the plan doc and continue.
+2. **Commit at every milestone** — each gap completion gets its own commit.
+3. **Log what didn't work** — failed approaches go in the plan's status section,
+   not as conversation questions.
+4. **Use real data** — the e2e_test_2026_03_25 DB has 16 promoted assertions
+   and 20 entities. Use it. Don't generate synthetic fixtures when real data
+   exists.
+5. **Budget awareness** — model_override is `gemini/gemini-2.5-flash` (cheap).
+   max_budget per call is $0.25. Batch LLM work where possible.
+6. **Test before commit** — `make test-quick` or targeted pytest before every
+   commit. Don't commit broken code.
+7. **Update Plan 0020 status** — after each gap, update the gap's Status
+   section in `docs/plans/0020_vision_gap_closure.md`.
+
+### Execution Order (consumer-driven priority)
+
+| Phase | Gaps | Est. Hours | Notes |
+|-------|------|-----------|-------|
+| 1 | CLAUDE.md update, Gap 9 (vocab), Gap 1 (names) | 3-4 | Quick wins, no blockers |
+| 2 | Gap 2 (domain test), Gap 3 (entity resolution) | 4-5 | Core capabilities |
+| 3 | Gap 4 (temporal), Gap 7 (epistemic) | 3-4 | Additive features |
+| 4 | Gap 8 (ProbLog), Gap 6 (research_v3), Gap 10 (OpenClaw) | 6-8 | Advanced/integration |
+| 5 | Final: tests, docs, commit | 1-2 | Cleanup |
+
+### Known Environment Facts
+
+- Python: `/home/brian/projects/.venv/bin/python` (shared venv)
+- CLI: `python -m onto_canon6` from project root
+- Model: `gemini/gemini-2.5-flash` (stable, cheap)
+- sumo_plus.db: `../onto-canon/data/sumo_plus.db`
+- E2E test DB: `var/e2e_test_2026_03_25/review_combined.sqlite3`
+- Digimon: `~/projects/Digimon_for_KG_application/`
+- research_v3: `~/projects/research_v3/`
+- Profiles: dodaf_minimal_strict, dodaf_minimal_mixed, psyop_seed, progressive_permissive
+- Hook bugs: MP-026 (project-meta validate_plan.py), MP-027 (llm_client, FIXED)
