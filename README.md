@@ -86,11 +86,15 @@ The supported local setup today is:
 
 1. install repo dev dependencies into your active interpreter:
    `make dev-setup`
-2. ensure the donor repos are available as siblings of this repo:
+2. install the shared `llm_client` dependency into that interpreter:
+   `python -m pip install -e ../llm_client`
+3. verify the setup explicitly:
+   `make verify-setup`
+4. ensure the donor repos are available as siblings of this repo:
    - `../onto-canon5` for donor profiles and ontology packs
    - `../onto-canon` for `data/sumo_plus.db`
    - `../research_v3` if you want the research_v3 portion of the smoke path
-3. if you are not using this repo's own `.venv`, pass `PYTHON=...` explicitly to
+5. if you are not using this repo's own `.venv`, pass `PYTHON=...` explicitly to
    `make` targets
 
 The current bootstrap is not yet fully self-contained. The donor-asset
@@ -109,6 +113,7 @@ local artifacts. It exercises:
 Run it with:
 
 ```bash
+make verify-setup
 make smoke
 ```
 
