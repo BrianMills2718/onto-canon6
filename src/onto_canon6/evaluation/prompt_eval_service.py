@@ -530,7 +530,6 @@ def _score_prompt_eval_exact_canonicalization(
     )
     # For precision: an observed candidate is a true positive if it matches
     # either the golden set or the accepted alternatives.
-    acceptable_signatures = golden_signatures + alternative_signatures
     observed_signatures = Counter(
         _prompt_eval_candidate_signature(candidate_import.payload) for candidate_import in observed_candidates
     )

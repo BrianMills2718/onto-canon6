@@ -20,21 +20,25 @@ import json
 import logging
 from pathlib import Path
 import re
-from typing import Any, Mapping, Protocol, cast
+from typing import TYPE_CHECKING, Any, Literal, Mapping, Protocol, Sequence, cast
 
 from pydantic import BaseModel, ConfigDict, Field, JsonValue, model_validator
 
 from ..config import ConfigError, get_config
 from ..ontology_runtime import load_effective_profile
-from ..ontology_runtime.loaders import LoadedProfile
+from ..ontology_runtime.loaders import LoadedProfile, PackPredicateRule
 from .models import (
     CandidateAssertionImport,
+    CandidateAssertionRecord,
     CandidateSubmissionResult,
     EvidenceSpan,
     ProfileRef,
     SourceArtifactRef,
 )
 from .service import ReviewService
+
+if TYPE_CHECKING:
+    from ..config import AppConfig
 
 logger = logging.getLogger(__name__)
 
@@ -706,17 +710,24 @@ class TextExtractionService:
         # Apply review_mode policy after submission
         review_mode = config.pipeline.review_mode
         if review_mode in ("auto", "llm") and submissions:
-            self._apply_review_mode(submissions, review_mode, source_text, config, submitted_by)
+            narrowed_review_mode = cast(Literal["auto", "llm"], review_mode)
+            self._apply_review_mode(
+                submissions,
+                narrowed_review_mode,
+                source_text,
+                config,
+                submitted_by,
+            )
 
         return submissions
 
 
     def _apply_review_mode(
         self,
-        submissions: tuple,
-        review_mode: str,
+        submissions: tuple[CandidateSubmissionResult, ...],
+        review_mode: Literal["auto", "llm"],
         source_text: str,
-        config: "AppConfig",
+        config: AppConfig,
         submitted_by: str,
     ) -> None:
         """Auto-accept and/or auto-promote based on review_mode config.
@@ -724,7 +735,6 @@ class TextExtractionService:
         - ``auto``: accept all valid candidates, promote all accepted.
         - ``llm``: run LLM-judge, accept supported, reject unsupported, promote accepted.
         """
-        from .service import ReviewService
         from ..core import CanonicalGraphService
 
         graph_service = CanonicalGraphService(db_path=self._review_service.store.db_path)
@@ -745,7 +755,7 @@ class TextExtractionService:
                         pass
                     continue
                 # supported or partially_supported → accept
-                decision = "accepted"
+                decision: Literal["accepted"] = "accepted"
             else:
                 # auto mode → accept everything valid
                 decision = "accepted"
@@ -760,7 +770,12 @@ class TextExtractionService:
             except Exception as exc:
                 logger.warning("auto-review failed for %s: %s", cid, exc)
 
-    def _judge_candidate(self, candidate: object, source_text: str, config: "AppConfig") -> str:
+    def _judge_candidate(
+        self,
+        candidate: CandidateAssertionRecord,
+        source_text: str,
+        config: AppConfig,
+    ) -> str:
         """Run LLM-judge on a single candidate, return label."""
         try:
             import litellm
@@ -769,7 +784,9 @@ class TextExtractionService:
             claim = getattr(candidate, "claim_text", "") or ""
             pred = ""
             if hasattr(candidate, "normalized_payload"):
-                pred = candidate.normalized_payload.get("predicate", "")
+                raw_predicate = candidate.normalized_payload.get("predicate", "")
+                if isinstance(raw_predicate, str):
+                    pred = raw_predicate
 
             rendered = render_prompt(
                 config.evaluation.judge_prompt_template,
@@ -822,7 +839,7 @@ def _apply_judge_filter(
     candidate_imports: list[CandidateAssertionImport],
     source_text: str,
     min_label: str,
-    config: "AppConfig",
+    config: AppConfig,
 ) -> list[CandidateAssertionImport]:
     """Filter candidates using LLM judge for reasonableness.
 
@@ -1103,10 +1120,10 @@ def _trace_id_for_source(*, source_ref: str, text: str) -> str:
 
 
 def _rank_predicates_by_relevance(
-    rules: list[tuple[str, object]],
+    rules: Sequence[tuple[str, PackPredicateRule]],
     source_text: str,
     max_predicates: int,
-) -> list[tuple[str, object]]:
+) -> list[tuple[str, PackPredicateRule]]:
     """Rank predicates by keyword overlap with source text.
 
     Simple heuristic: score each predicate by how many of its keywords
@@ -1116,7 +1133,7 @@ def _rank_predicates_by_relevance(
     source_lower = source_text.lower()
     source_words = set(source_lower.split())
 
-    scored: list[tuple[float, int, tuple[str, object]]] = []
+    scored: list[tuple[int, int, tuple[str, PackPredicateRule]]] = []
     for idx, (pred_id, rule) in enumerate(rules):
         # Extract keywords from predicate ID (e.g., "oc:hold_command_role" → ["hold", "command", "role"])
         pred_words = set(pred_id.replace(":", "_").replace("-", "_").split("_"))

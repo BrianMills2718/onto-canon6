@@ -101,7 +101,8 @@ def promoted_assertion_to_foundation(
                 foundation_filler["kind"] = kind
 
                 if kind == "entity":
-                    entity_id = filler.get("entity_id")
+                    entity_id_raw = filler.get("entity_id")
+                    entity_id = entity_id_raw if isinstance(entity_id_raw, str) and entity_id_raw else None
                     if entity_id:
                         foundation_filler["entity_id"] = entity_id
                     if "name" in filler:
@@ -109,7 +110,12 @@ def promoted_assertion_to_foundation(
                     if "entity_type" in filler:
                         foundation_filler["entity_type"] = filler["entity_type"]
                     # Merge alias_ids from payload AND identity subsystem.
-                    payload_aliases = filler.get("alias_ids", [])
+                    payload_aliases_raw = filler.get("alias_ids")
+                    payload_aliases = (
+                        [alias for alias in payload_aliases_raw if isinstance(alias, str)]
+                        if isinstance(payload_aliases_raw, list)
+                        else []
+                    )
                     identity_aliases = _aliases.get(entity_id, []) if entity_id else []
                     merged = sorted(set(payload_aliases + identity_aliases))
                     if merged:

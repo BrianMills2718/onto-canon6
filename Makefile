@@ -9,10 +9,11 @@
 
 SHELL := /bin/bash
 .DEFAULT_GOAL := help
-PYTHON := /home/brian/projects/.venv/bin/python
+PYTHON ?= $(if $(wildcard .venv/bin/python),$(CURDIR)/.venv/bin/python,python3)
 CLI := $(PYTHON) -m onto_canon6
 DAYS ?= 7
 PROJECT ?= onto_canon6
+LIMIT ?= 20
 
 # Default extraction config
 PROFILE_ID ?= psyop_seed
@@ -25,7 +26,7 @@ OUTPUT ?= json
 
 # ─── Shared: Testing ─────────────────────────────────────────────────────────
 
-.PHONY: test test-quick check
+.PHONY: test test-quick check dev-setup
 
 test:  ## Run full test suite
 	@$(PYTHON) -m pytest tests/ -v \
@@ -39,14 +40,23 @@ test-quick:  ## Run tests (no traceback)
 		--ignore=tests/adapters/test_digimon_export.py \
 		--ignore=tests/integration/test_cli_flow.py
 
-check:  ## Run tests + type check
+check:  ## Run tests + type check + source lint
 	@echo "Running tests..."
 	@$(PYTHON) -m pytest tests/ -q --tb=short \
 		--ignore=tests/integration/test_notebook_process.py \
 		--ignore=tests/adapters/test_digimon_export.py \
 		--ignore=tests/integration/test_cli_flow.py
 	@echo ""
+	@echo "Running mypy..."
+	@$(PYTHON) -m mypy src
+	@echo ""
+	@echo "Running ruff..."
+	@$(PYTHON) -m ruff check src
+	@echo ""
 	@echo "All checks passed!"
+
+dev-setup:  ## Install repo dev deps into the active interpreter
+	@$(PYTHON) -m pip install -e ".[dev]"
 
 # ─── Shared: Observability ───────────────────────────────────────────────────
 
@@ -55,8 +65,8 @@ check:  ## Run tests + type check
 cost:  ## LLM spend for this project (DAYS=7)
 	@$(PYTHON) -m llm_client cost --group-by task --days $(DAYS) --project $(PROJECT)
 
-errors:  ## Error breakdown (DAYS=7)
-	@$(PYTHON) -m llm_client cost --group-by model --days $(DAYS) --project $(PROJECT)
+errors:  ## Recent extraction errors from observability DB (DAYS=7 LIMIT=20)
+	@$(PYTHON) scripts/show_extraction_failures.py --days $(DAYS) --limit $(LIMIT)
 
 summary:  ## Quick extraction stats from review DB
 	@$(PYTHON) scripts/show_summary.py --db-path $(DB_PATH)

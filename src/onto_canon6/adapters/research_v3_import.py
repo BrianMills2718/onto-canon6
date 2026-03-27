@@ -10,10 +10,9 @@ Source URLs and retrieval timestamps → onto-canon6 provenance.
 
 from __future__ import annotations
 
-import json
 import logging
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import yaml
 
@@ -66,7 +65,12 @@ CONFIDENCE_LABEL_SCORE: dict[str, float] = {
 def load_research_v3_graph(graph_path: Path) -> dict[str, Any]:
     """Load a research_v3 graph.yaml file."""
     with graph_path.open("r", encoding="utf-8") as f:
-        return yaml.safe_load(f)
+        loaded = yaml.safe_load(f)
+    if loaded is None:
+        return {}
+    if not isinstance(loaded, dict):
+        raise ValueError(f"research_v3 graph must be a mapping: {graph_path}")
+    return cast(dict[str, Any], loaded)
 
 
 def map_ftm_entity_type(ftm_schema: str) -> str:
@@ -203,11 +207,15 @@ def _extract_entity_name(entity_data: dict[str, Any]) -> str:
     """Extract display name from FtM entity dict."""
     properties = entity_data.get("properties", {})
     # FtM stores names as arrays
-    names = properties.get("name", [])
-    if names and isinstance(names, list):
-        return names[0]
+    if isinstance(properties, dict):
+        names = properties.get("name", [])
+        if isinstance(names, list) and names and isinstance(names[0], str):
+            return names[0]
     # Fallback to id
-    return entity_data.get("id", "unknown")
+    entity_id = entity_data.get("id")
+    if isinstance(entity_id, str) and entity_id:
+        return entity_id
+    return "unknown"
 
 
 __all__ = [
