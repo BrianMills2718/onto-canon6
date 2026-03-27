@@ -2,7 +2,7 @@
 
 Status: active
 
-Last updated: 2026-03-26
+Last updated: 2026-03-27
 Workstream: post-bootstrap capability completion
 
 ## Purpose
@@ -18,6 +18,58 @@ own plans if scope warrants it. Gaps are ordered by dependency, not priority.
 Unless a gap section has been fully rewritten, the `Current State` subsection
 captures the baseline state at the moment the gap was opened. The per-gap
 `Status` block is authoritative for present closure state.
+
+## Execution Posture (2026-03-27)
+
+This plan is sequencing the work, not shrinking the vision.
+
+### Preserved Long-Term Capabilities
+
+The full successor capability vision remains authoritative in
+`docs/plans/0005_v1_capability_parity_matrix.md`. Deferred capabilities are
+not being dropped because an early run underperformed or because the current
+workstream is narrower. If a capability belongs in the successor, it stays in
+the parity ledger until explicitly abandoned with rationale.
+
+### Active Implementation Frontier
+
+The active implementation frontier is currently limited to the work most likely
+to unlock the rest of the vision:
+
+1. extraction quality and evaluation hardening;
+2. reproducibility / bootstrap independence from donor repos and hidden setup;
+3. consumer adoption of the proved outputs (research_v3, Digimon, Foundation IR,
+   and adjacent downstream surfaces).
+
+New active work should only be promoted when it clearly advances one of those
+three fronts.
+
+### Deferred But Protected
+
+Capabilities outside the current frontier remain deferred but protected.
+
+Protection means:
+
+1. do not delete proven slices merely because they are not the current
+   bottleneck;
+2. do not make local simplifications that would box out deferred capabilities;
+3. prefer archive-and-label over delete when preserving proof artifacts or
+   design records;
+4. keep extension points, schema seams, and boundary contracts explicit where
+   they are needed for later recovery.
+
+### Immediate Gate For New Work
+
+Before starting a new implementation track, answer:
+
+1. does this improve extraction quality on the canonical corpora;
+2. does this make the proved workflow reproducible without hidden repo
+   dependencies;
+3. does this cause a real downstream consumer to adopt onto-canon6 outputs;
+4. if none of the above, why is this more important than the current frontier?
+
+If the answer to 1-3 is no, the default move is to defer the work rather than
+expand the active surface area.
 
 ## Review Notes (2026-03-26)
 

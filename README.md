@@ -1,60 +1,84 @@
 # onto-canon6
 
-`onto-canon6` is the successor bootstrap for the `onto-canon` lineage.
+`onto-canon6` is the successor bootstrap for the `onto-canon` lineage and the
+current governed-assertion middleware for the ecosystem.
 
-Phases 0-15 completed the bootstrap roadmap, not the full successor-parity goal.
-The explicit parity ledger now lives in `docs/plans/0005_v1_capability_parity_matrix.md`.
-Two real non-fixture runs completed (PSYOP Stage 1 + Shield AI WhyGame).
-Post-bootstrap work is now active in explicit extraction-quality and
-gap-closure workstreams, not a hidden Phase 16+ chain. The active plan surface
-is Plans 0014, 0019, and 0020. The canonical successor-core story still ends
-at Phase 15, and the canonical notebook journey stays conservative until the
-post-bootstrap work stabilizes more.
+Its core job is to take candidate assertions from text or external producers,
+keep provenance and review in the loop, and only then promote durable graph
+state for downstream consumers.
 
-This repo starts from the first proved slice instead of trying to port an
-entire prior runtime. The current scope is intentionally narrow:
+Phases 0-15 completed the bootstrap roadmap, not the full successor-parity
+goal. The full long-term capability vision remains authoritative in
+`docs/plans/0005_v1_capability_parity_matrix.md`. Post-bootstrap work is now
+sequenced around the active bottlenecks rather than broad phase expansion:
 
-- ontology runtime contracts
-- unknown-item policy semantics
-- donor pack/profile loading
-- local assertion validation against donor rules
-- persisted candidate/proposal review state
-- candidate-level review state transitions
-- provenance-aware candidate submissions
-- typed text-grounded import contracts with source text, claim text, and
-  evidence spans
-- `llm_client`-backed raw-text extraction into candidate assertions via prompt
-  templates and structured output
-- live extraction evaluation that separates reasonableness, structural
-  validation, and exact canonicalization fidelity while emitting prompt
-  provenance and shared experiment records
-- explicit overlay application for accepted ontology proposals
-- overlay-aware validation against local additions
-- minimal report surface over persisted review and overlay state
-- a thin operational CLI over extract, list, review, proposal, and overlay
-  actions
-- one canonical end-to-end journey notebook plus a machine-readable notebook
-  registry and validator
-- one local second-pack proof with `dodaf_minimal` strict and mixed profiles
-- one narrow artifact-lineage recovery slice with candidate-centered support
-  links and a typed lineage report
-- one extension-local epistemic subsystem with candidate confidence /
-  supersession plus promoted-assertion `weakened` / `retracted` dispositions
-  and derived corroboration / tension reporting
-- one first product-facing workflow that exports a CLI-driven governed bundle
-  over accepted reviewed assertions
-- one first canonical-graph recovery slice with explicit promotion from
-  accepted candidates into durable promoted assertions and graph reports
-- one first stable-identity slice with explicit alias membership and explicit
-  attached or unresolved external-reference state over promoted entities
-- one first semantic canonicalization slice that replaces the v1 hard semantic
-  stack with pack-driven predicate/role canonicalization plus explicit
-  recanonicalization over promoted graph state
-- one thin FastMCP agent surface over the proved successor services
-- one narrow WhyGame relationship adapter plus local `whygame_minimal` pack
-  and strict profile
-- thin CLI commands for WhyGame relationship import and research-agent
-  relationship transformation into WhyGame facts
+1. extraction quality and evaluation hardening;
+2. reproducibility / bootstrap independence from donor repos and hidden setup;
+3. consumer adoption of the proved outputs.
+
+This is sequencing, not retreat. Deferred capabilities remain part of the
+successor vision and must stay architecturally protected even when they are not
+the current implementation frontier.
+
+## What This Repo Owns
+
+The durable core is:
+
+- ontology runtime contracts, packs, profiles, and policy semantics
+- reviewable candidate assertion and ontology-proposal state
+- provenance-aware submissions with source text, claim text, and evidence spans
+- overlay application for accepted ontology additions
+- promotion into durable graph assertions
+- stable identity, alias membership, and external-reference state
+- semantic canonicalization and recanonicalization over promoted graph state
+- extension-local epistemic reporting over promoted assertions
+- governed export surfaces for downstream consumers
+
+The producer side is intentionally replaceable:
+
+- raw-text extraction through `llm_client`
+- progressive extraction
+- WhyGame, research_v3, and other import adapters
+
+## Current Maturity
+
+The repo is beyond pure design/bootstrap work. It has:
+
+1. a maintained local test surface;
+2. two real non-fixture runs (PSYOP Stage 1 and Shield AI WhyGame);
+3. a proved E2E text -> review -> promotion path;
+4. proved downstream artifact exports and consumer-facing adapter slices.
+
+Current emphasis is not "recover every capability now." It is "keep the full
+vision visible while making the proved workflow stronger and more usable."
+
+## Canonical Workflow
+
+The canonical journey today is:
+
+1. ingest candidate assertions from raw text or an adapter;
+2. validate against the active profile and proposal/overlay rules;
+3. preserve provenance and evidence spans;
+4. review candidates explicitly;
+5. promote accepted candidates into durable graph state;
+6. export governed outputs for downstream consumers.
+
+The canonical notebook for that path is:
+
+- `notebooks/00_master_governed_text_to_reviewed_assertions.ipynb`
+
+## Canonical Proof Artifacts
+
+The highest-signal local proof artifacts today are:
+
+- `var/e2e_test_2026_03_25/review_combined.sqlite3`
+  first complete text -> review -> promotion proof
+- `var/gap9_dodaf_test/review.sqlite3`
+  second-pack composability proof
+- `var/real_runs/2026-03-18_research_agent_shield_ai_whygame/`
+  first real adapter-facing WhyGame proof
+
+These are more important than the broader historical run debris under `var/`.
 
 The governing architectural rationale lives in the local successor charter and
 the adopted ADR set.

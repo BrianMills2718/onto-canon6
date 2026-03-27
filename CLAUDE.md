@@ -54,7 +54,7 @@ config/
   transfer evaluation (Plan 0019), and vision-gap closure / consumer adoption
   hardening (Plan 0020).
 
-## Strategic Direction (2026-03-23)
+## Strategic Direction (2026-03-27)
 
 - **Architecture is sound. Bottleneck is extraction quality** (37.5% acceptance
   on PSYOP Stage 1, 80% on Phase B bounded chunks). Focus on prompt iteration
@@ -101,10 +101,18 @@ config/
   Digimon export/import/query (19 merged nodes, operator query proven), and
   Foundation IR (16 assertions). Next step is consumer-side adoption and
   long-tail hardening, not more net-new adapter surfaces.
-- **No more phases/ADRs/subsystems** unless justified by extraction quality
-    friction or consumer integration needs. The 15-phase bootstrap is done.
-    The parity matrix is the capability vision ledger — all planned capabilities
-    must be documented there, even if deferred. Uncertainties must be explicit.
+- **Preserve the full capability vision; narrow the active frontier.**
+  onto-canon6 is not retreating from deferred capabilities and is not judging
+  the thesis by one early extraction run. The parity matrix remains the full
+  successor capability ledger, and deferred capabilities remain mandatory to
+  preserve architecturally even when they are not the current implementation
+  focus.
+- **No capability deletion; no casual new implementation tracks.** The
+  bootstrap roadmap is done. New active work must be justified by one of:
+  extraction-quality friction, reproducibility / bootstrap-independence,
+  or concrete consumer adoption needs. Do not start net-new surfaces,
+  adapters, epistemic concepts, or internal subsystems unless they unblock one
+  of those three fronts.
 - **Foundation Assertion IR adapter operational** (`adapters/foundation_assertion_export.py`).
   Entity alias_ids and temporal qualifiers are wired from the promoted-graph /
   identity stack. Remaining alignment work is mainly confidence semantics and
@@ -165,12 +173,18 @@ happens.
   should eventually have must appear there, even if deferred. Deferred
   capabilities must not be silently dropped. Uncertainties must be documented
   explicitly in the parity matrix and the charter.
+- Deferred does not mean abandoned. Protect future capabilities with extension
+  points and clean boundaries even when implementation priority is elsewhere.
 - Architectural decisions must not box out the long-term vision. If a design
   choice prevents a deferred capability from being added later, add an
   extension point now.
 - Implementation priority is driven by consumer need and extraction quality
   friction. But the scope of what will eventually be built is defined by the
   vision, not by current friction alone.
+- Active implementation priority is currently limited to:
+  extraction quality, reproducibility / bootstrap independence, and
+  consumer adoption of the proved outputs. All other work must clear a higher
+  bar.
 - Keep the current scope narrow and explicit: reviewed assertions, overlays,
   promoted graph state, stable identity, semantic canonicalization, and the thin
   CLI/MCP surfaces that prove those slices.
@@ -190,4 +204,3 @@ happens.
   `config/config.yaml`.
 - No examples in prompts without approval. Rules and goal-oriented guidance
   are fine.
-
