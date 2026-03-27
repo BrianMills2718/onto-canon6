@@ -80,6 +80,52 @@ The highest-signal local proof artifacts today are:
 
 These are more important than the broader historical run debris under `var/`.
 
+## Setup Expectations
+
+The supported local setup today is:
+
+1. install repo dev dependencies into your active interpreter:
+   `make dev-setup`
+2. ensure the donor repos are available as siblings of this repo:
+   - `../onto-canon5` for donor profiles and ontology packs
+   - `../onto-canon` for `data/sumo_plus.db`
+   - `../research_v3` if you want the research_v3 portion of the smoke path
+3. if you are not using this repo's own `.venv`, pass `PYTHON=...` explicitly to
+   `make` targets
+
+The current bootstrap is not yet fully self-contained. The donor-asset
+assumptions are explicit here so the proved workflow is reproducible rather than
+hidden.
+
+## Canonical Smoke Path
+
+The canonical smoke path is a no-LLM end-to-end verification over the proved
+local artifacts. It exercises:
+
+1. promoted assertions -> identity auto-resolution -> Digimon export
+2. research_v3 graph -> import -> review pipeline
+3. promoted assertions -> Foundation IR export
+
+Run it with:
+
+```bash
+make smoke
+```
+
+If your interpreter is not the repo-local `.venv`, run:
+
+```bash
+make smoke PYTHON=/path/to/python
+```
+
+The smoke path uses:
+
+- `scripts/e2e_integration_test.py`
+- `var/e2e_test_2026_03_25/review_combined.sqlite3`
+
+It does not make LLM calls. If `../research_v3/output` is not available, the
+research_v3 portion is skipped and the rest of the smoke path still runs.
+
 The governing architectural rationale lives in the local successor charter and
 the adopted ADR set.
 

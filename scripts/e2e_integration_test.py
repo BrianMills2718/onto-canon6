@@ -21,6 +21,9 @@ from pathlib import Path
 # Ensure onto-canon6 is importable
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 
+_REPO_ROOT = Path(__file__).resolve().parent.parent
+_DEFAULT_RESEARCH_V3_OUTPUT = _REPO_ROOT.parent / "research_v3" / "output"
+
 
 def test_extraction_to_digimon(tmp_path: Path) -> None:
     """Test: promoted assertions → auto-resolve → Digimon export → ingestion."""
@@ -89,11 +92,9 @@ def test_research_v3_import(tmp_path: Path) -> None:
     print("\n=== Test: research_v3 → Import ===")
 
     # Find a real graph.yaml
-    graph_candidates = list(
-        Path("/home/brian/projects/research_v3/output").glob("*/graph.yaml")
-    )
+    graph_candidates = list(_DEFAULT_RESEARCH_V3_OUTPUT.glob("*/graph.yaml"))
     if not graph_candidates:
-        print("  SKIP: No research_v3 graph.yaml found")
+        print(f"  SKIP: No research_v3 graph.yaml found under {_DEFAULT_RESEARCH_V3_OUTPUT}")
         return
 
     graph_path = graph_candidates[0]

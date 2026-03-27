@@ -26,7 +26,7 @@ OUTPUT ?= json
 
 # ─── Shared: Testing ─────────────────────────────────────────────────────────
 
-.PHONY: test test-quick check dev-setup
+.PHONY: test test-quick check dev-setup smoke
 
 test:  ## Run full test suite
 	@$(PYTHON) -m pytest tests/ -v \
@@ -57,6 +57,9 @@ check:  ## Run tests + type check + source lint
 
 dev-setup:  ## Install repo dev deps into the active interpreter
 	@$(PYTHON) -m pip install -e ".[dev]"
+
+smoke:  ## Run the canonical no-LLM smoke workflow over proved local artifacts
+	@$(PYTHON) scripts/e2e_integration_test.py
 
 # ─── Shared: Observability ───────────────────────────────────────────────────
 
