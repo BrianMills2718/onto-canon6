@@ -1,0 +1,11 @@
+{"edge_type":"subtype_of","child_id":"oc:person","parent_id":"oc:entity"}
+{"edge_type":"subtype_of","child_id":"oc:organization","parent_id":"oc:entity"}
+{"edge_type":"subtype_of","child_id":"oc:government_organization","parent_id":"oc:organization"}
+{"edge_type":"subtype_of","child_id":"oc:military_organization","parent_id":"oc:government_organization"}
+{"edge_type":"subtype_of","child_id":"oc:military_unit","parent_id":"oc:military_organization"}
+{"edge_type":"subtype_of","child_id":"oc:community","parent_id":"oc:organization"}
+{"edge_type":"subtype_of","child_id":"oc:text_document","parent_id":"oc:entity"}
+{"edge_type":"subtype_of","child_id":"oc:report","parent_id":"oc:text_document"}
+{"edge_type":"subtype_of","child_id":"oc:military_operation","parent_id":"oc:entity"}
+{"edge_type":"subtype_of","child_id":"oc:psychological_operation","parent_id":"oc:military_operation"}
+{"edge_type":"subtype_of","child_id":"oc:information_content","parent_id":"oc:entity"}

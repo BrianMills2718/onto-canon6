@@ -1,7 +1,7 @@
 """Tests for the SUMO hierarchy read-only interface.
 
-These tests require v1's ``sumo_plus.db`` to be present at the configured
-path. They are skipped if the database is unavailable.
+These tests require the repo-local ``sumo_plus.db`` to be present at the
+configured path. They are skipped if the database is unavailable.
 """
 
 from __future__ import annotations
@@ -17,7 +17,7 @@ if str(PROJECT_ROOT / "src") not in sys.path:
 
 from onto_canon6.evaluation.sumo_hierarchy import SUMOHierarchy, SUMOHierarchyError
 
-SUMO_DB = Path(__file__).resolve().parents[3] / "onto-canon" / "data" / "sumo_plus.db"
+SUMO_DB = PROJECT_ROOT / "data" / "sumo_plus.db"
 SKIP_REASON = "sumo_plus.db not available"
 
 
@@ -114,7 +114,7 @@ def test_subtypes_max_depth(hierarchy: SUMOHierarchy) -> None:
 
 
 def test_type_count(hierarchy: SUMOHierarchy) -> None:
-    """Type count should match expected range from v1 documentation."""
+    """Type count should match the known range for the canonical local DB."""
     count = hierarchy.type_count()
     # v1 docs say ~7,894 types.
     assert count > 7000

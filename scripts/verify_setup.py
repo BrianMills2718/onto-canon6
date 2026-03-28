@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Verify onto-canon6's supported local setup.
 
-Checks the Python-side prerequisites and donor assets required for the current
-proved workflow. Fails loudly when required pieces are missing and reports
-optional pieces separately.
+Checks the Python-side prerequisites and successor-local assets required for
+the current proved workflow. Fails loudly when required pieces are missing and
+reports optional pieces separately.
 """
 
 from __future__ import annotations
@@ -77,8 +77,8 @@ def main() -> int:
 
     config = get_config()
 
-    donor_profiles = config.donor_profiles_dir()
-    donor_packs = config.donor_ontology_packs_dir()
+    local_profiles = config.local_profiles_dir()
+    local_packs = config.local_ontology_packs_dir()
     sumo_db = config.resolve_repo_path(config.evaluation.sumo_db_path)
     proof_db = _REPO_ROOT / "var" / "e2e_test_2026_03_25" / "review_combined.sqlite3"
     research_v3_output = _REPO_ROOT.parent / "research_v3" / "output"
@@ -110,22 +110,34 @@ def main() -> int:
             remediation=f"{sys.executable} -m pip install -e '.[dev]'",
         ),
         _path_check(
-            donor_profiles,
-            label="donor profiles",
+            local_profiles / "default" / "1.0.0" / "manifest.yaml",
+            label="local default profile",
             required=True,
-            remediation="ensure ../onto-canon5 is available next to this repo",
+            remediation="restore profiles/default/1.0.0/manifest.yaml",
         ),
         _path_check(
-            donor_packs,
-            label="donor ontology packs",
+            local_profiles / "dodaf" / "0.1.0" / "manifest.yaml",
+            label="local dodaf profile",
             required=True,
-            remediation="ensure ../onto-canon5 is available next to this repo",
+            remediation="restore profiles/dodaf/0.1.0/manifest.yaml",
+        ),
+        _path_check(
+            local_profiles / "psyop_seed" / "0.1.0" / "manifest.yaml",
+            label="local psyop_seed profile",
+            required=True,
+            remediation="restore profiles/psyop_seed/0.1.0/manifest.yaml",
+        ),
+        _path_check(
+            local_packs / "onto_canon_psyop_seed" / "0.1.0" / "manifest.yaml",
+            label="local onto_canon_psyop_seed pack",
+            required=True,
+            remediation="restore ontology_packs/onto_canon_psyop_seed/0.1.0/manifest.yaml",
         ),
         _path_check(
             sumo_db,
             label="SUMO database",
             required=True,
-            remediation="ensure ../onto-canon is available next to this repo",
+            remediation="restore data/sumo_plus.db",
         ),
         _path_check(
             proof_db,

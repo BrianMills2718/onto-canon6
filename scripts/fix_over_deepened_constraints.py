@@ -6,8 +6,8 @@ agents. CognitiveAgent is the correct level because it includes Human,
 Organization, and Deity -- all of which can be grammatical agents in
 OSINT text.
 
-This script updates both sumo_plus.db files (onto-canon6/data and
-onto-canon/data) so they stay in sync.
+This script updates the canonical repo-local ``sumo_plus.db`` owned by
+onto-canon6.
 
 Usage:
     python scripts/fix_over_deepened_constraints.py [--dry-run]
@@ -20,12 +20,8 @@ import sqlite3
 import sys
 from pathlib import Path
 
-# Both databases that need updating.
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
-DB_PATHS = [
-    PROJECT_ROOT / "data" / "sumo_plus.db",
-    PROJECT_ROOT.parent / "onto-canon" / "data" / "sumo_plus.db",
-]
+DB_PATHS = [PROJECT_ROOT / "data" / "sumo_plus.db"]
 
 # Verbs that truly require a biological human body -- these keep 'Human'.
 # If the process is inherently physiological (not metaphorical in any
@@ -116,7 +112,7 @@ def fix_constraints(db_path: Path, *, dry_run: bool = False) -> int:
 
 
 def main() -> None:
-    """Run the constraint fix on all known databases."""
+    """Run the constraint fix on the canonical local database."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--dry-run", action="store_true",

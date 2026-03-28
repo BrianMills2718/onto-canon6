@@ -1,0 +1,43 @@
+version: "0.1.0"
+profile_id: "dodaf"
+profile_version: "0.1.0"
+source: "working_dodaf_dm2_mapping"
+notes: "Initial internal crosswalk. Entries marked draft require reconciliation with authoritative DM2 relation catalog."
+
+predicates:
+  dodaf:activity_performs_resource:
+    dm2_relation: "PerformerPerformsActivityUsingResource"
+    certainty: "draft"
+    rationale: "Role pattern aligns with performer/activity/resource triad used in DoDAF profile rules."
+  dodaf:activity_precedes_activity:
+    dm2_relation: "ActivityPrecedesActivity"
+    certainty: "draft"
+    rationale: "Temporal ordering relation between operational activities."
+  dodaf:activity_produces_information:
+    dm2_relation: "ActivityProducesInformation"
+    certainty: "draft"
+    rationale: "Activity output modeled as information element with optional recipient node."
+  dodaf:operational_node_performs_activity:
+    dm2_relation: "OperationalNodePerformsActivity"
+    certainty: "draft"
+    rationale: "Operational node role acts as performer specialization for activity execution."
+  dodaf:operational_node_exchanges_information:
+    dm2_relation: "OperationalNodeExchangesInformation"
+    certainty: "draft"
+    rationale: "Source/target node exchange with information element payload."
+  dodaf:service_function_consumes_information:
+    dm2_relation: "ServiceFunctionConsumesInformation"
+    certainty: "draft"
+    rationale: "Service function input dependency on information element."
+  dodaf:service_function_performs_activity:
+    dm2_relation: "ServiceFunctionPerformsActivity"
+    certainty: "draft"
+    rationale: "Service-function execution of operational activity with optional resources."
+  dodaf:service_provides_service:
+    dm2_relation: "PerformerProvidesService"
+    certainty: "draft"
+    rationale: "Provider/consumer are performer-constrained, provided_service is service constrained."
+  dodaf:service_supports_activity:
+    dm2_relation: "ServiceSupportsActivity"
+    certainty: "draft"
+    rationale: "Service support linkage to operational activity."

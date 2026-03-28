@@ -178,6 +178,22 @@ happens.
 
 ## Working Rules
 
+- **Autonomy is the default operating mode.** When there is an active plan or
+  clearly bounded workstream, continue executing it end to end without waiting
+  for incremental permission after each slice. Do not stop at "plan written",
+  "first file migrated", or "one test passed". Continue until the active plan
+  is fully implemented, a real blocker is hit, or a concrete unresolved
+  uncertainty appears.
+- **Do not pause for routine next-step confirmation.** Once the repo has an
+  adopted execution plan, treat "what next?" as already answered by that plan.
+  Keep moving through the phases in order, commit verified increments, and only
+  surface to the user when:
+  1. the current plan is complete;
+  2. a real blocker or risk requires a decision;
+  3. a material new uncertainty changes the plan.
+- **For active implementation blocks, stopping early is a failure mode.** The
+  expected behavior is continuous execution across planning, migration,
+  verification, cleanup, and documentation updates in one sustained pass.
 - The parity matrix is the capability vision ledger. Every capability the system
   should eventually have must appear there, even if deferred. Deferred
   capabilities must not be silently dropped. Uncertainties must be documented

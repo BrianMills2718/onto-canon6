@@ -1,6 +1,6 @@
 # onto-canon6 Status
 
-Updated: 2026-03-26
+Updated: 2026-03-28
 
 ## What Is Proven
 
@@ -9,8 +9,8 @@ typed ontology runtime:
 
 1. typed ontology policy contracts;
 2. deterministic `open|closed|mixed` unknown-item handling;
-3. donor profile and ontology-pack loading from `onto-canon5`;
-4. local assertion validation against donor predicate rules;
+3. successor-local profile and ontology-pack loading from this repo;
+4. local assertion validation against explicit local predicate rules;
 5. persisted candidate assertion records;
 6. persisted ontology proposal records with deduplicated links from candidates;
 7. explicit proposal review decisions with configurable acceptance policy;
@@ -302,14 +302,12 @@ Still missing:
 
 ## Current Donor Dependencies
 
-`onto-canon6` still depends on donor material from `onto-canon5` for:
+`onto-canon6` no longer depends on sibling donor repos for its canonical
+runtime. Remaining donor-era dependency is now primarily historical:
 
 1. detailed successor ADR source records;
 2. first-slice planning history;
-3. donor validation profiles;
-4. donor ontology packs.
-
-This is acceptable for bootstrap, but it should shrink over time.
+3. archived bootstrap notebooks and run records.
 
 The local strategic summary now lives in `docs/SUCCESSOR_CHARTER.md`, so the
 repo no longer depends on donor docs for the basic explanation of why the

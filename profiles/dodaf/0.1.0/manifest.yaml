@@ -1,0 +1,126 @@
+profile:
+  id: dodaf
+  version: "0.1.0"
+  name: "DoDAF MVP OV-5b + SV-1 + OV-2 + SV-4 + DM2 depth set A"
+  ontology_version: "dodaf_dm2_mvp@0.1.0"
+  rule_version: "dodaf_rules@0.1.0"
+
+ontology:
+  source: custom
+  mode: closed
+  normalization_policy: conservative
+  proposal_policy: reject
+
+validation:
+  type_adapter: dm2
+  type_check_policy: hierarchical
+  type_hierarchy_overrides:
+    dm2:CoalitionService: [dm2:Service]
+    dm2:CoalitionOrganization: [dm2:Organization]
+  allowed_predicates:
+    - dodaf:activity_performs_resource
+    - dodaf:activity_produces_information
+    - dodaf:activity_precedes_activity
+    - dodaf:operational_node_performs_activity
+    - dodaf:operational_node_exchanges_information
+    - dodaf:service_function_consumes_information
+    - dodaf:service_function_performs_activity
+    - dodaf:service_provides_service
+    - dodaf:service_supports_activity
+  predicate_rules:
+    dodaf:activity_performs_resource:
+      allowed_roles: [performer, activity, resource]
+      required_roles: [performer, activity, resource]
+      role_cardinality:
+        performer: {min: 1, max: 1}
+        activity: {min: 1, max: 1}
+        resource: {min: 1, max: 5}
+      role_filler_types:
+        performer: dm2:Performer
+        activity: dm2:OperationalActivity
+        resource: dm2:Resource
+    dodaf:activity_produces_information:
+      allowed_roles: [activity, information_element, recipient_node]
+      required_roles: [activity, information_element]
+      role_cardinality:
+        activity: {min: 1, max: 1}
+        information_element: {min: 1, max: 10}
+        recipient_node: {min: 0, max: 5}
+      role_filler_types:
+        activity: dm2:OperationalActivity
+        information_element: dm2:InformationElement
+        recipient_node: dm2:OperationalNode
+    dodaf:activity_precedes_activity:
+      allowed_roles: [before_activity, after_activity]
+      required_roles: [before_activity, after_activity]
+      role_cardinality:
+        before_activity: {min: 1, max: 1}
+        after_activity: {min: 1, max: 1}
+      role_filler_types:
+        before_activity: dm2:OperationalActivity
+        after_activity: dm2:OperationalActivity
+    dodaf:operational_node_performs_activity:
+      allowed_roles: [node, activity, resource]
+      required_roles: [node, activity]
+      role_cardinality:
+        node: {min: 1, max: 1}
+        activity: {min: 1, max: 3}
+        resource: {min: 0, max: 10}
+      role_filler_types:
+        node: dm2:OperationalNode
+        activity: dm2:OperationalActivity
+        resource: dm2:Resource
+    dodaf:operational_node_exchanges_information:
+      allowed_roles: [source_node, target_node, information_element]
+      required_roles: [source_node, target_node, information_element]
+      role_cardinality:
+        source_node: {min: 1, max: 1}
+        target_node: {min: 1, max: 1}
+        information_element: {min: 1, max: 10}
+      role_filler_types:
+        source_node: dm2:OperationalNode
+        target_node: dm2:OperationalNode
+        information_element: dm2:InformationElement
+    dodaf:service_function_consumes_information:
+      allowed_roles: [service_function, information_element]
+      required_roles: [service_function, information_element]
+      role_cardinality:
+        service_function: {min: 1, max: 1}
+        information_element: {min: 1, max: 10}
+      role_filler_types:
+        service_function: dm2:ServiceFunction
+        information_element: dm2:InformationElement
+    dodaf:service_function_performs_activity:
+      allowed_roles: [service_function, activity, resource]
+      required_roles: [service_function, activity]
+      role_cardinality:
+        service_function: {min: 1, max: 1}
+        activity: {min: 1, max: 3}
+        resource: {min: 0, max: 10}
+      role_filler_types:
+        service_function: dm2:ServiceFunction
+        activity: dm2:OperationalActivity
+        resource: dm2:Resource
+    dodaf:service_provides_service:
+      allowed_roles: [provider, provided_service, consumer]
+      required_roles: [provider, provided_service]
+      role_cardinality:
+        provider: {min: 1, max: 1}
+        provided_service: {min: 1, max: 1}
+        consumer: {min: 0, max: 10}
+      role_filler_types:
+        provider: dm2:Performer
+        provided_service: dm2:Service
+        consumer: dm2:Performer
+    dodaf:service_supports_activity:
+      allowed_roles: [service, activity]
+      required_roles: [service, activity]
+      role_cardinality:
+        service: {min: 1, max: 1}
+        activity: {min: 1, max: 1}
+      role_filler_types:
+        service: dm2:Service
+        activity: dm2:OperationalActivity
+
+ingestion:
+  allow_heuristic_default: false

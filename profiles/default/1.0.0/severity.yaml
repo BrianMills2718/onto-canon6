@@ -1,0 +1,21 @@
+profile:
+  id: default
+  version: "1.0.0"
+
+severity:
+  oc:hard_missing_predicate: hard
+  oc:hard_missing_roles: hard
+  oc:hard_missing_role_fillers: hard
+  oc:hard_invalid_role_filler: hard
+  oc:hard_missing_entity_id: hard
+  oc:soft_noncanonical_entity_id: soft
+  oc:profile_unknown_predicate: soft
+  oc:profile_missing_required_role: hard
+  oc:profile_disallowed_role: soft
+  oc:profile_role_cardinality_violation: soft
+  oc:profile_missing_entity_type: soft
+  oc:profile_role_type_violation: hard
+  oc:profile_missing_value_kind: hard
+  oc:profile_role_value_kind_violation: hard
+  oc:profile_role_type_unknown_relationship: soft
+  oc:profile_type_check_skipped_by_policy: soft

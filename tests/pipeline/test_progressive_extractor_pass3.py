@@ -1,9 +1,9 @@
 """Tests for Pass 3 progressive extraction -- entity refinement (Plan 0018, Slice D).
 
 LLM calls are mocked (mock-ok: LLM calls must be mocked for deterministic
-testing).  SUMOHierarchy and PredicateCanon use the real sumo_plus.db for
-deterministic subtree and role-constraint tests.  Tests are skipped if the
-database is unavailable.
+testing). SUMOHierarchy and PredicateCanon use the real repo-local
+``sumo_plus.db`` for deterministic subtree and role-constraint tests. Tests
+are skipped if the database is unavailable.
 """
 
 from __future__ import annotations
@@ -36,7 +36,7 @@ from onto_canon6.pipeline.progressive_types import (
     Pass3TypedAssertion,
 )
 
-SUMO_DB = Path(__file__).resolve().parents[2] / ".." / "onto-canon" / "data" / "sumo_plus.db"
+SUMO_DB = Path(__file__).resolve().parents[2] / "data" / "sumo_plus.db"
 SKIP_REASON = "sumo_plus.db not available"
 
 

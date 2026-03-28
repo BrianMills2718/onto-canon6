@@ -1,4 +1,4 @@
-"""Tests for donor profile and ontology-pack loading."""
+"""Tests for successor-local profile and ontology-pack loading."""
 
 from __future__ import annotations
 
@@ -15,12 +15,12 @@ from onto_canon6.ontology_runtime import (  # noqa: E402
     LoadedProfile,
     OverlayPredicateAdditionRecord,
     clear_loader_caches,
-    donor_ontology_packs_root,
-    donor_profiles_root,
     load_effective_profile,
     load_ontology_pack,
     load_overlay_predicate_additions,
     load_profile,
+    local_ontology_packs_root,
+    local_profiles_root,
     overlay_pack_ref_for,
     write_overlay_predicate_addition,
 )
@@ -32,17 +32,17 @@ def setup_function() -> None:
     clear_loader_caches()
 
 
-def test_loader_uses_repo_relative_donor_roots() -> None:
-    """Donor roots should resolve through onto-canon6 config, not absolute code paths."""
+def test_loader_uses_repo_local_roots() -> None:
+    """Canonical loader roots should resolve inside onto-canon6."""
 
-    assert donor_profiles_root().name == "profiles"
-    assert donor_profiles_root().parent.name == "onto-canon5"
-    assert donor_ontology_packs_root().name == "ontology_packs"
-    assert donor_ontology_packs_root().parent.name == "onto-canon5"
+    assert local_profiles_root().name == "profiles"
+    assert local_profiles_root().parent == PROJECT_ROOT
+    assert local_ontology_packs_root().name == "ontology_packs"
+    assert local_ontology_packs_root().parent == PROJECT_ROOT
 
 
 def test_load_default_profile() -> None:
-    """Default donor profile should load as open mode with no pack reference."""
+    """Default successor-local baseline profile should load as open mode."""
 
     profile = load_profile("default", "1.0.0")
 
@@ -57,7 +57,7 @@ def test_load_default_profile() -> None:
 
 
 def test_load_dodaf_profile() -> None:
-    """DoDAF donor profile should load explicit predicate rules from profile YAML."""
+    """DoDAF successor-local profile should load explicit predicate rules."""
 
     profile = load_profile("dodaf", "0.1.0")
 
@@ -75,7 +75,7 @@ def test_load_dodaf_profile() -> None:
 
 
 def test_load_psyop_seed_profile_inherits_pack_rules() -> None:
-    """PSYOP donor profile should load its referenced pack and inherit pack vocabulary."""
+    """PSYOP successor-local profile should inherit its pack vocabulary."""
 
     profile = load_profile("psyop_seed", "0.1.0")
 
@@ -106,7 +106,7 @@ def test_load_pack_directly() -> None:
 
 
 def test_loaded_profiles_drive_unknown_item_decisions() -> None:
-    """Loaded donor profile policy should map cleanly onto unknown-item handling."""
+    """Loaded profile policy should map cleanly onto unknown-item handling."""
 
     default_profile = load_profile("default", "1.0.0")
     dodaf_profile = load_profile("dodaf", "0.1.0")

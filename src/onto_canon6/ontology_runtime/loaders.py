@@ -1,9 +1,9 @@
-"""Load donor ontology packs and profiles for the first successor slice.
+"""Load successor-local ontology packs and profiles for the current runtime.
 
-This module deliberately ports only the narrow pack/profile loading surface
-needed by the `onto-canon6` bootstrap. It avoids importing the old
-`onto-canon5` runtime directly so the successor can own its contracts while
-still proving them against real donor data.
+This module owns the narrow pack/profile loading surface needed by the
+successor runtime. Historical assets may still be imported from archived donor
+repos by passing explicit root overrides, but the canonical contract is now
+repo-local.
 """
 
 from __future__ import annotations
@@ -42,11 +42,11 @@ logger = logging.getLogger(__name__)
 
 
 class OntologyPackLoadError(ValueError):
-    """Raised when a donor ontology pack is missing or malformed."""
+    """Raised when an ontology pack is missing or malformed."""
 
 
 class ProfileLoadError(ValueError):
-    """Raised when a donor validation profile is missing or malformed."""
+    """Raised when a validation profile is missing or malformed."""
 
 
 @dataclass(frozen=True)
@@ -111,7 +111,7 @@ class PackPredicateRuleBuilder:
 
 @dataclass(frozen=True)
 class LoadedOntologyPack:
-    """Loaded donor ontology pack with runtime-facing validation views."""
+    """Loaded ontology pack with runtime-facing validation views."""
 
     pack_ref: PackRef
     name: str
@@ -127,7 +127,7 @@ class LoadedOntologyPack:
 
 @dataclass(frozen=True)
 class LoadedProfile:
-    """Loaded donor profile summary for the first successor slice."""
+    """Loaded profile summary for the current successor slice."""
 
     profile_id: str
     profile_version: str
@@ -148,22 +148,10 @@ class LoadedProfile:
     active_overlay_predicates: frozenset[str]
 
 
-def donor_profiles_root() -> Path:
-    """Return the configured donor profiles directory."""
-
-    return get_config().donor_profiles_dir()
-
-
 def local_profiles_root() -> Path:
     """Return the configured repo-local profiles directory."""
 
     return get_config().local_profiles_dir()
-
-
-def donor_ontology_packs_root() -> Path:
-    """Return the configured donor ontology-packs directory."""
-
-    return get_config().donor_ontology_packs_dir()
 
 
 def local_ontology_packs_root() -> Path:
@@ -197,11 +185,10 @@ def load_ontology_pack(
     *,
     packs_root: Path | None = None,
 ) -> LoadedOntologyPack:
-    """Load one donor ontology pack from disk.
+    """Load one ontology pack from disk.
 
-    This is the first real donor import surface for `onto-canon6`. It validates
-    the small runtime subset the successor needs today: predicate ids, pack
-    predicate rules, and type hierarchy parents.
+    It validates the small runtime subset the successor needs today: predicate
+    ids, pack predicate rules, and type hierarchy parents.
     """
 
     if not _PACK_ID_RE.match(pack_id):
@@ -209,7 +196,7 @@ def load_ontology_pack(
     if not _PACK_VERSION_RE.match(pack_version):
         raise OntologyPackLoadError(f"invalid pack_version: {pack_version!r}")
     roots = (
-        ((packs_root or donor_ontology_packs_root()).resolve(),)
+        (packs_root.resolve(),)
         if packs_root is not None
         else ontology_pack_search_roots()
     )
@@ -223,7 +210,7 @@ def load_profile(
     profiles_root: Path | None = None,
     packs_root: Path | None = None,
 ) -> LoadedProfile:
-    """Load one donor profile and merge any pack-derived vocabulary views."""
+    """Load one profile and merge any pack-derived vocabulary views."""
 
     normalized_profile_id = _required_token(profile_id, "profile_id", error_cls=ProfileLoadError)
     normalized_profile_version = _required_token(
@@ -232,12 +219,12 @@ def load_profile(
         error_cls=ProfileLoadError,
     )
     profile_roots = (
-        ((profiles_root or donor_profiles_root()).resolve(),)
+        (profiles_root.resolve(),)
         if profiles_root is not None
         else profile_search_roots()
     )
     pack_roots = (
-        ((packs_root or donor_ontology_packs_root()).resolve(),)
+        (packs_root.resolve(),)
         if packs_root is not None
         else ontology_pack_search_roots()
     )
@@ -257,7 +244,7 @@ def load_effective_profile(
     packs_root: Path | None = None,
     overlay_root: Path | None = None,
 ) -> LoadedProfile:
-    """Load one donor profile plus any currently applied local overlay additions.
+    """Load one profile plus any currently applied local overlay additions.
 
     Base donor profile loading remains cached. Overlay additions are loaded from
     disk on each call so explicit writeback becomes visible without cache
@@ -1179,8 +1166,8 @@ __all__ = [
     "PackRoleCardinality",
     "ProfileLoadError",
     "clear_loader_caches",
-    "donor_ontology_packs_root",
-    "donor_profiles_root",
     "load_ontology_pack",
     "load_profile",
+    "local_ontology_packs_root",
+    "local_profiles_root",
 ]

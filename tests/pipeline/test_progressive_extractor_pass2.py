@@ -1,8 +1,9 @@
 """Tests for Pass 2 progressive extraction — predicate mapping (Plan 0018, Slice C).
 
 LLM calls are mocked (mock-ok: LLM calls must be mocked for deterministic
-testing).  PredicateCanon lookups use the real sumo_plus.db for deterministic
-lemma lookup tests.  Tests are skipped if the database is unavailable.
+testing). PredicateCanon lookups use the real repo-local ``sumo_plus.db`` for
+deterministic lemma lookup tests. Tests are skipped if the database is
+unavailable.
 """
 
 from __future__ import annotations
@@ -33,7 +34,7 @@ from onto_canon6.pipeline.progressive_types import (
     Pass2Result,
 )
 
-SUMO_DB = Path(__file__).resolve().parents[2] / ".." / "onto-canon" / "data" / "sumo_plus.db"
+SUMO_DB = Path(__file__).resolve().parents[2] / "data" / "sumo_plus.db"
 SKIP_REASON = "sumo_plus.db not available"
 
 

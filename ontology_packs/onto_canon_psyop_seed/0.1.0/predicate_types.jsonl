@@ -1,0 +1,14 @@
+{"predicate_id":"oc:replace_designation","family":"event","preferred_label":"replace designation","description":"An actor replaces one organizational designation with another.","status":"active"}
+{"predicate_id":"oc:uses_designation_label","family":"state","preferred_label":"uses designation label","description":"A subject is referred to by a designation label.","status":"active"}
+{"predicate_id":"oc:hold_command_role","family":"state","preferred_label":"hold command role","description":"A commander holds a role over an organization.","status":"active"}
+{"predicate_id":"oc:express_concern","family":"event","preferred_label":"express concern","description":"A speaker expresses concern about a topic.","status":"active"}
+{"predicate_id":"oc:limit_capability","family":"event","preferred_label":"limit capability","description":"A cause limits a subject's capability.","status":"active"}
+{"predicate_id":"oc:create_organizational_unit","family":"event","preferred_label":"create organizational unit","description":"A unit is created within an organizational context.","status":"active"}
+{"predicate_id":"oc:belongs_to_organization","family":"relation","preferred_label":"belongs to organization","description":"A member unit belongs to a parent organization.","status":"active"}
+{"predicate_id":"oc:send_report","family":"event","preferred_label":"send report","description":"A sender sends or routes a report to a recipient.","status":"active"}
+{"predicate_id":"oc:use_organizational_form","family":"event","preferred_label":"use organizational form","description":"An organizational form is used in an operation.","status":"active"}
+{"predicate_id":"oc:operation_occurs_in_location","family":"relation","preferred_label":"operation occurs in location","description":"An operation occurs in a named location.","status":"active"}
+{"predicate_id":"oc:criticize_change","family":"event","preferred_label":"criticize change","description":"A critic attacks or condemns a change with a complaint.","status":"active"}
+{"predicate_id":"oc:describe_dissatisfaction","family":"event","preferred_label":"describe dissatisfaction","description":"A speaker describes dissatisfaction affecting a subject.","status":"active"}
+{"predicate_id":"oc:view_as_classification","family":"event","preferred_label":"view as classification","description":"An actor views or characterizes a subject under a label.","status":"active"}
+{"predicate_id":"oc:seek_exit_from_field","family":"event","preferred_label":"seek exit from field","description":"A subject seeks to leave a field or domain under discussion.","status":"active"}

@@ -1,6 +1,6 @@
 # Donor Dependency Inventory
 
-Status: active snapshot
+Status: completed snapshot
 
 Last updated: 2026-03-28
 Parent plan: `docs/plans/0022_donor_absorption_and_archive_readiness.md`
@@ -8,6 +8,10 @@ Parent plan: `docs/plans/0022_donor_absorption_and_archive_readiness.md`
 ## Purpose
 
 This document is the Phase 1 dependency table for Plan 0022.
+
+It is intentionally preserved as the pre-cutover classification artifact. The
+runtime described here has since been migrated; see Plan 0023 and the
+implementation update in Plan 0022 for the post-cutover state.
 
 It records the donor-era material that `onto-canon6` still references, how that
 material is used today, and the planned disposition for each item. The point is

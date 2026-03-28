@@ -35,7 +35,7 @@ class ProjectConfig(BaseModel):
 
 
 class PathsConfig(BaseModel):
-    """Repository-relative paths used during the bootstrap phase."""
+    """Repository-relative paths used by the successor-owned runtime."""
 
     model_config = ConfigDict(extra="forbid", frozen=True)
 
@@ -44,8 +44,6 @@ class PathsConfig(BaseModel):
     notebook_registry_path: str = Field(min_length=1)
     local_profiles_root: str = Field(min_length=1)
     local_ontology_packs_root: str = Field(min_length=1)
-    donor_profiles_root: str = Field(min_length=1)
-    donor_ontology_packs_root: str = Field(min_length=1)
     review_db_path: str = Field(min_length=1)
     overlay_root: str = Field(min_length=1)
 
@@ -355,11 +353,6 @@ class AppConfig(BaseModel):
         """Return the configured notebooks directory."""
         return self.resolve_repo_path(self.paths.notebooks_root)
 
-    def donor_profiles_dir(self) -> Path:
-        """Return the configured donor profiles directory."""
-
-        return self.resolve_repo_path(self.paths.donor_profiles_root)
-
     def local_profiles_dir(self) -> Path:
         """Return the configured repo-local profiles directory."""
 
@@ -370,31 +363,20 @@ class AppConfig(BaseModel):
 
         return self.resolve_repo_path(self.paths.notebook_registry_path)
 
-    def donor_ontology_packs_dir(self) -> Path:
-        """Return the configured donor ontology-pack directory."""
-
-        return self.resolve_repo_path(self.paths.donor_ontology_packs_root)
-
     def local_ontology_packs_dir(self) -> Path:
         """Return the configured repo-local ontology-pack directory."""
 
         return self.resolve_repo_path(self.paths.local_ontology_packs_root)
 
     def profile_search_roots(self) -> tuple[Path, ...]:
-        """Return the search order for profiles: local first, donor second."""
+        """Return the canonical search order for profiles."""
 
-        return (
-            self.local_profiles_dir(),
-            self.donor_profiles_dir(),
-        )
+        return (self.local_profiles_dir(),)
 
     def ontology_pack_search_roots(self) -> tuple[Path, ...]:
-        """Return the search order for ontology packs: local first, donor second."""
+        """Return the canonical search order for ontology packs."""
 
-        return (
-            self.local_ontology_packs_dir(),
-            self.donor_ontology_packs_dir(),
-        )
+        return (self.local_ontology_packs_dir(),)
 
     def review_db_path(self) -> Path:
         """Return the configured review-state SQLite database path."""

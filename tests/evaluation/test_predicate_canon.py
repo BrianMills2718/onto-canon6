@@ -1,8 +1,8 @@
 """Tests for the Predicate Canon read-only interface.
 
-These tests require v1's ``sumo_plus.db`` to be present at the configured
-path.  They are skipped if the database is unavailable.  All assertions are
-deterministic against the real database contents.
+These tests require the repo-local ``sumo_plus.db`` to be present at the
+configured path. They are skipped if the database is unavailable. All
+assertions are deterministic against the real database contents.
 """
 
 from __future__ import annotations
@@ -24,7 +24,7 @@ from onto_canon6.evaluation.predicate_canon import (
     RoleSlotInfo,
 )
 
-SUMO_DB = Path(__file__).resolve().parents[3] / "onto-canon" / "data" / "sumo_plus.db"
+SUMO_DB = PROJECT_ROOT / "data" / "sumo_plus.db"
 SKIP_REASON = "sumo_plus.db not available"
 
 

@@ -90,16 +90,14 @@ The supported local setup today is:
    `python -m pip install -e ../llm_client`
 3. verify the setup explicitly:
    `make verify-setup`
-4. ensure the donor repos are available as siblings of this repo:
-   - `../onto-canon5` for donor profiles and ontology packs
-   - `../onto-canon` for `data/sumo_plus.db`
-   - `../research_v3` if you want the research_v3 portion of the smoke path
+4. if you want the optional research_v3 portion of the smoke path, ensure
+   `../research_v3` is available as a sibling repo
 5. if you are not using this repo's own `.venv`, pass `PYTHON=...` explicitly to
    `make` targets
 
-The current bootstrap is not yet fully self-contained. The donor-asset
-assumptions are explicit here so the proved workflow is reproducible rather than
-hidden.
+The canonical runtime no longer depends on sibling `../onto-canon5` or
+`../onto-canon` checkouts. Older repos are now archive-era provenance sources,
+not required runtime dependencies.
 
 ## Canonical Smoke Path
 
@@ -156,20 +154,17 @@ planning notebooks stay cataloged in `notebooks/README.md` and
 
 ## Local Evaluation Dependency
 
-Ancestor-aware evaluation and progressive extraction use the donor
-`sumo_plus.db` by default via `../onto-canon/data/sumo_plus.db`.
-
-An optional local copy may exist under `data/sumo_plus.db`, but that is
-operator convenience rather than the canonical repo default.
+Ancestor-aware evaluation and progressive extraction use the repo-local
+`data/sumo_plus.db` by default.
 
 ## Current Scope
 
 Phases 0-15 are complete. The repo now proves:
 
 1. model ontology pack references and ontology policy explicitly
-2. load real donor profiles and ontology packs from `onto-canon5`
+2. load successor-local profiles and ontology packs owned by this repo
 3. make unknown-item handling deterministic and inspectable
-4. validate one assertion payload against donor rules locally
+4. validate one assertion payload against explicit local rules
 5. persist reviewable candidate assertions and ontology proposals
 6. review candidates through explicit accept/reject state transitions
 7. persist optional source text, optional claim text, and exact evidence spans

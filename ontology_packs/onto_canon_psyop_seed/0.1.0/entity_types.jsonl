@@ -1,0 +1,12 @@
+{"type_id":"oc:entity","preferred_label":"Entity","category":"entity","status":"active"}
+{"type_id":"oc:person","preferred_label":"Person","category":"entity","status":"active"}
+{"type_id":"oc:organization","preferred_label":"Organization","category":"entity","status":"active"}
+{"type_id":"oc:government_organization","preferred_label":"Government Organization","category":"entity","status":"active"}
+{"type_id":"oc:military_organization","preferred_label":"Military Organization","category":"entity","status":"active"}
+{"type_id":"oc:military_unit","preferred_label":"Military Unit","category":"entity","status":"active"}
+{"type_id":"oc:community","preferred_label":"Community","category":"entity","status":"active"}
+{"type_id":"oc:text_document","preferred_label":"Text Document","category":"entity","status":"active"}
+{"type_id":"oc:report","preferred_label":"Report","category":"entity","status":"active"}
+{"type_id":"oc:military_operation","preferred_label":"Military Operation","category":"entity","status":"active"}
+{"type_id":"oc:psychological_operation","preferred_label":"Psychological Operation","category":"entity","status":"active"}
+{"type_id":"oc:information_content","preferred_label":"Information Content","category":"entity","status":"active"}

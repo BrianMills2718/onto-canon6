@@ -5,6 +5,23 @@ Status: active
 Last updated: 2026-03-28
 Workstream: post-bootstrap reproducibility / successor ownership transfer
 
+## Implementation Update (2026-03-28)
+
+Runtime-critical donor absorption and contract cutover are complete:
+
+1. `default@1.0.0`, `dodaf@0.1.0`, `psyop_seed@0.1.0`, and
+   `onto_canon_psyop_seed@0.1.0` are now owned locally by `onto-canon6`;
+2. `data/sumo_plus.db` is now the canonical repo-local DB path;
+3. `make verify-setup`, `make smoke`, and `make check` pass on the main repo;
+4. the same verification surface also passed from a temporary copy with no
+   sibling `onto-canon5` or `onto-canon` repos available;
+5. provenance notes were added under `profiles/`, `ontology_packs/`, and
+   `data/`.
+
+Remaining work under this plan is no longer runtime cutover. It is historical
+labeling and long-tail documentation cleanup where donor-era records still read
+like present-tense contract statements.
+
 ## Purpose
 
 Prepare `onto-canon6` to become the stable successor repository before older
@@ -77,9 +94,9 @@ execution.
 5. Historical artifacts may remain historically accurate. They do not all need
    rewriting immediately, but they must stop masquerading as the current
    canonical contract.
-6. `sumo_plus.db` is the only currently known donor data asset that may justify
-   a separate build-or-vendor decision. That decision must be made explicitly,
-   not drift in accidentally.
+6. `sumo_plus.db` ownership is resolved for the current successor cutover:
+   `data/sumo_plus.db` is the canonical repo-local DB, with provenance recorded
+   in `data/PROVENANCE.md`.
 
 ## Current State
 
@@ -100,21 +117,19 @@ The repo already owns several important successor-local assets:
    - `profiles/whygame_minimal_strict/0.1.0`
 3. canonical proof artifacts and smoke path already live inside this repo.
 
-### Still External By Default
+### Canonical Runtime Contract
 
-The repo still defaults to external donor paths in `config/config.yaml`:
+The canonical runtime is now successor-local by default:
 
-1. `paths.donor_profiles_root: ../onto-canon5/profiles`
-2. `paths.donor_ontology_packs_root: ../onto-canon5/ontology_packs`
-3. `evaluation.sumo_db_path: ../onto-canon/data/sumo_plus.db`
+1. profiles resolve from `profiles/`;
+2. ontology packs resolve from `ontology_packs/`;
+3. evaluation and progressive extraction use `data/sumo_plus.db`;
+4. optional `research_v3` input remains external and optional.
 
-The setup contract, tests, and docs still encode those sibling-repo
-assumptions in multiple places.
+### Remaining Donor Surface After Cutover
 
-### Remaining Donor Surface Before Classification
-
-The following donor material is still reachable through current config and
-bootstrap-era fallback paths, but not all of it is equally live:
+The following donor material still exists historically, but it is no longer
+required by the canonical runtime:
 
 1. donor profiles in `../onto-canon5/profiles`:
    - `default/1.0.0`
@@ -129,9 +144,9 @@ bootstrap-era fallback paths, but not all of it is equally live:
 3. donor evaluation asset in `../onto-canon/data/`:
    - `sumo_plus.db`
 
-Phase 1 inventory is now captured in
+Phase 1 inventory is captured in
 `docs/plans/0022a_donor_dependency_inventory.md`. That inventory narrows the
-required-now donor set to:
+previously live donor set to:
 
 1. `default@1.0.0`
 2. `dodaf@0.1.0`
@@ -139,21 +154,17 @@ required-now donor set to:
 4. `onto_canon_psyop_seed@0.1.0`
 5. `sumo_plus.db`
 
-The remaining donor profiles and packs are currently classified as historical
-or deferred unless a supported workflow reactivates them.
+Those assets have now been absorbed locally. The remaining donor profiles and
+packs are currently classified as historical or deferred unless a supported
+workflow reactivates them.
 
 ### Confirmed Current References
 
-The current repo still uses donor assumptions in at least these areas:
+The remaining donor-era references are now concentrated in:
 
-1. runtime config and setup verification;
-2. ontology loader tests that assert donor roots under `onto-canon5`;
-3. config tests that assert `../onto-canon/data/sumo_plus.db` as the default;
-4. pipeline/review/runtime tests that still exercise `default`, `dodaf`,
-   and `psyop_seed`;
-5. notebooks and status docs that still describe donor loading as a current
-   proved behavior;
-6. the default `PROFILE_ID` in the Makefile currently points at `psyop_seed`.
+1. historical notebooks and run notes;
+2. archive-era ADR/documentation references;
+3. dormant parity items not currently in the supported runtime surface.
 
 ## Scope
 

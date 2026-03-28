@@ -1,0 +1,25 @@
+{"role_id":"oc.role.actor","runtime_name":"actor","preferred_label":"actor","status":"active"}
+{"role_id":"oc.role.subject","runtime_name":"subject","preferred_label":"subject","status":"active"}
+{"role_id":"oc.role.old_designation","runtime_name":"old_designation","preferred_label":"old designation","status":"active"}
+{"role_id":"oc.role.new_designation","runtime_name":"new_designation","preferred_label":"new designation","status":"active"}
+{"role_id":"oc.role.time","runtime_name":"time","preferred_label":"time","status":"active"}
+{"role_id":"oc.role.label","runtime_name":"label","preferred_label":"label","status":"active"}
+{"role_id":"oc.role.commander","runtime_name":"commander","preferred_label":"commander","status":"active"}
+{"role_id":"oc.role.organization","runtime_name":"organization","preferred_label":"organization","status":"active"}
+{"role_id":"oc.role.role_title","runtime_name":"role_title","preferred_label":"role title","status":"active"}
+{"role_id":"oc.role.speaker","runtime_name":"speaker","preferred_label":"speaker","status":"active"}
+{"role_id":"oc.role.topic","runtime_name":"topic","preferred_label":"topic","status":"active"}
+{"role_id":"oc.role.capability","runtime_name":"capability","preferred_label":"capability","status":"active"}
+{"role_id":"oc.role.created_unit","runtime_name":"created_unit","preferred_label":"created unit","status":"active"}
+{"role_id":"oc.role.parent_organization","runtime_name":"parent_organization","preferred_label":"parent organization","status":"active"}
+{"role_id":"oc.role.member","runtime_name":"member","preferred_label":"member","status":"active"}
+{"role_id":"oc.role.sender","runtime_name":"sender","preferred_label":"sender","status":"active"}
+{"role_id":"oc.role.recipient","runtime_name":"recipient","preferred_label":"recipient","status":"active"}
+{"role_id":"oc.role.message","runtime_name":"message","preferred_label":"message","status":"active"}
+{"role_id":"oc.role.organizational_form","runtime_name":"organizational_form","preferred_label":"organizational form","status":"active"}
+{"role_id":"oc.role.operation","runtime_name":"operation","preferred_label":"operation","status":"active"}
+{"role_id":"oc.role.location","runtime_name":"location","preferred_label":"location","status":"active"}
+{"role_id":"oc.role.critic","runtime_name":"critic","preferred_label":"critic","status":"active"}
+{"role_id":"oc.role.target_change","runtime_name":"target_change","preferred_label":"target change","status":"active"}
+{"role_id":"oc.role.complaint","runtime_name":"complaint","preferred_label":"complaint","status":"active"}
+{"role_id":"oc.role.description","runtime_name":"description","preferred_label":"description","status":"active"}

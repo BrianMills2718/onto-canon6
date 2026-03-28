@@ -1,0 +1,8 @@
+{"canonical_id":"oc:psychological_operation","canonical_kind":"entity_type","alias":"PSYOP"}
+{"canonical_id":"oc:psychological_operation","canonical_kind":"entity_type","alias":"Military Information Support Operations"}
+{"canonical_id":"oc:replace_designation","canonical_kind":"predicate_type","alias":"replace"}
+{"canonical_id":"oc:hold_command_role","canonical_kind":"predicate_type","alias":"command"}
+{"canonical_id":"oc:express_concern","canonical_kind":"predicate_type","alias":"express concern"}
+{"canonical_id":"oc:create_organizational_unit","canonical_kind":"predicate_type","alias":"create unit"}
+{"canonical_id":"oc:send_report","canonical_kind":"predicate_type","alias":"send report"}
+{"canonical_id":"oc:criticize_change","canonical_kind":"predicate_type","alias":"criticize change"}

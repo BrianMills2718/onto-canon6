@@ -1,0 +1,21 @@
+profile:
+  id: default
+  version: "1.0.0"
+  name: "Default Baseline"
+  ontology_version: "none@1.0.0"
+  rule_version: "default_rules@1.0.0"
+
+ontology:
+  source: none
+  mode: open
+  normalization_policy: conservative
+  proposal_policy: reject
+
+validation:
+  type_adapter: "null"
+  type_check_policy: "skip"
+  allowed_predicates: []
+  predicate_rules: {}
+
+ingestion:
+  allow_heuristic_default: false

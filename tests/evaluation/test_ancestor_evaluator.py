@@ -1,7 +1,7 @@
 """Tests for the ancestor-aware evaluator.
 
-These tests require v1's ``sumo_plus.db`` to be present at the configured
-path. They are skipped if the database is unavailable.
+These tests require the repo-local ``sumo_plus.db`` to be present at the
+configured path. They are skipped if the database is unavailable.
 """
 
 from __future__ import annotations
@@ -17,7 +17,7 @@ if str(PROJECT_ROOT / "src") not in sys.path:
 
 from onto_canon6.evaluation.ancestor_evaluator import AncestorEvalScore, make_ancestor_evaluator
 
-SUMO_DB = Path(__file__).resolve().parents[3] / "onto-canon" / "data" / "sumo_plus.db"
+SUMO_DB = PROJECT_ROOT / "data" / "sumo_plus.db"
 SKIP_REASON = "sumo_plus.db not available"
 
 

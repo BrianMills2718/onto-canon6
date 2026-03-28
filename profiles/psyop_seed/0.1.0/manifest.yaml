@@ -1,0 +1,23 @@
+profile:
+  id: psyop_seed
+  version: "0.1.0"
+  name: "PSYOP Seed Slice"
+  ontology_version: "onto_canon_psyop_seed@0.1.0"
+  rule_version: "psyop_seed_rules@0.1.0"
+
+ontology:
+  source: onto_canon
+  mode: mixed
+  normalization_policy: conservative
+  proposal_policy: allow
+  pack_id: onto_canon_psyop_seed
+  pack_version: "0.1.0"
+
+validation:
+  type_adapter: ontology_pack
+  type_check_policy: hierarchical
+  allowed_predicates: []
+  predicate_rules: {}
+
+ingestion:
+  allow_heuristic_default: false
