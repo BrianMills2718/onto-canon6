@@ -113,6 +113,15 @@ config/
   or concrete consumer adoption needs. Do not start net-new surfaces,
   adapters, epistemic concepts, or internal subsystems unless they unblock one
   of those three fronts.
+- **Donor repos are transitional, not permanent runtime dependencies.** The
+  older `onto-canon` repos are expected to be archived once `onto-canon6` is
+  stable. Stabilization therefore means `onto-canon6` must absorb the donor
+  assets and code slices it truly needs, rather than requiring sibling repos
+  forever.
+- **Absorb selectively, not by wholesale copy.** Migrate required donor
+  profiles, packs, data assets, and narrow utility code as explicit ownership
+  transfers with provenance notes. Do not bulk-copy whole repos and sort them
+  out later.
 - **Foundation Assertion IR adapter operational** (`adapters/foundation_assertion_export.py`).
   Entity alias_ids and temporal qualifiers are wired from the promoted-graph /
   identity stack. Remaining alignment work is mainly confidence semantics and
@@ -185,6 +194,10 @@ happens.
   extraction quality, reproducibility / bootstrap independence, and
   consumer adoption of the proved outputs. All other work must clear a higher
   bar.
+- Bootstrap independence means the canonical runtime must eventually stop
+  requiring sibling `../onto-canon5` or `../onto-canon` checkouts. Optional
+  external consumers such as `research_v3` may remain outside this repo, but
+  required donor runtime assets must not.
 - Keep the current scope narrow and explicit: reviewed assertions, overlays,
   promoted graph state, stable identity, semantic canonicalization, and the thin
   CLI/MCP surfaces that prove those slices.
