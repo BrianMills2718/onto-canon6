@@ -111,9 +111,10 @@ The repo still defaults to external donor paths in `config/config.yaml`:
 The setup contract, tests, and docs still encode those sibling-repo
 assumptions in multiple places.
 
-### Confirmed Remaining Donor Surface
+### Remaining Donor Surface Before Classification
 
-The following donor material is still known to matter:
+The following donor material is still reachable through current config and
+bootstrap-era fallback paths, but not all of it is equally live:
 
 1. donor profiles in `../onto-canon5/profiles`:
    - `default/1.0.0`
@@ -128,6 +129,19 @@ The following donor material is still known to matter:
 3. donor evaluation asset in `../onto-canon/data/`:
    - `sumo_plus.db`
 
+Phase 1 inventory is now captured in
+`docs/plans/0022a_donor_dependency_inventory.md`. That inventory narrows the
+required-now donor set to:
+
+1. `default@1.0.0`
+2. `dodaf@0.1.0`
+3. `psyop_seed@0.1.0`
+4. `onto_canon_psyop_seed@0.1.0`
+5. `sumo_plus.db`
+
+The remaining donor profiles and packs are currently classified as historical
+or deferred unless a supported workflow reactivates them.
+
 ### Confirmed Current References
 
 The current repo still uses donor assumptions in at least these areas:
@@ -136,7 +150,7 @@ The current repo still uses donor assumptions in at least these areas:
 2. ontology loader tests that assert donor roots under `onto-canon5`;
 3. config tests that assert `../onto-canon/data/sumo_plus.db` as the default;
 4. pipeline/review/runtime tests that still exercise `default`, `dodaf`,
-   `psyop_seed`, and related donor profiles;
+   and `psyop_seed`;
 5. notebooks and status docs that still describe donor loading as a current
    proved behavior;
 6. the default `PROFILE_ID` in the Makefile currently points at `psyop_seed`.
@@ -170,6 +184,10 @@ The current repo still uses donor assumptions in at least these areas:
 #### Goal
 
 Freeze the actual donor surface before changing it.
+
+Inventory artifact:
+
+- `docs/plans/0022a_donor_dependency_inventory.md`
 
 #### Tasks
 
