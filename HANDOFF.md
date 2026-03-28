@@ -1,3 +1,99 @@
+# Handoff: onto-canon6 — 2026-03-28
+
+## Session Focus
+
+Documentation-authority cleanup, post-cutover program clarification, and
+architecture review of the DIGIMON boundary.
+
+## What Landed
+
+### 1. Documentation authority cleanup
+
+Committed on `main` as:
+
+- `6854cfe` — `Clarify post-cutover documentation authority`
+
+Main effects:
+
+1. added `docs/plans/0024_post_cutover_program.md`
+2. removed broken current-plan references from top-level reading surfaces
+3. aligned README / charter / status / active plans around one current
+   post-cutover program
+4. marked `0021` completed
+5. reduced `0022` to residual historical cleanup
+6. made `0022a` clearly historical/pre-cutover
+
+### 2. Current post-cutover execution authority
+
+The intended reading/authority split is now:
+
+1. `docs/plans/0005_v1_capability_parity_matrix.md`
+   - full preserved capability vision
+2. `docs/plans/0024_post_cutover_program.md`
+   - ordered execution lanes after cutover
+3. `docs/plans/0020_vision_gap_closure.md`
+   - ecosystem-gap tracker
+
+The repo is no longer supposed to infer current program order from scattered
+historical plans.
+
+## DIGIMON Boundary Review
+
+### Strategic conclusion
+
+The long-term split remains:
+
+1. `onto-canon6` owns governed semantic/canonical state
+2. DIGIMON should own retrieval-oriented projections and retrieval runtime
+3. analysis is conceptually separate, but does not need a repo split now
+
+### Important nuance
+
+The current DIGIMON adapter surface is still thinner than that long-term
+architecture implies.
+
+`src/onto_canon6/adapters/digimon_export.py` currently exports a flat entity /
+relationship JSONL shape. It does not yet export:
+
+1. alias memberships
+2. passage artifacts
+3. evidence refs
+4. assertion-to-passage links
+5. artifact-lineage context
+
+So the advice was:
+
+1. do **not** move retrieval projections into onto-canon6 core
+2. do **not** assume the current DIGIMON export is already the right semantic
+   interchange
+3. consider Foundation-style assertion export as the stronger basis for any
+   richer future DIGIMON contract
+
+### Foundation export relevance
+
+`src/onto_canon6/adapters/foundation_assertion_export.py` is closer to the
+likely long-term interchange shape than `digimon_export.py` because it already
+preserves:
+
+1. typed role fillers
+2. alias ids
+3. qualifiers
+4. assertion identity
+
+## Recommended Next Actions
+
+1. Execute Plan 0024 Lane 2:
+   choose and prove the first real consumer workflow.
+2. Define Lane 3 schema-stability gates explicitly.
+3. Treat any DIGIMON convergence beyond the current adapter as a deliberate
+   richer interchange effort, not as a casual extension of the flat export.
+4. Keep extraction-quality hardening under Plan 0014 tied to transfer evidence.
+
+## Current Repo State
+
+- `main` clean after the doc-authority cleanup commit
+- no uncommitted changes from this session
+
 # Handoff: onto-canon6
 
 **Date**: 2026-03-26
