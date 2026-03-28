@@ -2,6 +2,20 @@
 
 Updated: 2026-03-28
 
+## Current Program
+
+The current long-term execution authority is split deliberately:
+
+1. `docs/plans/0005_v1_capability_parity_matrix.md`
+   preserved full capability vision;
+2. `docs/plans/0024_post_cutover_program.md`
+   current ordered execution program and gates;
+3. `docs/plans/0020_vision_gap_closure.md`
+   gap-by-gap closure tracking against the broader ecosystem vision.
+
+This status page is intentionally narrower: it records what is already proved
+and where the repo still has real operational risk.
+
 ## What Is Proven
 
 `onto-canon6` currently proves a narrow review-and-governance slice built on a
@@ -125,10 +139,10 @@ typed ontology runtime:
 68. one live notebook proof for the Phase 15 promoted-assertion epistemic
     slice.
 
-Concrete assets:
+Representative proof assets:
 
 1. `notebooks/01_policy_contracts.ipynb`
-2. `notebooks/02_donor_profile_loading.ipynb`
+2. `notebooks/02_donor_profile_loading.ipynb` (historical bootstrap proof)
 3. `notebooks/03_validation_slice.ipynb`
 4. `notebooks/04_review_slice.ipynb`
 5. `notebooks/05_review_reporting_slice.ipynb`

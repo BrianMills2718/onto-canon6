@@ -1,7 +1,7 @@
 # onto-canon6 Successor Roadmap
 
 Status: Completed (historical bootstrap baseline)
-Updated: 2026-03-26
+Updated: 2026-03-28
 
 ## Purpose
 
@@ -20,7 +20,7 @@ The canonical end-to-end workflow notebook now lives in
 contracts kept in `notebooks/notebook_registry.yaml`.
 
 Phases 0-15 remain the canonical successor-core roadmap. Active post-bootstrap
-work now lives outside this historical roadmap in Plans 0014, 0019, and 0020,
+work now lives outside this historical roadmap in Plans 0014, 0020, and 0024,
 not as a silent Phase 16+ extension.
 
 ## Phase Exit Rule

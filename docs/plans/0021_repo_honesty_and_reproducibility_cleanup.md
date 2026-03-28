@@ -1,9 +1,28 @@
 # Repo Honesty And Reproducibility Cleanup
 
-Status: active
+Status: completed
 
-Last updated: 2026-03-27
+Last updated: 2026-03-28
 Workstream: post-bootstrap operational hardening
+
+## Implementation Outcome (2026-03-28)
+
+This plan is complete.
+
+Delivered:
+
+1. `Makefile` now matches the supported verification surface;
+2. `make check`, `make verify-setup`, and `make smoke` are real operator-facing
+   entry points;
+3. static-check expectations were brought back into alignment with the repo
+   contract;
+4. canonical proof artifacts are named in `README.md`;
+5. setup and smoke-path documentation now match the repo's actual behavior.
+
+Residual work from this area now belongs elsewhere:
+
+1. donor-ownership completion and archive readiness live in Plan 0022 / 0023;
+2. ongoing documentation authority and long-term sequencing live in Plan 0024.
 
 ## Purpose
 
@@ -40,20 +59,20 @@ This plan fails if:
 3. proof artifacts remain discoverable only by reading old run notes or
    exploring `var/` manually.
 
-## Current State
+## Historical Baseline
 
-The repo already has real proof artifacts, real tests, and clear strategic
-docs, but there are still avoidable trust gaps:
+When this plan opened, the repo already had real proof artifacts, real tests,
+and clear strategic docs, but it still had avoidable trust gaps:
 
-1. the Makefile currently hardcodes a workspace interpreter path;
-2. `make check` is labeled as test + type check but only runs pytest;
-3. `make errors` does not match its help text;
-4. static-check expectations are stronger in docs than in the current local
+1. the Makefile hardcoded a workspace interpreter path;
+2. `make check` overclaimed what it verified;
+3. `make errors` did not match its help text;
+4. static-check expectations were stronger in docs than in the supported local
    verification envelope;
-5. canonical proof artifacts exist, but the repo does not yet foreground them
+5. canonical proof artifacts existed, but the repo did not foreground them
    consistently;
-6. reproducibility still depends on donor-repo assets and local context that
-   should be made explicit.
+6. reproducibility still depended on donor-repo assets and hidden local
+   context.
 
 ## Scope
 
@@ -120,19 +139,8 @@ Define one operator-facing smoke workflow:
 4. expected summary metrics;
 5. where the resulting artifact lives.
 
-## Immediate Priority
-
-The recommended execution order is:
-
-1. README alignment;
-2. Makefile honesty;
-3. static-check honesty;
-4. reproducibility documentation / setup;
-5. canonical proof-artifact labeling;
-6. canonical smoke path.
-
 ## Notes
 
-This plan does not reduce scope. It raises the floor on trust so the preserved
-long-term vision rests on a workflow that other agents and consumers can
+This plan did not reduce scope. It raised the floor on trust so the preserved
+long-term vision now rests on a workflow that other agents and consumers can
 actually reproduce.

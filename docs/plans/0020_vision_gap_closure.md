@@ -2,7 +2,7 @@
 
 Status: active
 
-Last updated: 2026-03-27
+Last updated: 2026-03-28
 Workstream: post-bootstrap capability completion
 
 ## Purpose
@@ -14,6 +14,9 @@ vision-driven (per CLAUDE.md principles).
 
 This is a tracking plan, not a phase. Individual gaps may be promoted to their
 own plans if scope warrants it. Gaps are ordered by dependency, not priority.
+The ordered post-cutover execution program now lives in
+`docs/plans/0024_post_cutover_program.md`; this document remains the
+gap-by-gap closure tracker.
 
 Unless a gap section has been fully rewritten, the `Current State` subsection
 captures the baseline state at the moment the gap was opened. The per-gap

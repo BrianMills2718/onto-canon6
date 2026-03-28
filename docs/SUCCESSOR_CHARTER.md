@@ -1,6 +1,6 @@
 # onto-canon6 Successor Charter
 
-Updated: 2026-03-26
+Updated: 2026-03-28
 
 ## Purpose
 
@@ -15,11 +15,11 @@ It exists to keep the project from repeating the drift that happened across
 4. what the long-term plan is;
 5. what now counts as drift.
 
-This charter summarizes the accepted ADR direction. The detailed supporting ADR
-record still exists in `onto-canon5/docs/adr/`. The bootstrap implementation
-record lives in this repo's roadmap, the long-term capability ledger lives in
-the parity matrix, and the active post-bootstrap closure work lives in the
-vision-gap and extraction workstream plans.
+This charter summarizes the accepted ADR direction. The bootstrap
+implementation record lives in this repo's roadmap, the long-term capability
+ledger lives in the parity matrix, and the active post-cutover execution
+program now lives in the local program and gap-closure plans. Older donor-repo
+ADRs remain historical lineage material, not part of the current repo contract.
 
 ## The Successor Goal
 
@@ -286,8 +286,8 @@ extension of the successor roadmap.
 Instead, the repo now treats it as explicit post-bootstrap workstreams:
 
 1. `docs/plans/0014_extraction_quality_baseline.md`
-2. `docs/plans/0019_chunk_level_transfer_evaluation.md`
-3. `docs/plans/0020_vision_gap_closure.md`
+2. `docs/plans/0020_vision_gap_closure.md`
+3. `docs/plans/0024_post_cutover_program.md`
 
 Plans 0016-0018 remain important historical design records for the extraction
 workstream, but they are no longer the shortest path to current status.
@@ -543,14 +543,11 @@ If someone needs the local strategic picture in `onto-canon6`, start with:
 1. this document;
 2. `docs/adr/README.md`;
 3. `docs/STATUS.md`;
-4. `docs/plans/0001_successor_roadmap.md`;
+4. `docs/plans/0024_post_cutover_program.md`;
 5. `docs/plans/0005_v1_capability_parity_matrix.md`;
-6. `notebooks/README.md`.
+6. `docs/plans/0001_successor_roadmap.md`;
+7. `notebooks/README.md`.
 
-If someone needs the deeper donor rationale behind this charter, then read the
-supporting donor record in `onto-canon5`:
-
-1. `docs/adr/0001-restart-successor-repo-instead-of-continuing-onto-canon5.md`
-2. `docs/adr/0009-borrow-from-the-lineage-by-subsystem-not-by-version.md`
-3. `docs/adr/0010-realign-the-successor-with-the-original-refactor-intent.md`
-4. `docs/plans/015_lineage_final_synthesis.md`
+Historical lineage rationale beyond this repo lives in archived donor records.
+Those records may still be useful background, but they are not required to
+understand the current successor contract or the active execution program.

@@ -13,6 +13,10 @@ It is intentionally preserved as the pre-cutover classification artifact. The
 runtime described here has since been migrated; see Plan 0023 and the
 implementation update in Plan 0022 for the post-cutover state.
 
+Do not use this document as the current runtime contract. It is a historical
+snapshot retained so later agents can see exactly what the donor dependency
+surface looked like before cutover.
+
 It records the donor-era material that `onto-canon6` still references, how that
 material is used today, and the planned disposition for each item. The point is
 to remove ambiguity before migration work starts.

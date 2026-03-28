@@ -9,8 +9,9 @@ runtime.
 1. `README.md`
 2. `docs/SUCCESSOR_CHARTER.md`
 3. `docs/STATUS.md`
-4. `docs/plans/0001_successor_roadmap.md`
+4. `docs/plans/0024_post_cutover_program.md`
 5. `docs/plans/0005_v1_capability_parity_matrix.md`
+6. `docs/plans/0001_successor_roadmap.md`
 
 ## Commands
 
@@ -50,9 +51,10 @@ config/
   classification, chunk-level transfer evaluation).
 - Predicate Canon bridge, ancestor-aware evaluator, and Digimon export
   adapter operational.
-- **Active work**: extraction quality hardening (Plan 0014), chunk-level
-  transfer evaluation (Plan 0019), and vision-gap closure / consumer adoption
-  hardening (Plan 0020).
+- **Active work**: extraction quality hardening (Plan 0014), vision-gap closure
+  tracking (Plan 0020), and the post-cutover execution program (Plan 0024).
+  The chunk-level transfer evaluation requirement remains active through
+  ADR 0023 and Plan 0024 even though there is no standalone Plan 0019 file.
 
 ## Strategic Direction (2026-03-27)
 

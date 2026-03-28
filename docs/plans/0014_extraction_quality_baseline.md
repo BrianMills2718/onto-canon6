@@ -2,7 +2,7 @@
 
 Status: active
 
-Last updated: 2026-03-22
+Last updated: 2026-03-28
 Workstream: post-bootstrap extraction R&D (ADR-0022)
 
 ## Purpose
@@ -217,7 +217,7 @@ Rendered prompt comparison narrowed that transfer gap further:
 
 ### Chunk-Level Transfer Gate
 
-That explicit chunk-level gate now exists (ADR-0023, Plan 0019).
+That explicit chunk-level gate now exists (ADR-0023, Plan 0024).
 
 The new stable artifact is:
 

@@ -1,6 +1,6 @@
 # Donor Absorption And Archive Readiness
 
-Status: active
+Status: residual historical cleanup
 
 Last updated: 2026-03-28
 Workstream: post-bootstrap reproducibility / successor ownership transfer
@@ -22,6 +22,20 @@ Remaining work under this plan is no longer runtime cutover. It is historical
 labeling and long-tail documentation cleanup where donor-era records still read
 like present-tense contract statements.
 
+## Residual Scope
+
+The only remaining work under this plan is:
+
+1. label archive-era notebooks, plans, and run notes that still describe donor
+   loading in present tense;
+2. remove or rewrite remaining current-doc references that imply sibling donor
+   repos are still part of the canonical runtime contract;
+3. preserve donor provenance without treating donor repos as live runtime
+   dependencies.
+
+This plan should not reopen runtime migration work unless a genuinely live
+successor dependency on archived donor material is rediscovered.
+
 ## Purpose
 
 Prepare `onto-canon6` to become the stable successor repository before older
@@ -37,7 +51,8 @@ This plan converts "bootstrap against donor repos" into
 
 ## Why This Plan Exists
 
-`onto-canon6` has already proved a real workflow, but the repo still assumes:
+When this plan opened, `onto-canon6` had already proved a real workflow, but
+the repo still assumed:
 
 1. `../onto-canon5` for configured donor profile and ontology-pack roots;
 2. `../onto-canon` for `data/sumo_plus.db`;
@@ -188,9 +203,9 @@ The remaining donor-era references are now concentrated in:
 4. vendoring external consumer repos such as `research_v3`;
 5. deleting historical archives merely because they still mention donor roots.
 
-## Work Breakdown
+## Historical Work Breakdown
 
-### Phase 1. Inventory And Classification
+### Phase 1. Inventory And Classification [completed]
 
 #### Goal
 
@@ -224,7 +239,7 @@ the migration without rediscovering what matters.
 2. It is also easy to under-classify a test-only asset that still protects a
    meaningful capability.
 
-### Phase 2. Localize Required Donor Profiles
+### Phase 2. Localize Required Donor Profiles [completed]
 
 #### Goal
 
@@ -270,7 +285,7 @@ or operator workflow after Phase 2 review:
 2. `psyop_seed` is central to proof artifacts and fixtures. Renaming it during
    migration would create avoidable churn.
 
-### Phase 3. Localize Required Donor Packs
+### Phase 3. Localize Required Donor Packs [completed]
 
 #### Goal
 
@@ -302,7 +317,7 @@ Bring in the packs still required by absorbed profiles.
    desirable, but the first absorption pass should prioritize ownership and
    compatibility over ontology cleanup.
 
-### Phase 4. Resolve `sumo_plus.db` Ownership
+### Phase 4. Resolve `sumo_plus.db` Ownership [completed]
 
 #### Goal
 

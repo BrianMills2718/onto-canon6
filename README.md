@@ -9,8 +9,10 @@ state for downstream consumers.
 
 Phases 0-15 completed the bootstrap roadmap, not the full successor-parity
 goal. The full long-term capability vision remains authoritative in
-`docs/plans/0005_v1_capability_parity_matrix.md`. Post-bootstrap work is now
-sequenced around the active bottlenecks rather than broad phase expansion:
+`docs/plans/0005_v1_capability_parity_matrix.md`. The authoritative
+post-cutover execution sequence now lives in
+`docs/plans/0024_post_cutover_program.md`. Post-bootstrap work is sequenced
+around the active bottlenecks rather than broad phase expansion:
 
 1. extraction quality and evaluation hardening;
 2. reproducibility / bootstrap independence from donor repos and hidden setup;
@@ -136,12 +138,14 @@ High-signal reading order:
 
 - `docs/SUCCESSOR_CHARTER.md`
 - `docs/STATUS.md`
+- `docs/plans/0024_post_cutover_program.md`
 - `docs/plans/0005_v1_capability_parity_matrix.md`
 - `docs/plans/0020_vision_gap_closure.md`
+- `docs/plans/0021_repo_honesty_and_reproducibility_cleanup.md`
+- `docs/plans/0022_donor_absorption_and_archive_readiness.md`
+- `docs/plans/0023_24h_successor_ownership_execution_block.md`
 - `docs/plans/0001_successor_roadmap.md` (historical bootstrap baseline)
-- `docs/plans/0013_llm_observability_and_prompt_eval_adoption.md`
 - `docs/plans/0014_extraction_quality_baseline.md`
-- `docs/plans/0019_chunk_level_transfer_evaluation.md`
 - `docs/AUDIT_2026_03_26.md`
 - `docs/EXTRACTION_EXPERIMENT_RUNBOOK.md`
 - `notebooks/README.md`
