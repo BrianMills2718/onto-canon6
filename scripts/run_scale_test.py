@@ -64,10 +64,19 @@ def extract_all_documents(
 ) -> dict[str, int]:
     """Extract assertions from all documents in the corpus.
 
+    Uses TextExtractionService.extract_and_submit which handles:
+    - LLM extraction via llm_client
+    - Optional LLM judge filtering (if enable_judge_filter=true in config)
+    - Review mode policy (auto/llm/human per config)
+
     Returns stats: {extracted, accepted, rejected, errors}.
     """
+    from onto_canon6.pipeline.text_extraction import TextExtractionService
+
     stats: dict[str, int] = defaultdict(int)
     doc_files = sorted(corpus_dir.glob("doc_*.txt"))
+
+    extraction_svc = TextExtractionService(review_service=review_svc)
 
     for doc_path in doc_files:
         text = doc_path.read_text(encoding="utf-8")
@@ -75,41 +84,24 @@ def extract_all_documents(
         logging.info("Extracting from %s (%d chars)", doc_id, len(text))
 
         try:
-            # Use the pipeline's extract_and_submit
-            from onto_canon6.pipeline.text_extraction import extract_candidates
-            from onto_canon6.config import get_config
-
-            config = get_config()
-            candidates = extract_candidates(
+            submissions = extraction_svc.extract_and_submit(
                 source_text=text,
+                profile_id="general_purpose_open",
+                profile_version="0.1.0",
+                submitted_by=f"scale_test:{doc_id}",
                 source_ref=doc_id,
                 source_kind="synthetic_text",
                 extraction_goal="Extract all factual assertions about people, organizations, locations, and their relationships.",
-                profile_id="general_purpose_open",
-                profile_version="0.1.0",
             )
 
-            for candidate in candidates:
-                submission = review_svc.submit_candidate_import(
-                    candidate=candidate,
-                    profile_id="general_purpose_open",
-                    profile_version="0.1.0",
-                    submitted_by=f"scale_test:{doc_id}",
-                    source_kind="synthetic_text",
-                    source_ref=doc_id,
-                )
+            for sub in submissions:
                 stats["extracted"] += 1
-
-                # Auto-accept for scale test (skip LLM judge for speed)
-                if submission.candidate.validation_status in ("valid", "needs_review"):
-                    review_svc.review_candidate(
-                        candidate_id=submission.candidate.candidate_id,
-                        decision="accepted",
-                        actor_id="scale_test:auto_accept",
-                    )
+                if sub.candidate.review_status == "accepted":
                     stats["accepted"] += 1
-                else:
+                elif sub.candidate.review_status == "rejected":
                     stats["rejected"] += 1
+                else:
+                    stats["pending"] += 1
 
         except Exception as exc:
             logging.warning("Extraction failed for %s: %s", doc_id, exc)
@@ -119,24 +111,31 @@ def extract_all_documents(
 
 
 def promote_all(review_svc: ReviewService, db_path: Path) -> int:
-    """Promote all accepted candidates to graph."""
+    """Promote all accepted candidates to graph.
+
+    Note: if review_mode is auto or llm, extract_and_submit already promotes.
+    This is a safety net for any candidates that were accepted but not promoted.
+    """
     graph_svc = CanonicalGraphService(db_path=db_path)
     store = review_svc.store
     promoted = 0
 
     with store.transaction() as conn:
-        candidates = store.list_candidates(conn)
+        rows = conn.execute(
+            "SELECT candidate_id, review_status FROM candidate_assertions "
+            "WHERE review_status = 'accepted' ORDER BY submitted_at"
+        ).fetchall()
 
-    for candidate in candidates:
-        if candidate.review_status == "accepted":
-            try:
-                graph_svc.promote_candidate(
-                    candidate_id=candidate.candidate_id,
-                    promoted_by="scale_test",
-                )
-                promoted += 1
-            except Exception as exc:
-                logging.debug("Promote failed for %s: %s", candidate.candidate_id, exc)
+    for row in rows:
+        candidate_id = str(row[0])
+        try:
+            graph_svc.promote_candidate(
+                candidate_id=candidate_id,
+                promoted_by="scale_test",
+            )
+            promoted += 1
+        except Exception as exc:
+            logging.debug("Promote skipped for %s: %s", candidate_id, exc)
 
     return promoted
 
@@ -193,19 +192,10 @@ def evaluate_resolution(db_path: Path, ground_truth: dict) -> dict:
         if len(members) >= 2
     ]
 
-    # Check expected merges
-    gt_entities = ground_truth["entities"]
-    expected_merges = ground_truth["expected_merges"]
-    expected_non_merges = ground_truth["expected_non_merges"]
-
-    merge_found = 0
-    merge_missed = 0
-
-    # For expected merges: check if entities with same ground-truth ID ended up
-    # in the same identity cluster
-    # (We can't directly map GT entity IDs to extracted entity IDs since
-    # extraction produces different IDs each time. Instead we evaluate
-    # structurally: are multi-member clusters present?)
+    # Structural evaluation: we can't directly map GT entity IDs to extracted
+    # entity IDs since extraction produces different IDs each time. Instead
+    # we report structural metrics (multi-member identities = merges happened)
+    # and dump the identity details for manual inspection.
 
     results = {
         "total_identities": len(identities),
@@ -301,7 +291,7 @@ def main() -> int:
     full_results = {
         "strategy": args.strategy,
         "timestamp": timestamp,
-        "extraction_stats": extraction_stats if not args.skip_extraction else "skipped",
+        "extraction_stats": extraction_stats if not args.skip_extraction else "skipped",  # type: ignore[possibly-undefined]
         "resolution_stats": resolution_stats,
         "evaluation": eval_results,
         "ground_truth_summary": {
