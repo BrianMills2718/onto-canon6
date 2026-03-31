@@ -2,7 +2,7 @@
 
 Status: active
 
-Last updated: 2026-03-28
+Last updated: 2026-03-31
 Workstream: successor completion after runtime ownership cutover
 
 ## Purpose
@@ -110,13 +110,45 @@ workflow.
 
 1. "consumer adoption" means the consuming repo or workflow actually uses the
    outputs, not merely that `onto-canon6` can export them.
-2. The first supported consumer should be chosen from already-proved surfaces:
-   Digimon, `research_v3`, or Foundation Assertion IR.
+2. DIGIMON is the first supported consumer for Lane 2. Foundation Assertion IR
+   and `research_v3` remain valid secondary consumers but no longer compete for
+   the first proof slot.
 3. One adopted workflow is worth more than another new adapter.
+
+#### Decision Update (2026-03-31)
+
+The first supported consumer is now DIGIMON. The current supported workflow is
+the thin v1 export/import seam:
+
+1. from the `onto-canon6` repo root, run:
+   `.venv/bin/onto-canon6 export-digimon --review-db-path var/progressive_review_v2.sqlite3 --output-dir <export_dir>`
+2. from the DIGIMON repo root, run:
+   `.venv/bin/python scripts/import_onto_canon_jsonl.py --entities <export_dir>/entities.jsonl --relationships <export_dir>/relationships.jsonl --working-dir <artifact_root> --dataset-name <dataset_name> --force`
+3. consume the resulting GraphML artifact through DIGIMON's existing
+   entity/relationship retrieval surfaces.
+
+Verified on 2026-03-31 against the real Shield AI review DB:
+
+- export wrote `110` entities and `99` relationships from
+  `var/progressive_review_v2.sqlite3`
+- DIGIMON imported them into GraphML as `110` nodes and `78` edges
+- `16` single-endpoint relationships were skipped by the importer, and the
+  remaining delta came from DIGIMON's duplicate-endpoint merge semantics
+
+#### Remaining Gaps Captured By Lane 2
+
+1. DIGIMON's importer must currently be invoked from the DIGIMON repo root
+   because `Option/Config2.yaml` is loaded via a relative path.
+2. The v1 seam is still flat and lossy: alias memberships, role structure,
+   passages, evidence refs, and richer provenance are not exported.
+3. The current supported consumer proof is graph materialization plus
+   downstream queryability, not a richer passage-aware retrieval contract.
+4. DIGIMON's default benchmark lane remains DIGIMON-native. The richer
+   convergence experiment still lives under DIGIMON Plan 23.
 
 #### Tasks
 
-1. choose the first consumer workflow explicitly;
+1. keep the DIGIMON consumer workflow explicit and truthful;
 2. define the exact handoff artifact, invocation path, and success criteria;
 3. prove the workflow in the consumer context, not only inside this repo;
 4. capture friction: dependency shape, schema mismatches, confidence semantics,

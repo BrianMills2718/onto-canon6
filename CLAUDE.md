@@ -116,6 +116,13 @@ config/
   Digimon export/import/query (19 merged nodes, operator query proven), and
   Foundation IR (16 assertions). Next step is consumer-side adoption and
   long-tail hardening, not more net-new adapter surfaces.
+- **DIGIMON is now the first chosen Lane 2 consumer.** The currently supported
+  downstream workflow is the thin v1 seam: `onto-canon6` exports flat
+  `entities.jsonl` / `relationships.jsonl` via the `onto-canon6` console
+  script, then DIGIMON imports them into GraphML via
+  `scripts/import_onto_canon_jsonl.py` from the DIGIMON repo root. Keep this
+  workflow truthful: it proves downstream materialization and graph reuse, not
+  richer alias/passage/provenance interchange yet.
 - **Preserve the full capability vision; narrow the active frontier.**
   onto-canon6 is not retreating from deferred capabilities and is not judging
   the thesis by one early extraction run. The parity matrix remains the full
