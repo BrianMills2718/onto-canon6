@@ -74,6 +74,41 @@ class OntologyRuntimeConfig(BaseModel):
     overlay_pack_suffix: str = Field(min_length=1)
 
 
+class ResolutionConfig(BaseModel):
+    """Cross-document entity resolution configuration."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    default_strategy: str = Field(
+        default="llm",
+        description="Resolution strategy: exact, fuzzy, or llm.",
+    )
+    model_override: str | None = Field(
+        default=None,
+        description="Model for LLM clustering calls.",
+    )
+    max_budget_usd: float = Field(
+        default=0.50,
+        description="Max budget per resolution run.",
+    )
+    prompt_template: str = Field(
+        default="prompts/resolution/cluster_entities.yaml",
+        description="Prompt template for LLM entity clustering.",
+    )
+    fuzzy_pre_filter_threshold: int = Field(
+        default=80,
+        description="Fuzzy threshold for pre-filtering candidates before LLM review.",
+    )
+    batch_token_limit: int = Field(
+        default=50000,
+        description="Max tokens per LLM clustering call before batching.",
+    )
+    min_entities_for_llm: int = Field(
+        default=2,
+        description="Minimum entities of a type to trigger LLM clustering.",
+    )
+
+
 class ExtractionConfig(BaseModel):
     """Text-extraction defaults for the first llm_client-backed Phase 4 path.
 
@@ -337,6 +372,7 @@ class AppConfig(BaseModel):
     extraction: ExtractionConfig
     chunking: ChunkingConfig
     evaluation: EvaluationConfig
+    resolution: ResolutionConfig = Field(default_factory=ResolutionConfig)
     cli: CLIConfig
     mcp: MCPConfig
     adapters: AdaptersConfig

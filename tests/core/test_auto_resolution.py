@@ -80,11 +80,46 @@ class TestNormalizeName:
     def test_collapse_whitespace(self) -> None:
         assert _normalize_name("4th  PSYOP   Group") == "4th psyop group"
 
-    def test_strip(self) -> None:
-        assert _normalize_name("  Gen. Holland  ") == "gen. holland"
+    def test_strip_whitespace(self) -> None:
+        assert _normalize_name("  Holland  ") == "holland"
 
     def test_empty(self) -> None:
         assert _normalize_name("") == ""
+
+    def test_title_abbreviation_stripped(self) -> None:
+        """Gen. Smith normalizes to just 'smith'."""
+        assert _normalize_name("Gen. Smith") == "smith"
+
+    def test_full_title_stripped(self) -> None:
+        """General Smith normalizes to just 'smith'."""
+        assert _normalize_name("General Smith") == "smith"
+
+    def test_title_variations_converge(self) -> None:
+        """Gen. John Smith and General John Smith normalize to same key."""
+        assert _normalize_name("Gen. John Smith") == _normalize_name("General John Smith")
+
+    def test_multi_word_title_stripped(self) -> None:
+        """Lieutenant General normalizes away."""
+        assert _normalize_name("Lt. Gen. James Holland") == "james holland"
+
+    def test_civilian_title_stripped(self) -> None:
+        """Dr. and Mr. are stripped."""
+        assert _normalize_name("Dr. Jane Doe") == "jane doe"
+        assert _normalize_name("Mr. John Smith") == "john smith"
+
+    def test_no_title_unchanged(self) -> None:
+        """Names without titles pass through normally."""
+        assert _normalize_name("John Smith") == "john smith"
+
+    def test_org_names_unaffected(self) -> None:
+        """Org names that happen to contain title-like substrings are fine."""
+        assert _normalize_name("USSOCOM") == "ussocom"
+        assert _normalize_name("4th PSYOP Group") == "4th psyop group"
+
+    def test_trailing_punctuation_stripped(self) -> None:
+        """Trailing periods and commas are cleaned."""
+        assert _normalize_name("Smith,") == "smith"
+        assert _normalize_name("Smith.") == "smith"
 
 
 class TestGroupByName:
@@ -290,8 +325,8 @@ class TestFuzzyResolution:
         assert result.groups_found == 1  # Should merge
         assert result.entities_scanned == 2
 
-    def test_exact_keeps_abbreviations_separate(self, tmp_path: Path) -> None:
-        """Exact match does NOT merge Gen. Holland / General Holland."""
+    def test_exact_merges_title_variations(self, tmp_path: Path) -> None:
+        """Exact match NOW merges Gen. Holland / General Holland via normalization."""
         review_svc = _seed_review_service(tmp_path)
         _submit_accept_promote(
             review_svc,
@@ -311,4 +346,5 @@ class TestFuzzyResolution:
             db_path=review_svc.store.db_path,
             strategy="exact",
         )
-        assert result.groups_found == 2  # Exact keeps them separate
+        # Title normalization makes both "holland" → exact merge
+        assert result.groups_found == 1

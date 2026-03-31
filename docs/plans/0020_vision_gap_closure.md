@@ -238,17 +238,26 @@ E2E pipeline must work (done). Gap 2 would test resolution across domains.
 ### Estimated Scope
 Medium (2-3 sessions). Matching logic + CLI integration + tests.
 
-### Status: COMPLETED (2026-03-26)
+### Status: PARTIALLY COMPLETED (updated 2026-03-31)
 
-Implemented auto_resolution.py with exact name matching strategy. CLI command
+**Exact-name resolution (2026-03-26):** Implemented auto_resolution.py with
+exact name matching + fuzzy (rapidfuzz) strategies. CLI command
 `auto-resolve-identities` added. Tested on e2e data:
 - 20 entities scanned, 19 groups found (USSOCOM merged from 2 chunks)
 - 18 identities created, 1 multi-member identity (USSOCOM canonical + alias)
-- Resolution strategy configurable via --strategy flag (currently: exact)
+- Resolution strategy configurable via --strategy flag
 - Auto-resolved identities created with `created_by="auto:resolution"`
 
-USSOCOM from chunk 9efd089a and chunk f82d1997 correctly merged into single
-identity gid_c6476dce with canonical + alias memberships.
+**Cross-document LLM clustering (Plan 0025, planned):** Exact-name matching
+cannot resolve title variations ("Gen. Smith" vs "General John Smith"),
+abbreviations, or contextual identity. Plan 0025 adds:
+- Name normalization (title/honorific stripping)
+- LLM-based entity clustering (KGGen-style, per entity type)
+- Fuzzy pre-filtering → LLM validation (no direct fuzzy merges)
+- Scale test on 20-50 doc synthetic corpus with ground truth
+
+Gap 3 is fully closed when Plan 0025 Phase 4 demonstrates cross-document
+entity resolution on a realistic corpus with >90% precision and >70% recall.
 
 ---
 

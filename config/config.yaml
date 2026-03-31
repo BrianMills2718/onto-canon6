@@ -13,7 +13,7 @@ paths:
 pipeline:
   default_acceptance_policy: record_only
   permissive_review: false
-  review_mode: human
+  review_mode: llm
 ontology_runtime:
   overlay_pack_suffix: __overlay
 extraction:
@@ -27,7 +27,7 @@ extraction:
   timeout_seconds: 60
   num_retries: 2
   max_budget_usd: 0.25
-  enable_judge_filter: false
+  enable_judge_filter: true
   judge_filter_min_label: partially_supported
 chunking:
   target_max_chars: 4000
@@ -88,6 +88,14 @@ evaluation:
       prompt_ref: onto_canon6.extraction.prompt_eval_text_to_candidate_assertions_single_response_hardened@1
       max_candidates_per_case: 2
       max_evidence_spans_per_candidate: 1
+resolution:
+  default_strategy: llm
+  model_override: gemini/gemini-2.5-flash
+  max_budget_usd: 0.50
+  prompt_template: prompts/resolution/cluster_entities.yaml
+  fuzzy_pre_filter_threshold: 80
+  batch_token_limit: 50000
+  min_entities_for_llm: 2
 cli:
   default_output_format: json
   file_source_kind: text_file

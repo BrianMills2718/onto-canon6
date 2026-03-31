@@ -26,10 +26,66 @@ from .identity_service import IdentityConflictError, IdentityService
 
 logger = logging.getLogger(__name__)
 
-ResolutionStrategy = Literal["exact", "fuzzy"]
+ResolutionStrategy = Literal["exact", "fuzzy", "llm"]
 
 ACTOR_ID = "auto:resolution"
 DEFAULT_FUZZY_THRESHOLD = 85
+
+# Title/honorific patterns for name normalization (military, government, academic, civilian)
+_TITLE_PATTERNS: list[tuple[str, str]] = [
+    # Military ranks — abbreviations and full forms
+    ("gen.", "general"),
+    ("lt. gen.", "lieutenant general"),
+    ("maj. gen.", "major general"),
+    ("brig. gen.", "brigadier general"),
+    ("col.", "colonel"),
+    ("lt. col.", "lieutenant colonel"),
+    ("maj.", "major"),
+    ("capt.", "captain"),
+    ("cpt.", "captain"),
+    ("lt.", "lieutenant"),
+    ("1lt.", "first lieutenant"),
+    ("2lt.", "second lieutenant"),
+    ("sgt.", "sergeant"),
+    ("sgt. maj.", "sergeant major"),
+    ("msgt.", "master sergeant"),
+    ("ssgt.", "staff sergeant"),
+    ("cpl.", "corporal"),
+    ("pvt.", "private"),
+    ("adm.", "admiral"),
+    ("vadm.", "vice admiral"),
+    ("radm.", "rear admiral"),
+    ("cmdr.", "commander"),
+    ("cdr.", "commander"),
+    ("lcdr.", "lieutenant commander"),
+    ("ens.", "ensign"),
+    # Civilian / academic / government
+    ("dr.", "doctor"),
+    ("mr.", ""),
+    ("mrs.", ""),
+    ("ms.", ""),
+    ("prof.", "professor"),
+    ("sen.", "senator"),
+    ("rep.", "representative"),
+    ("gov.", "governor"),
+    ("amb.", "ambassador"),
+    ("sec.", "secretary"),
+    ("pres.", "president"),
+    ("hon.", "honorable"),
+]
+
+# Full-form titles to strip entirely (they add no identity signal)
+_STRIP_TITLES: set[str] = {
+    "general", "lieutenant general", "major general", "brigadier general",
+    "colonel", "lieutenant colonel", "major", "captain", "lieutenant",
+    "first lieutenant", "second lieutenant", "sergeant", "sergeant major",
+    "master sergeant", "staff sergeant", "corporal", "private",
+    "admiral", "vice admiral", "rear admiral", "commander",
+    "lieutenant commander", "ensign",
+    "doctor", "professor", "senator", "representative", "governor",
+    "ambassador", "secretary", "president", "honorable",
+    "mister", "miss", "sir", "madam", "dame",
+}
 
 
 @dataclass(frozen=True)
@@ -177,8 +233,40 @@ def _build_entity_name_map(
 
 
 def _normalize_name(name: str) -> str:
-    """Normalize entity name for matching: lowercase, collapse whitespace."""
-    return " ".join(name.lower().split())
+    """Normalize entity name for matching.
+
+    Steps:
+    1. Lowercase and collapse whitespace
+    2. Expand known abbreviations (``Gen.`` → ``general``)
+    3. Strip titles/honorifics that add no identity signal
+    4. Strip trailing punctuation artifacts
+    5. Collapse whitespace again after stripping
+    """
+    result = " ".join(name.lower().split())
+
+    # Expand abbreviations — longest match first to avoid partial replacements
+    for abbrev, expansion in sorted(_TITLE_PATTERNS, key=lambda t: -len(t[0])):
+        if result.startswith(abbrev + " "):
+            result = (expansion + " " + result[len(abbrev) + 1:]).strip()
+        elif result.startswith(abbrev):
+            result = (expansion + " " + result[len(abbrev):]).strip()
+
+    # Strip full-form titles from the beginning of the name
+    words = result.split()
+    while words and words[0] in _STRIP_TITLES:
+        words.pop(0)
+
+    # Handle two-word titles like "lieutenant general"
+    while len(words) >= 2 and f"{words[0]} {words[1]}" in _STRIP_TITLES:
+        words.pop(0)
+        words.pop(0)
+
+    result = " ".join(words) if words else result
+
+    # Strip trailing punctuation artifacts (periods, commas)
+    result = result.strip(" .,;:")
+
+    return " ".join(result.split())
 
 
 def _group_by_name(

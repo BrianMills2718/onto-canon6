@@ -9,9 +9,10 @@ runtime.
 1. `README.md`
 2. `docs/SUCCESSOR_CHARTER.md`
 3. `docs/STATUS.md`
-4. `docs/plans/0024_post_cutover_program.md`
-5. `docs/plans/0005_v1_capability_parity_matrix.md`
-6. `docs/plans/0001_successor_roadmap.md`
+4. `docs/plans/0025_cross_document_entity_resolution.md` (current active work)
+5. `docs/plans/0024_post_cutover_program.md`
+6. `docs/plans/0005_v1_capability_parity_matrix.md`
+7. `docs/plans/0001_successor_roadmap.md`
 
 ## Commands
 
@@ -56,11 +57,23 @@ config/
   The chunk-level transfer evaluation requirement remains active through
   ADR 0023 and Plan 0024 even though there is no standalone Plan 0019 file.
 
-## Strategic Direction (2026-03-27)
+## Strategic Direction (2026-03-31)
 
-- **Architecture is sound. Bottleneck is extraction quality** (37.5% acceptance
-  on PSYOP Stage 1, 80% on Phase B bounded chunks). Focus on prompt iteration
-  with `prompt_eval`, not new infrastructure.
+- **Architecture is sound. Current priority: cross-document entity resolution
+  and scale test.** Plan 0025 implements KGGen-style LLM clustering over
+  promoted entities, then tests on a 20-50 document corpus to prove onto-canon6's
+  value proposition (cross-doc entity resolution, contradiction detection, typed
+  reasoning). This is the prerequisite for consumer adoption (Plan 0024 Lane 2).
+- **Default operating mode is `review_mode: llm` with `enable_judge_filter: true`.**
+  Human review is for debugging, not production. Auto-accept is for bulk
+  throughput when you trust the schema. LLM-judge is the standard mode.
+- **Extraction quality at 88% structural validity on bounded chunks** (progressive
+  extraction + improved prompts). The 37.5% PSYOP Stage 1 number was from an
+  early run before progressive extraction and prompt hardening.
+- **Entity resolution is the scale bottleneck, not extraction quality.** Without
+  cross-document resolution, every document produces isolated entity islands.
+  The value proposition (accumulation, contradiction detection, cross-doc
+  reasoning) cannot be demonstrated.
 - **Flat filler model with strong descriptions** — discriminated unions (oneOf)
   are architecturally correct but no current model can navigate them (all produce
   empty roles). Reverted to flat model with `Field(description=...)` enforcing
@@ -177,6 +190,25 @@ happens.
    *strategy* (exact name, Q-code, never merge); onto-canon6 provides the
    resolution *infrastructure*. Export adapters wire the identity subsystem.
    Consumers should not have to reimplement dedup.
+
+## Active Execution Block (2026-03-31)
+
+**Plan 0025: Cross-Document Entity Resolution — Phases 1-4.**
+
+Execute continuously. Do NOT stop after completing one phase — immediately
+proceed to the next. The only valid stop conditions are:
+1. All 4 phases complete
+2. A real blocker that cannot be resolved from plan context
+3. A material uncertainty not covered by the pre-made decisions below
+
+Pre-made decisions (do not ask about these):
+- Config defaults: `review_mode: llm`, `enable_judge_filter: true`
+- Fuzzy matching is a pre-filter for LLM validation, not an independent merge strategy
+- Synthetic corpus for Phase 4 (controlled ground truth)
+- Single LLM call per entity type; batch if token count exceeds threshold
+- All LLM calls through llm_client with task/trace_id/max_budget
+- Prompt templates in `prompts/resolution/` as YAML/Jinja2
+- Commit each verified phase immediately
 
 ## Working Rules
 
