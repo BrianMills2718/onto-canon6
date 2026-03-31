@@ -7,6 +7,10 @@ Resolution strategies:
 - ``exact``: case-insensitive exact name match (default, zero false positives)
 - ``fuzzy``: rapidfuzz token_sort_ratio with configurable threshold and
   same-entity-type guard (requires rapidfuzz)
+- ``llm``: LLM-based entity clustering per entity type, optionally with fuzzy
+  pre-filtering. Fuzzy-proposed clusters go through LLM validation (no direct
+  fuzzy merges). Uses ``llm_client`` with mandatory ``task=``, ``trace_id=``,
+  ``max_budget=`` kwargs.
 
 Auto-resolved identities are created with ``created_by="auto:resolution"``
 so they can be distinguished from manual identity assignments.
@@ -14,11 +18,15 @@ so they can be distinguished from manual identity assignments.
 
 from __future__ import annotations
 
+import asyncio
+import json
 import logging
+import uuid as _uuid
 from collections import defaultdict
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from importlib import import_module
 from pathlib import Path
-from typing import Literal
+from typing import Any, Literal, Protocol
 
 from .graph_models import PromotedGraphAssertionRecord
 from .graph_service import CanonicalGraphService
@@ -134,7 +142,29 @@ def auto_resolve_identities(
     entity_types = {str(row[0]): str(row[1]) if row[1] else "" for row in all_entities}
     name_map = _build_entity_name_map(assertions)
 
-    if strategy == "fuzzy":
+    if strategy == "llm":
+        context_map = _build_context_map(assertions)
+        # Load resolution config
+        try:
+            from ..config import get_config
+            config = get_config()
+            res_cfg = config.resolution
+            groups = _group_by_llm(
+                entity_ids, name_map, entity_types, context_map, assertions,
+                model=res_cfg.model_override,
+                max_budget=res_cfg.max_budget_usd,
+                prompt_template=res_cfg.prompt_template,
+                fuzzy_pre_filter_threshold=res_cfg.fuzzy_pre_filter_threshold,
+                batch_token_limit=res_cfg.batch_token_limit,
+                min_entities_for_llm=res_cfg.min_entities_for_llm,
+            )
+        except Exception:
+            # Fall back to config-less defaults
+            context_map = _build_context_map(assertions)
+            groups = _group_by_llm(
+                entity_ids, name_map, entity_types, context_map, assertions,
+            )
+    elif strategy == "fuzzy":
         groups = _group_by_fuzzy(entity_ids, name_map, entity_types, fuzzy_threshold)
     else:
         groups = _group_by_name(entity_ids, name_map, strategy)
@@ -343,7 +373,315 @@ def _group_by_fuzzy(
     return dict(groups)
 
 
+# ---------------------------------------------------------------------------
+# LLM-based entity clustering (Phase 2)
+# ---------------------------------------------------------------------------
+
+from pydantic import BaseModel, ConfigDict, Field
+
+
+class EntityCluster(BaseModel):
+    """One cluster of entities that refer to the same real-world entity."""
+
+    model_config = ConfigDict(extra="ignore")
+
+    canonical_name: str = Field(description="Best full canonical name for this entity")
+    entity_ids: list[str] = Field(description="Entity IDs that refer to this same entity")
+    reasoning: str = Field(description="Why these are the same entity, citing evidence")
+
+
+class ClusteringResult(BaseModel):
+    """LLM output: all entity clusters for one entity type."""
+
+    model_config = ConfigDict(extra="ignore")
+
+    clusters: list[EntityCluster]
+
+
+@dataclass(frozen=True)
+class _EntityInfo:
+    """Entity metadata passed to the clustering prompt."""
+
+    entity_id: str
+    name: str
+    entity_type: str
+    context: str  # from claim_text of assertions involving this entity
+
+
+@dataclass(frozen=True)
+class _FuzzyProposal:
+    """A fuzzy-proposed cluster to be validated by the LLM."""
+
+    entities: list[_EntityInfo]
+
+
+def _build_entity_info_list(
+    entity_ids: list[str],
+    name_map: dict[str, str],
+    entity_types: dict[str, str],
+    context_map: dict[str, str],
+) -> list[_EntityInfo]:
+    """Build entity info list for clustering prompt."""
+    return [
+        _EntityInfo(
+            entity_id=eid,
+            name=name_map.get(eid, eid),
+            entity_type=entity_types.get(eid, "unknown"),
+            context=context_map.get(eid, ""),
+        )
+        for eid in entity_ids
+    ]
+
+
+def _build_context_map(
+    assertions: list[PromotedGraphAssertionRecord],
+) -> dict[str, str]:
+    """Build entity_id → context snippet map from assertion claim_text."""
+    context_map: dict[str, str] = {}
+    for assertion in assertions:
+        claim_text = assertion.claim_text or ""
+        if not claim_text:
+            continue
+        roles = assertion.normalized_body.get("roles")
+        if not isinstance(roles, dict):
+            continue
+        for _role_id, fillers in roles.items():
+            if not isinstance(fillers, list):
+                continue
+            for filler in fillers:
+                if not isinstance(filler, dict):
+                    continue
+                entity_id = filler.get("entity_id")
+                if isinstance(entity_id, str) and entity_id not in context_map:
+                    # Use first ~200 chars of claim_text as context
+                    context_map[entity_id] = claim_text[:200]
+    return context_map
+
+
+def _fuzzy_pre_filter(
+    entities: list[_EntityInfo],
+    threshold: int,
+) -> tuple[list[_FuzzyProposal], list[_EntityInfo]]:
+    """Generate fuzzy candidate clusters for LLM review.
+
+    Returns (proposals, unclustered). Proposals are groups of 2+ entities
+    with fuzzy similarity above threshold. Unclustered are singletons.
+    """
+    from rapidfuzz import fuzz
+
+    entity_ids = [e.entity_id for e in entities]
+    name_map = {e.entity_id: e.name for e in entities}
+    entity_types = {e.entity_id: e.entity_type for e in entities}
+
+    fuzzy_groups = _group_by_fuzzy(entity_ids, name_map, entity_types, threshold)
+
+    info_map = {e.entity_id: e for e in entities}
+    proposals: list[_FuzzyProposal] = []
+    unclustered: list[_EntityInfo] = []
+
+    for _root, group_ids in fuzzy_groups.items():
+        group_entities = [info_map[eid] for eid in group_ids]
+        if len(group_entities) >= 2:
+            proposals.append(_FuzzyProposal(entities=group_entities))
+        else:
+            unclustered.extend(group_entities)
+
+    return proposals, unclustered
+
+
+def _group_by_llm(
+    entity_ids: list[str],
+    name_map: dict[str, str],
+    entity_types: dict[str, str],
+    context_map: dict[str, str],
+    assertions: list[PromotedGraphAssertionRecord],
+    *,
+    model: str | None = None,
+    max_budget: float = 0.50,
+    prompt_template: str = "prompts/resolution/cluster_entities.yaml",
+    fuzzy_pre_filter_threshold: int = 80,
+    batch_token_limit: int = 50000,
+    min_entities_for_llm: int = 2,
+) -> dict[str, list[str]]:
+    """Group entities using LLM-based clustering with optional fuzzy pre-filter.
+
+    For each entity type:
+    1. If type has >=50 entities: run fuzzy pre-filter, send proposals to LLM
+    2. If type has <50 entities: send all directly to LLM
+    3. LLM validates/rejects fuzzy proposals and identifies additional clusters
+
+    All LLM calls go through llm_client with task/trace_id/max_budget.
+    """
+    try:
+        llm_mod = import_module("llm_client")
+        render_prompt = llm_mod.render_prompt
+        acall_llm = llm_mod.acall_llm
+    except ImportError:
+        logger.error("llm_client not available — cannot use LLM resolution strategy")
+        # Fall back to fuzzy
+        return _group_by_fuzzy(entity_ids, name_map, entity_types, fuzzy_pre_filter_threshold)
+
+    if model is None:
+        try:
+            get_model = llm_mod.get_model
+            model = get_model("fast_extraction", use_performance=False)
+        except Exception:
+            model = "gemini/gemini-2.5-flash"
+
+    # Group entities by type
+    type_groups: dict[str, list[str]] = defaultdict(list)
+    for eid in entity_ids:
+        etype = entity_types.get(eid, "unknown")
+        type_groups[etype].append(eid)
+
+    all_groups: dict[str, list[str]] = {}
+    group_counter = 0
+
+    for entity_type, type_eids in type_groups.items():
+        if len(type_eids) < min_entities_for_llm:
+            # Single entity — no clustering needed
+            for eid in type_eids:
+                all_groups[f"singleton_{group_counter}"] = [eid]
+                group_counter += 1
+            continue
+
+        entities = _build_entity_info_list(type_eids, name_map, entity_types, context_map)
+
+        # Decide: fuzzy pre-filter or direct LLM
+        use_fuzzy_prefilter = len(entities) >= 50
+        fuzzy_proposals: list[_FuzzyProposal] | None = None
+        unclustered: list[_EntityInfo] | None = None
+
+        if use_fuzzy_prefilter:
+            fuzzy_proposals, unclustered = _fuzzy_pre_filter(
+                entities, fuzzy_pre_filter_threshold
+            )
+
+        # Build prompt context
+        prompt_context: dict[str, Any] = {"entity_type": entity_type}
+
+        if fuzzy_proposals is not None and unclustered is not None:
+            prompt_context["fuzzy_proposals"] = [
+                {
+                    "entities": [
+                        {"entity_id": e.entity_id, "name": e.name, "context": e.context}
+                        for e in p.entities
+                    ]
+                }
+                for p in fuzzy_proposals
+            ]
+            prompt_context["unclustered_entities"] = [
+                {"entity_id": e.entity_id, "name": e.name, "context": e.context}
+                for e in unclustered
+            ]
+        else:
+            prompt_context["entities"] = [
+                {"entity_id": e.entity_id, "name": e.name, "context": e.context}
+                for e in entities
+            ]
+
+        # Render prompt
+        try:
+            messages = render_prompt(prompt_template, **prompt_context)
+        except Exception:
+            logger.warning(
+                "Failed to render resolution prompt for type %s, falling back to fuzzy",
+                entity_type,
+            )
+            fuzzy_groups = _group_by_fuzzy(
+                type_eids, name_map, entity_types, fuzzy_pre_filter_threshold
+            )
+            for key, eids in fuzzy_groups.items():
+                all_groups[f"fuzzy_fallback_{group_counter}"] = eids
+                group_counter += 1
+            continue
+
+        # Call LLM
+        trace_id = f"resolution.cluster.{entity_type}.{_uuid.uuid4().hex[:8]}"
+        schema = ClusteringResult.model_json_schema()
+
+        try:
+            result = asyncio.run(
+                acall_llm(
+                    model,
+                    messages,
+                    task="entity_resolution",
+                    trace_id=trace_id,
+                    max_budget=max_budget,
+                    response_format={
+                        "type": "json_schema",
+                        "json_schema": {
+                            "name": "ClusteringResult",
+                            "schema": schema,
+                        },
+                    },
+                )
+            )
+        except Exception as exc:
+            logger.warning(
+                "LLM clustering failed for type %s: %s — falling back to fuzzy",
+                entity_type, exc,
+            )
+            fuzzy_groups = _group_by_fuzzy(
+                type_eids, name_map, entity_types, fuzzy_pre_filter_threshold
+            )
+            for key, eids in fuzzy_groups.items():
+                all_groups[f"fuzzy_fallback_{group_counter}"] = eids
+                group_counter += 1
+            continue
+
+        # Parse LLM response
+        try:
+            response_text = result.content if hasattr(result, "content") else str(result)
+            clustering = ClusteringResult.model_validate_json(response_text)
+        except Exception as exc:
+            logger.warning(
+                "Failed to parse LLM clustering response for type %s: %s",
+                entity_type, exc,
+            )
+            # Fall back to fuzzy
+            fuzzy_groups = _group_by_fuzzy(
+                type_eids, name_map, entity_types, fuzzy_pre_filter_threshold
+            )
+            for key, eids in fuzzy_groups.items():
+                all_groups[f"fuzzy_fallback_{group_counter}"] = eids
+                group_counter += 1
+            continue
+
+        logger.info(
+            "LLM clustering for type %s: %d entities → %d clusters "
+            "(entity_count=%d, trace=%s)",
+            entity_type, len(type_eids), len(clustering.clusters),
+            len(type_eids), trace_id,
+        )
+
+        # Convert LLM clusters to groups
+        claimed_ids: set[str] = set()
+        valid_eids = set(type_eids)
+
+        for cluster in clustering.clusters:
+            # Filter to only entity IDs that are actually in this type group
+            valid_cluster_ids = [
+                eid for eid in cluster.entity_ids
+                if eid in valid_eids and eid not in claimed_ids
+            ]
+            if valid_cluster_ids:
+                all_groups[f"llm_{group_counter}"] = valid_cluster_ids
+                claimed_ids.update(valid_cluster_ids)
+                group_counter += 1
+
+        # Any entities not claimed by LLM clusters get singleton groups
+        for eid in type_eids:
+            if eid not in claimed_ids:
+                all_groups[f"unclaimed_{group_counter}"] = [eid]
+                group_counter += 1
+
+    return all_groups
+
+
 __all__ = [
+    "ClusteringResult",
+    "EntityCluster",
     "ResolutionResult",
     "ResolutionStrategy",
     "auto_resolve_identities",

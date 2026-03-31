@@ -6,8 +6,16 @@ from pathlib import Path
 
 import pytest
 
+from unittest.mock import MagicMock, patch
+
 from onto_canon6.core.auto_resolution import (
+    ClusteringResult,
+    EntityCluster,
+    _build_context_map,
+    _build_entity_info_list,
+    _fuzzy_pre_filter,
     _group_by_fuzzy,
+    _group_by_llm,
     ResolutionResult,
     auto_resolve_identities,
     _normalize_name,
@@ -348,3 +356,131 @@ class TestFuzzyResolution:
         )
         # Title normalization makes both "holland" → exact merge
         assert result.groups_found == 1
+
+
+class TestClusteringModels:
+    """Test Pydantic models for LLM clustering output."""
+
+    def test_clustering_result_parses(self) -> None:
+        """ClusteringResult parses valid JSON."""
+        raw = '{"clusters": [{"canonical_name": "John Smith", "entity_ids": ["e1", "e2"], "reasoning": "same person"}]}'
+        result = ClusteringResult.model_validate_json(raw)
+        assert len(result.clusters) == 1
+        assert result.clusters[0].canonical_name == "John Smith"
+        assert result.clusters[0].entity_ids == ["e1", "e2"]
+
+    def test_clustering_result_ignores_extra(self) -> None:
+        """ClusteringResult ignores extra fields from LLM."""
+        raw = '{"clusters": [{"canonical_name": "X", "entity_ids": ["e1"], "reasoning": "ok", "extra": true}], "extra_top": 1}'
+        result = ClusteringResult.model_validate_json(raw)
+        assert len(result.clusters) == 1
+
+    def test_empty_clusters(self) -> None:
+        """Empty clusters list is valid."""
+        raw = '{"clusters": []}'
+        result = ClusteringResult.model_validate_json(raw)
+        assert len(result.clusters) == 0
+
+
+class TestBuildEntityInfo:
+    """Test entity info construction for prompts."""
+
+    def test_build_entity_info_list(self) -> None:
+        entities = _build_entity_info_list(
+            ["e1", "e2"],
+            {"e1": "Gen. Smith", "e2": "John Doe"},
+            {"e1": "oc:person", "e2": "oc:person"},
+            {"e1": "commanded 3rd division", "e2": ""},
+        )
+        assert len(entities) == 2
+        assert entities[0].entity_id == "e1"
+        assert entities[0].name == "Gen. Smith"
+        assert entities[0].context == "commanded 3rd division"
+        assert entities[1].context == ""
+
+
+class TestFuzzyPreFilter:
+    """Test fuzzy pre-filtering for LLM clustering."""
+
+    def test_pre_filter_groups_similar(self) -> None:
+        """Fuzzy pre-filter groups similar names."""
+        from onto_canon6.core.auto_resolution import _EntityInfo
+        entities = [
+            _EntityInfo("e1", "Gen. Holland", "oc:person", ""),
+            _EntityInfo("e2", "General Holland", "oc:person", ""),
+            _EntityInfo("e3", "Adm. Olson", "oc:person", ""),
+        ]
+        proposals, unclustered = _fuzzy_pre_filter(entities, threshold=75)
+        assert len(proposals) == 1  # Holland pair
+        assert len(proposals[0].entities) == 2
+        assert len(unclustered) == 1  # Olson singleton
+        assert unclustered[0].entity_id == "e3"
+
+
+class TestGroupByLLM:
+    """Test LLM clustering with mocked LLM calls."""
+
+    def test_llm_clustering_with_mock(self) -> None:
+        """LLM clustering produces correct groups from mocked response."""
+        mock_response = MagicMock()
+        mock_response.content = ClusteringResult(
+            clusters=[
+                EntityCluster(
+                    canonical_name="General John Smith",
+                    entity_ids=["e1", "e2"],
+                    reasoning="Same person — title variation",
+                ),
+                EntityCluster(
+                    canonical_name="Admiral Olson",
+                    entity_ids=["e3"],
+                    reasoning="Singleton",
+                ),
+            ]
+        ).model_dump_json()
+
+        async def mock_acall_llm(*args: object, **kwargs: object) -> object:
+            return mock_response
+
+        with patch.dict(
+            "sys.modules",
+            {
+                "llm_client": MagicMock(
+                    render_prompt=lambda tpl, **ctx: [{"role": "user", "content": "test"}],
+                    acall_llm=mock_acall_llm,
+                    get_model=lambda task, **kw: "mock-model",
+                ),
+            },
+        ):
+            from onto_canon6.core import auto_resolution as ar_mod
+            # Force re-import of llm_client in the function
+            groups = ar_mod._group_by_llm(
+                entity_ids=["e1", "e2", "e3"],
+                name_map={"e1": "Gen. Smith", "e2": "General John Smith", "e3": "Adm. Olson"},
+                entity_types={"e1": "oc:person", "e2": "oc:person", "e3": "oc:person"},
+                context_map={"e1": "", "e2": "", "e3": ""},
+                assertions=[],
+            )
+
+        # Should have 2 groups: one with 2 entities, one with 1
+        multi_groups = [g for g in groups.values() if len(g) >= 2]
+        single_groups = [g for g in groups.values() if len(g) == 1]
+        assert len(multi_groups) == 1
+        assert set(multi_groups[0]) == {"e1", "e2"}
+        assert len(single_groups) == 1
+
+    def test_llm_fallback_to_fuzzy_on_import_error(self) -> None:
+        """Falls back to fuzzy when llm_client unavailable."""
+        # This test verifies graceful degradation
+        with patch.dict("sys.modules", {"llm_client": None}):
+            from onto_canon6.core import auto_resolution as ar_mod
+            # import_module("llm_client") will raise ImportError
+            # The function should fall back to fuzzy grouping
+            groups = ar_mod._group_by_llm(
+                entity_ids=["e1", "e2"],
+                name_map={"e1": "USSOCOM", "e2": "USSOCOM"},
+                entity_types={"e1": "oc:org", "e2": "oc:org"},
+                context_map={},
+                assertions=[],
+            )
+            # Fuzzy fallback should merge identical names
+            assert any(len(g) == 2 for g in groups.values())
