@@ -841,9 +841,9 @@ def _build_parser() -> argparse.ArgumentParser:
     _add_store_args(auto_resolve_parser, include_overlay_root=False)
     auto_resolve_parser.add_argument(
         "--strategy",
-        default="exact",
-        choices=["exact", "fuzzy"],
-        help="Resolution strategy: exact (case-insensitive name match) or fuzzy (rapidfuzz token_sort_ratio with entity-type guard).",
+        default=None,
+        choices=["exact", "fuzzy", "llm"],
+        help="Resolution strategy: exact (name match), fuzzy (rapidfuzz), or llm (LLM clustering with fuzzy pre-filter). Default: from config.",
     )
     auto_resolve_parser.add_argument(
         "--fuzzy-threshold",
@@ -1666,8 +1666,19 @@ def _handle_auto_resolve_identities(args: argparse.Namespace) -> int:
     """Run automated entity resolution over promoted entities."""
     from .core.auto_resolution import auto_resolve_identities
 
+    from .core.auto_resolution import ResolutionStrategy
+    from typing import cast
+
     db_path = Path(args.review_db_path)
-    result = auto_resolve_identities(db_path=db_path, strategy=args.strategy, fuzzy_threshold=args.fuzzy_threshold)
+    strategy_str: str = args.strategy
+    if strategy_str is None:
+        try:
+            config = get_config()
+            strategy_str = config.resolution.default_strategy
+        except Exception:
+            strategy_str = "exact"
+    strategy = cast(ResolutionStrategy, strategy_str)
+    result = auto_resolve_identities(db_path=db_path, strategy=strategy, fuzzy_threshold=args.fuzzy_threshold)
     output = {
         "entities_scanned": result.entities_scanned,
         "groups_found": result.groups_found,

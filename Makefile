@@ -138,7 +138,7 @@ accept-all:  ## Accept all pending candidates in batch
 promote-all:  ## Promote all accepted candidates to graph
 	@$(CLI) promote-all 		--review-db-path $(DB_PATH) 		--output $(OUTPUT)
 
-govern:  ## Full auto pipeline: accept-all → promote-all → auto-resolve
+govern:  ## Full auto pipeline: accept-all → promote-all → resolve identities
 	@$(CLI) accept-all --review-db-path $(DB_PATH) --output $(OUTPUT)
 	@$(CLI) promote-all --review-db-path $(DB_PATH) --output $(OUTPUT)
 	@$(CLI) auto-resolve-identities --review-db-path $(DB_PATH) --output $(OUTPUT)
@@ -156,7 +156,12 @@ export-foundation:  ## Export as Foundation Assertion IR
 	assertions = export_foundation_assertions('$(DB_PATH)'); \
 	print(json.dumps([a.model_dump(exclude_none=True) for a in assertions], indent=2))"
 
-auto-resolve:  ## Run automated entity resolution on promoted entities
+auto-resolve:  ## Run automated entity resolution (uses config default strategy)
+	@$(CLI) auto-resolve-identities \
+		--review-db-path $(DB_PATH) \
+		--output $(OUTPUT)
+
+resolve:  ## Alias for auto-resolve — run entity resolution with config strategy
 	@$(CLI) auto-resolve-identities \
 		--review-db-path $(DB_PATH) \
 		--output $(OUTPUT)
