@@ -1,6 +1,6 @@
 # Cross-Document Entity Resolution
 
-Status: planned
+Status: active
 
 Last updated: 2026-03-31
 Workstream: entity resolution for scale test (20-500 documents)
@@ -15,6 +15,49 @@ that proves onto-canon6's value proposition.
 Without this, every document produces isolated entity islands. The scale value
 (cross-document entity resolution, contradiction detection, typed reasoning)
 cannot be demonstrated.
+
+## Progress Update (2026-03-31)
+
+This plan is no longer just planned. The first implementation slice has
+started and the scale-test harness now exists.
+
+### Landed so far
+
+1. **Phase 1** landed:
+   - config defaults and name-normalization groundwork
+2. **Phase 2** landed:
+   - additive `llm` resolution strategy with fuzzy pre-filtering
+3. **Phase 3** landed:
+   - CLI / Makefile / pipeline integration for resolution
+4. **Phase 4 harness** landed:
+   - synthetic corpus + scale-test runner
+   - first exact-strategy and llm-strategy runs written under `docs/runs/`
+
+Targeted regression coverage for the active slice is green on the current repo
+surface:
+
+1. `tests/core/test_auto_resolution.py`
+2. `tests/core/test_identity_service.py`
+3. `tests/pipeline/test_text_extraction.py`
+4. `tests/integration/test_identity_cli.py`
+
+### What is still unresolved
+
+The plan's value-proof acceptance is **not** met yet.
+
+The current scale-test outputs are still structural diagnostics, not the final
+quality gate:
+
+1. they report identity counts and merge structure,
+2. they do **not** yet report precision / recall / false-merge / false-split
+   against ground truth,
+3. they do **not** yet include the bare-extraction comparison from Phase 4d,
+4. and they do **not** yet include the cross-document QA comparison from
+   Phase 4e.
+
+So the current question is no longer "can the repo run cross-document
+resolution at all?" It can. The current question is "does the resolved pipeline
+beat the simpler alternatives clearly enough to count as the value proof?"
 
 ## What Exists Today
 
@@ -250,6 +293,38 @@ Not started until Phase 4 proves the approach works at 20-500 scale.
    resolution to work on.
    Mitigation: LLM judge filter removes unfaithful extractions before
    promotion. Resolution operates on judge-approved entities only.
+
+## Open Questions / Uncertainty Tracking
+
+### Q1: Are the current exact-vs-llm scale-test artifacts decision-grade?
+**Status:** Open
+**Why it matters:** The checked-in run artifacts show structural merge counts,
+but not the precision/recall gate defined in Phase 4.
+**Current evidence:** both runs exist under `docs/runs/`, but they are not yet
+enough to choose the winning strategy.
+
+### Q2: Is the synthetic corpus exposing resolution quality, or mostly extraction noise?
+**Status:** Open
+**Why it matters:** The run artifacts still show noisy extracted entities such
+as pronoun-like person nodes and type drift. If extraction noise dominates, the
+resolution comparison is not yet isolating the right problem.
+**Current handling:** keep judge-filtered extraction in the pipeline and score
+false merges / false splits explicitly before drawing a strategy conclusion.
+
+### Q3: Does LLM clustering materially outperform the cheaper exact/fuzzy path on the current corpus?
+**Status:** Open
+**Why it matters:** If not, the repo should not default to a more expensive
+strategy just because it exists.
+**Current handling:** the current artifacts are treated as a first baseline,
+not a promotion decision.
+
+### Q4: What is the official Phase 4 value-proof corpus?
+**Status:** Open
+**Why it matters:** The plan allows military/OSINT or general-purpose
+synthetic corpora. The repo should choose one explicit canonical slice before
+claiming a value proof.
+**Current handling:** no user decision is required yet, but this must be fixed
+before Phase 4 is declared complete.
 
 ## Relationship to Other Plans
 
