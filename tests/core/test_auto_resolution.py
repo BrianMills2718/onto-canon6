@@ -468,19 +468,15 @@ class TestGroupByLLM:
         assert set(multi_groups[0]) == {"e1", "e2"}
         assert len(single_groups) == 1
 
-    def test_llm_fallback_to_fuzzy_on_import_error(self) -> None:
-        """Falls back to fuzzy when llm_client unavailable."""
-        # This test verifies graceful degradation
+    def test_llm_fails_loud_on_import_error(self) -> None:
+        """Raises RuntimeError when llm_client unavailable (fail loud, no silent fallback)."""
         with patch.dict("sys.modules", {"llm_client": None}):
             from onto_canon6.core import auto_resolution as ar_mod
-            # import_module("llm_client") will raise ImportError
-            # The function should fall back to fuzzy grouping
-            groups = ar_mod._group_by_llm(
-                entity_ids=["e1", "e2"],
-                name_map={"e1": "USSOCOM", "e2": "USSOCOM"},
-                entity_types={"e1": "oc:org", "e2": "oc:org"},
-                context_map={},
-                assertions=[],
-            )
-            # Fuzzy fallback should merge identical names
-            assert any(len(g) == 2 for g in groups.values())
+            with pytest.raises(RuntimeError, match="llm_client is required"):
+                ar_mod._group_by_llm(
+                    entity_ids=["e1", "e2"],
+                    name_map={"e1": "USSOCOM", "e2": "USSOCOM"},
+                    entity_types={"e1": "oc:org", "e2": "oc:org"},
+                    context_map={},
+                    assertions=[],
+                )

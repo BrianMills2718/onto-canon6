@@ -516,10 +516,11 @@ def _group_by_llm(
         llm_mod = import_module("llm_client")
         render_prompt = llm_mod.render_prompt
         acall_llm = llm_mod.acall_llm
-    except ImportError:
-        logger.error("llm_client not available — cannot use LLM resolution strategy")
-        # Fall back to fuzzy
-        return _group_by_fuzzy(entity_ids, name_map, entity_types, fuzzy_pre_filter_threshold)
+    except ImportError as exc:
+        raise RuntimeError(
+            "llm_client is required for LLM resolution strategy; "
+            "run `pip install -e ~/projects/llm_client`"
+        ) from exc
 
     if model is None:
         try:
@@ -580,73 +581,34 @@ def _group_by_llm(
                 for e in entities
             ]
 
-        # Render prompt
-        try:
-            messages = render_prompt(prompt_template, **prompt_context)
-        except Exception:
-            logger.warning(
-                "Failed to render resolution prompt for type %s, falling back to fuzzy",
-                entity_type,
-            )
-            fuzzy_groups = _group_by_fuzzy(
-                type_eids, name_map, entity_types, fuzzy_pre_filter_threshold
-            )
-            for key, eids in fuzzy_groups.items():
-                all_groups[f"fuzzy_fallback_{group_counter}"] = eids
-                group_counter += 1
-            continue
+        # Render prompt — fail loud if template is broken
+        messages = render_prompt(prompt_template, **prompt_context)
 
         # Call LLM
         trace_id = f"resolution.cluster.{entity_type}.{_uuid.uuid4().hex[:8]}"
         schema = ClusteringResult.model_json_schema()
 
-        try:
-            result = asyncio.run(
-                acall_llm(
-                    model,
-                    messages,
-                    task="entity_resolution",
-                    trace_id=trace_id,
-                    max_budget=max_budget,
-                    response_format={
-                        "type": "json_schema",
-                        "json_schema": {
-                            "name": "ClusteringResult",
-                            "schema": schema,
-                        },
+        # Call LLM — fail loud on errors
+        result = asyncio.run(
+            acall_llm(
+                model,
+                messages,
+                task="entity_resolution",
+                trace_id=trace_id,
+                max_budget=max_budget,
+                response_format={
+                    "type": "json_schema",
+                    "json_schema": {
+                        "name": "ClusteringResult",
+                        "schema": schema,
                     },
-                )
+                },
             )
-        except Exception as exc:
-            logger.warning(
-                "LLM clustering failed for type %s: %s — falling back to fuzzy",
-                entity_type, exc,
-            )
-            fuzzy_groups = _group_by_fuzzy(
-                type_eids, name_map, entity_types, fuzzy_pre_filter_threshold
-            )
-            for key, eids in fuzzy_groups.items():
-                all_groups[f"fuzzy_fallback_{group_counter}"] = eids
-                group_counter += 1
-            continue
+        )
 
-        # Parse LLM response
-        try:
-            response_text = result.content if hasattr(result, "content") else str(result)
-            clustering = ClusteringResult.model_validate_json(response_text)
-        except Exception as exc:
-            logger.warning(
-                "Failed to parse LLM clustering response for type %s: %s",
-                entity_type, exc,
-            )
-            # Fall back to fuzzy
-            fuzzy_groups = _group_by_fuzzy(
-                type_eids, name_map, entity_types, fuzzy_pre_filter_threshold
-            )
-            for key, eids in fuzzy_groups.items():
-                all_groups[f"fuzzy_fallback_{group_counter}"] = eids
-                group_counter += 1
-            continue
+        # Parse LLM response — fail loud on parse errors
+        response_text = result.content if hasattr(result, "content") else str(result)
+        clustering = ClusteringResult.model_validate_json(response_text)
 
         logger.info(
             "LLM clustering for type %s: %d entities → %d clusters "

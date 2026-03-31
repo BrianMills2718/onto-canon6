@@ -1,0 +1,498 @@
+{
+  "strategy": "llm",
+  "timestamp": "2026-03-31_160705",
+  "extraction_stats": {
+    "extracted": 77,
+    "pending": 77
+  },
+  "resolution_stats": {
+    "entities_scanned": 91,
+    "groups_found": 54,
+    "identities_created": 54,
+    "aliases_attached": 37,
+    "already_resolved": 0,
+    "strategy": "llm"
+  },
+  "evaluation": {
+    "total_identities": 54,
+    "multi_member_identities": 18,
+    "singleton_identities": 36,
+    "total_aliases_attached": 37,
+    "identity_details": [
+      {
+        "identity_id": "gid_325e5501c37ec328ffa0eceb",
+        "display_label": "USSOCOM",
+        "member_count": 7,
+        "entity_ids": [
+          "ent:auto:e470fa0d:oc_military_organization:ussocom",
+          "ent:auto:4b3a13a1:oc_military_organization:u_s_special_operations_command",
+          "ent:auto:98e9cbb2:oc_military_organization:us_special_operations_command",
+          "ent:auto:20ba9f32:oc_military_organization:special_operations_command",
+          "ent:auto:e2365aa6:oc_military_organization:ussocom",
+          "ent:auto:4324487e:oc_military_organization:ussocom",
+          "ent:auto:a8917635:oc_military_organization:u_s_special_operations_command"
+        ]
+      },
+      {
+        "identity_id": "gid_f9f12d97ae3a833285943313",
+        "display_label": "The 4th PSYOP Group",
+        "member_count": 5,
+        "entity_ids": [
+          "ent:auto:98e9cbb2:oc_military_organization:the_4th_psyop_group",
+          "ent:auto:e6b74170:oc_military_organization:4th_pog",
+          "ent:auto:de49ab90:oc_military_organization:4th_psychological_operations_group",
+          "ent:auto:b7eaf40d:oc_military_organization:4th_pog_a",
+          "ent:auto:7bcc6a28:oc_military_organization:4th_psyop_group"
+        ]
+      },
+      {
+        "identity_id": "gid_f11da4f02a61e5d1f76a139c",
+        "display_label": "Gen. Smith",
+        "member_count": 1,
+        "entity_ids": [
+          "ent:auto:6d646836:oc_person:gen_smith"
+        ]
+      },
+      {
+        "identity_id": "gid_4332b5ed371405c30a98c75f",
+        "display_label": "representatives",
+        "member_count": 1,
+        "entity_ids": [
+          "ent:auto:9ba22d95:oc_person:representatives"
+        ]
+      },
+      {
+        "identity_id": "gid_d33c8bcb02aed2b4c517a531",
+        "display_label": "General Smith",
+        "member_count": 1,
+        "entity_ids": [
+          "ent:auto:7d7e3d80:oc_person:general_smith"
+        ]
+      },
+      {
+        "identity_id": "gid_08c3185271d0c87938b3fc09",
+        "display_label": "James Smith",
+        "member_count": 1,
+        "entity_ids": [
+          "ent:auto:7d7e3d80:oc_person:james_smith"
+        ]
+      },
+      {
+        "identity_id": "gid_e3a019173ee63ab5f69619e1",
+        "display_label": "CIA",
+        "member_count": 5,
+        "entity_ids": [
+          "ent:auto:df618304:oc_organization:cia",
+          "ent:auto:df618304:oc_organization:the_agency_s_headquarters",
+          "ent:auto:e2365aa6:oc_organization:central_intelligence_agency",
+          "ent:auto:7d7e3d80:oc_organization:cia",
+          "ent:auto:ec02b08e:oc_organization:central_intelligence_agency"
+        ]
+      },
+      {
+        "identity_id": "gid_2e6215d8c0dca15a59c9e2d0",
+        "display_label": "the NSA",
+        "member_count": 3,
+        "entity_ids": [
+          "ent:auto:9ba22d95:oc_organization:the_nsa",
+          "ent:auto:6d646836:oc_organization:the_national_security_agency",
+          "ent:auto:ec02b08e:oc_organization:nsa"
+        ]
+      },
+      {
+        "identity_id": "gid_1acf97ce7f282056902e6cdf",
+        "display_label": "A joint task force",
+        "member_count": 1,
+        "entity_ids": [
+          "ent:auto:6d646836:oc_organization:a_joint_task_force"
+        ]
+      },
+      {
+        "identity_id": "gid_261933b4b8868c6f657d48b8",
+        "display_label": "several defense think tanks",
+        "member_count": 1,
+        "entity_ids": [
+          "ent:auto:d3289154:oc_organization:several_defense_think_tanks"
+        ]
+      },
+      {
+        "identity_id": "gid_d01768ba297a2604dc36e281",
+        "display_label": "special operations policy community",
+        "member_count": 1,
+        "entity_ids": [
+          "ent:auto:d3289154:oc_organization:special_operations_policy_community"
+        ]
+      },
+      {
+        "identity_id": "gid_c77ac922d81fa9cfff4accee",
+        "display_label": "the group's activities",
+        "member_count": 1,
+        "entity_ids": [
+          "ent:auto:98e9cbb2:oc_military_organization:the_group_s_activities"
+        ]
+      },
+      {
+        "identity_id": "gid_bbd6b8d8b8fe8b2fae3d8901",
+        "display_label": "GWU",
+        "member_count": 1,
+        "entity_ids": [
+          "ent:auto:ec02b08e:oc_organization:gwu"
+        ]
+      },
+      {
+        "identity_id": "gid_de119d8cac639b88baed51fe",
+        "display_label": "USSOCOM",
+        "member_count": 1,
+        "entity_ids": [
+          "ent:auto:34766658:oc_organization:ussocom"
+        ]
+      },
+      {
+        "identity_id": "gid_413116d514610d20b793741f",
+        "display_label": "Washington",
+        "member_count": 2,
+        "entity_ids": [
+          "ent:auto:df618304:oc_location:washington",
+          "ent:auto:d3289154:oc_location:d_c"
+        ]
+      },
+      {
+        "identity_id": "gid_c96518c1c946e9ab1060a939",
+        "display_label": "several initiatives to modernize its force structure",
+        "member_count": 2,
+        "entity_ids": [
+          "ent:auto:20ba9f32:oc_project:several_initiatives_to_modernize_its_force_structure",
+          "ent:auto:20ba9f32:oc_project:the_reforms"
+        ]
+      },
+      {
+        "identity_id": "gid_ed70266b34bb9177683376ca",
+        "display_label": "classified assessment of information warfare capabilities",
+        "member_count": 1,
+        "entity_ids": [
+          "ent:auto:e2365aa6:oc_report:classified_assessment_of_information_warfare_capabilities"
+        ]
+      },
+      {
+        "identity_id": "gid_98999173c34836d3ef8a225a",
+        "display_label": "The review",
+        "member_count": 1,
+        "entity_ids": [
+          "ent:auto:a8917635:oc_report:the_review"
+        ]
+      },
+      {
+        "identity_id": "gid_75c92cd3ce392954fef4e8dd",
+        "display_label": "adversary",
+        "member_count": 1,
+        "entity_ids": [
+          "ent:auto:de49ab90:oc_military_organization:adversary"
+        ]
+      },
+      {
+        "identity_id": "gid_62f837caa90fb52bf26b85ca",
+        "display_label": "Washington D.C.",
+        "member_count": 2,
+        "entity_ids": [
+          "ent:auto:9ba22d95:oc_city:washington_d_c",
+          "ent:auto:f027dc3a:oc_city:washington"
+        ]
+      },
+      {
+        "identity_id": "gid_d9aca5fd61cebc8afa5b5310",
+        "display_label": "a joint conference",
+        "member_count": 2,
+        "entity_ids": [
+          "ent:auto:9ba22d95:oc_event:a_joint_conference",
+          "ent:auto:9ba22d95:oc_event:the_conference"
+        ]
+      },
+      {
+        "identity_id": "gid_d602fc085138fe34e333ead2",
+        "display_label": "training exercise",
+        "member_count": 1,
+        "entity_ids": [
+          "ent:auto:de49ab90:oc_event:training_exercise"
+        ]
+      },
+      {
+        "identity_id": "gid_6c57d9ec97f16705a15d6f29",
+        "display_label": "a ceremony",
+        "member_count": 1,
+        "entity_ids": [
+          "ent:auto:34766658:oc_event:a_ceremony"
+        ]
+      },
+      {
+        "identity_id": "gid_f9fe51f145af4a28c39b19ac",
+        "display_label": "met",
+        "member_count": 2,
+        "entity_ids": [
+          "ent:auto:f027dc3a:oc_event:met",
+          "ent:auto:f027dc3a:oc_event:meeting"
+        ]
+      },
+      {
+        "identity_id": "gid_8383847fbe2db1398785682d",
+        "display_label": "Fort Liberty",
+        "member_count": 2,
+        "entity_ids": [
+          "ent:auto:de49ab90:oc_military_installation:fort_liberty",
+          "ent:auto:2652e0ef:oc_military_installation:fort_bragg"
+        ]
+      },
+      {
+        "identity_id": "gid_4e1c03b062dc28ec9ef33834",
+        "display_label": "Gen. Smith",
+        "member_count": 3,
+        "entity_ids": [
+          "ent:auto:e470fa0d:oc_person:gen_smith",
+          "ent:auto:e470fa0d:oc_person:general_smith",
+          "ent:auto:20ba9f32:oc_person:john_smith"
+        ]
+      },
+      {
+        "identity_id": "gid_e625b40f811f2daaf04b2888",
+        "display_label": "a strategy document",
+        "member_count": 1,
+        "entity_ids": [
+          "ent:auto:7d7e3d80:oc_document:a_strategy_document"
+        ]
+      },
+      {
+        "identity_id": "gid_dc45f3b57aa622e7e3dd38a2",
+        "display_label": "new guidelines for joint planning",
+        "member_count": 1,
+        "entity_ids": [
+          "ent:auto:f027dc3a:oc_document:new_guidelines_for_joint_planning"
+        ]
+      },
+      {
+        "identity_id": "gid_f3f1d8049cd874987295b026",
+        "display_label": "new capabilities for operating in the digital information space",
+        "member_count": 1,
+        "entity_ids": [
+          "ent:auto:7bcc6a28:oc_capability:new_capabilities_for_operating_in_the_digital_information_space"
+        ]
+      },
+      {
+        "identity_id": "gid_f988e3d392212a670fe1ed5c",
+        "display_label": "new technical collection capabilities",
+        "member_count": 1,
+        "entity_ids": [
+          "ent:auto:05be3bc7:oc_capability:new_technical_collection_capabilities"
+        ]
+      },
+      {
+        "identity_id": "gid_f5641535259d13a68d3e0de8",
+        "display_label": "special operations forces",
+        "member_count": 2,
+        "entity_ids": [
+          "ent:auto:05be3bc7:oc_military_unit:special_operations_forces",
+          "ent:auto:05be3bc7:oc_military_unit:special_operations"
+        ]
+      },
+      {
+        "identity_id": "gid_c5ce2d3a1dadd656211069b3",
+        "display_label": "The unit's soldiers",
+        "member_count": 1,
+        "entity_ids": [
+          "ent:auto:7bcc6a28:oc_military_unit:the_unit_s_soldiers"
+        ]
+      },
+      {
+        "identity_id": "gid_3c6c287dae50dd9489fb811e",
+        "display_label": "social media analysis",
+        "member_count": 1,
+        "entity_ids": [
+          "ent:auto:7bcc6a28:oc_topic:social_media_analysis"
+        ]
+      },
+      {
+        "identity_id": "gid_528a08fe9273e23c6668ebe8",
+        "display_label": "content creation",
+        "member_count": 1,
+        "entity_ids": [
+          "ent:auto:7bcc6a28:oc_topic:content_creation"
+        ]
+      },
+      {
+        "identity_id": "gid_3027a6e88ffb7cfe8ee3f9ce",
+        "display_label": "Adm. Olson",
+        "member_count": 6,
+        "entity_ids": [
+          "ent:auto:4b3a13a1:oc_person:adm_olson",
+          "ent:auto:4b3a13a1:oc_person:admiral_olson",
+          "ent:auto:df618304:oc_person:eric_olson",
+          "ent:auto:4324487e:oc_person:adm_eric_olson",
+          "ent:auto:d3289154:oc_person:adm_olson",
+          "ent:auto:d3289154:oc_person:he"
+        ]
+      },
+      {
+        "identity_id": "gid_697cc176b177e4a6095766ae",
+        "display_label": "CIA",
+        "member_count": 1,
+        "entity_ids": [
+          "ent:auto:f027dc3a:oc_government_organization:cia"
+        ]
+      },
+      {
+        "identity_id": "gid_236d2521fa1d3de8720c2b58",
+        "display_label": "Pentagon",
+        "member_count": 1,
+        "entity_ids": [
+          "ent:auto:f027dc3a:oc_government_organization:pentagon"
+        ]
+      },
+      {
+        "identity_id": "gid_65a2b1c0f769206487247beb",
+        "display_label": "National Security Agency",
+        "member_count": 2,
+        "entity_ids": [
+          "ent:auto:05be3bc7:oc_government_agency:national_security_agency",
+          "ent:auto:05be3bc7:oc_government_agency:the_national_security_agency"
+        ]
+      },
+      {
+        "identity_id": "gid_0415bab9b2c059f3082e9262",
+        "display_label": "Dr. Chen",
+        "member_count": 2,
+        "entity_ids": [
+          "ent:auto:e2365aa6:oc_person:dr_chen",
+          "ent:auto:ec02b08e:oc_person:dr_sarah_chen"
+        ]
+      },
+      {
+        "identity_id": "gid_7ad40e142ead51e93c10055d",
+        "display_label": "Gen. J. Smith",
+        "member_count": 2,
+        "entity_ids": [
+          "ent:auto:9ba22d95:oc_person:gen_j_smith",
+          "ent:auto:567b14c8:oc_person:j_smith"
+        ]
+      },
+      {
+        "identity_id": "gid_dfee8001f06ff1147fec8252",
+        "display_label": "Lt. Gen. Torres",
+        "member_count": 3,
+        "entity_ids": [
+          "ent:auto:4324487e:oc_person:lt_gen_torres",
+          "ent:auto:a8917635:oc_person:michael_torres",
+          "ent:auto:34766658:oc_person:lt_gen_michael_torres"
+        ]
+      },
+      {
+        "identity_id": "gid_92a1325f35e46c8358dc7510",
+        "display_label": "Colonel Rodriguez",
+        "member_count": 3,
+        "entity_ids": [
+          "ent:auto:de49ab90:oc_person:colonel_rodriguez",
+          "ent:auto:b7eaf40d:oc_person:james_rodriguez",
+          "ent:auto:7bcc6a28:oc_person:col_james_rodriguez"
+        ]
+      },
+      {
+        "identity_id": "gid_159403968fa1797375cc881e",
+        "display_label": "Fort Bragg",
+        "member_count": 1,
+        "entity_ids": [
+          "ent:auto:98e9cbb2:oc_military_facility:fort_bragg"
+        ]
+      },
+      {
+        "identity_id": "gid_327bc1e05b421b29f60e649d",
+        "display_label": "new training programs",
+        "member_count": 1,
+        "entity_ids": [
+          "ent:auto:20ba9f32:oc_program:new_training_programs"
+        ]
+      },
+      {
+        "identity_id": "gid_e16f78c81b583eb9e632e0cb",
+        "display_label": "equipment upgrades for deployed units",
+        "member_count": 1,
+        "entity_ids": [
+          "ent:auto:20ba9f32:oc_equipment:equipment_upgrades_for_deployed_units"
+        ]
+      },
+      {
+        "identity_id": "gid_48e7b47e6d7675e263dcd773",
+        "display_label": "Ft. Bragg",
+        "member_count": 1,
+        "entity_ids": [
+          "ent:auto:e6b74170:oc_military_base:ft_bragg"
+        ]
+      },
+      {
+        "identity_id": "gid_881fb4297fbdba9d4c2cd913",
+        "display_label": "the intelligence community",
+        "member_count": 1,
+        "entity_ids": [
+          "ent:auto:e2365aa6:oc_intelligence_community:the_intelligence_community"
+        ]
+      },
+      {
+        "identity_id": "gid_82190805de7d49e7099ae731",
+        "display_label": "signals intelligence support to special operations forces deployed overseas",
+        "member_count": 1,
+        "entity_ids": [
+          "ent:auto:9ba22d95:oc_concept:signals_intelligence_support_to_special_operations_forces_deployed_overseas"
+        ]
+      },
+      {
+        "identity_id": "gid_257aeabfe9efb1d80408493f",
+        "display_label": "the command's approach to partner force development in contested regions",
+        "member_count": 1,
+        "entity_ids": [
+          "ent:auto:4324487e:oc_organization_approach:the_command_s_approach_to_partner_force_development_in_contested_regions"
+        ]
+      },
+      {
+        "identity_id": "gid_3f7ce184dada25c0293ea2ba",
+        "display_label": "adversary information campaigns",
+        "member_count": 1,
+        "entity_ids": [
+          "ent:auto:de49ab90:oc_campaign:adversary_information_campaigns"
+        ]
+      },
+      {
+        "identity_id": "gid_e74a04170ad9edc60025f922",
+        "display_label": "a sensitive collection operation",
+        "member_count": 1,
+        "entity_ids": [
+          "ent:auto:6d646836:oc_operation:a_sensitive_collection_operation"
+        ]
+      },
+      {
+        "identity_id": "gid_9ce1a89b6bd67127ecc7828e",
+        "display_label": "New facilities",
+        "member_count": 1,
+        "entity_ids": [
+          "ent:auto:2652e0ef:oc_facility:new_facilities"
+        ]
+      },
+      {
+        "identity_id": "gid_1a29dd30b10eb8aa00bebbd2",
+        "display_label": "USSOCOM headquarters",
+        "member_count": 1,
+        "entity_ids": [
+          "ent:auto:34766658:oc_headquarters:ussocom_headquarters"
+        ]
+      },
+      {
+        "identity_id": "gid_f3982b8894fac04fac5fe560",
+        "display_label": "signals intelligence",
+        "member_count": 1,
+        "entity_ids": [
+          "ent:auto:05be3bc7:oc_intelligence_agency:signals_intelligence"
+        ]
+      }
+    ]
+  },
+  "ground_truth_summary": {
+    "entities": 13,
+    "expected_merges": 10,
+    "expected_non_merges": 3
+  }
+}

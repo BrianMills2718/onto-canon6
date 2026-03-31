@@ -1,49 +1,55 @@
-system: |
-  You are an entity resolution expert. Your task is to identify which entity
-  mentions in a list refer to the same real-world entity and group them into
-  clusters.
+name: onto_canon6_cluster_entities
+version: "1.0"
+description: "Cluster entity mentions that refer to the same real-world entity."
+messages:
+  - role: system
+    content: |
+      You are an entity resolution expert. Your task is to identify which entity
+      mentions in a list refer to the same real-world entity and group them into
+      clusters.
 
-  Rules:
-  - Two mentions refer to the same entity if they are different names,
-    abbreviations, or title variations for the same real-world person,
-    organization, or place.
-  - Consider the context descriptions carefully. Names alone can be ambiguous
-    ("Washington" could be a person or a place), but context usually disambiguates.
-  - Do NOT merge entities that merely have similar names but refer to different
-    real-world things. When in doubt, keep them separate.
-  - Each entity ID must appear in exactly one cluster. Entities that do not
-    match anything else should be in a singleton cluster.
-  - Choose the most complete and formal name as the canonical_name for each
-    cluster (e.g., "General John Smith" over "Gen. Smith" or "Smith").
+      Rules:
+      - Two mentions refer to the same entity if they are different names,
+        abbreviations, or title variations for the same real-world person,
+        organization, or place.
+      - Consider the context descriptions carefully. Names alone can be ambiguous
+        ("Washington" could be a person or a place), but context usually disambiguates.
+      - Do NOT merge entities that merely have similar names but refer to different
+        real-world things. When in doubt, keep them separate.
+      - Each entity ID must appear in exactly one cluster. Entities that do not
+        match anything else should be in a singleton cluster.
+      - Choose the most complete and formal name as the canonical_name for each
+        cluster (e.g., "General John Smith" over "Gen. Smith" or "Smith").
 
-user: |
-  Entity type: {{ entity_type }}
+  - role: user
+    content: |
+      Entity type: {{ entity_type }}
 
-  {% if fuzzy_proposals %}
-  The following clusters were proposed by fuzzy name matching. Review each one
-  and either confirm, split, or reject it. Also check if any remaining
-  unclustered entities should join an existing cluster or form new clusters.
+      {% if fuzzy_proposals is defined and fuzzy_proposals %}
+      The following clusters were proposed by fuzzy name matching. Review each one
+      and either confirm, split, or reject it. Also check if any remaining
+      unclustered entities should join an existing cluster or form new clusters.
 
-  Proposed clusters:
-  {% for proposal in fuzzy_proposals %}
-  Cluster {{ loop.index }}:
-  {% for entity in proposal.entities %}
-    - ID: {{ entity.entity_id }} | Name: "{{ entity.name }}" | Context: "{{ entity.context }}"
-  {% endfor %}
-  {% endfor %}
+      Proposed clusters:
+      {% for proposal in fuzzy_proposals %}
+      Cluster {{ loop.index }}:
+      {% for entity in proposal.entities %}
+        - ID: {{ entity.entity_id }} | Name: "{{ entity.name }}" | Context: "{{ entity.context }}"
+      {% endfor %}
+      {% endfor %}
 
-  Unclustered entities:
-  {% for entity in unclustered_entities %}
-    - ID: {{ entity.entity_id }} | Name: "{{ entity.name }}" | Context: "{{ entity.context }}"
-  {% endfor %}
-  {% else %}
-  Review the following entities and group any that refer to the same real-world
-  {{ entity_type }}. Return clusters for all entities, including singletons.
+      Unclustered entities:
+      {% for entity in unclustered_entities %}
+        - ID: {{ entity.entity_id }} | Name: "{{ entity.name }}" | Context: "{{ entity.context }}"
+      {% endfor %}
+      {% else %}
+      Review the following entities and group any that refer to the same real-world
+      {{ entity_type }}. Return clusters for all entities, including singletons.
 
-  Entities:
-  {% for entity in entities %}
-    - ID: {{ entity.entity_id }} | Name: "{{ entity.name }}" | Context: "{{ entity.context }}"
-  {% endfor %}
-  {% endif %}
+      Entities:
+      {% for entity in entities %}
+        - ID: {{ entity.entity_id }} | Name: "{{ entity.name }}" | Context: "{{ entity.context }}"
+      {% endfor %}
+      {% endif %}
 
-  Return your answer as a JSON object matching the provided schema.
+      Return your answer as a JSON object matching the provided schema.
