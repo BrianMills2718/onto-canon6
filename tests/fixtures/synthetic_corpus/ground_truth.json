@@ -1,0 +1,102 @@
+{
+  "description": "Synthetic corpus for entity resolution scale test. 25 documents about overlapping military/intelligence entities. Ground truth for measuring precision and recall of entity resolution.",
+  "entities": {
+    "E001": {
+      "canonical_name": "General John Smith",
+      "type": "oc:person",
+      "name_variants": ["Gen. Smith", "General Smith", "General John Smith", "John Smith", "Gen. J. Smith"],
+      "appears_in_docs": ["doc_01", "doc_02", "doc_05", "doc_08", "doc_12", "doc_15", "doc_20"]
+    },
+    "E002": {
+      "canonical_name": "United States Special Operations Command",
+      "type": "oc:military_organization",
+      "name_variants": ["USSOCOM", "U.S. Special Operations Command", "US Special Operations Command", "Special Operations Command"],
+      "appears_in_docs": ["doc_01", "doc_03", "doc_05", "doc_07", "doc_09", "doc_11", "doc_14", "doc_18", "doc_22"]
+    },
+    "E003": {
+      "canonical_name": "Admiral Eric Olson",
+      "type": "oc:person",
+      "name_variants": ["Adm. Olson", "Admiral Olson", "Eric Olson", "Adm. Eric Olson"],
+      "appears_in_docs": ["doc_02", "doc_04", "doc_09", "doc_16"]
+    },
+    "E004": {
+      "canonical_name": "4th Psychological Operations Group",
+      "type": "oc:military_organization",
+      "name_variants": ["4th PSYOP Group", "4th POG", "4th Psychological Operations Group", "4th POG(A)"],
+      "appears_in_docs": ["doc_03", "doc_06", "doc_10", "doc_13", "doc_17"]
+    },
+    "E005": {
+      "canonical_name": "Fort Bragg",
+      "type": "oc:military_installation",
+      "name_variants": ["Fort Bragg", "Ft. Bragg", "Fort Liberty"],
+      "appears_in_docs": ["doc_03", "doc_06", "doc_10", "doc_13", "doc_21"]
+    },
+    "E006": {
+      "canonical_name": "Central Intelligence Agency",
+      "type": "oc:government_organization",
+      "name_variants": ["CIA", "Central Intelligence Agency", "the Agency"],
+      "appears_in_docs": ["doc_04", "doc_07", "doc_11", "doc_15", "doc_19", "doc_23"]
+    },
+    "E007": {
+      "canonical_name": "Colonel James Rodriguez",
+      "type": "oc:person",
+      "name_variants": ["Col. Rodriguez", "Colonel Rodriguez", "James Rodriguez", "Col. James Rodriguez"],
+      "appears_in_docs": ["doc_06", "doc_10", "doc_13", "doc_17"]
+    },
+    "E008": {
+      "canonical_name": "Dr. Sarah Chen",
+      "type": "oc:person",
+      "name_variants": ["Dr. Chen", "Sarah Chen", "Dr. Sarah Chen"],
+      "appears_in_docs": ["doc_07", "doc_11", "doc_19"]
+    },
+    "E009": {
+      "canonical_name": "National Security Agency",
+      "type": "oc:government_organization",
+      "name_variants": ["NSA", "National Security Agency"],
+      "appears_in_docs": ["doc_08", "doc_12", "doc_19", "doc_24"]
+    },
+    "E010": {
+      "canonical_name": "Lieutenant General Michael Torres",
+      "type": "oc:person",
+      "name_variants": ["Lt. Gen. Torres", "General Torres", "Michael Torres", "Lt. Gen. Michael Torres"],
+      "appears_in_docs": ["doc_09", "doc_14", "doc_18", "doc_22"]
+    },
+    "E011": {
+      "canonical_name": "James Smith",
+      "type": "oc:person",
+      "name_variants": ["James Smith", "J. Smith"],
+      "appears_in_docs": ["doc_15", "doc_20"],
+      "note": "DIFFERENT person from E001 (General John Smith). Tests false merge avoidance."
+    },
+    "E012": {
+      "canonical_name": "Washington D.C.",
+      "type": "oc:location",
+      "name_variants": ["Washington", "Washington D.C.", "D.C."],
+      "appears_in_docs": ["doc_04", "doc_08", "doc_16", "doc_23"]
+    },
+    "E013": {
+      "canonical_name": "George Washington University",
+      "type": "oc:educational_institution",
+      "name_variants": ["George Washington University", "GWU", "GW"],
+      "appears_in_docs": ["doc_11", "doc_19"],
+      "note": "Tests that 'Washington' location and 'George Washington University' are NOT merged (different types)."
+    }
+  },
+  "expected_merges": [
+    {"entity": "E001", "description": "Gen. Smith + General Smith + General John Smith + John Smith should merge"},
+    {"entity": "E002", "description": "USSOCOM + U.S. Special Operations Command should merge"},
+    {"entity": "E003", "description": "Adm. Olson + Admiral Olson + Eric Olson should merge"},
+    {"entity": "E004", "description": "4th PSYOP Group + 4th POG should merge"},
+    {"entity": "E005", "description": "Fort Bragg + Ft. Bragg + Fort Liberty should merge"},
+    {"entity": "E006", "description": "CIA + Central Intelligence Agency should merge"},
+    {"entity": "E007", "description": "Col. Rodriguez + Colonel Rodriguez + James Rodriguez should merge"},
+    {"entity": "E008", "description": "Dr. Chen + Sarah Chen should merge"},
+    {"entity": "E009", "description": "NSA + National Security Agency should merge"},
+    {"entity": "E010", "description": "Lt. Gen. Torres + General Torres + Michael Torres should merge"}
+  ],
+  "expected_non_merges": [
+    {"entities": ["E001", "E011"], "description": "General John Smith (E001) and James Smith (E011) are DIFFERENT people despite surname match"},
+    {"entities": ["E012", "E013"], "description": "Washington D.C. (location) and George Washington University (institution) are different entities — type guard should prevent merge"},
+    {"entities": ["E001", "E007"], "description": "Gen. Smith (person) and Col. Rodriguez (person) are different people"}
+  ]
+}
