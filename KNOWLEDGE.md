@@ -16,6 +16,15 @@ script, not `python -m onto_canon6.cli`. The module lacks a `__main__.py` or
 `if __name__ == "__main__"` guard in `cli.py`, so `python -m onto_canon6.cli`
 exits without running. Use the console script in docs and CLI examples.
 
+### 2026-04-01 — claude-code — bug-pattern
+gemini-3-flash-preview structured output regression CONFIRMED still present
+(2026-04-01). The model returns candidates with empty `roles` objects
+(`"roles": {}`) — it produces predicates and evidence spans but cannot fill
+the nested filler schema (entity fillers with kind/name/entity_type). Pydantic
+rejects these as invalid → 0 candidates. gemini-2.5-flash handles the same
+schema correctly. gemini-2.0-flash handles it partially (lower recall but
+valid roles). This is NOT a pipeline bug — it's a model capability gap.
+
 ### 2026-03-31 — claude-code — bug-pattern
 Judge filter (`_apply_judge_filter` in `text_extraction.py`) was calling
 `call_llm_structured` with a stale API: missing `model` positional arg and
