@@ -10,7 +10,7 @@ This subtree owns active gaps, acceptance criteria, and verification notes.
 | # | Plan | Status |
 |---|------|--------|
 | 0024 | [Post-Cutover Program](0024_post_cutover_program.md) | Active (Lanes 1-3 done; Lane 4 evidence gate and Lane 5 reprioritization still pending) |
-| 0025 | [Cross-Document Entity Resolution](0025_cross_document_entity_resolution.md) | In progress (value proof plus four bounded hardening passes complete; Plan 0035 active for residual alias-family closure) |
+| 0025 | [Cross-Document Entity Resolution](0025_cross_document_entity_resolution.md) | In progress (value proof plus five bounded hardening passes complete; Plan 0036 active for fresh-run negative-control recovery) |
 | 0025a | [Entity Resolution Scale-Out](0025a_entity_resolution_scale_out.md) | Deferred (activates after 0025 Phase 4) |
 | 0027 | [Deferred Parity Reprioritization](0027_deferred_parity_reprioritization.md) | Active (Lane 5 execution surface; next-active order now explicit) |
 | 0028 | [Query And Browse Surface](0028_query_browse_surface.md) | Active (first read-only slice landed and proved; wider hardening still open) |
@@ -19,7 +19,8 @@ This subtree owns active gaps, acceptance criteria, and verification notes.
 | 0032 | [24h Entity Resolution Recall Recovery Block](0032_24h_entity_resolution_recall_recovery_block.md) | Complete (gate-clearing rerun landed; docs survived, recall and answerability improved) |
 | 0033 | [24h Entity Resolution Answerability Block](0033_24h_entity_resolution_answerability_block.md) | Complete (localized remaining miss through a failed-measurement rerun) |
 | 0034 | [24h Entity Resolution Clean Measurement Block](0034_24h_entity_resolution_clean_measurement_block.md) | Complete (measurement-valid rerun landed; residual misses localized) |
-| 0035 | [24h Entity Resolution Alias-Family Completion Block](0035_24h_entity_resolution_alias_family_completion_block.md) | Active (generic org drift, government-agency family drift, bounded installation equivalence) |
+| 0035 | [24h Entity Resolution Alias-Family Completion Block](0035_24h_entity_resolution_alias_family_completion_block.md) | Complete (closed q02/q04/q08; fresh clean rerun exposed a new same-surname blocker) |
+| 0036 | [24h Entity Resolution Negative-Control Recovery Block](0036_24h_entity_resolution_negative_control_recovery_block.md) | Active (restore same-surname safety and q05/q06 behavior on a fresh clean rerun) |
 | 0014 | [Extraction Quality Baseline](0014_extraction_quality_baseline.md) | Active (explicit promotion gate defined; operational transfer proof still open) |
 | 0020 | [Vision Gap Closure](0020_vision_gap_closure.md) | Active (tracking) |
 

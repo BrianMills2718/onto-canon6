@@ -2,6 +2,58 @@
 
 ## Session Focus
 
+Plan 0035 closeout and Plan 0036 activation in the isolated worktree branch
+`codex/onto-canon6-integration-planning`.
+
+## What Landed
+
+Committed in the isolated worktree as:
+
+- `f5c7d4d` — `Harden titled person alias bridging`
+- `e7cc695` — `Fix named observation ground-truth fallback`
+- `e350585` — `Enrich observation aliases from source descriptors`
+
+Main effects:
+
+1. bounded titled-person bridging now supports positive merges like
+   `General John Smith` / `Gen. J. Smith` more reliably;
+2. the value-proof evaluator no longer uses source-doc overlap fallback when a
+   named observation already has a non-matching surface, which fixed a real
+   scoring bug;
+3. source-text descriptor alias enrichment can now recover `the Agency`
+   conservatively when the source has exactly one organization-family entity;
+4. fresh diagnostic and clean rerun artifacts now live in:
+   - `docs/runs/scale_test_llm_2026-04-01_105502.json`
+   - `docs/runs/scale_test_llm_2026-04-01_110321.json`
+   - `docs/runs/2026-04-01_entity_resolution_alias_family_completion.md`
+
+## Current State
+
+1. Plan 0035 is complete under its explicit exit clause.
+2. The original residual alias families are now closed on the fresh clean rerun:
+   - `q02` correct
+   - `q04` correct
+   - `q08` correct
+3. The new blocker is different:
+   - `John Smith` / `James Smith` same-surname false merges reopened
+   - `q05` regressed to answered-but-wrong
+   - `q06` remained unanswered
+4. Plan 0036 is now the active bounded execution surface.
+
+## Recommended Next Step
+
+If work continues:
+
+1. stay on `codex/onto-canon6-integration-planning`;
+2. execute Plan 0036 in order:
+   - freeze the fresh-run residual contract
+   - restore same-surname person safety
+   - localize/fix the remaining `q06` negative-control path
+   - rerun on a fresh DB
+3. preserve the Plan 0035 `q02` / `q04` / `q08` wins while fixing `q05`.
+
+## Session Focus
+
 Plan 0032 closeout and Plan 0033 activation in the isolated worktree branch
 `codex/onto-canon6-integration-planning`.
 

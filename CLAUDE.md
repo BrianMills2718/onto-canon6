@@ -15,13 +15,14 @@ runtime.
 7. `docs/plans/0032_24h_entity_resolution_recall_recovery_block.md` (completed recall-recovery block)
 8. `docs/plans/0033_24h_entity_resolution_answerability_block.md` (completed answerability block)
 9. `docs/plans/0034_24h_entity_resolution_clean_measurement_block.md` (completed clean-measurement block)
-10. `docs/plans/0035_24h_entity_resolution_alias_family_completion_block.md` (current active execution block)
-11. `docs/plans/0026_schema_stability_gate.md` (completed Lane 3 contract policy)
-12. `docs/plans/0014_extraction_quality_baseline.md` (active Lane 4 promotion gate)
-13. `docs/plans/0027_deferred_parity_reprioritization.md`
-14. `docs/plans/0028_query_browse_surface.md`
-15. `docs/plans/0005_v1_capability_parity_matrix.md`
-16. `docs/plans/0001_successor_roadmap.md`
+10. `docs/plans/0035_24h_entity_resolution_alias_family_completion_block.md` (completed alias-family closure block)
+11. `docs/plans/0036_24h_entity_resolution_negative_control_recovery_block.md` (current active execution block)
+12. `docs/plans/0026_schema_stability_gate.md` (completed Lane 3 contract policy)
+13. `docs/plans/0014_extraction_quality_baseline.md` (active Lane 4 promotion gate)
+14. `docs/plans/0027_deferred_parity_reprioritization.md`
+15. `docs/plans/0028_query_browse_surface.md`
+16. `docs/plans/0005_v1_capability_parity_matrix.md`
+17. `docs/plans/0001_successor_roadmap.md`
 
 ## Commands
 
@@ -81,9 +82,11 @@ config/
   a clean measurement run rather than broad new clustering churn. Plan 0034 is
   now also complete: it restored a valid `25/25` clean rerun, improved recall
   to `0.746`, and narrowed the remaining work to three residual alias families.
-  The active bounded block is now Plan 0035, which owns exactly those three
-  residual misses: generic organization-type drift, government-agency family
-  drift, and bounded installation rename equivalence.
+  Plan 0035 is now also complete: it closed `q02`, `q04`, and `q08`, and the
+  fresh clean rerun proved that those alias families are no longer the blocker.
+  The active bounded block is now Plan 0036, which owns the reopened
+  same-surname person safety regression (`John Smith` / `James Smith`) plus
+  the remaining `q05` / `q06` negative-control question behavior.
   The chunk-level transfer evaluation requirement remains active through
   ADR 0023 and Plans 0024/0014 even though there is no standalone Plan 0019
   file.
@@ -238,7 +241,7 @@ happens.
 
 ## Active Execution Block (2026-04-01)
 
-**Plan 0035: 24h Entity Resolution Alias-Family Completion Block — active until fully closed.**
+**Plan 0036: 24h Entity Resolution Negative-Control Recovery Block — active until fully closed.**
 
 Within an active 24h execution block, the default operating mode is continuous
 execution: finish the current phase, verify it, commit it, update the active
@@ -253,9 +256,14 @@ immediately to the next phase. Never stop at "one extraction fix landed" or
 "one alias family improved." The block is not done until all required phases,
 rerun artifacts, and closeout docs are finished.
 
+Treat premature stopping as a repo-level failure mode. While a bounded block is
+active, the required behavior is: plan the next concrete phase, execute it,
+verify it, commit it, log any uncertainty, and continue. Do not wait for
+"what next?" confirmation mid-block.
+
 The only valid stop conditions are:
 
-1. all 5 phases in `docs/plans/0034_24h_entity_resolution_clean_measurement_block.md`
+1. all 5 phases in `docs/plans/0036_24h_entity_resolution_negative_control_recovery_block.md`
    are complete and committed;
 2. a real blocker that cannot be resolved from repo context or the plan;
 3. a material uncertainty not covered by the pre-made decisions below.
@@ -269,10 +277,9 @@ decision note, activate the next bounded repair block, and keep going.
 Pre-made decisions (do not ask about these):
 - Work stays in the isolated `codex/onto-canon6-integration-planning` worktree
 - `exact` remains the default floor unless the block's rerun clears the new gate
-- The next fixes must target underlying representation or harness reliability, not the evaluator
-- Measurement hygiene lands before any new installation-equivalence heuristic
-- `oc:university` and educational-institution ground truth are pre-approved as one conservative institution family
-- The Plan 0031 same-surname safety guard must remain intact
+- The Plan 0035 `q02` / `q04` / `q08` wins must remain intact
+- The next fixes must target same-surname person safety and the residual negative-control path before any broader recall work
+- The Plan 0031 same-surname safety guard must remain intact unless a stricter replacement is landed in the same commit
 - Commit each verified phase immediately
 
 ## Most Recent Execution Block (2026-04-01)

@@ -1,12 +1,12 @@
 # 24h Entity Resolution Alias-Family Completion Block
 
-Status: active
+Status: completed
 Phase status:
-- Phase 1 pending
-- Phase 2 pending
-- Phase 3 pending
-- Phase 4 pending
-- Phase 5 pending
+- Phase 1 completed
+- Phase 2 completed
+- Phase 3 completed
+- Phase 4 completed
+- Phase 5 completed
 
 Last updated: 2026-04-01
 Workstream: bounded closure of the three residual answerability misses after
@@ -186,3 +186,59 @@ This block is complete only when:
 2. the worktree is clean;
 3. the repo contains committed code, tests, rerun artifacts, and docs for the
    alias-family completion decision.
+
+## Outcome
+
+Plan 0035 is complete under its explicit exit clause: the intended residual
+families were materially addressed, and the remaining miss is now explicit and
+localized in a fresh clean rerun rather than hidden inside those three
+original families.
+
+### What closed
+
+1. `q02` closed on the fresh rerun:
+   - `USSOCOM` and `U.S. Special Operations Command` now resolve together;
+2. `q04` closed on the fresh rerun:
+   - `Ft. Bragg` and `Fort Liberty` now resolve together through the bounded
+     installation-equivalence repair;
+3. `q08` closed on the fresh rerun:
+   - descriptor alias enrichment now recovers `the Agency` conservatively when
+     the source contains exactly one organization-family entity.
+
+### Decision artifacts
+
+1. fixed-sample diagnostic artifact:
+   - `docs/runs/scale_test_llm_2026-04-01_105502.json`
+   - precision `1.00`
+   - recall `0.8818`
+   - false merges `0`
+   - answer rate `0.90`
+   - accuracy `0.90`
+2. fresh clean rerun artifact:
+   - `docs/runs/scale_test_llm_2026-04-01_110321.json`
+   - precision `0.9316`
+   - recall `1.00`
+   - false merges `8`
+   - answer rate `0.90`
+   - accuracy `0.80`
+3. written decision note:
+   - `docs/runs/2026-04-01_entity_resolution_alias_family_completion.md`
+
+### Why the declared gate did not clear
+
+The fresh clean rerun proved that the original three residual misses are no
+longer the blocker. Instead, the run reopened a different safety family:
+
+1. `John Smith` / `James Smith` overmerged again through the titled-person
+   bridge path;
+2. `q05` regressed to answered-but-wrong;
+3. `q06` remained unanswered on the fresh rerun.
+
+### Next block
+
+The active follow-on block is:
+
+1. `docs/plans/0036_24h_entity_resolution_negative_control_recovery_block.md`
+
+That block owns restoration of same-surname person safety on a fresh clean
+rerun while preserving the `q02` / `q04` / `q08` gains from this block.

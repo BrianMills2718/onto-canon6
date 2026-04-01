@@ -3,6 +3,39 @@
 ## Current 24h Execution Block
 
 Source of truth:
+- `docs/plans/0036_24h_entity_resolution_negative_control_recovery_block.md`
+
+### Phase 1 — Freeze The Fresh-Run Residual Contract
+- [x] Close Plan 0035 truthfully in the docs
+- [x] Activate Plan 0036 and freeze the fresh-run residuals (`q05`, `q06`)
+- [x] Commit verified phase
+
+### Phase 2 — Restore Same-Surname Person Safety
+- [ ] Localize the fresh-run `John Smith` / `James Smith` overmerge precisely
+- [ ] Tighten titled-person bridge logic without undoing positive title/initial merges
+- [ ] Add/update targeted regression tests
+- [ ] Commit verified phase
+
+### Phase 3 — Recover The Remaining Negative-Control Answerability
+- [ ] Localize the residual `q06` unmatched/ambiguous path after Phase 2
+- [ ] Land one bounded repair only if the residual is explicit
+- [ ] Add/update targeted regression tests
+- [ ] Commit verified phase
+
+### Phase 4 — Rerun The Value Proof
+- [ ] Rerun LLM strategy on a fresh DB
+- [ ] Verify 25/25 document survival from the DB
+- [ ] Check the gate for `q05` and `q06` while preserving `q02` / `q04` / `q08`
+- [ ] Commit verified phase
+
+### Phase 5 — Closeout
+- [ ] Refresh docs/status/handoff
+- [ ] Mark execution block complete
+- [ ] Commit verified phase
+
+## Most Recent Completed 24h Execution Block
+
+Source of truth:
 - `docs/plans/0035_24h_entity_resolution_alias_family_completion_block.md`
 
 ### Phase 1 — Freeze The Residual Failure Contract
@@ -19,46 +52,13 @@ Source of truth:
 ### Phase 3 — Land The Bounded Installation-Equivalence Repair
 - [x] Localize the surviving `Ft. Bragg` / `Fort Liberty` split at the grouping level
 - [x] Add one bounded installation rename / redesignation repair
-- [x] Add/update targeted tests
-- [x] Commit verified phase
-
-### Phase 4 — Rerun The Value Proof
-- [ ] Rerun LLM strategy on a fresh DB
-- [ ] Verify 25/25 document survival from the DB
-- [ ] Check the gate for `q02`, `q04`, and `q08`
-- [ ] Commit verified phase
-
-### Phase 5 — Closeout
-- [ ] Refresh docs/status/handoff
-- [ ] Mark execution block complete
-- [ ] Commit verified phase
-
-## Most Recent Completed 24h Execution Block
-
-Source of truth:
-- `docs/plans/0032_24h_entity_resolution_recall_recovery_block.md`
-
-### Phase 1 — Freeze The Recovery Contract
-- [x] Make Plan 0032 the active execution surface
-- [x] Freeze the targeted failure families and thresholds
-- [x] Commit verified phase
-
-### Phase 2 — Remove Extraction Document Loss
-- [x] Reproduce and localize the `event` / malformed-unknown extraction failure
-- [x] Fix the boundary so one malformed candidate does not lose a whole doc
-- [x] Add/update targeted tests
-- [x] Commit verified phase
-
-### Phase 3 — Recover Alias And Answerability Families
-- [x] Improve org / installation alias handling
-- [x] Improve abbreviated person unique-cluster handling
-- [x] Keep the same-surname safety family green
 - [x] Add/update targeted regression tests
 - [x] Commit verified phase
 
 ### Phase 4 — Refresh The LLM Value Proof
 - [x] Rerun LLM strategy on a fresh DB
-- [x] Write refreshed decision-grade run note
+- [x] Verify 25/25 document survival from the DB
+- [x] Record both the corrected fixed-sample diagnostic and fresh clean rerun
 - [x] Commit verified phase
 
 ### Phase 5 — Closeout
@@ -71,8 +71,10 @@ Source of truth:
 Source of truth:
 - `docs/plans/0025_cross_document_entity_resolution.md`
 
-- [ ] Close the three residual misses from the clean-measurement baseline (`q02`, `q04`, `q08`)
-- [ ] Preserve the `25/25` extraction-survival baseline while rerunning
+- [x] Close the three residual misses from the clean-measurement baseline (`q02`, `q04`, `q08`)
+- [x] Preserve the `25/25` extraction-survival baseline while rerunning
+- [ ] Restore fresh-run same-surname safety while preserving the `q02` / `q04` / `q08` wins
+- [ ] Get `q05` back to answered-and-correct and localize/fix `q06`
 - [ ] Keep precision at or above `0.95` with zero false merges
 - [ ] Refresh the decision note and close the active 24h block truthfully
 

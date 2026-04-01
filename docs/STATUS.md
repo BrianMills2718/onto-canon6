@@ -26,10 +26,10 @@ Current post-cutover program state:
 4. the first read-only query surface is now landed and proved through
    `docs/plans/0028_query_browse_surface.md` and
    `docs/plans/0029_24h_query_surface_execution_block.md`;
-5. Plan 0025 now has decision-grade value-proof evidence plus two completed
-   hardening passes; the next active question is narrower answerability
-   hardening for typed-mention drift and missing alias surfaces after the
-   successful Plan 0032 rerun.
+5. Plan 0025 now has decision-grade value-proof evidence plus six completed
+   bounded blocks; the current active question is narrower fresh-run
+   same-surname safety recovery plus the remaining `q06` negative-control
+   answerability after Plan 0035 closed `q02`, `q04`, and `q08`.
 
 ## What Is Proven
 

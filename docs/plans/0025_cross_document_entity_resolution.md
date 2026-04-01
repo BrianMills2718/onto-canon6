@@ -58,7 +58,7 @@ can. The current question is now narrower:
 3. can one bounded installation rename equivalence close the remaining
    `Ft. Bragg` / `Fort Liberty` split.
 
-The completed value-proof block and the follow-on hardening block showed:
+The completed value-proof block and the follow-on hardening blocks showed:
 
 1. exact strategy remains the high-precision floor;
 2. bare extraction is not competitive;
@@ -83,12 +83,16 @@ Latest decision artifacts:
 5. the next bounded pass is now
    `docs/plans/0034_24h_entity_resolution_clean_measurement_block.md`, which
    restored a valid `25/25` rerun and localized the remaining residual misses;
-6. the current bounded pass is now
-   `docs/plans/0035_24h_entity_resolution_alias_family_completion_block.md`,
-   which owns the three remaining residual misses:
-   - `q02` generic / missing organization-type drift
-   - `q04` bounded installation rename equivalence
-   - `q08` `government_agency` ↔ `government_organization` family drift
+6. Plan 0035 is now complete:
+   - it closed the original residual alias families (`q02`, `q04`, `q08`);
+   - its closeout note is
+     `docs/runs/2026-04-01_entity_resolution_alias_family_completion.md`;
+7. the current bounded pass is now
+   `docs/plans/0036_24h_entity_resolution_negative_control_recovery_block.md`,
+   which owns the fresh-run blocker:
+   - same-surname person safety regression (`John Smith` / `James Smith`)
+   - `q05` negative-control correctness
+   - remaining `q06` answerability on the fresh rerun
 
 ## What Exists Today
 

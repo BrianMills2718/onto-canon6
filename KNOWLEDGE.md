@@ -121,3 +121,18 @@ type-divergent mention surfaces (`Gen. Smith` as `person` vs `military_rank`,
 alias-surface absence (`the Agency`, `GWU`, `George Washington University`
 never surviving as promoted matched observations). Treat the next block as
 answerability hardening, not generic clustering churn.
+
+### 2026-04-01 — codex — bug-pattern
+`_candidate_ground_truth_entity_ids()` in
+`src/onto_canon6/evaluation/entity_resolution_value_proof.py` must not fall
+back to source-doc overlap when an observation already has explicit named
+surfaces that do not match any ground-truth variant. The old fallback created
+bogus "unique normalized name + type match" assignments and contaminated
+intermediate value-proof artifacts until fixed.
+
+### 2026-04-01 — codex — best-practice
+Do not treat repeated `--skip-extraction` reruns on an already-resolved DB as
+decision-grade entity-resolution evidence. Identity memberships and prior
+resolution state can change answerability in misleading ways. Use a fresh DB
+for closeout reruns, and treat repeated-resolution artifacts as diagnostics
+only.
