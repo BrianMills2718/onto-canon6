@@ -3,35 +3,33 @@
 ## Current 24h Execution Block
 
 Source of truth:
-- `docs/plans/0038_24h_entity_resolution_surface_stability_block.md`
+- `docs/plans/0039_24h_entity_resolution_rerun_stability_block.md`
 
-### Phase 1 — Freeze The Surface-Stability Contract
-- [x] Close Plan 0037 truthfully in the docs
-- [x] Activate Plan 0038 and freeze the residual blocker families
-- [x] Commit verified phase
+### Phase 1 — Freeze The Rerun-Stability Contract
+- [ ] Close Plan 0038 truthfully in the docs
+- [ ] Activate Plan 0039 and freeze the incoming artifact pair
+- [ ] Commit verified phase
 
-### Phase 2 — Recover Generic Acronym Organization Families
-- [x] Localize exactly why generic acronym org surfaces stay outside long-form clusters
-- [x] Land one conservative family-level acronym routing repair
-- [x] Add/update targeted regression tests
-- [x] Commit verified phase
+### Phase 2 — Recover Deterministic Alias Bridges For Reopened Runtime Families
+- [ ] Localize which reopened families are still honest resolution problems
+- [ ] Land one bounded repair for each in-scope runtime family
+- [ ] Add/update targeted regression tests
+- [ ] Commit verified phase
 
-### Phase 3 — Recover Organization Descriptor Alias Collapse
-- [x] Localize exactly why `the Agency` still stays outside the CIA cluster
-- [x] Land one bounded descriptor-alias repair
-- [x] Add/update targeted regression tests
-- [x] Commit verified phase
+### Phase 3 — Classify Composite-Acronym Residuals Honestly
+- [ ] Determine whether `GWU` is still in resolution scope or must move to Plan 0014
+- [ ] Land one bounded repair only if it is still in resolution/evaluator scope
+- [ ] Record the owning plan explicitly
+- [ ] Commit verified phase
 
-### Phase 4 — Repair Evaluator Mention-Key Stability
-- [x] Localize exactly why `q04` still misses despite the runtime merge
-- [x] Land one bounded installation-equivalence mention-key repair
-- [x] Add/update targeted regression tests
-- [x] Commit verified phase
+### Phase 4 — Prove Fresh-Run Stability
+- [ ] Run two fresh reruns on new DBs
+- [ ] Compare both against the gate
+- [ ] Localize any remaining instability by owning layer
+- [ ] Commit verified phase
 
-### Phase 5 — Rerun The Value Proof And Closeout
-- [ ] Rerun LLM strategy on a fresh DB
-- [ ] Verify 25/25 document survival from the DB
-- [ ] Check the zero-false-split gate while preserving zero false merges and 10/10 question accuracy
+### Phase 5 — Closeout
+- [ ] Write the decision-grade stability note
 - [ ] Refresh docs/status/handoff
 - [ ] Mark execution block complete
 - [ ] Commit verified phase
@@ -79,7 +77,7 @@ Source of truth:
 - [x] Restore fresh-run same-surname safety while preserving the `q02` / `q04` / `q08` wins
 - [x] Get `q05` back to answered-and-correct and localize/fix `q06`
 - [ ] Keep precision at or above `0.95` with zero false merges
-- [ ] Clear the remaining acronym/descriptor/evaluator residual splits
+- [ ] Convert the best `0038` rerun into a repeatable fresh-run result
 - [ ] Refresh the decision note and close the active 24h block truthfully
 
 ## Longer-Term Queue

@@ -101,13 +101,14 @@ Latest decision artifacts:
    - it closed the Washington place-family split;
    - its canonical rerun artifact is
      `docs/runs/scale_test_llm_2026-04-01_124135.json`;
-9. the current bounded pass is now
-   `docs/plans/0038_24h_entity_resolution_surface_stability_block.md`,
-   which owns only the remaining rerun-stable residuals:
-   - `National Security Agency` / `NSA`
-   - `CIA` / `Central Intelligence Agency` / `the Agency`
-   - `George Washington University` / `GWU`
-   - evaluator mention-key equivalence for `Ft. Bragg`
+9. Plan `0038` is now complete under its explicit exit clause:
+   - it materially improved the original acronym/descriptor/evaluator family;
+   - its best fresh rerun is `docs/runs/scale_test_llm_2026-04-01_131124.json`;
+   - its instability counterexample is
+     `docs/runs/scale_test_llm_2026-04-01_132119.json`;
+10. the current bounded pass is now
+    `docs/plans/0039_24h_entity_resolution_rerun_stability_block.md`,
+    which owns only the fresh-run stability problem after `0038`.
 
 ## What Exists Today
 

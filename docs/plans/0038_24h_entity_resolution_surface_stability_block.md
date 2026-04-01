@@ -1,16 +1,16 @@
 # 24h Entity Resolution Surface Stability Block
 
-Status: active
+Status: completed
 Phase status:
 - Phase 1 completed
 - Phase 2 completed
 - Phase 3 completed
 - Phase 4 completed
-- Phase 5 pending
+- Phase 5 completed
 
 Last updated: 2026-04-01
-Workstream: clear the rerun-stable residual blocker family after Plan 0037
-closed its Rodriguez and Washington scope
+Workstream: close the original `0038` blocker family truthfully and hand off
+fresh-run stability to Plan `0039`
 
 ## Purpose
 
@@ -25,7 +25,7 @@ that the active blocker family is now different and narrower:
    question because mention lookup does not yet use bounded installation
    equivalence keys.
 
-This block owns only those three residual seams. It must preserve the current
+This block owned only those three residual seams. It preserved the current
 safety floor:
 
 1. false merges stay at `0`;
@@ -108,6 +108,37 @@ The incoming residuals from `124135` are:
    - `Fort Liberty`
 
 No other families are in scope.
+
+## Outcome
+
+This block materially improved the owned family and produced one near-gate fresh
+rerun:
+
+1. `docs/runs/scale_test_llm_2026-04-01_131124.json`
+   - precision `1.00`
+   - recall `0.9756`
+   - false merges `0`
+   - false splits `2`
+   - answer rate `0.80`
+   - accuracy over all questions `0.80`
+2. the original `NSA`, `GWU`, `the Agency`, and `Ft. Bragg` seams are no longer
+   all active in the same way they were at the start of `0038`;
+3. the remaining misses shifted again on the next fresh rerun, which exposed a
+   broader rerun-stability problem driven by extraction-shape drift.
+
+The counterexample rerun is:
+
+1. `docs/runs/scale_test_llm_2026-04-01_132119.json`
+
+That artifact reopened:
+
+1. `the Agency`
+2. `4th POG`
+3. `D.C.`
+4. `GWU`
+
+Those are now owned by
+`docs/plans/0039_24h_entity_resolution_rerun_stability_block.md`.
 
 ## Phase Order
 
