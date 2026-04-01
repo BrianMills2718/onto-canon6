@@ -32,6 +32,8 @@ except ImportError:
         return decorator
 from pydantic import BaseModel, ConfigDict, Field, JsonValue
 
+from data_contracts.models import BoundaryModel
+
 from ..core.graph_models import PromotedGraphAssertionRecord
 from ..core.graph_store import CanonicalGraphStore
 from ..core.identity_store import IdentityStore
@@ -69,6 +71,28 @@ class FoundationAssertion(BaseModel):
     qualifiers: dict[str, Any] = Field(default_factory=dict)
     confidence: float | None = None
     provenance_refs: list[str] = Field(default_factory=list)
+
+
+class ExportFoundationAssertionsInput(BoundaryModel):
+    """Boundary input schema for exporting promoted assertions as Foundation IR."""
+
+    db_path: str = Field(description="Path to the onto-canon6 review SQLite database.")
+    output_path: str | None = Field(
+        default=None,
+        description="Optional path to write Foundation assertions JSON. None to skip file output.",
+    )
+    include_aliases: bool = Field(
+        default=True,
+        description="Whether to enrich entity fillers with alias_ids from the identity subsystem.",
+    )
+
+
+class ExportFoundationAssertionsOutput(BoundaryModel):
+    """Boundary output schema for the Foundation assertion export."""
+
+    assertions: list[FoundationAssertion] = Field(
+        description="List of Foundation Assertion IR records exported from the promoted graph.",
+    )
 
 
 @boundary(
@@ -204,8 +228,6 @@ def _build_alias_lookup(db_path: Path) -> dict[str, list[str]]:
     version="0.1.0",
     producer="onto-canon6",
     consumers=["digimon", "research_v3"],
-    validate_input=False,
-    validate_output=False,
 )
 def export_foundation_assertions(
     db_path: Path | str,
@@ -254,6 +276,17 @@ def export_foundation_assertions(
         )
 
     return foundation_assertions
+
+
+# Manually set boundary schemas — auto-detection can't extract from Path/str
+# params or list[...] return types.
+if hasattr(export_foundation_assertions, "_boundary_info"):
+    export_foundation_assertions._boundary_info.input_schema = (
+        ExportFoundationAssertionsInput.model_json_schema()
+    )
+    export_foundation_assertions._boundary_info.output_schema = (
+        ExportFoundationAssertionsOutput.model_json_schema()
+    )
 
 
 # Schema gap documentation:

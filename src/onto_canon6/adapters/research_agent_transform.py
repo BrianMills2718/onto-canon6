@@ -22,6 +22,8 @@ except ImportError:
         return decorator
 from pydantic import BaseModel, ConfigDict, Field, JsonValue, TypeAdapter
 
+from data_contracts.models import BoundaryModel
+
 from ..config import get_config
 from .whygame_models import WhyGameRelationshipFact, WhyGameRelationshipRoles
 
@@ -58,6 +60,17 @@ class ResearchAgentWhyGameTransformResult(BaseModel):
     fact_count: int = Field(ge=1)
     investigation_id: str | None = None
     facts: tuple[WhyGameRelationshipFact, ...] = ()
+
+
+class WriteTransformedFactsInput(BoundaryModel):
+    """Boundary input schema for the research-agent to WhyGame transform."""
+
+    input_path: str = Field(description="Path to the research-agent entities JSON file.")
+    output_path: str = Field(description="Path where WhyGame facts JSON will be written.")
+    investigation_id: str | None = Field(
+        default=None,
+        description="Optional investigation identifier for provenance tracking.",
+    )
 
 
 class ResearchAgentWhyGameTransformService:
@@ -127,8 +140,6 @@ class ResearchAgentWhyGameTransformService:
         version="0.1.0",
         producer="research-agent",
         consumers=["onto-canon6"],
-        validate_input=False,
-        validate_output=False,
     )
     def write_transformed_facts(
         self,
@@ -158,6 +169,15 @@ class ResearchAgentWhyGameTransformService:
             investigation_id=investigation_id,
             facts=facts,
         )
+
+
+# Manually set boundary schemas — auto-detection can't extract from method
+# signatures with Path/str params and the output model IS auto-detected but
+# input is not.
+if hasattr(ResearchAgentWhyGameTransformService.write_transformed_facts, "_boundary_info"):
+    ResearchAgentWhyGameTransformService.write_transformed_facts._boundary_info.input_schema = (
+        WriteTransformedFactsInput.model_json_schema()
+    )
 
 
 def _fact_prefix(entity_name: str) -> str:

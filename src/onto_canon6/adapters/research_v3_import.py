@@ -22,6 +22,9 @@ except ImportError:
             return fn
         return decorator
 import yaml
+from pydantic import Field
+
+from data_contracts.models import BoundaryModel
 
 from ..pipeline import (
     CandidateAssertionImport,
@@ -100,13 +103,59 @@ def map_corroboration_to_confidence(
     return CORROBORATION_CONFIDENCE.get(corroboration_status, 0.50)
 
 
+class ImportResearchV3GraphInput(BoundaryModel):
+    """Boundary input schema for importing a research_v3 graph.yaml."""
+
+    graph_path: str = Field(description="Path to the research_v3 graph.yaml file.")
+    profile_id: str = Field(
+        default="progressive_permissive",
+        description="Validation profile ID for candidate submission.",
+    )
+    profile_version: str = Field(
+        default="0.1.0",
+        description="Version of the validation profile.",
+    )
+    submitted_by: str = Field(
+        default="adapter:research_v3",
+        description="Actor identifier for provenance tracking.",
+    )
+
+
+class ImportResearchV3Output(BoundaryModel):
+    """Boundary output schema for research_v3 imports (shared by graph and memo)."""
+
+    candidates: list[CandidateAssertionImport] = Field(
+        description="Candidate assertion imports derived from research_v3 data.",
+    )
+
+
+class ImportResearchV3MemoInput(BoundaryModel):
+    """Boundary input schema for importing a research_v3 loop memo.yaml."""
+
+    memo_path: str = Field(description="Path to the research_v3 loop memo.yaml file.")
+    limit: int | None = Field(
+        default=None,
+        description="Optional maximum number of findings to import.",
+    )
+    profile_id: str = Field(
+        default="research_v3_integration",
+        description="Validation profile ID for candidate submission.",
+    )
+    profile_version: str = Field(
+        default="0.1.0",
+        description="Version of the validation profile.",
+    )
+    submitted_by: str = Field(
+        default="adapter:research_v3_memo",
+        description="Actor identifier for provenance tracking.",
+    )
+
+
 @boundary(
     name="onto-canon6.import_research_v3_graph",
     version="0.1.0",
     producer="research_v3",
     consumers=["onto-canon6"],
-    validate_input=False,
-    validate_output=False,
 )
 def import_research_v3_graph(
     *,
@@ -207,6 +256,17 @@ def import_research_v3_graph(
     return imports
 
 
+# Manually set boundary schemas — auto-detection can't extract from keyword-only
+# Path params or list[...] return types.
+if hasattr(import_research_v3_graph, "_boundary_info"):
+    import_research_v3_graph._boundary_info.input_schema = (
+        ImportResearchV3GraphInput.model_json_schema()
+    )
+    import_research_v3_graph._boundary_info.output_schema = (
+        ImportResearchV3Output.model_json_schema()
+    )
+
+
 def _map_claim_type_to_predicate(claim_type: str) -> str:
     """Map research_v3 claim types to generic predicates."""
     mapping = {
@@ -259,8 +319,6 @@ def load_research_v3_memo(memo_path: Path) -> dict[str, Any]:
     version="0.1.0",
     producer="research_v3",
     consumers=["onto-canon6"],
-    validate_input=False,
-    validate_output=False,
 )
 def import_research_v3_memo(
     memo_path: Path,
@@ -352,6 +410,16 @@ def import_research_v3_memo(
         memo_path,
     )
     return imports
+
+
+# Manually set boundary schemas for memo import.
+if hasattr(import_research_v3_memo, "_boundary_info"):
+    import_research_v3_memo._boundary_info.input_schema = (
+        ImportResearchV3MemoInput.model_json_schema()
+    )
+    import_research_v3_memo._boundary_info.output_schema = (
+        ImportResearchV3Output.model_json_schema()
+    )
 
 
 def import_and_submit_memo(

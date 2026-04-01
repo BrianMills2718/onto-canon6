@@ -32,7 +32,9 @@ except ImportError:
         def decorator(fn):
             return fn
         return decorator
-from pydantic import JsonValue
+from pydantic import Field, JsonValue
+
+from data_contracts.models import BoundaryModel
 
 from ..config import get_config
 from ..pipeline.models import (
@@ -54,13 +56,27 @@ from ..pipeline.service import ReviewService
 logger = logging.getLogger(__name__)
 
 
+class ConvertProgressiveToCandidatesOutput(BoundaryModel):
+    """Boundary output schema for converting progressive reports to candidate imports."""
+
+    candidates: list[CandidateAssertionImport] = Field(
+        description="Candidate assertion imports derived from the progressive extraction report.",
+    )
+
+
+class SubmitProgressiveReportOutput(BoundaryModel):
+    """Boundary output schema for submitting a progressive report through review."""
+
+    results: list[CandidateSubmissionResult] = Field(
+        description="Submission results for each candidate in the progressive report.",
+    )
+
+
 @boundary(
     name="onto-canon6.convert_progressive_to_candidates",
     version="0.1.0",
     producer="onto-canon6",
     consumers=["onto-canon6"],
-    validate_input=False,
-    validate_output=False,
 )
 def convert_to_candidate_imports(
     report: ProgressiveExtractionReport,
@@ -139,8 +155,6 @@ def convert_to_candidate_imports(
     version="0.1.0",
     producer="onto-canon6",
     consumers=["onto-canon6"],
-    validate_input=False,
-    validate_output=False,
 )
 def submit_progressive_report(
     report: ProgressiveExtractionReport,
@@ -178,6 +192,18 @@ def submit_progressive_report(
         report.trace_id,
     )
     return results
+
+
+# Manually set output schemas — auto-detection can't extract from list[...] return types.
+# Input schemas ARE auto-detected (ProgressiveExtractionReport is a BaseModel).
+if hasattr(convert_to_candidate_imports, "_boundary_info"):
+    convert_to_candidate_imports._boundary_info.output_schema = (
+        ConvertProgressiveToCandidatesOutput.model_json_schema()
+    )
+if hasattr(submit_progressive_report, "_boundary_info"):
+    submit_progressive_report._boundary_info.output_schema = (
+        SubmitProgressiveReportOutput.model_json_schema()
+    )
 
 
 def _typed_assertion_to_import(
