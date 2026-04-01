@@ -3,9 +3,9 @@
 Status: active
 Phase status:
 - Phase 1 completed
-- Phase 2 in progress
-- Phase 3 in progress
-- Phase 4 pending
+- Phase 2 completed
+- Phase 3 completed
+- Phase 4 in progress
 - Phase 5 pending
 
 Last updated: 2026-04-01
@@ -156,9 +156,20 @@ Progress note:
    - `4th POG` now shares a bounded alias signature with
      `4th PSYOP Group`;
    - `4th POG(A)` remains separate.
-2. descriptor-alias drift is not currently pre-approved for more deterministic
-   bridge logic unless the next rerun shows the runtime evidence is explicit
-   enough to stay inside entity resolution.
+2. fresh rerun `docs/runs/scale_test_llm_2026-04-01_145141.json` proved the
+   bounded `D.C.` / `4th POG` repair slice is effective on a new DB:
+   - precision `1.00`
+   - recall `0.9643`
+   - false merges `0`
+   - false splits `4`
+   - answer rate `1.00`
+   - accuracy over all questions `1.00`
+3. descriptor-alias drift is still not pre-approved for broader deterministic
+   bridge logic. The remaining false-split family is `the Agency` versus
+   `CIA` / `Central Intelligence Agency`, and the current residual is still a
+   descriptor-only mention without a same-source anchor. This block will not
+   force a cross-document descriptor merge heuristic just to recover those
+   non-question pairwise splits.
 
 ### Phase 3: Classify Composite-Acronym Residuals Honestly
 
@@ -177,15 +188,17 @@ Progress note:
 
 Current classification (provisional until the next rerun pair):
 
-1. `GWU` drift is currently treated as likely upstream extraction-shape drift,
-   not a pure resolution failure, because the reopened v4 residual is
-   `researchers at GWU` rather than a standalone `GWU` university mention.
-2. `the Agency` drift is also provisionally upstream when the rerun emits only
-   the descriptor form without any co-occurring CIA anchor in the same source
-   text.
-3. If the next fresh rerun still reopens those families after the deterministic
-   `D.C.` / `4th POG` fixes, record them under Plan `0014` rather than forcing
-   another resolution heuristic.
+1. fresh rerun `145141` emitted a standalone `George Washington University`
+   mention again, and `q09` returned to answered-and-correct. `GWU` is
+   therefore no longer an open residual for this block.
+2. `researchers at GWU` remains an unmatched extraction shape in the same rerun,
+   but it is no longer blocking question scoring and does not justify more
+   entity-resolution heuristics inside this block.
+3. `the Agency` remains a descriptor-only false-split family in `145141`, but
+   it no longer blocks any fixed question. The owned question-answerability
+   problem is therefore cleared; any future attempt to merge descriptor-only
+   mentions across documents should be treated as higher-risk work, not as a
+   prerequisite for closing this block.
 
 ### Phase 4: Prove Fresh-Run Stability
 
@@ -199,6 +212,14 @@ Current classification (provisional until the next rerun pair):
 
 1. two fresh artifacts exist under `docs/runs/`;
 2. the comparison is sufficient to decide whether stability is achieved.
+
+Progress note:
+
+1. first fresh rerun `docs/runs/scale_test_llm_2026-04-01_145141.json` is now
+   in hand and clears the question-level gate on a new DB while preserving the
+   zero-false-merge floor.
+2. one more fresh rerun is still required before this block can claim
+   repeatable stability.
 
 ### Phase 5: Closeout
 

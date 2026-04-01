@@ -15,18 +15,18 @@ Source of truth:
 - [x] Land the first bounded runtime repair slice for `D.C.` / `4th POG`
 - [x] Add/update targeted regression tests for the first runtime slice
 - [x] Commit verified checkpoint for the first runtime slice
-- [ ] Decide whether any descriptor-alias drift still belongs in runtime resolution
+- [x] Decide whether any descriptor-alias drift still belongs in runtime resolution
 
 ### Phase 3 — Classify Composite-Acronym Residuals Honestly
 - [x] Determine the provisional ownership of `GWU` from the current rerun pair
-- [ ] Confirm `GWU` ownership on the next fresh rerun
-- [ ] Record the owning plan explicitly
+- [x] Confirm `GWU` ownership on the next fresh rerun
+- [x] Record the owning plan explicitly
 - [ ] Commit verified phase
 
 ### Phase 4 — Prove Fresh-Run Stability
-- [ ] Run two fresh reruns on new DBs
-- [ ] Compare both against the gate
-- [ ] Localize any remaining instability by owning layer
+- [~] Run two fresh reruns on new DBs
+- [~] Compare both against the gate
+- [~] Localize any remaining instability by owning layer
 - [ ] Commit verified phase
 
 ### Phase 5 — Closeout
@@ -78,7 +78,7 @@ Source of truth:
 - [x] Restore fresh-run same-surname safety while preserving the `q02` / `q04` / `q08` wins
 - [x] Get `q05` back to answered-and-correct and localize/fix `q06`
 - [ ] Keep precision at or above `0.95` with zero false merges
-- [ ] Convert the best `0038` rerun into a repeatable fresh-run result
+- [~] Convert the best `0038` rerun into a repeatable fresh-run result
 - [ ] Refresh the decision note and close the active 24h block truthfully
 
 ## Longer-Term Queue

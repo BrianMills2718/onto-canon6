@@ -95,7 +95,10 @@ config/
   near-gate `131124` fresh rerun, but the follow-on `132119` rerun proved that
   the next blocker is rerun stability under extraction-shape drift. The active
   bounded block is now Plan 0039, which owns only that rerun-stability
-  problem while preserving the zero-false-merge floor.
+  problem while preserving the zero-false-merge floor. The first fresh `0039`
+  rerun (`145141`) already restored `10/10` question accuracy with precision
+  `1.00`, recall `0.9643`, and false merges `0`; one more fresh rerun is still
+  required before the block can claim repeatable stability.
   The chunk-level transfer evaluation requirement remains active through
   ADR 0023 and Plans 0024/0014 even though there is no standalone Plan 0019
   file.
