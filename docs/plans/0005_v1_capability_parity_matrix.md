@@ -1,6 +1,6 @@
 # onto-canon v1 Capability Parity Matrix
 
-Updated: 2026-03-26
+Updated: 2026-03-31
 
 ## Purpose
 

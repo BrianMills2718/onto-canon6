@@ -18,6 +18,8 @@ Committed in the isolated worktree as:
 - `3062f49` — `Clarify Lane 4 extraction promotion gate`
 - `e8f9c8f` — `Plan Lane 5 deferred parity ordering`
 - `99fff08` — `Plan browse and search capability recovery`
+- `9412854` — `Refresh top-level docs for current plan stack`
+- `d8d6f97` — `Align legacy trackers with current program`
 
 Main effects:
 
@@ -32,8 +34,9 @@ Main effects:
    consumer-blocked / abandoned-with-rationale.
 4. The next-active queryability recovery plan now exists as
    `docs/plans/0028_query_browse_surface.md`.
-5. `README.md`, `CLAUDE.md`, and the plans index now point to the current
-   Lane 3-5 stack instead of leaving it implicit.
+5. `README.md`, `CLAUDE.md`, `docs/STATUS.md`, the plans index, the parity
+   matrix, and the vision-gap tracker now point to the same current Lane 3-5
+   stack instead of leaving it implicit.
 
 ## Current Recommended Next Step
 

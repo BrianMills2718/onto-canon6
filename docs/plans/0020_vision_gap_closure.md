@@ -2,7 +2,7 @@
 
 Status: active
 
-Last updated: 2026-03-28
+Last updated: 2026-03-31
 Workstream: post-bootstrap capability completion
 
 ## Purpose
