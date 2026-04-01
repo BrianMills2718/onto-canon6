@@ -235,6 +235,12 @@ not become undirected churn.
 3. Golden-set exact match is necessary but insufficient; reasonableness and
    transfer matter too.
 
+#### Current State
+
+Plan 0014 now carries the explicit promotion policy for this lane. The current
+state remains: no compact-family candidate is eligible to replace the live
+default yet because prose-heavy chunk transfer is still negative or mixed.
+
 #### Tasks
 
 1. keep the canonical corpora explicit;

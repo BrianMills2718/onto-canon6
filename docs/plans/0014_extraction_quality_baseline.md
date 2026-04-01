@@ -36,6 +36,55 @@ This plan fails if:
 3. real-document runs regress back into empty roles, invalid filler shape, or
    other structural failures as the main blocker.
 
+## Promotion Gate (Current Policy)
+
+This is the current Lane 4 promotion policy for prompt/model changes on the
+live extraction path.
+
+### A candidate prompt/model pair may be promoted only when all of the following are true
+
+1. it wins or clearly passes the current frozen extraction-boundary benchmark
+   contract with reproducible evidence, not a one-off run;
+2. it shows no structural trial failures on the bounded benchmark sweep used
+   for the promotion decision;
+3. it passes chunk-level transfer on at least two explicitly named real chunks;
+4. at least one of those chunks is analytical/prose-heavy rather than only a
+   straightforward organizational fact chunk;
+5. the real-chunk review outcome shows the remaining misses are semantic/domain
+   questions, not schema, grounding, or prompt/render-path failures;
+6. the promotion record names the benchmark artifact, the transfer artifacts,
+   and the exact prompt/model asset being promoted.
+
+### A candidate prompt/model pair must not be promoted when any of the following are true
+
+1. prompt-eval wins on sentence-level or synthetic cases but chunk-level
+   transfer remains negative;
+2. the live extraction path and the prompt-eval parity lane still disagree in a
+   way that has not been explained;
+3. structural validity regresses, even if semantic metrics improve;
+4. the apparent gain comes mainly from reviewer-only normalization differences
+   instead of extraction-boundary behavior;
+5. the evidence comes from one friendly chunk and one unresolved failure family
+   remains active on another named chunk.
+
+### Required promotion record
+
+Every future prompt/model promotion must cite:
+
+1. the benchmark fixture and run artifact;
+2. the exact prompt asset path and model/task configuration;
+3. the named real chunks used for transfer;
+4. the transfer report artifacts;
+5. the specific reason the candidate is judged better than the current live
+   default.
+
+### Current policy consequence
+
+No compact-family candidate is eligible to replace the live repo-default
+extraction prompt yet. The current blocker is still negative or mixed
+full-chunk transfer on prose-heavy chunk 003 despite better bounded prompt-eval
+results.
+
 ## Current State
 
 ### Harness and Scoring
