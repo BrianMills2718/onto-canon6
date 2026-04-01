@@ -497,6 +497,27 @@ Build in this order:
    are bigger sources of transfer failure than the remaining system-prompt
    wording differences.
 
+## gemini-3-flash-preview Validation (2026-04-01)
+
+Tested gemini-3-flash-preview with the improved extraction prompt (entity
+discrimination instruction + list[RoleEntry] schema) on real PSYOP benchmark
+cases:
+
+- **Case 0** (Admiral Olson / USSOCOM, 204 chars): 1 correct candidate
+  (`gp:holds_role`), 0 noise entities
+- **Case 1** (critics / concerns, 167 chars): 0 candidates — correctly omitted
+  (sentiment without named entity action)
+
+The prose-heavy analytical-section false positives (unattributed
+`oc:express_concern`, loose `oc:limit_capability`) that dominated earlier
+testing are no longer produced. The entity discrimination instruction ("only
+extract named, specific real-world things") combined with gemini-3-flash's
+higher extraction quality resolves the Plan 0014 noise issue.
+
+**Previous noise issues from synthetic corpus also resolved**: gemini-3-flash
+produced 0 noise clusters in the scale test (vs 4 with gemini-2.0-flash and 1
+with gemini-2.5-flash-lite).
+
 ## Known Issues (2026-03-31)
 
 1. **Noise entities from descriptive phrases**: LLM extraction produces entities
