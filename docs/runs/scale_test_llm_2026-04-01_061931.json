@@ -1,0 +1,396 @@
+{
+  "strategy": "llm",
+  "timestamp": "2026-04-01_061931",
+  "extraction_stats": {
+    "extracted": 65,
+    "pending": 65
+  },
+  "resolution_stats": {
+    "entities_scanned": 66,
+    "groups_found": 43,
+    "identities_created": 43,
+    "aliases_attached": 23,
+    "already_resolved": 0,
+    "strategy": "llm"
+  },
+  "evaluation": {
+    "total_identities": 43,
+    "multi_member_identities": 14,
+    "singleton_identities": 29,
+    "total_aliases_attached": 23,
+    "identity_details": [
+      {
+        "identity_id": "gid_c0c1c0572f7b45188851ac51",
+        "display_label": "U.S. Special Operations Command",
+        "member_count": 1,
+        "entity_ids": [
+          "org:us_socom"
+        ]
+      },
+      {
+        "identity_id": "gid_703cc2b4c4213d3587edc907",
+        "display_label": "the 4th Psychological Operations Group",
+        "member_count": 1,
+        "entity_ids": [
+          "ent:auto:de49ab90:militaryorganization:the_4th_psychological_operations_group"
+        ]
+      },
+      {
+        "identity_id": "gid_9f2ac22ff3ee9d3c7b71f682",
+        "display_label": "special operations forces",
+        "member_count": 2,
+        "entity_ids": [
+          "ent:auto:05be3bc7:military_unit:special_operations_forces",
+          "ent:auto:05be3bc7:military_unit:special_operations"
+        ]
+      },
+      {
+        "identity_id": "gid_0f255f4bf84d3890adbcb5a4",
+        "display_label": "US Special Operations Command",
+        "member_count": 3,
+        "entity_ids": [
+          "ent:auto:98e9cbb2:military_organization:us_special_operations_command",
+          "doc_18-ent_2",
+          "doc_18-ent_3"
+        ]
+      },
+      {
+        "identity_id": "gid_724a29824a70361bb7568ec3",
+        "display_label": "The National Security Agency",
+        "member_count": 1,
+        "entity_ids": [
+          "ent:auto:05be3bc7:military_organization:the_national_security_agency"
+        ]
+      },
+      {
+        "identity_id": "gid_4a90ec45ba3332e19c747903",
+        "display_label": "signals intelligence",
+        "member_count": 1,
+        "entity_ids": [
+          "ent:auto:05be3bc7:military_organization:signals_intelligence"
+        ]
+      },
+      {
+        "identity_id": "gid_414f236e236b31eaa794c30d",
+        "display_label": "Eric Olson",
+        "member_count": 3,
+        "entity_ids": [
+          "ent:auto:df618304:person:eric_olson",
+          "ent:auto:d3289154:person:adm_olson",
+          "ent:auto:d3289154:person:he"
+        ]
+      },
+      {
+        "identity_id": "gid_f8669f1baa0a749cb8fffaf6",
+        "display_label": "Gen. J. Smith",
+        "member_count": 3,
+        "entity_ids": [
+          "ent:auto:9ba22d95:person:gen_j_smith",
+          "ent:auto:6d646836:person:gen_smith",
+          "ent:auto:7d7e3d80:person:general_smith"
+        ]
+      },
+      {
+        "identity_id": "gid_15ffd7d35b9533d96a6ee1a6",
+        "display_label": "Sarah Chen",
+        "member_count": 1,
+        "entity_ids": [
+          "ent:auto:15268fd9:person:sarah_chen"
+        ]
+      },
+      {
+        "identity_id": "gid_e0b36c21ded148fe08f7a73a",
+        "display_label": "James Smith",
+        "member_count": 1,
+        "entity_ids": [
+          "ent:auto:7d7e3d80:person:james_smith"
+        ]
+      },
+      {
+        "identity_id": "gid_bdbf0964068218ee0be2e9e0",
+        "display_label": "Michael Torres",
+        "member_count": 1,
+        "entity_ids": [
+          "doc_18-ent_1"
+        ]
+      },
+      {
+        "identity_id": "gid_1aead03b863fc433914a446d",
+        "display_label": "Adm. Olson",
+        "member_count": 1,
+        "entity_ids": [
+          "per:adm_olson"
+        ]
+      },
+      {
+        "identity_id": "gid_03bcd586e9bb9a0bfc9e7a33",
+        "display_label": "Central Intelligence Agency",
+        "member_count": 5,
+        "entity_ids": [
+          "doc_07_entity1",
+          "ent:auto:df618304:organization:the_cia",
+          "ent:auto:7d7e3d80:organization:cia",
+          "ent:auto:15268fd9:organization:agency_leadership",
+          "ent:auto:df618304:organization:the_agency_s_headquarters"
+        ]
+      },
+      {
+        "identity_id": "gid_a2b36277e67381fb92be9803",
+        "display_label": "USSOCOM",
+        "member_count": 1,
+        "entity_ids": [
+          "doc_07_entity4"
+        ]
+      },
+      {
+        "identity_id": "gid_af39a5db2aa7304cec837b15",
+        "display_label": "representatives from the NSA",
+        "member_count": 2,
+        "entity_ids": [
+          "ent:auto:9ba22d95:organization:representatives_from_the_nsa",
+          "ent:auto:6d646836:organization:the_national_security_agency"
+        ]
+      },
+      {
+        "identity_id": "gid_bb8422477a1021911837189e",
+        "display_label": "A joint task force",
+        "member_count": 1,
+        "entity_ids": [
+          "ent:auto:6d646836:organization:a_joint_task_force"
+        ]
+      },
+      {
+        "identity_id": "gid_b868bd44765ff97cc2b7a5e9",
+        "display_label": "several defense think tanks",
+        "member_count": 1,
+        "entity_ids": [
+          "ent:auto:d3289154:organization:several_defense_think_tanks"
+        ]
+      },
+      {
+        "identity_id": "gid_4098894abdaabe4f5de00c6b",
+        "display_label": "4th POG",
+        "member_count": 2,
+        "entity_ids": [
+          "ent:auto:e6b74170:militaryunit:4th_pog",
+          "ent:auto:de49ab90:militaryunit:the_4th_psychological_operations_group"
+        ]
+      },
+      {
+        "identity_id": "gid_367d889707492fefb74826b5",
+        "display_label": "Ft. Bragg",
+        "member_count": 2,
+        "entity_ids": [
+          "ent:auto:e6b74170:location:ft_bragg",
+          "ent:auto:2652e0ef:location:fort_bragg"
+        ]
+      },
+      {
+        "identity_id": "gid_5332739ccc91ee0ef619dca1",
+        "display_label": "Fort Liberty",
+        "member_count": 1,
+        "entity_ids": [
+          "ent:auto:de49ab90:location:fort_liberty"
+        ]
+      },
+      {
+        "identity_id": "gid_fb3ccdd03fa2571fd314f7ac",
+        "display_label": "Dr. Chen",
+        "member_count": 2,
+        "entity_ids": [
+          "doc_07_entity0",
+          "doc_07_entity2"
+        ]
+      },
+      {
+        "identity_id": "gid_86c9bd69af88a3de582187e4",
+        "display_label": "Colonel Rodriguez",
+        "member_count": 1,
+        "entity_ids": [
+          "ent:auto:de49ab90:person:colonel_rodriguez"
+        ]
+      },
+      {
+        "identity_id": "gid_df704a687d0291ca50713334",
+        "display_label": "a joint conference",
+        "member_count": 2,
+        "entity_ids": [
+          "ent:auto:9ba22d95:event:a_joint_conference",
+          "ent:auto:9ba22d95:event:joint_conference"
+        ]
+      },
+      {
+        "identity_id": "gid_eea2bcc3830ff36ee6a6314e",
+        "display_label": "conference",
+        "member_count": 1,
+        "entity_ids": [
+          "ent:auto:9ba22d95:event:conference"
+        ]
+      },
+      {
+        "identity_id": "gid_2be9e70f9983b7bd3d0ea9f2",
+        "display_label": "Fort Liberty",
+        "member_count": 3,
+        "entity_ids": [
+          "ent:auto:de49ab90:militarybase:fort_liberty",
+          "ent:auto:2652e0ef:militarybase:facilities",
+          "ent:auto:2652e0ef:militarybase:installation"
+        ]
+      },
+      {
+        "identity_id": "gid_e52d2a48cb7277f2b21833dc",
+        "display_label": "Washington",
+        "member_count": 3,
+        "entity_ids": [
+          "ent:auto:df618304:location:washington",
+          "ent:auto:9ba22d95:location:washington_d_c",
+          "ent:auto:d3289154:location:d_c"
+        ]
+      },
+      {
+        "identity_id": "gid_b7a0a72029cee9f7d94151c4",
+        "display_label": "Fort Bragg",
+        "member_count": 2,
+        "entity_ids": [
+          "ent:auto:98e9cbb2:location:fort_bragg",
+          "ent:auto:b7eaf40d:location:a_forward_base_near_fort_bragg"
+        ]
+      },
+      {
+        "identity_id": "gid_6861bf87f4beef8b509dc29b",
+        "display_label": "the Pacific region",
+        "member_count": 1,
+        "entity_ids": [
+          "doc_18-ent_4"
+        ]
+      },
+      {
+        "identity_id": "gid_418f4f28d8754675a9bcf674",
+        "display_label": "4th PSYOP Group",
+        "member_count": 3,
+        "entity_ids": [
+          "ent:auto:98e9cbb2:military_unit:4th_psyop_group",
+          "ent:auto:b7eaf40d:military_unit:the_4th_pog_a",
+          "ent:auto:b7eaf40d:military_unit:the_group"
+        ]
+      },
+      {
+        "identity_id": "gid_c631f0e8eb6d653583ab5659",
+        "display_label": "James Rodriguez",
+        "member_count": 1,
+        "entity_ids": [
+          "ent:auto:b7eaf40d:military_unit:james_rodriguez"
+        ]
+      },
+      {
+        "identity_id": "gid_cae2f3271abb7737b0f625bb",
+        "display_label": "the group's activities",
+        "member_count": 1,
+        "entity_ids": [
+          "ent:auto:98e9cbb2:activity:the_group_s_activities"
+        ]
+      },
+      {
+        "identity_id": "gid_3dc589a00c684eb9bc59e5af",
+        "display_label": "Col. Rodriguez",
+        "member_count": 1,
+        "entity_ids": [
+          "ent:auto:e6b74170:militaryperson:col_rodriguez"
+        ]
+      },
+      {
+        "identity_id": "gid_b1eb996ddcef21ff69eff0b6",
+        "display_label": "a classified assessment of information warfare capabilities",
+        "member_count": 1,
+        "entity_ids": [
+          "doc_07_entity3"
+        ]
+      },
+      {
+        "identity_id": "gid_0e4ea619c7ee790a379ddf6a",
+        "display_label": "the intelligence community",
+        "member_count": 1,
+        "entity_ids": [
+          "doc_07_entity5"
+        ]
+      },
+      {
+        "identity_id": "gid_9c8f0b0eab6ac625c673c9de",
+        "display_label": "signals intelligence support",
+        "member_count": 1,
+        "entity_ids": [
+          "ent:auto:9ba22d95:intelligence_service:signals_intelligence_support"
+        ]
+      },
+      {
+        "identity_id": "gid_c0455ba3045c9ee777908d29",
+        "display_label": "special operations forces",
+        "member_count": 1,
+        "entity_ids": [
+          "ent:auto:9ba22d95:force:special_operations_forces"
+        ]
+      },
+      {
+        "identity_id": "gid_dd8b908f3b80c29d17f4f83f",
+        "display_label": "USSOCOM",
+        "member_count": 1,
+        "entity_ids": [
+          "ent:auto:4324487e:oc_military_organization:ussocom"
+        ]
+      },
+      {
+        "identity_id": "gid_dfee8001f06ff1147fec8252",
+        "display_label": "Lt. Gen. Torres",
+        "member_count": 1,
+        "entity_ids": [
+          "ent:auto:4324487e:oc_person:lt_gen_torres"
+        ]
+      },
+      {
+        "identity_id": "gid_f6a9387acd347929e34fccba",
+        "display_label": "a training exercise",
+        "member_count": 1,
+        "entity_ids": [
+          "ent:auto:de49ab90:event:a_training_exercise"
+        ]
+      },
+      {
+        "identity_id": "gid_1f555ed52482ce508fb23487",
+        "display_label": "the command's counterterrorism capabilities",
+        "member_count": 1,
+        "entity_ids": [
+          "cap:counterterrorism_capabilities"
+        ]
+      },
+      {
+        "identity_id": "gid_b6d6dd88a4060469568615c0",
+        "display_label": "George Washington University",
+        "member_count": 1,
+        "entity_ids": [
+          "ent:auto:15268fd9:educational_institution:george_washington_university"
+        ]
+      },
+      {
+        "identity_id": "gid_ef87cefd6557485cfd3deaf3",
+        "display_label": "a strategy document",
+        "member_count": 1,
+        "entity_ids": [
+          "ent:auto:7d7e3d80:document:a_strategy_document"
+        ]
+      },
+      {
+        "identity_id": "gid_44d2a8252f79834c75921b9d",
+        "display_label": "installation",
+        "member_count": 1,
+        "entity_ids": [
+          "ent:auto:2652e0ef:organization:installation"
+        ]
+      }
+    ]
+  },
+  "ground_truth_summary": {
+    "entities": 13,
+    "expected_merges": 10,
+    "expected_non_merges": 3
+  }
+}

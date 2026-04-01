@@ -13,13 +13,13 @@ paths:
 pipeline:
   default_acceptance_policy: record_only
   permissive_review: false
-  review_mode: llm
+  review_mode: auto
 ontology_runtime:
   overlay_pack_suffix: __overlay
 extraction:
   selection_task: fast_extraction
   selection_use_performance: false
-  model_override: gemini/gemini-3-flash-preview
+  model_override: gemini/gemini-2.0-flash
   default_extraction_goal: Extract all factual assertions directly supported by the
     source text.
   prompt_template: prompts/extraction/text_to_candidate_assertions.yaml
@@ -27,7 +27,7 @@ extraction:
   timeout_seconds: 60
   num_retries: 2
   max_budget_usd: 0.25
-  enable_judge_filter: true
+  enable_judge_filter: false
   judge_filter_min_label: partially_supported
 chunking:
   target_max_chars: 4000
@@ -55,7 +55,7 @@ evaluation:
     observability_phase: evaluation
     selection_task: fast_extraction
     selection_use_performance: false
-    model_override: gemini/gemini-3-flash-preview
+    model_override: gemini/gemini-2.0-flash
     n_runs: 2
     temperature: 0.0
     timeout_seconds: 60
@@ -91,7 +91,7 @@ evaluation:
 resolution:
   default_strategy: exact
   require_llm_review: true
-  model_override: gemini/gemini-3-flash-preview
+  model_override: gemini/gemini-2.0-flash
   max_budget_usd: 0.50
   cluster_prompt_template: prompts/resolution/cluster_entities.yaml
   validate_prompt_template: prompts/resolution/validate_merge.yaml
