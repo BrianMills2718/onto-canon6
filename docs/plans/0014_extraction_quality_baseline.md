@@ -497,6 +497,19 @@ Build in this order:
    are bigger sources of transfer failure than the remaining system-prompt
    wording differences.
 
+## Known Issues (2026-03-31)
+
+1. **Noise entities from descriptive phrases**: LLM extraction produces entities
+   like "several initiatives to modernize its force structure", "met",
+   "a ceremony". These survive structural validation because they have valid
+   entity types. Two mitigation paths: (a) judge filter rejects as unsupported
+   (judge filter now fixed — was broken by API mismatch), (b) extraction prompt
+   needs discriminating instruction to avoid treating noun phrases as entities.
+
+2. **Module entrypoint missing**: `python -m onto_canon6.cli` doesn't work.
+   Use the installed console script `onto-canon6` instead. Needs `__main__.py`
+   or `if __name__ == "__main__"` guard in `cli.py`.
+
 ## Non-Goals
 
 1. silently turning this workstream into a new canonical successor phase;

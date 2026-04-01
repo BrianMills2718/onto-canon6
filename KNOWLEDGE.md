@@ -12,11 +12,9 @@ not inferred from the main workspace. `make verify-setup`, `make smoke`, and
 
 ### 2026-03-31 — codex — integration-issue
 The supported DIGIMON export entrypoint is the installed `onto-canon6` console
-script, not `python -m onto_canon6.cli`. `src/onto_canon6/cli.py` exposes
-`main()` but does not execute it as a module entrypoint, so `python -m
-onto_canon6.cli export-digimon ...` exits without writing JSONL. Use the
-console script in docs and verification commands until the module entrypoint is
-made explicit.
+script, not `python -m onto_canon6.cli`. The module lacks a `__main__.py` or
+`if __name__ == "__main__"` guard in `cli.py`, so `python -m onto_canon6.cli`
+exits without running. Use the console script in docs and CLI examples.
 
 ### 2026-03-31 — claude-code — bug-pattern
 Judge filter (`_apply_judge_filter` in `text_extraction.py`) was calling
@@ -36,12 +34,12 @@ The system appeared to work but was doing the wrong thing. Fixed: all fallbacks
 removed, errors raise.
 
 ### 2026-03-31 — claude-code — schema-gotcha
-LLM extraction produces noise entities from descriptive phrases: "several
-initiatives to modernize its force structure", "met", "a ceremony",
-"a joint conference". These survive structural validation because they have
-valid entity types. The judge filter (now fixed) should catch these as
-unsupported, but the extraction prompt may also need a discriminating
-instruction to avoid extracting noun phrases as entities.
+LLM extraction produces noise entities from descriptive phrases ("several
+initiatives to modernize its force structure", "met", "a ceremony"). These
+survive structural validation because they have valid entity types. Two
+mitigation paths: (1) judge filter rejects as unsupported, (2) extraction
+prompt needs discriminating instruction to avoid noun-phrase entities.
+Tracked as extraction quality issue in Plan 0014.
 
 ### 2026-03-31 — claude-code — schema-gotcha
 Entity type inconsistency across documents: the same USSOCOM entity gets typed
