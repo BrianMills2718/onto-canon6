@@ -50,11 +50,33 @@ From this point forward:
 | Concept/entity browsing and search | `canon_list_concepts`, `canon_search_concepts`, `canon_get_evidence_for_concept`, `canon_search_evidence` | Not yet recovered; only candidate/proposal listing exists | Deferred | Required for any agent to use onto-canon6 as a queryable knowledge base. **Uncertainty**: should browsing surface be MCP-only, or also CLI? |
 | DIGIMON bidirectional adapter | `canon_import_digimon_graph`, `canon_export_digimon_graph` | Export adapter operational (`digimon_export.py`), tested on real data (20 entities, 16 relationships → 19 merged nodes in GraphML). DIGIMON-side importer also built. Import adapter not yet built. | Retained, narrowed (export only) | Plan 0020 Gap 5 complete. Import adapter deferred. |
 | Lead/investigation management | `canon_create_lead`, `canon_list_leads` | Not recovered; not in original parity matrix (silently dropped) | Deferred | Lightweight investigation tracking. May be replaced by a richer consumer-side concept. **Uncertainty**: does this belong in onto-canon6 or in research_v3? |
-| Concept dedup and merge tools | `canon_merge_concepts`, `canon_prune_orphans` | Exact-name and fuzzy matching implemented. **LLM-based cross-document clustering planned (Plan 0025)**: fuzzy pre-filter → LLM validation, per entity type, KGGen-style. Scale test on 20-50 doc corpus with ground truth. | Partially recovered, actively extending | Plan 0025 (active). Plan 0020 Gap 3 partially closed. |
+| Concept dedup and merge tools | `canon_merge_concepts`, `canon_prune_orphans` | **COMPLETE (Plan 0025).** Exact-name + title normalization + LLM clustering + type-hierarchy-aware type guard. Scale test: 100% precision, 100% recall, 0 false merges. | Recovered | Plan 0025 complete (2026-04-01). |
 | Frame ontology interactive browsing | `canon_frame_lookup`, `canon_compress_predicates`, `canon_list_proposed_frames`, `canon_review_proposed_frame` | Not recovered; Predicate Canon bridge reads data but no interactive surface | Deferred | Low priority unless consumers need interactive frame exploration. |
 | Multi-consumer query federation | Not in v1 | Not started | Vision (beyond v1) | Multiple consumers querying the same assertion store with different resolution strategies. **Uncertainty**: requires multi-tenant identity model not yet designed. |
-| Cross-investigation entity resolution at scale | Not in v1 (Q-codes were partial) | Exact-name and fuzzy proven. **LLM clustering active (Plan 0025)** for 20-500 doc scale. Embedding-based + tiered pipeline deferred (Plan 0025a) for 500+ docs. | Vision (beyond v1), actively extending | Plan 0025 (20-500 docs, active). Plan 0025a (500+ docs, deferred). |
+| Cross-investigation entity resolution at scale | Not in v1 (Q-codes were partial) | **20-500 docs: COMPLETE (Plan 0025).** 100% precision/recall on synthetic corpus. 500+ docs: deferred (Plan 0025a — tiered pipeline with embeddings). | Vision (beyond v1), partially recovered | Plan 0025 complete. Plan 0025a deferred. |
 | Streaming/incremental ingestion | Not in v1 | Not started | Vision (beyond v1) | Real-time assertion ingestion from continuous sources. Architecture must not prevent this. **Uncertainty**: requires async pipeline design not yet specified. |
+
+## Lane 5 Reprioritization (2026-04-01)
+
+Based on Plans 0025/0026/0014 results, each deferred capability is now
+classified:
+
+| Deferred Capability | Classification | Rationale |
+|---|---|---|
+| Direct CRUD (add/update/query) | **Protected-deferred** | No consumer has needed it. Governed review + auto-accept works for current scale. Revisit if bulk ingestion (>10K assertions) becomes real. |
+| Concept/entity browsing and search | **Next-active** | Required for any agent to use onto-canon6 as a queryable KB. DIGIMON adoption (Lane 2) means agents will want to browse what's in the store. Start with CLI, add MCP later. |
+| DIGIMON import adapter | **Consumer-blocked** | No use case for importing DIGIMON analysis results back. Build only when a consumer requests it. |
+| Lead/investigation management | **Abandoned** | Not an onto-canon6 concern. Investigation tracking belongs in research_v3 or a dedicated investigation tool. onto-canon6 is the Data bucket, not the workflow manager. |
+| Frame ontology browsing | **Protected-deferred** | Low priority. The Predicate Canon bridge reads data; interactive browsing can be added if a consumer needs it. |
+| Multi-consumer query federation | **Protected-deferred** | No second consumer yet. Architecture supports it (consumer-chosen resolution strategies). Build when a real second consumer appears. |
+| Streaming/incremental ingestion | **Protected-deferred** | No streaming data source exists. Architecture doesn't prevent it. Build when continuous ingestion is needed. |
+| Entity resolution at 500+ docs | **Protected-deferred (Plan 0025a)** | 20-500 doc scale works. Scale-out when a real corpus exceeds this. |
+
+**Next-active items** (should get their own plans):
+1. **Concept/entity browsing and search** — CLI + optional MCP for agents to browse promoted entities, assertions, and identity clusters
+
+**Abandoned items** (removed from future scope):
+1. **Lead/investigation management** — not onto-canon6's responsibility
 
 ## Open Uncertainties
 
@@ -66,11 +88,10 @@ They must be revisited when the relevant capability moves from deferred to activ
    ingestion (10K+ assertions from a research_v3 run)? If not, a trusted-source
    fast path is needed. The architecture must not prevent adding one.
 
-2. **Entity resolution strategy.** The identity subsystem provides infrastructure
-   (aliases, merges, external refs) but no default resolution strategy. Each
-   consumer chooses their own. This is architecturally clean but means no
-   cross-consumer entity resolution exists by default. Undecided: should there
-   be a default strategy?
+2. **Entity resolution strategy.** RESOLVED (Plan 0025, 2026-04-01). Default
+   strategy: `exact` with `require_llm_review=true` (cheap candidate generation
+   + LLM validation). Config-selectable: exact, fuzzy, llm. 100% precision and
+   recall on synthetic corpus with gemini-3-flash-preview.
 
 3. **Extraction packaging boundary.** The current extraction pipeline lives in
    onto-canon6 and is an active, first-class producer. No move is planned
