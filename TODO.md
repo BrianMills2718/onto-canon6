@@ -6,10 +6,10 @@ Source of truth:
 - `docs/plans/0029_24h_query_surface_execution_block.md`
 
 ### Phase 1 — Shared Read Service
-- [ ] Add typed query request/response models
-- [ ] Implement read-only query service
-- [ ] Add service-level tests
-- [ ] Commit verified phase
+- [x] Add typed query request/response models
+- [x] Implement read-only query service
+- [x] Add service-level tests
+- [x] Commit verified phase
 
 ### Phase 2 — CLI Surface
 - [ ] Add `search-entities`
