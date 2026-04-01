@@ -2,8 +2,8 @@
 
 Status: active
 Phase status:
-- Phase 1 in progress
-- Phase 2 pending
+- Phase 1 completed
+- Phase 2 in progress
 - Phase 3 pending
 - Phase 4 pending
 - Phase 5 pending
@@ -110,6 +110,28 @@ Incoming artifacts frozen for this block:
 2. `docs/runs/2026-03-22_chunk003_full_operational_parity_prompt_eval.md`
 3. `docs/runs/2026-03-22_chunk003_compact_v4_candidate_prompt_eval.md`
 4. `docs/runs/2026-03-22_compact4_real_chunk_verification_chunk003.md`
+
+Progress note:
+
+1. the live certification candidate is now frozen as:
+   - task: `budget_extraction`
+   - prompt template:
+     `prompts/extraction/text_to_candidate_assertions_compact_v4.yaml`
+   - prompt ref:
+     `onto_canon6.extraction.text_to_candidate_assertions_compact_v4@1`
+   - live extraction model path:
+     `config.config.yaml -> extraction.model_override = gemini/gemini-2.5-flash`
+2. the prompt-eval operational-parity comparison lane is now frozen as:
+   - variant: `compact_operational_parity`
+   - prompt template:
+     `prompts/extraction/prompt_eval_text_to_candidate_assertions_compact_operational_parity_v2.yaml`
+   - prompt ref:
+     `onto_canon6.extraction.prompt_eval_text_to_candidate_assertions_compact_operational_parity@2`
+   - prompt-eval model path used in the canonical full-chunk run:
+     `openrouter/deepseek/deepseek-chat`
+   - task: `budget_extraction`
+3. that live-vs-parity model mismatch is now an explicit part of the
+   certification contract, not a hidden assumption.
 
 ### Phase 2: Localize The Live-vs-Parity Gap
 

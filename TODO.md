@@ -6,9 +6,9 @@ Source of truth:
 - `docs/plans/0040_24h_extraction_transfer_certification_block.md`
 
 ### Phase 1 — Freeze The Certification Contract
-- [ ] Name the exact compact candidate lane and prompt asset under test
-- [ ] Freeze the canonical chunk pair (`002`, `003`)
-- [ ] Freeze the incoming transfer artifacts from Plan 0014
+- [x] Name the exact compact candidate lane and prompt asset under test
+- [x] Freeze the canonical chunk pair (`002`, `003`)
+- [x] Freeze the incoming transfer artifacts from Plan 0014
 - [ ] Commit verified phase
 
 ### Phase 2 — Localize The Live-vs-Parity Gap
