@@ -2,49 +2,49 @@
 
 ## Session Focus
 
-Plan 0039 closeout and Plan 0040 activation in the isolated worktree branch
+Plan 0040 closeout and Plan 0041 activation in the isolated worktree branch
 `codex/onto-canon6-integration-planning`.
 
 ## What Landed
 
 Committed and documented in the isolated worktree:
 
-1. fresh rerun artifact:
-   - `docs/runs/scale_test_llm_2026-04-01_145141.json`
-2. second fresh rerun artifact:
-   - `docs/runs/scale_test_llm_2026-04-01_152927.json`
-3. decision note:
-   - `docs/runs/2026-04-01_entity_resolution_rerun_stability.md`
-4. Plan `0039` is now complete;
-5. Plan `0025` is now complete at the Phase 4 value-proof level;
-6. Plan `0040` is now the active bounded execution surface.
+1. certification decision note:
+   - `docs/runs/2026-04-01_extraction_transfer_certification.md`
+2. fresh chunk `002` certification artifacts:
+   - `docs/runs/2026-04-01_chunk002_full_chunk_prompt_eval_report.json`
+   - `docs/runs/2026-04-01_chunk002_transfer_report_compact4.json`
+   - `docs/runs/2026-04-01_chunk002_live_vs_parity_diff.json`
+3. fresh chunk `002` reviewed live artifact:
+   - `var/real_runs/2026-04-01_compact4_real_chunk_verification_chunk002/outputs/01_stage1_query2__chunk_002_compact4_max10_candidates_reviewed.json`
+4. Plan `0040` is now complete;
+5. Plan `0041` is now the active bounded execution surface.
 
 ## Current State
 
-1. Plan `0039` cleared its declared gate with two consecutive fresh reruns:
-   - `145141`: precision `1.00`, recall `0.9643`, false merges `0`,
-     answer rate `1.00`, accuracy `1.00`
-   - `152927`: precision `1.00`, recall `0.9346`, false merges `0`,
-     answer rate `1.00`, accuracy `1.00`
-2. Pairwise false splits still drift across runs, mainly in:
-   - `the Agency` descriptor-only family
-   - `Washington D.C.` / `Washington` / `D.C.`
-3. Those residuals are no longer blocking the bounded rerun-stability block.
-4. The active frontier has shifted back to Lane 4 extraction-transfer
-   certification under Plan `0040`.
+1. The compact operational-parity lane is **not promotable** yet.
+2. chunk `002` is now a strong positive live compact-v4 transfer case:
+   - `10/10` accepted
+   - verdict `positive`
+3. chunk `003` remains a negative live compact-v4 transfer case.
+4. Full-chunk prompt-eval/live parity still diverges materially on both named
+   chunks.
+5. The active frontier is now the parity-localization block in Plan `0041`,
+   not generic prompt churn and not another entity-resolution block.
 
 ## Recommended Next Step
 
 If work continues:
 
 1. stay on `codex/onto-canon6-integration-planning`;
-2. execute Plan `0040` in order:
-   - freeze the exact compact operational-parity candidate under test
-   - localize the live-vs-parity gap on chunks `002` and `003`
-   - land the minimum certification helper
-   - rerun the certification check and write the decision note
-3. do not reopen entity-resolution heuristics unless the new extraction block
-   proves the transfer gap is no longer the next bottleneck.
+2. execute Plan `0041` in order:
+   - freeze the residual parity contract from `0040`
+   - reconstruct the live and prompt-eval full-chunk prompt surfaces
+   - land the minimum prompt-surface parity aid
+   - classify the dominant residual blocker family
+3. keep all worktree runtime commands on `PYTHONPATH=src`;
+4. do not reopen entity-resolution heuristics unless the extraction parity
+   block is no longer the next bottleneck.
 
 # Handoff: onto-canon6 — 2026-04-01
 

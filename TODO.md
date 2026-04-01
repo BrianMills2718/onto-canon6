@@ -3,6 +3,39 @@
 ## Current 24h Execution Block
 
 Source of truth:
+- `docs/plans/0041_24h_full_chunk_transfer_parity_block.md`
+
+### Phase 1 — Freeze The Residual Contract
+- [x] Restate the Plan 0040 result as the incoming contract
+- [x] Enumerate the exact residual mismatches on chunks `002` and `003`
+- [x] Record the execution caveats (`PYTHONPATH=src`, run-id mapping)
+- [ ] Commit verified phase
+
+### Phase 2 — Reconstruct Prompt Surfaces
+- [ ] Reconstruct the live extraction prompt surface for a named chunk
+- [ ] Reconstruct the prompt-eval parity prompt surface for the same chunk
+- [ ] Save the exact message/context delta
+- [ ] Commit verified phase
+
+### Phase 3 — Land The Minimum Parity Aid
+- [ ] Implement the narrowest reproducible prompt-surface comparison helper
+- [ ] Add verification for the helper
+- [ ] Commit verified phase
+
+### Phase 4 — Classify The Dominant Residual
+- [ ] Run the parity aid on chunks `002` and `003`
+- [ ] Decide whether the dominant blocker is prompt/render contract or semantic extraction
+- [ ] Commit verified phase
+
+### Phase 5 — Closeout
+- [ ] Write the decision-grade parity note
+- [ ] Refresh docs/status/handoff
+- [ ] Mark execution block complete
+- [ ] Commit verified phase
+
+## Most Recent Completed 24h Execution Block
+
+Source of truth:
 - `docs/plans/0040_24h_extraction_transfer_certification_block.md`
 
 ### Phase 1 — Freeze The Certification Contract
@@ -23,18 +56,18 @@ Source of truth:
 - [x] Commit verified phase
 
 ### Phase 4 — Re-run The Certification Check
-- [ ] Build one current-generation full-chunk parity artifact for chunk `002`
-- [ ] Build or confirm one current-generation live compact-v4 reviewed chunk `002` artifact
-- [ ] Run the certification comparison on chunk `002`
+- [x] Build one current-generation full-chunk parity artifact for chunk `002`
+- [x] Build or confirm one current-generation live compact-v4 reviewed chunk `002` artifact
+- [x] Run the certification comparison on chunk `002`
 - [x] Run the certification comparison on chunk `003`
-- [ ] Decide whether the candidate clears or fails the transfer gate
-- [ ] Commit verified phase
+- [x] Decide whether the candidate clears or fails the transfer gate
+- [x] Commit verified phase
 
 ### Phase 5 — Closeout
-- [ ] Write the decision-grade certification note
-- [ ] Refresh docs/status/handoff
-- [ ] Mark execution block complete
-- [ ] Commit verified phase
+- [x] Write the decision-grade certification note
+- [x] Refresh docs/status/handoff
+- [x] Mark execution block complete
+- [x] Commit verified phase
 
 ## Most Recent Completed 24h Execution Block
 
@@ -74,10 +107,11 @@ Source of truth:
 Source of truth:
 - `docs/plans/0014_extraction_quality_baseline.md`
 
-- [ ] Turn the current compact operational-parity lane into one explicit certification decision
-- [ ] Keep chunk `002` as the positive control and chunk `003` as the prose-heavy stress case
-- [ ] Make the live-vs-parity gap reproducible instead of aggregate-only
-- [ ] Decide whether the current candidate is promotable or still transfer-blocked
+- [x] Turn the current compact operational-parity lane into one explicit certification decision
+- [x] Keep chunk `002` as the positive control and chunk `003` as the prose-heavy stress case
+- [x] Make the live-vs-parity gap reproducible instead of aggregate-only
+- [x] Decide whether the current candidate is promotable or still transfer-blocked
+- [ ] Narrow the remaining full-chunk prompt-eval/live residual into one dominant blocker family
 
 ## Longer-Term Queue
 

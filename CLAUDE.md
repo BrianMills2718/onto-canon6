@@ -20,13 +20,14 @@ runtime.
 12. `docs/plans/0037_24h_entity_resolution_false_split_cleanup_block.md` (completed Rodriguez/Washington cleanup block)
 13. `docs/plans/0038_24h_entity_resolution_surface_stability_block.md` (completed surface-stability block)
 14. `docs/plans/0039_24h_entity_resolution_rerun_stability_block.md` (completed rerun-stability block)
-15. `docs/plans/0040_24h_extraction_transfer_certification_block.md` (current active execution block)
-16. `docs/plans/0026_schema_stability_gate.md` (completed Lane 3 contract policy)
-17. `docs/plans/0014_extraction_quality_baseline.md` (active Lane 4 promotion gate)
-18. `docs/plans/0027_deferred_parity_reprioritization.md`
-19. `docs/plans/0028_query_browse_surface.md`
-20. `docs/plans/0005_v1_capability_parity_matrix.md`
-21. `docs/plans/0001_successor_roadmap.md`
+15. `docs/plans/0040_24h_extraction_transfer_certification_block.md` (completed certification decision block)
+16. `docs/plans/0041_24h_full_chunk_transfer_parity_block.md` (current active execution block)
+17. `docs/plans/0026_schema_stability_gate.md` (completed Lane 3 contract policy)
+18. `docs/plans/0014_extraction_quality_baseline.md` (active Lane 4 promotion gate)
+19. `docs/plans/0027_deferred_parity_reprioritization.md`
+20. `docs/plans/0028_query_browse_surface.md`
+21. `docs/plans/0005_v1_capability_parity_matrix.md`
+22. `docs/plans/0001_successor_roadmap.md`
 
 ## Commands
 
@@ -97,9 +98,12 @@ config/
   0039 is now also complete: fresh reruns `145141` and `152927` both restored
   `10/10` question accuracy while keeping precision `1.00` and false merges
   `0`, which is enough to close the rerun-stability gate. Plan 0025 is now
-  complete at its Phase 4 value-proof level. The current active bounded block
-  is Plan 0040, which moves the frontier back to Lane 4 extraction-transfer
-  certification.
+  complete at its Phase 4 value-proof level. Plan 0040 is now also complete:
+  chunk `002` proved positive live transfer for compact-v4, but chunk `003`
+  remained negative and full-chunk prompt-eval/live parity still diverged on
+  both named chunks. The current active bounded block is therefore Plan 0041,
+  which narrows that residual parity blocker instead of reopening broad prompt
+  churn.
   The chunk-level transfer evaluation requirement remains active through
   ADR 0023 and Plans 0024/0014 even though there is no standalone Plan 0019
   file.
@@ -130,12 +134,12 @@ config/
   not a suggestion: keep executing, keep rerunning, keep committing, and only
   stop when the active block is either complete or explicitly narrowed to a new
   documented blocker.
-- **Current execution rule for Plan 0040:** the next 24h sequence is already
-  pre-decided. Finish chunk `002` current-generation parity/live certification,
-  close Plan `0040` with a decision-grade extraction-transfer note, then
-  immediately activate the next bounded extraction block named by that
-  closeout. Do not pause after the closeout commit just to ask what comes next;
-  the answer must already be in the active docs.
+- **Current execution rule for Plan 0041:** the next 24h sequence is already
+  pre-decided. Localize the remaining full-chunk prompt-eval/live disagreement
+  on chunks `002` and `003`, close Plan `0041` with a decision-grade parity
+  note, then immediately activate the next bounded extraction block named by
+  that closeout. Do not pause after the closeout commit just to ask what comes
+  next; the answer must already be in the active docs.
 - **After the current value-proof work, the next-active deferred capability is
   queryability.** Plan 0027 now fixes the deferred-capability order, and Plan
   0028 now has a landed first read-only browse/search surface over promoted
@@ -269,7 +273,7 @@ happens.
 
 ## Active Execution Block (2026-04-01)
 
-**Plan 0040: 24h Extraction Transfer Certification Block — active until fully closed.**
+**Plan 0041: 24h Full-Chunk Transfer Parity Block — active until fully closed.**
 
 Within an active 24h execution block, the default operating mode is continuous
 execution: finish the current phase, verify it, commit it, update the active
@@ -291,7 +295,7 @@ verify it, commit it, log any uncertainty, and continue. Do not wait for
 
 The only valid stop conditions are:
 
-1. all 5 phases in `docs/plans/0040_24h_extraction_transfer_certification_block.md`
+1. all 5 phases in `docs/plans/0041_24h_full_chunk_transfer_parity_block.md`
    are complete and committed;
 2. a real blocker that cannot be resolved from repo context or the plan;
 3. a material uncertainty not covered by the pre-made decisions below.

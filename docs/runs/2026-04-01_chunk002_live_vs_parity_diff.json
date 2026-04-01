@@ -1,0 +1,462 @@
+{
+  "live_candidates": [
+    {
+      "claim_text": "Gen. Charles R. Holland held the role of Commander in USSOCOM.",
+      "evidence": [
+        "Gen. Charles R. Holland"
+      ],
+      "predicate": "oc:hold_command_role",
+      "roles": [
+        "commander:entity:Gen. Charles R. Holland",
+        "organization:entity:USSOCOM",
+        "role_title:value:Commander"
+      ]
+    },
+    {
+      "claim_text": "Gen. Bryan D. Brown held the role of Commander in USSOCOM.",
+      "evidence": [
+        "Gen. Bryan D. Brown"
+      ],
+      "predicate": "oc:hold_command_role",
+      "roles": [
+        "commander:entity:Gen. Bryan D. Brown",
+        "organization:entity:USSOCOM",
+        "role_title:value:Commander"
+      ]
+    },
+    {
+      "claim_text": "Adm. Eric T. Olson held the role of Commander in USSOCOM.",
+      "evidence": [
+        "Adm. Eric T. Olson"
+      ],
+      "predicate": "oc:hold_command_role",
+      "roles": [
+        "commander:entity:Adm. Eric T. Olson",
+        "organization:entity:USSOCOM",
+        "role_title:value:Commander"
+      ]
+    },
+    {
+      "claim_text": "Adm. William H. McRaven held the role of Commander in USSOCOM.",
+      "evidence": [
+        "Adm. William H. McRaven"
+      ],
+      "predicate": "oc:hold_command_role",
+      "roles": [
+        "commander:entity:Adm. William H. McRaven",
+        "organization:entity:USSOCOM",
+        "role_title:value:Commander"
+      ]
+    },
+    {
+      "claim_text": "Gen. Joseph L. Votel held the role of Commander in USSOCOM.",
+      "evidence": [
+        "Gen. Joseph L. Votel"
+      ],
+      "predicate": "oc:hold_command_role",
+      "roles": [
+        "commander:entity:Gen. Joseph L. Votel",
+        "organization:entity:USSOCOM",
+        "role_title:value:Commander"
+      ]
+    },
+    {
+      "claim_text": "The 4th PSYOP Group belongs to the Army organization.",
+      "evidence": [
+        "The 4th PSYOP Group, as the principal Army PSYOP unit"
+      ],
+      "predicate": "oc:belongs_to_organization",
+      "roles": [
+        "member:entity:4th PSYOP Group",
+        "organization:entity:Army"
+      ]
+    },
+    {
+      "claim_text": "The sensitive nature of their work limited the availability of names for PSYOP Group commanders.",
+      "evidence": [
+        "their names are not widely available in open literature due to the sensitive nature of their work"
+      ],
+      "predicate": "oc:limit_capability",
+      "roles": [
+        "capability:value:names",
+        "subject:entity:PSYOP Group",
+        "topic:value:sensitive nature of their work"
+      ]
+    },
+    {
+      "claim_text": "Operation Iraqi Freedom used the Joint PSYOP Task Force model.",
+      "evidence": [
+        "The Joint PSYOP Task Force model was employed to coordinate efforts across multiple coalition partners"
+      ],
+      "predicate": "oc:use_organizational_form",
+      "roles": [
+        "operation:entity:Operation Iraqi Freedom",
+        "organizational_form:entity:Joint PSYOP Task Force"
+      ]
+    },
+    {
+      "claim_text": "Joint PSYOP Task Forces (JPOTF) were established.",
+      "evidence": [
+        "the establishment of Joint PSYOP Task Forces (JPOTF)"
+      ],
+      "predicate": "oc:create_organizational_unit",
+      "roles": [
+        "created_unit:entity:Joint PSYOP Task Forces (JPOTF)"
+      ]
+    },
+    {
+      "claim_text": "A 2005 review by the National Defense University expressed concern about the need for better integration and improved effectiveness measurement in PSYOP.",
+      "evidence": [
+        "A 2005 review by the National Defense University highlighted both successes and persistent challenges in PSYOP, including the need for better integration with other elements of national power and improved measurement of effectiveness"
+      ],
+      "predicate": "oc:express_concern",
+      "roles": [
+        "speaker:entity:National Defense University",
+        "topic:value:the need for better integration with other elements of national power and improved measurement of effectiveness"
+      ]
+    }
+  ],
+  "only_live": [
+    {
+      "claim_text": "Gen. Charles R. Holland held the role of Commander in USSOCOM.",
+      "evidence": [
+        "Gen. Charles R. Holland"
+      ],
+      "predicate": "oc:hold_command_role",
+      "roles": [
+        "commander:entity:Gen. Charles R. Holland",
+        "organization:entity:USSOCOM",
+        "role_title:value:Commander"
+      ]
+    },
+    {
+      "claim_text": "Gen. Bryan D. Brown held the role of Commander in USSOCOM.",
+      "evidence": [
+        "Gen. Bryan D. Brown"
+      ],
+      "predicate": "oc:hold_command_role",
+      "roles": [
+        "commander:entity:Gen. Bryan D. Brown",
+        "organization:entity:USSOCOM",
+        "role_title:value:Commander"
+      ]
+    },
+    {
+      "claim_text": "Adm. Eric T. Olson held the role of Commander in USSOCOM.",
+      "evidence": [
+        "Adm. Eric T. Olson"
+      ],
+      "predicate": "oc:hold_command_role",
+      "roles": [
+        "commander:entity:Adm. Eric T. Olson",
+        "organization:entity:USSOCOM",
+        "role_title:value:Commander"
+      ]
+    },
+    {
+      "claim_text": "Adm. William H. McRaven held the role of Commander in USSOCOM.",
+      "evidence": [
+        "Adm. William H. McRaven"
+      ],
+      "predicate": "oc:hold_command_role",
+      "roles": [
+        "commander:entity:Adm. William H. McRaven",
+        "organization:entity:USSOCOM",
+        "role_title:value:Commander"
+      ]
+    },
+    {
+      "claim_text": "Gen. Joseph L. Votel held the role of Commander in USSOCOM.",
+      "evidence": [
+        "Gen. Joseph L. Votel"
+      ],
+      "predicate": "oc:hold_command_role",
+      "roles": [
+        "commander:entity:Gen. Joseph L. Votel",
+        "organization:entity:USSOCOM",
+        "role_title:value:Commander"
+      ]
+    },
+    {
+      "claim_text": "The 4th PSYOP Group belongs to the Army organization.",
+      "evidence": [
+        "The 4th PSYOP Group, as the principal Army PSYOP unit"
+      ],
+      "predicate": "oc:belongs_to_organization",
+      "roles": [
+        "member:entity:4th PSYOP Group",
+        "organization:entity:Army"
+      ]
+    },
+    {
+      "claim_text": "The sensitive nature of their work limited the availability of names for PSYOP Group commanders.",
+      "evidence": [
+        "their names are not widely available in open literature due to the sensitive nature of their work"
+      ],
+      "predicate": "oc:limit_capability",
+      "roles": [
+        "capability:value:names",
+        "subject:entity:PSYOP Group",
+        "topic:value:sensitive nature of their work"
+      ]
+    },
+    {
+      "claim_text": "Operation Iraqi Freedom used the Joint PSYOP Task Force model.",
+      "evidence": [
+        "The Joint PSYOP Task Force model was employed to coordinate efforts across multiple coalition partners"
+      ],
+      "predicate": "oc:use_organizational_form",
+      "roles": [
+        "operation:entity:Operation Iraqi Freedom",
+        "organizational_form:entity:Joint PSYOP Task Force"
+      ]
+    },
+    {
+      "claim_text": "A 2005 review by the National Defense University expressed concern about the need for better integration and improved effectiveness measurement in PSYOP.",
+      "evidence": [
+        "A 2005 review by the National Defense University highlighted both successes and persistent challenges in PSYOP, including the need for better integration with other elements of national power and improved measurement of effectiveness"
+      ],
+      "predicate": "oc:express_concern",
+      "roles": [
+        "speaker:entity:National Defense University",
+        "topic:value:the need for better integration with other elements of national power and improved measurement of effectiveness"
+      ]
+    }
+  ],
+  "only_prompt_eval": [
+    {
+      "claim_text": "Gen. Charles R. Holland held the role of Commander for USSOCOM.",
+      "evidence": [
+        "Gen. Charles R. Holland"
+      ],
+      "predicate": "oc:hold_command_role",
+      "roles": [
+        "commander:entity:Gen. Charles R. Holland",
+        "organization:entity:USSOCOM",
+        "role_title:value:Commander"
+      ]
+    },
+    {
+      "claim_text": "Gen. Bryan D. Brown held the role of Commander for USSOCOM.",
+      "evidence": [
+        "Gen. Bryan D. Brown"
+      ],
+      "predicate": "oc:hold_command_role",
+      "roles": [
+        "commander:entity:Gen. Bryan D. Brown",
+        "organization:entity:USSOCOM",
+        "role_title:value:Commander"
+      ]
+    },
+    {
+      "claim_text": "Adm. Eric T. Olson held the role of Commander for USSOCOM.",
+      "evidence": [
+        "Adm. Eric T. Olson"
+      ],
+      "predicate": "oc:hold_command_role",
+      "roles": [
+        "commander:entity:Adm. Eric T. Olson",
+        "organization:entity:USSOCOM",
+        "role_title:value:Commander"
+      ]
+    },
+    {
+      "claim_text": "Adm. William H. McRaven held the role of Commander for USSOCOM.",
+      "evidence": [
+        "Adm. William H. McRaven"
+      ],
+      "predicate": "oc:hold_command_role",
+      "roles": [
+        "commander:entity:Adm. William H. McRaven",
+        "organization:entity:USSOCOM",
+        "role_title:value:Commander"
+      ]
+    },
+    {
+      "claim_text": "Gen. Joseph L. Votel held the role of Commander for USSOCOM.",
+      "evidence": [
+        "Gen. Joseph L. Votel"
+      ],
+      "predicate": "oc:hold_command_role",
+      "roles": [
+        "commander:entity:Gen. Joseph L. Votel",
+        "organization:entity:USSOCOM",
+        "role_title:value:Commander"
+      ]
+    },
+    {
+      "claim_text": "The 4th PSYOP Group is a member of the Army PSYOP unit.",
+      "evidence": [
+        "The 4th PSYOP Group, as the principal Army PSYOP unit"
+      ],
+      "predicate": "oc:belongs_to_organization",
+      "roles": [
+        "member:entity:4th PSYOP Group",
+        "organization:entity:Army PSYOP unit"
+      ]
+    },
+    {
+      "claim_text": "Operation Enduring Freedom occurred in Afghanistan.",
+      "evidence": [
+        "Operation Enduring Freedom (Afghanistan)"
+      ],
+      "predicate": "oc:operation_occurs_in_location",
+      "roles": [
+        "location:value:Afghanistan",
+        "operation:entity:Operation Enduring Freedom"
+      ]
+    },
+    {
+      "claim_text": "Operation Iraqi Freedom occurred in Iraq.",
+      "evidence": [
+        "Operation Iraqi Freedom (Iraq)"
+      ],
+      "predicate": "oc:operation_occurs_in_location",
+      "roles": [
+        "location:value:Iraq",
+        "operation:entity:Operation Iraqi Freedom"
+      ]
+    },
+    {
+      "claim_text": "A 2005 review by the National Defense University expressed concern about the need for better integration with other elements of national power and improved measurement of effectiveness in PSYOP.",
+      "evidence": [
+        "A 2005 review by the National Defense University highlighted both successes and persistent challenges in PSYOP, including the need for better integration with other elements of national power and improved measurement of effectiveness"
+      ],
+      "predicate": "oc:express_concern",
+      "roles": [
+        "speaker:entity:National Defense University",
+        "topic:value:the need for better integration with other elements of national power and improved measurement of effectiveness"
+      ]
+    }
+  ],
+  "prompt_eval_candidates": [
+    {
+      "claim_text": "Gen. Charles R. Holland held the role of Commander for USSOCOM.",
+      "evidence": [
+        "Gen. Charles R. Holland"
+      ],
+      "predicate": "oc:hold_command_role",
+      "roles": [
+        "commander:entity:Gen. Charles R. Holland",
+        "organization:entity:USSOCOM",
+        "role_title:value:Commander"
+      ]
+    },
+    {
+      "claim_text": "Gen. Bryan D. Brown held the role of Commander for USSOCOM.",
+      "evidence": [
+        "Gen. Bryan D. Brown"
+      ],
+      "predicate": "oc:hold_command_role",
+      "roles": [
+        "commander:entity:Gen. Bryan D. Brown",
+        "organization:entity:USSOCOM",
+        "role_title:value:Commander"
+      ]
+    },
+    {
+      "claim_text": "Adm. Eric T. Olson held the role of Commander for USSOCOM.",
+      "evidence": [
+        "Adm. Eric T. Olson"
+      ],
+      "predicate": "oc:hold_command_role",
+      "roles": [
+        "commander:entity:Adm. Eric T. Olson",
+        "organization:entity:USSOCOM",
+        "role_title:value:Commander"
+      ]
+    },
+    {
+      "claim_text": "Adm. William H. McRaven held the role of Commander for USSOCOM.",
+      "evidence": [
+        "Adm. William H. McRaven"
+      ],
+      "predicate": "oc:hold_command_role",
+      "roles": [
+        "commander:entity:Adm. William H. McRaven",
+        "organization:entity:USSOCOM",
+        "role_title:value:Commander"
+      ]
+    },
+    {
+      "claim_text": "Gen. Joseph L. Votel held the role of Commander for USSOCOM.",
+      "evidence": [
+        "Gen. Joseph L. Votel"
+      ],
+      "predicate": "oc:hold_command_role",
+      "roles": [
+        "commander:entity:Gen. Joseph L. Votel",
+        "organization:entity:USSOCOM",
+        "role_title:value:Commander"
+      ]
+    },
+    {
+      "claim_text": "The 4th PSYOP Group is a member of the Army PSYOP unit.",
+      "evidence": [
+        "The 4th PSYOP Group, as the principal Army PSYOP unit"
+      ],
+      "predicate": "oc:belongs_to_organization",
+      "roles": [
+        "member:entity:4th PSYOP Group",
+        "organization:entity:Army PSYOP unit"
+      ]
+    },
+    {
+      "claim_text": "Operation Enduring Freedom occurred in Afghanistan.",
+      "evidence": [
+        "Operation Enduring Freedom (Afghanistan)"
+      ],
+      "predicate": "oc:operation_occurs_in_location",
+      "roles": [
+        "location:value:Afghanistan",
+        "operation:entity:Operation Enduring Freedom"
+      ]
+    },
+    {
+      "claim_text": "Operation Iraqi Freedom occurred in Iraq.",
+      "evidence": [
+        "Operation Iraqi Freedom (Iraq)"
+      ],
+      "predicate": "oc:operation_occurs_in_location",
+      "roles": [
+        "location:value:Iraq",
+        "operation:entity:Operation Iraqi Freedom"
+      ]
+    },
+    {
+      "claim_text": "Joint PSYOP Task Forces (JPOTF) were established.",
+      "evidence": [
+        "the establishment of Joint PSYOP Task Forces (JPOTF)"
+      ],
+      "predicate": "oc:create_organizational_unit",
+      "roles": [
+        "created_unit:entity:Joint PSYOP Task Forces (JPOTF)"
+      ]
+    },
+    {
+      "claim_text": "A 2005 review by the National Defense University expressed concern about the need for better integration with other elements of national power and improved measurement of effectiveness in PSYOP.",
+      "evidence": [
+        "A 2005 review by the National Defense University highlighted both successes and persistent challenges in PSYOP, including the need for better integration with other elements of national power and improved measurement of effectiveness"
+      ],
+      "predicate": "oc:express_concern",
+      "roles": [
+        "speaker:entity:National Defense University",
+        "topic:value:the need for better integration with other elements of national power and improved measurement of effectiveness"
+      ]
+    }
+  ],
+  "prompt_eval_item_id": "chunk_002_full_transfer_certification",
+  "prompt_eval_run_id": "111362e2bec4",
+  "shared": [
+    {
+      "claim_text": "Joint PSYOP Task Forces (JPOTF) were established.",
+      "evidence": [
+        "the establishment of Joint PSYOP Task Forces (JPOTF)"
+      ],
+      "predicate": "oc:create_organizational_unit",
+      "roles": [
+        "created_unit:entity:Joint PSYOP Task Forces (JPOTF)"
+      ]
+    }
+  ]
+}

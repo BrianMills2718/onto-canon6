@@ -163,3 +163,16 @@ reruns without reopening the fixed question set. The dominant residual families
 were descriptor-only `the Agency` and the `Washington D.C.` / `Washington` /
 `D.C.` place family. Treat those as follow-on quality work, not proof that the
 question-level rerun gate failed.
+
+### 2026-04-01 — codex — integration-issue
+When executing `onto-canon6` from the isolated worktree, `python -m onto_canon6`
+without `PYTHONPATH=src` can import the editable install from the main checkout
+instead of the worktree source tree. Plan 0040 produced invalid intermediate
+certification artifacts until the commands were rerun with `PYTHONPATH=src`.
+Treat this as a hard execution rule for future worktree-based runtime checks.
+
+### 2026-04-01 — codex — schema-gotcha
+Prompt-eval report `execution_id` is not the same key as
+`experiment_items.run_id` in the observability DB. For transfer-comparison
+work, recover the real per-variant `run_id` from `experiment_runs`
+(`config.variant_kwargs.prompt_ref`) before querying `experiment_items`.

@@ -14,7 +14,8 @@ This subtree owns active gaps, acceptance criteria, and verification notes.
 | 0025a | [Entity Resolution Scale-Out](0025a_entity_resolution_scale_out.md) | Deferred (activates after 0025 Phase 4) |
 | 0027 | [Deferred Parity Reprioritization](0027_deferred_parity_reprioritization.md) | Active (Lane 5 execution surface; next-active order now explicit) |
 | 0028 | [Query And Browse Surface](0028_query_browse_surface.md) | Active (first read-only slice landed and proved; wider hardening still open) |
-| 0040 | [24h Extraction Transfer Certification Block](0040_24h_extraction_transfer_certification_block.md) | Active (bounded Lane 4 certification block for the current compact operational-parity lane) |
+| 0041 | [24h Full-Chunk Transfer Parity Block](0041_24h_full_chunk_transfer_parity_block.md) | Active (bounded Lane 4 parity-localization block after 0040 certification closeout) |
+| 0040 | [24h Extraction Transfer Certification Block](0040_24h_extraction_transfer_certification_block.md) | Complete (chunk 002 positive control proved; compact lane still not promotable) |
 | 0030 | [24h Entity Resolution Value-Proof Block](0030_24h_entity_resolution_value_proof_block.md) | Complete (Plan 0025 now has decision-grade evidence) |
 | 0031 | [24h Entity Resolution Hardening Block](0031_24h_entity_resolution_hardening_block.md) | Complete (judge parity fixed, false-merge family removed, rerun decision recorded) |
 | 0032 | [24h Entity Resolution Recall Recovery Block](0032_24h_entity_resolution_recall_recovery_block.md) | Complete (gate-clearing rerun landed; docs survived, recall and answerability improved) |

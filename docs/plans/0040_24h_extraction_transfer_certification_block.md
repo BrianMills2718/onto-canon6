@@ -1,12 +1,12 @@
 # 24h Extraction Transfer Certification Block
 
-Status: active
+Status: complete
 Phase status:
 - Phase 1 completed
-- Phase 2 in progress
+- Phase 2 completed
 - Phase 3 completed
-- Phase 4 in progress
-- Phase 5 pending
+- Phase 4 completed
+- Phase 5 completed
 
 Last updated: 2026-04-01
 Workstream: convert Plan `0014` from diffuse transfer-gap tracking into one
@@ -248,6 +248,22 @@ language.
 
 1. top-level docs describe the extraction-transfer decision truthfully;
 2. the next extraction step, if any, is narrowed to one explicit blocker.
+
+Progress note:
+
+1. closeout note landed in:
+   `docs/runs/2026-04-01_extraction_transfer_certification.md`
+2. chunk `002` now has current-generation compact-v4 certification artifacts:
+   - full-chunk prompt-eval parity report
+   - positive live transfer report
+   - live-vs-parity diff
+3. the decision is now explicit:
+   - the current compact operational-parity lane is **not promotable**
+   - chunk `003` remains negative on the live path
+   - chunk `002` is positive on the live path but still diverges materially
+     from prompt-eval parity at the artifact level
+4. the named next block is:
+   `docs/plans/0041_24h_full_chunk_transfer_parity_block.md`
 
 ## Failure Modes
 

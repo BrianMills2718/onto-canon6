@@ -30,8 +30,11 @@ Current post-cutover program state:
 6. Plan 0039 proved rerun stability at the question/safety gate with two fresh
    reruns (`145141`, `152927`) that both held `10/10` question accuracy,
    precision `1.00`, and false merges `0`;
-7. the remaining active program gate is now Lane 4 extraction-transfer
-   certification under Plan `0014`, not another entity-resolution rerun block.
+7. Plan `0040` is now complete and decided the compact operational-parity lane
+   is not yet promotable;
+8. the remaining active program gate is now Lane 4 full-chunk
+   prompt-eval/live parity localization under Plans `0014` and `0041`, not
+   another entity-resolution rerun block.
 
 ## What Is Proven
 

@@ -81,9 +81,18 @@ Every future prompt/model promotion must cite:
 ### Current policy consequence
 
 No compact-family candidate is eligible to replace the live repo-default
-extraction prompt yet. The current blocker is still negative or mixed
-full-chunk transfer on prose-heavy chunk 003 despite better bounded prompt-eval
-results.
+extraction prompt yet.
+
+Plan `0040` narrowed the blocker more precisely than before:
+
+1. chunk `002` is now a positive live compact-v4 transfer case;
+2. chunk `003` remains a negative live compact-v4 transfer case; and
+3. full-chunk prompt-eval/live parity still diverges materially on both named
+   chunks, so prompt-eval cannot certify promotion by itself.
+
+The current blocker is therefore no longer "missing positive-control transfer
+evidence." The current blocker is the residual full-chunk prompt-eval/live
+parity gap now tracked under Plan `0041`.
 
 ## Current State
 
