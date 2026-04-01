@@ -676,6 +676,22 @@ def score_value_proof_questions(
             mention_index,
             question.mention,
         )
+        note = "scored from uniquely matched promoted observation(s)"
+        if len(predicted_ground_truth_ids) != 1:
+            cluster_ids = _observed_cluster_ids_for_mention(
+                mention_index,
+                question.mention,
+            )
+            if len(cluster_ids) == 1:
+                predicted_ground_truth_ids = _ground_truth_ids_for_cluster_ids(
+                    mention_index,
+                    cluster_ids,
+                )
+                if len(predicted_ground_truth_ids) == 1:
+                    note = (
+                        "scored from a unique predicted cluster backed by matched "
+                        "promoted observations"
+                    )
         if len(predicted_ground_truth_ids) != 1:
             results.append(
                 QuestionScoreRecord(
@@ -701,7 +717,7 @@ def score_value_proof_questions(
                     == question.expected_ground_truth_entity_id
                 ),
                 predicted_ground_truth_entity_id=predicted_ground_truth_entity_id,
-                note="scored from uniquely matched promoted observation(s)",
+                note=note,
             )
         )
     return tuple(results)
@@ -847,6 +863,21 @@ def _cluster_ids_for_mention(
     return cluster_ids
 
 
+def _observed_cluster_ids_for_mention(
+    mention_index: dict[str, tuple[EntityObservation, ...]],
+    mention: str,
+) -> set[str]:
+    """Return predicted cluster ids for one mention from all surfaced observations."""
+
+    cluster_ids: set[str] = set()
+    for lookup_key in _lookup_keys_for_mention(mention):
+        cluster_ids.update(
+            observation.predicted_cluster_id
+            for observation in mention_index.get(lookup_key, ())
+        )
+    return cluster_ids
+
+
 def _ground_truth_ids_for_mention(
     mention_index: dict[str, tuple[EntityObservation, ...]],
     mention: str,
@@ -861,6 +892,26 @@ def _ground_truth_ids_for_mention(
             if observation.match_status == "matched"
             and observation.matched_ground_truth_entity_id is not None
         )
+    return ground_truth_ids
+
+
+def _ground_truth_ids_for_cluster_ids(
+    mention_index: dict[str, tuple[EntityObservation, ...]],
+    cluster_ids: set[str],
+) -> set[str]:
+    """Return matched ground-truth ids supported by one predicted cluster set."""
+
+    if not cluster_ids:
+        return set()
+    ground_truth_ids: set[str] = set()
+    for observation_list in mention_index.values():
+        for observation in observation_list:
+            if (
+                observation.predicted_cluster_id in cluster_ids
+                and observation.match_status == "matched"
+                and observation.matched_ground_truth_entity_id is not None
+            ):
+                ground_truth_ids.add(observation.matched_ground_truth_entity_id)
     return ground_truth_ids
 
 

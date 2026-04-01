@@ -1443,13 +1443,18 @@ def _collapse_equivalent_llm_groups(
         if not group:
             continue
         representative_name = name_map.get(group[0], group[0])
-        if _entity_resolution_family(entity_types.get(group[0], ""), representative_name) != "place":
+        representative_family = _entity_resolution_family(
+            entity_types.get(group[0], ""),
+            representative_name,
+        )
+        if representative_family not in {"place", "unknown"}:
             continue
         place_bridge_info = _place_group_bridge_info(group, name_map=name_map)
         if place_bridge_info is None:
             continue
-        for district_head in place_bridge_info.district_heads:
-            place_keys_by_district_head[district_head].append(key)
+        if representative_family == "place":
+            for district_head in place_bridge_info.district_heads:
+                place_keys_by_district_head[district_head].append(key)
         for token in place_bridge_info.single_token_places:
             place_keys_by_single_token[token].append(key)
 

@@ -559,3 +559,57 @@ def test_score_value_proof_questions_uses_installation_equivalence_lookup_keys()
     assert scores[0].answered is True
     assert scores[0].correct is True
     assert scores[0].predicted_answer is True
+
+
+def test_score_value_proof_questions_uses_cluster_backed_ground_truth_for_canonical_entity() -> None:
+    """Canonical-entity questions can inherit one unique matched id from the resolved cluster."""
+
+    questions = ValueProofQuestionFixture.model_validate(
+        {
+            "description": "questions",
+            "questions": [
+                {
+                    "question_id": "q_cluster_backed",
+                    "kind": "canonical_entity",
+                    "prompt": "canonical?",
+                    "mention": "Gen. J. Smith",
+                    "expected_ground_truth_entity_id": "E001",
+                },
+            ],
+        }
+    )
+    observations = (
+        EntityObservation(
+            entity_id="ent_john",
+            entity_type="oc:person",
+            first_candidate_id="cand_john",
+            predicted_cluster_id="cluster_e001",
+            observed_names=("General John Smith",),
+            source_refs=("doc_20",),
+            matched_ground_truth_entity_id="E001",
+            match_status="matched",
+            match_reason="matched",
+            candidate_ground_truth_entity_ids=("E001",),
+        ),
+        EntityObservation(
+            entity_id="ent_initial",
+            entity_type=None,
+            first_candidate_id="cand_initial",
+            predicted_cluster_id="cluster_e001",
+            observed_names=("J. Smith",),
+            source_refs=("doc_20",),
+            matched_ground_truth_entity_id=None,
+            match_status="ambiguous",
+            match_reason="ambiguous",
+            candidate_ground_truth_entity_ids=("E001", "E011"),
+        ),
+    )
+
+    scores = score_value_proof_questions(
+        observations=observations,
+        questions=questions,
+    )
+
+    assert scores[0].answered is True
+    assert scores[0].correct is True
+    assert scores[0].predicted_ground_truth_entity_id == "E001"
