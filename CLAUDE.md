@@ -14,13 +14,14 @@ runtime.
 6. `docs/plans/0031_24h_entity_resolution_hardening_block.md` (completed hardening block)
 7. `docs/plans/0032_24h_entity_resolution_recall_recovery_block.md` (completed recall-recovery block)
 8. `docs/plans/0033_24h_entity_resolution_answerability_block.md` (completed answerability block)
-9. `docs/plans/0034_24h_entity_resolution_clean_measurement_block.md` (current active execution block)
-10. `docs/plans/0026_schema_stability_gate.md` (completed Lane 3 contract policy)
-11. `docs/plans/0014_extraction_quality_baseline.md` (active Lane 4 promotion gate)
-12. `docs/plans/0027_deferred_parity_reprioritization.md`
-13. `docs/plans/0028_query_browse_surface.md`
-14. `docs/plans/0005_v1_capability_parity_matrix.md`
-15. `docs/plans/0001_successor_roadmap.md`
+9. `docs/plans/0034_24h_entity_resolution_clean_measurement_block.md` (completed clean-measurement block)
+10. `docs/plans/0035_24h_entity_resolution_alias_family_completion_block.md` (current active execution block)
+11. `docs/plans/0026_schema_stability_gate.md` (completed Lane 3 contract policy)
+12. `docs/plans/0014_extraction_quality_baseline.md` (active Lane 4 promotion gate)
+13. `docs/plans/0027_deferred_parity_reprioritization.md`
+14. `docs/plans/0028_query_browse_surface.md`
+15. `docs/plans/0005_v1_capability_parity_matrix.md`
+16. `docs/plans/0001_successor_roadmap.md`
 
 ## Commands
 
@@ -76,12 +77,13 @@ config/
   materially improved recall and answerability, and cleared its declared gate
   with precision `1.00`, recall `0.615`, false merges `0`, answer rate `0.50`,
   and accuracy `0.40`. Plan 0033 is now complete: it recovered alias-surface
-  coverage, localized the remaining miss, and showed that the next blocker is
-  a clean measurement run rather than broad new clustering churn. The active
-  bounded block is now Plan 0034, which targets measurement hygiene first,
-  then the bounded institution-family compatibility gap, and only then a
-  conditional installation-equivalence repair if a clean rerun still leaves
-  `q04` wrong.
+  coverage, localized the remaining miss, and showed that the next blocker was
+  a clean measurement run rather than broad new clustering churn. Plan 0034 is
+  now also complete: it restored a valid `25/25` clean rerun, improved recall
+  to `0.746`, and narrowed the remaining work to three residual alias families.
+  The active bounded block is now Plan 0035, which owns exactly those three
+  residual misses: generic organization-type drift, government-agency family
+  drift, and bounded installation rename equivalence.
   The chunk-level transfer evaluation requirement remains active through
   ADR 0023 and Plans 0024/0014 even though there is no standalone Plan 0019
   file.
@@ -236,7 +238,14 @@ happens.
 
 ## Active Execution Block (2026-04-01)
 
-**Plan 0034: 24h Entity Resolution Clean Measurement Block — active until fully closed.**
+**Plan 0035: 24h Entity Resolution Alias-Family Completion Block — active until fully closed.**
+
+Within an active 24h execution block, the default operating mode is continuous
+execution: finish the current phase, verify it, commit it, update the active
+plan / TODO surface, then continue immediately into the next declared phase.
+Do not stop because a smaller slice is complete. If a real uncertainty remains,
+log it in the active plan, decision note, TODO, or KNOWLEDGE file and continue
+unless it creates a genuine blocker.
 
 Execute continuously and do not pause between phases. Finish the current
 phase, update the plan/TODO surfaces, commit the verified increment, and move

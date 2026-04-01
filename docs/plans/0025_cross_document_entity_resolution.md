@@ -44,19 +44,19 @@ surface:
 
 ### What is still unresolved
 
-The plan's harness and metrics gap is now closed, and the first hardening block
-after the value proof is also complete. The strategy decision is still
-unresolved, but the blocking failure family is now much narrower.
+The plan's harness and metrics gap is now closed, and the next hardening pass
+is now strictly about three remaining alias families rather than broad
+measurement validity.
 
 The current question is no longer "can the repo score resolution quality?" It
 can. The current question is now narrower:
 
-1. can the LLM strategy recover alias-heavy merges without regressing the new
-   zero-false-merge safety floor;
-2. can organization and installation alias handling catch up enough to improve
-   recall and unique-cluster answerability;
-3. can the extraction/schema failure family that dropped `doc_06` in the
-   hardened LLM rerun be removed before the next comparison run.
+1. can the LLM strategy close the three remaining residual misses without
+   regressing the new zero-false-merge safety floor;
+2. can organization-family drift (`government_agency`,
+   missing / generic organization types) be repaired conservatively;
+3. can one bounded installation rename equivalence close the remaining
+   `Ft. Bragg` / `Fort Liberty` split.
 
 The completed value-proof block and the follow-on hardening block showed:
 
@@ -66,24 +66,29 @@ The completed value-proof block and the follow-on hardening block showed:
    merges, but it is not yet promotable as the default because recall and
    fixed-question answerability remain too weak.
 
-Latest decision artifact:
+Latest decision artifacts:
 
 1. `docs/runs/2026-04-01_entity_resolution_hardening_rerun.md`
-2. `docs/plans/0032_24h_entity_resolution_recall_recovery_block.md` is now
+2. `docs/runs/2026-04-01_entity_resolution_clean_measurement.md`
+3. `docs/plans/0032_24h_entity_resolution_recall_recovery_block.md` is now
    completed with a successful bounded rerun:
    - precision `1.00`
    - recall `0.615`
    - false merges `0`
    - answer rate `0.50`
    - accuracy over all questions `0.40`
-3. the next bounded pass is now
+4. the next bounded pass is now
    `docs/plans/0033_24h_entity_resolution_answerability_block.md`, which
    localized the remaining miss through a failed-measurement rerun;
-4. the next bounded pass is now
+5. the next bounded pass is now
    `docs/plans/0034_24h_entity_resolution_clean_measurement_block.md`, which
-   owns clean-rerun recovery, the institution-family compatibility gap, and
-   conditional installation-equivalence repair only if a clean rerun still
-   leaves `q04` wrong.
+   restored a valid `25/25` rerun and localized the remaining residual misses;
+6. the current bounded pass is now
+   `docs/plans/0035_24h_entity_resolution_alias_family_completion_block.md`,
+   which owns the three remaining residual misses:
+   - `q02` generic / missing organization-type drift
+   - `q04` bounded installation rename equivalence
+   - `q08` `government_agency` ↔ `government_organization` family drift
 
 ## What Exists Today
 

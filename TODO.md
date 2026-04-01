@@ -3,34 +3,32 @@
 ## Current 24h Execution Block
 
 Source of truth:
-- `docs/plans/0034_24h_entity_resolution_clean_measurement_block.md`
+- `docs/plans/0035_24h_entity_resolution_alias_family_completion_block.md`
 
-### Phase 1 — Freeze The Clean-Measurement Contract
-- [x] Record the Plan 0033 outcome and activate Plan 0034
-- [x] Freeze the remaining failure classes and thresholds
-- [x] Commit verified phase
-
-### Phase 2 — Harden Measurement Hygiene
-- [x] Localize run-scale extraction failure handling
-- [x] Add bounded failed-doc retry behavior
-- [x] Add/update focused tests
-- [x] Commit verified phase
-
-### Phase 3 — Repair Institution-Family Compatibility
-- [x] Land the bounded `university` / institution family fix
-- [x] Add/update targeted tests
-- [x] Keep the existing safety families green
+### Phase 1 — Freeze The Residual Failure Contract
+- [ ] Record the Plan 0034 clean-measurement baseline and activate Plan 0035
+- [ ] Freeze the three residual failure families and thresholds
 - [ ] Commit verified phase
 
-### Phase 4 — Run One Clean Rerun
+### Phase 2 — Repair Organization-Family Drift
+- [ ] Add `government_agency` ↔ `government_organization` compatibility
+- [ ] Add bounded name-aware organization-family inference for missing / generic entity types
+- [ ] Add/update targeted tests
+- [ ] Commit verified phase
+
+### Phase 3 — Land The Bounded Installation-Equivalence Repair
+- [ ] Localize the surviving `Ft. Bragg` / `Fort Liberty` split at the grouping level
+- [ ] Add one bounded installation rename / redesignation repair
+- [ ] Add/update targeted tests
+- [ ] Commit verified phase
+
+### Phase 4 — Rerun The Value Proof
 - [ ] Rerun LLM strategy on a fresh DB
 - [ ] Verify 25/25 document survival from the DB
-- [ ] Decide whether installation-equivalence work is still needed
+- [ ] Check the gate for `q02`, `q04`, and `q08`
 - [ ] Commit verified phase
 
-### Phase 5 — Conditional Installation-Equivalence Repair And Closeout
-- [ ] If needed, add the bounded `Ft. Bragg` / `Fort Liberty` repair
-- [ ] Rerun after the repair if Phase 4 still misses `q04`
+### Phase 5 — Closeout
 - [ ] Refresh docs/status/handoff
 - [ ] Mark execution block complete
 - [ ] Commit verified phase
@@ -73,11 +71,10 @@ Source of truth:
 Source of truth:
 - `docs/plans/0025_cross_document_entity_resolution.md`
 
-- [ ] Make the value-proof harness robust against transient failed-doc runs
-- [ ] Repair `oc:university` / educational-institution compatibility
-- [ ] Get one clean 25/25 answerability rerun on the fixed corpus
-- [ ] Decide whether bounded installation-equivalence work is still needed only
-      after the clean rerun
+- [ ] Close the three residual misses from the clean-measurement baseline (`q02`, `q04`, `q08`)
+- [ ] Preserve the `25/25` extraction-survival baseline while rerunning
+- [ ] Keep precision at or above `0.95` with zero false merges
+- [ ] Refresh the decision note and close the active 24h block truthfully
 
 ## Longer-Term Queue
 

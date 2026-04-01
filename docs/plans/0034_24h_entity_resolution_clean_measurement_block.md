@@ -1,12 +1,12 @@
 # 24h Entity Resolution Clean Measurement Block
 
-Status: active
+Status: completed
 Phase status:
 - Phase 1 completed
 - Phase 2 completed
 - Phase 3 completed
-- Phase 4 pending
-- Phase 5 pending
+- Phase 4 completed
+- Phase 5 completed
 
 Last updated: 2026-04-01
 Workstream: clean-rerun recovery after Plan 0033 localized the remaining misses
@@ -200,6 +200,35 @@ Landed changes:
 3. the artifact is sufficient to decide whether installation-equivalence work
    is still needed.
 
+#### Outcome
+
+Completed on 2026-04-01.
+
+Clean rerun artifact:
+
+1. `docs/runs/scale_test_llm_2026-04-01_100114.json`
+2. `docs/runs/2026-04-01_entity_resolution_clean_measurement.md`
+
+Verified outcome:
+
+1. `25/25` source documents survived extraction;
+2. pairwise precision improved to `1.00`;
+3. pairwise recall improved to `0.746`;
+4. false merges stayed at `0`;
+5. answer rate rose to `0.80`;
+6. accuracy over all questions rose to `0.70`.
+
+The rerun was therefore measurement-valid, and the remaining misses became
+precise enough to hand off to a narrower follow-on repair block:
+
+1. `q02`: one `U.S. Special Operations Command` observation remained in a
+   separate predicted cluster because it carried a generic / missing entity type;
+2. `q04`: `Ft. Bragg` and `Fort Liberty` still remained split across place-like
+   installation mentions;
+3. `q08`: `the Agency` still failed ground-truth matching because the observed
+   `oc:government_agency` family did not match the ground-truth
+   `oc:government_organization` family.
+
 ### Phase 5: Conditional Installation-Equivalence Repair And Closeout
 
 #### Tasks
@@ -218,6 +247,24 @@ Landed changes:
    remaining miss explicit and localized;
 2. top-level docs describe the current decision truthfully;
 3. the worktree is left clean with committed checkpoints only.
+
+#### Outcome
+
+Completed on 2026-04-01.
+
+The clean rerun did not clear the full gate, but it satisfied the block's
+fallback completion rule: the remaining miss family is explicit and localized.
+Rather than broadening this block ad hoc, the repo now moves into a narrower
+follow-on repair block:
+
+1. `docs/plans/0035_24h_entity_resolution_alias_family_completion_block.md`
+
+That next block owns the three remaining failure families under one bounded
+contract:
+
+1. generic / missing organization-type drift (`q02`);
+2. government-agency vs government-organization family drift (`q08`);
+3. bounded installation rename equivalence (`q04`).
 
 ## Failure Modes
 
