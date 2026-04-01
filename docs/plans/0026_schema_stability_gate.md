@@ -301,6 +301,53 @@ The following are explicitly insufficient:
 3. an adapter test with no consumer-side proof for a consumer-facing seam;
 4. saying a surface is "schema-stable" without naming which fields are gated.
 
+## Phase 2 Decision Update (2026-03-31)
+
+Phase 2 now has a concrete artifact layout. The compatibility artifacts will
+live under `tests/fixtures/compatibility/` with one directory per gated
+surface.
+
+### Artifact Inventory
+
+| Surface | Compatibility artifact | Owner test/check | Normalization rules |
+|---------|------------------------|------------------|---------------------|
+| Surface A — promoted graph typed surface | `tests/fixtures/compatibility/promoted_graph/minimal_promotion_result.json` | `tests/core/test_graph_service.py` | normalize generated ids and timestamps: `assertion_id`, `source_candidate_id`, `first_candidate_id`, `promoted_at`, `created_at` |
+| Surface B — governed bundle surface | `tests/fixtures/compatibility/governed_bundle/minimal_governed_bundle.json` | `tests/surfaces/test_governed_bundle.py` with secondary CLI/MCP coverage in `tests/integration/test_mcp_server.py` | normalize `generated_at`, candidate/proposal/artifact ids, overlay-application ids, epistemic timestamps, and any temp-path-like values |
+| Surface C — Foundation Assertion IR export | `tests/fixtures/compatibility/foundation_ir/minimal_foundation_assertion.json` | `tests/adapters/test_foundation_assertion_export.py` with temporal coverage in `tests/pipeline/test_temporal_qualifiers.py` | no timestamp normalization by default; keep deterministic helper ids and sorted alias lists |
+| Surface D — DIGIMON v1 export seam | `tests/fixtures/compatibility/digimon_v1/minimal_entities.jsonl` and `tests/fixtures/compatibility/digimon_v1/minimal_relationships.jsonl` | `tests/adapters/test_digimon_export.py` plus DIGIMON `tests/unit/test_onto_canon_import.py` | fixture pair should be deterministic; real-data proof notes do not replace the fixture pair |
+
+### Artifact Design Decisions
+
+1. **Surface A snapshots the promotion result, not the raw DB.**
+   The artifact represents the typed promotion surface consumed by adapters and
+   reports, not internal SQLite rows.
+2. **Surface B snapshots the Python bundle export shape, not the CLI text
+   rendering.**
+   CLI and MCP checks remain secondary path verification over the same typed
+   structure.
+3. **Surface C uses one minimal deterministic assertion fixture, with temporal
+   qualifiers covered by the existing temporal test instead of a second
+   snapshot.**
+4. **Surface D uses a fixture pair because the contract is intrinsically a
+   two-file seam.**
+   That pair is the compatibility artifact.
+5. **Real proof artifacts remain supplemental evidence only.**
+   The Shield AI export/import proof is important, but Lane 3's baseline gate
+   needs deterministic local artifacts first.
+
+### Normalization Policy
+
+1. normalize generated identifiers when the value is an implementation detail
+   rather than a contract field;
+2. preserve identifiers when they are the contract field under test
+   (for example Foundation `assertion_id` in the minimal deterministic helper);
+3. strip timestamps and temp paths from snapshots unless the timestamp field is
+   itself contractual;
+4. sort unordered collections before writing snapshots when the surface does not
+   promise insertion order;
+5. keep role ordering and JSONL row ordering stable whenever the consumer
+   currently relies on deterministic order.
+
 ## Execution Plan
 
 ### Phase 0: Freeze The Surface Inventory
@@ -330,20 +377,18 @@ The following are explicitly insufficient:
 
 ### Phase 2: Define Minimal Compatibility Artifacts
 
-1. choose one deterministic compatibility artifact per surface:
-   - Surface A: promoted-graph compatibility fixture or seeded-service report
-   - Surface B: governed-bundle JSON fixture or normalized snapshot
-   - Surface C: Foundation assertion JSON fixture
-   - Surface D: DIGIMON export JSONL fixture and the existing real-data proof
-2. define how volatile fields will be normalized:
-   timestamps, generated_at, temp paths, and nondeterministic IDs if any;
-3. decide whether snapshots live under `tests/fixtures/compatibility/` or
-   equivalent.
+1. create the artifact files listed in the Phase 2 decision table;
+2. implement the normalization policy above in reusable helper code if needed;
+3. keep all baseline compatibility artifacts under
+   `tests/fixtures/compatibility/`;
+4. use real proof artifacts only as supplemental evidence, not as the sole
+   compatibility gate.
 
 **Acceptance**
 
-1. each surface has one named compatibility artifact strategy;
-2. normalization rules are pre-decided before implementation.
+1. each surface has one named compatibility artifact path;
+2. normalization rules are pre-decided before implementation;
+3. future implementation does not need to decide where fixtures live.
 
 ### Phase 3: Implement The Minimum Gate
 
@@ -398,10 +443,9 @@ must not claim completion without at least these classes of evidence.
 ## Open Questions / Uncertainty Tracking
 
 ### Q1: Should Lane 3 snapshot raw JSON outputs or normalize them first?
-**Status:** Open
-**Decision pressure:** Medium
-**Current default:** normalize volatile fields first; do not snapshot raw temp
-paths or timestamps.
+**Status:** Resolved
+**Decision:** normalize volatile fields first; do not snapshot raw temp paths
+or timestamps.
 
 ### Q2: Does Surface A need a dedicated compatibility fixture beyond `test_graph_service.py`?
 **Status:** Open
