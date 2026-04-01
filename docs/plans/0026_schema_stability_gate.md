@@ -5,6 +5,23 @@ Status: active
 Last updated: 2026-03-31
 Workstream: Lane 3 of the post-cutover program
 
+## Current State (2026-03-31)
+
+Phase 2 and the minimum Phase 3 gate are now implemented in this repo:
+
+1. deterministic compatibility artifacts exist under
+   `tests/fixtures/compatibility/` for all four gated surfaces;
+2. owner checks load those artifacts through `tests/compatibility_helpers.py`;
+3. the current baseline verification command is:
+   `pytest -q tests/core/test_graph_service.py tests/surfaces/test_governed_bundle.py tests/adapters/test_foundation_assertion_export.py tests/adapters/test_digimon_export.py`
+
+Lane 3 is still active because two things remain open:
+
+1. Q3: whether the DIGIMON consumer proof should become an automated
+   cross-repo check;
+2. Phase 4: classification and release-note policy for future
+   breaking/compatibility-risking changes.
+
 ## Purpose
 
 Turn Lane 3 of [0024_post_cutover_program.md](0024_post_cutover_program.md)
@@ -390,6 +407,8 @@ surface.
 2. normalization rules are pre-decided before implementation;
 3. future implementation does not need to decide where fixtures live.
 
+**Implementation status (2026-03-31): complete**
+
 ### Phase 3: Implement The Minimum Gate
 
 1. add or tighten the owner checks so each surface has at least one explicit
@@ -424,6 +443,8 @@ surface.
 
 1. every surface has one runnable compatibility owner check;
 2. Lane 3 can point to actual commands/tests instead of intentions.
+
+**Implementation status (2026-03-31): minimum gate complete**
 
 ### Phase 4: Classify Future Changes
 

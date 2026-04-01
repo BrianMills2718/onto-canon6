@@ -188,6 +188,13 @@ on them.
 This lane now executes through
 [0026_schema_stability_gate.md](0026_schema_stability_gate.md).
 
+#### Current State
+
+The minimum in-repo compatibility gate is now landed for the four named Lane 3
+surfaces. Lane 3 remains active until the DIGIMON consumer-proof automation
+question is resolved and the change-classification/release-note policy is
+written down.
+
 #### Tasks
 
 1. choose the contract surfaces that matter:

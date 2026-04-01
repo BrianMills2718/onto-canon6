@@ -50,3 +50,11 @@ another. The ontology pack should normalize these (military_organization is a
 subtype of organization) but the type guard in entity resolution treats them as
 different types, preventing merge. The type guard should use type hierarchy
 (is-a relationship) not exact match.
+
+### 2026-03-31 — codex — schema-gotcha
+Compatibility fixtures for governed exports cannot snapshot raw serialized
+objects directly because generated ids, timestamps, and temp-path-like values
+drift even when the contract shape is stable. Lane 3 now normalizes those
+volatile fields in `tests/compatibility_helpers.py` before comparing snapshots;
+future compatibility fixtures should reuse that helper instead of embedding raw
+volatile values.
