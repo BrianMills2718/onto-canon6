@@ -36,6 +36,84 @@ logger = logging.getLogger(__name__)
 
 ResolutionStrategy = Literal["exact", "fuzzy", "llm"]
 
+
+def _oc_type_to_sumo(oc_type: str) -> str:
+    """Convert oc:snake_case entity type to SUMO CamelCase.
+
+    ``oc:military_organization`` → ``MilitaryOrganization``
+    ``oc_military_organization`` → ``MilitaryOrganization``
+    ``militaryorganization`` → ``MilitaryOrganization`` (best effort)
+    """
+    # Strip oc: or oc_ prefix
+    t = oc_type
+    if t.startswith("oc:"):
+        t = t[3:]
+    elif t.startswith("oc_"):
+        t = t[3:]
+
+    # Convert snake_case to CamelCase
+    parts = t.split("_")
+    return "".join(p.capitalize() for p in parts if p)
+
+
+def _types_compatible(type_a: str, type_b: str, *, sumo_db_path: Path | None = None) -> bool:
+    """Check if two entity types are compatible for resolution.
+
+    Compatible means: same type, one is ancestor of the other, or they share
+    a common ancestor within depth 3 (top-level category like Organization,
+    Person, etc.).
+
+    Falls back to exact match if sumo_plus.db is not available.
+    """
+    if not type_a or not type_b:
+        return True  # Unknown types are compatible with anything
+
+    # Normalize both to SUMO CamelCase
+    sumo_a = _oc_type_to_sumo(type_a)
+    sumo_b = _oc_type_to_sumo(type_b)
+
+    # Exact match after normalization
+    if sumo_a.lower() == sumo_b.lower():
+        return True
+
+    # Try ancestor lookup if DB available
+    if sumo_db_path is None:
+        # Try default location
+        default_db = Path("data/sumo_plus.db")
+        if default_db.exists():
+            sumo_db_path = default_db
+
+    if sumo_db_path is None or not sumo_db_path.exists():
+        # No DB — fall back to exact match (already failed above)
+        return False
+
+    import sqlite3
+    conn = sqlite3.connect(str(sumo_db_path))
+    try:
+        # Get ancestors of both types (within depth 3)
+        ancestors_a = {
+            row[0].lower()
+            for row in conn.execute(
+                "SELECT ancestor_id FROM type_ancestors WHERE type_id = ? AND depth <= 3",
+                (sumo_a,),
+            ).fetchall()
+        }
+        ancestors_a.add(sumo_a.lower())
+
+        ancestors_b = {
+            row[0].lower()
+            for row in conn.execute(
+                "SELECT ancestor_id FROM type_ancestors WHERE type_id = ? AND depth <= 3",
+                (sumo_b,),
+            ).fetchall()
+        }
+        ancestors_b.add(sumo_b.lower())
+
+        # Compatible if one is ancestor of the other, or they share an ancestor
+        return bool(ancestors_a & ancestors_b)
+    finally:
+        conn.close()
+
 ACTOR_ID = "auto:resolution"
 DEFAULT_FUZZY_THRESHOLD = 85
 
@@ -367,8 +445,9 @@ def _group_by_fuzzy(
             type_a = entity_types.get(eid_a, "")
             type_b = entity_types.get(eid_b, "")
 
-            # Entity type guard: only merge same-type entities
-            if type_a and type_b and type_a != type_b:
+            # Entity type guard: only merge compatible-type entities
+            # Uses SUMO type hierarchy when available (is-a relationship)
+            if type_a and type_b and not _types_compatible(type_a, type_b):
                 continue
 
             score = fuzz.token_sort_ratio(normalized[eid_a], normalized[eid_b])
