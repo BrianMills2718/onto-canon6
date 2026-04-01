@@ -6,14 +6,14 @@ Source of truth:
 - `docs/plans/0031_24h_entity_resolution_hardening_block.md`
 
 ### Phase 1 — Freeze The Hardening Contract
-- [ ] Make Plan 0031 the active execution surface
-- [ ] Freeze the targeted failure families and thresholds
-- [ ] Commit verified phase
+- [x] Make Plan 0031 the active execution surface
+- [x] Freeze the targeted failure families and thresholds
+- [x] Commit verified phase
 
 ### Phase 2 — Fix Auto-Review Judge Parity
-- [ ] Remove or modernize the stale `_judge_candidate()` path
-- [ ] Ensure explicit `judge_model_override` is honored in auto-review
-- [ ] Add/update tests for the seam
+- [x] Remove or modernize the stale `_judge_candidate()` path
+- [x] Ensure explicit `judge_model_override` is honored in auto-review
+- [x] Add/update tests for the seam
 - [ ] Commit verified phase
 
 ### Phase 3 — Harden Resolution Decisions

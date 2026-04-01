@@ -7,8 +7,9 @@ import json
 from pathlib import Path
 from types import SimpleNamespace
 import sys
-from typing import Callable, cast
+from typing import Any, Callable, cast
 
+from pydantic import BaseModel
 import pytest
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -17,14 +18,14 @@ if str(PROJECT_ROOT / "src") not in sys.path:
 
 from onto_canon6.ontology_runtime import clear_loader_caches  # noqa: E402
 from onto_canon6.ontology_runtime import load_effective_profile  # noqa: E402
+from onto_canon6.core import CanonicalGraphService  # noqa: E402
 from onto_canon6.pipeline import EvidenceSpan, ProfileRef, ReviewService, SourceArtifactRef  # noqa: E402
 from onto_canon6.pipeline import text_extraction as extraction_module  # noqa: E402
-from onto_canon6.config import ConfigError  # noqa: E402
+from onto_canon6.config import ConfigError, get_config  # noqa: E402
 from onto_canon6.pipeline.text_extraction import (  # noqa: E402
     ExtractedCandidate,
     ExtractedEntityFiller,
     ExtractedEvidenceSpan,
-    ExtractedFiller,
     ExtractedValueFiller,
     TextExtractionResponse,
     TextExtractionService,
@@ -73,40 +74,45 @@ def test_extract_candidate_imports_uses_llm_client_boundary(tmp_path: Path, monk
     def fake_call_llm_structured(
         model: str,
         messages: list[dict[str, str]],
-        response_model: type[TextExtractionResponse],
+        response_model: type[BaseModel],
         **kwargs: object,
-    ) -> tuple[TextExtractionResponse, object]:
+    ) -> tuple[BaseModel, object]:
         calls["model"] = model
         calls["messages"] = messages
         calls["kwargs"] = kwargs
-        response = response_model(
-            candidates=[
-                ExtractedCandidate(
-                    predicate="oc:uses_system_demo",
-                    roles={
-                        "subject": [
-                            ExtractedEntityFiller(
-                                kind="entity", entity_id="ent:activity:mission_planning",
-                                entity_type="oc:activity",
-                                name="Mission planning",
-                            ),
+        if response_model is TextExtractionResponse:
+            response = response_model(
+                candidates=[
+                    ExtractedCandidate(
+                        predicate="oc:uses_system_demo",
+                        roles={
+                            "subject": [
+                                ExtractedEntityFiller(
+                                    kind="entity", entity_id="ent:activity:mission_planning",
+                                    entity_type="oc:activity",
+                                    name="Mission planning",
+                                ),
+                            ],
+                            "object": [
+                                ExtractedEntityFiller(
+                                    kind="entity", entity_id="ent:system:radar_system",
+                                    entity_type="oc:system",
+                                    name="radar system",
+                                ),
+                            ],
+                        },
+                        evidence_spans=[
+                            ExtractedEvidenceSpan(text="Mission planning"),
+                            ExtractedEvidenceSpan(text="radar system"),
                         ],
-                        "object": [
-                            ExtractedEntityFiller(
-                                kind="entity", entity_id="ent:system:radar_system",
-                                entity_type="oc:system",
-                                name="radar system",
-                            ),
-                        ],
-                    },
-                    evidence_spans=[
-                        ExtractedEvidenceSpan(text="Mission planning"),
-                        ExtractedEvidenceSpan(text="radar system"),
-                    ],
-                    claim_text="Mission planning uses the radar system.",
-                ),
-            ]
-        )
+                        claim_text="Mission planning uses the radar system.",
+                    ),
+                ]
+            )
+        else:
+            response = response_model.model_validate(
+                {"judgments": [{"candidate_index": 0, "label": "supported"}]}
+            )
         return response, SimpleNamespace(resolved_model="fake-structured-model")
 
     monkeypatch.setattr(
@@ -115,7 +121,7 @@ def test_extract_candidate_imports_uses_llm_client_boundary(tmp_path: Path, monk
         lambda: extraction_module._LLMClientAPI(
             get_model=fake_get_model,
             render_prompt=_render_prompt,
-            call_llm_structured=fake_call_llm_structured,
+            call_llm_structured=cast(Any, fake_call_llm_structured),
         ),
     )
 
@@ -168,12 +174,16 @@ def test_extract_candidate_imports_allows_selection_task_override(
     def fake_call_llm_structured(
         model: str,
         messages: list[dict[str, str]],
-        response_model: type[TextExtractionResponse],
+        response_model: type[BaseModel],
         **kwargs: object,
-    ) -> tuple[TextExtractionResponse, object]:
+    ) -> tuple[BaseModel, object]:
         del model, messages
         calls["kwargs"] = kwargs
-        return response_model(candidates=[]), SimpleNamespace(resolved_model="fake-structured-model")
+        if response_model is TextExtractionResponse:
+            return response_model(candidates=[]), SimpleNamespace(resolved_model="fake-structured-model")
+        return response_model.model_validate(
+            {"judgments": [{"candidate_index": 0, "label": "supported"}]}
+        ), SimpleNamespace(resolved_model="fake-structured-model")
 
     monkeypatch.setattr(
         extraction_module,
@@ -181,7 +191,7 @@ def test_extract_candidate_imports_allows_selection_task_override(
         lambda: extraction_module._LLMClientAPI(
             get_model=fake_get_model,
             render_prompt=_render_prompt,
-            call_llm_structured=fake_call_llm_structured,
+            call_llm_structured=cast(Any, fake_call_llm_structured),
         ),
     )
 
@@ -242,13 +252,17 @@ def test_extract_candidate_imports_allows_prompt_override_pair(
     def fake_call_llm_structured(
         model: str,
         messages: list[dict[str, str]],
-        response_model: type[TextExtractionResponse],
+        response_model: type[BaseModel],
         **kwargs: object,
-    ) -> tuple[TextExtractionResponse, object]:
+    ) -> tuple[BaseModel, object]:
         del model
         calls["messages"] = messages
         calls["kwargs"] = kwargs
-        return response_model(candidates=[]), SimpleNamespace(resolved_model="fake-structured-model")
+        if response_model is TextExtractionResponse:
+            return response_model(candidates=[]), SimpleNamespace(resolved_model="fake-structured-model")
+        return response_model.model_validate(
+            {"judgments": [{"candidate_index": 0, "label": "supported"}]}
+        ), SimpleNamespace(resolved_model="fake-structured-model")
 
     monkeypatch.setattr(
         extraction_module,
@@ -256,7 +270,7 @@ def test_extract_candidate_imports_allows_prompt_override_pair(
         lambda: extraction_module._LLMClientAPI(
             get_model=fake_get_model,
             render_prompt=_render_prompt,
-            call_llm_structured=fake_call_llm_structured,
+            call_llm_structured=cast(Any, fake_call_llm_structured),
         ),
     )
 
@@ -338,31 +352,35 @@ def test_extract_and_submit_persists_extracted_candidates(
     def fake_call_llm_structured(
         model: str,
         messages: list[dict[str, str]],
-        response_model: type[TextExtractionResponse],
+        response_model: type[BaseModel],
         **kwargs: object,
-    ) -> tuple[TextExtractionResponse, object]:
-        return (
-            response_model(
-                candidates=[
-                    ExtractedCandidate(
-                        predicate="oc:uses_system_demo",
-                        roles={
-                            "subject": [
-                                ExtractedEntityFiller(
-                                    kind="entity", entity_type="oc:activity",
-                                    name="Mission planning",
-                                ),
+    ) -> tuple[BaseModel, object]:
+        if response_model is TextExtractionResponse:
+            return (
+                response_model(
+                    candidates=[
+                        ExtractedCandidate(
+                            predicate="oc:uses_system_demo",
+                            roles={
+                                "subject": [
+                                    ExtractedEntityFiller(
+                                        kind="entity", entity_type="oc:activity",
+                                        name="Mission planning",
+                                    ),
+                                ],
+                            },
+                            evidence_spans=[
+                                ExtractedEvidenceSpan(text="Mission planning"),
                             ],
-                        },
-                        evidence_spans=[
-                            ExtractedEvidenceSpan(text="Mission planning"),
-                        ],
-                        claim_text="Mission planning is the subject.",
-                    ),
-                ]
-            ),
-            SimpleNamespace(resolved_model=model),
-        )
+                            claim_text="Mission planning is the subject.",
+                        ),
+                    ]
+                ),
+                SimpleNamespace(resolved_model=model),
+            )
+        return response_model.model_validate(
+            {"judgments": [{"candidate_index": 0, "label": "supported"}]}
+        ), SimpleNamespace(resolved_model=model)
 
     monkeypatch.setattr(
         extraction_module,
@@ -370,7 +388,7 @@ def test_extract_and_submit_persists_extracted_candidates(
         lambda: extraction_module._LLMClientAPI(
             get_model=fake_get_model,
             render_prompt=_render_prompt,
-            call_llm_structured=fake_call_llm_structured,
+            call_llm_structured=cast(Any, fake_call_llm_structured),
         ),
     )
 
@@ -413,30 +431,34 @@ def test_extract_and_submit_skips_unresolvable_evidence_spans(
     def fake_call_llm_structured(
         model: str,
         messages: list[dict[str, str]],
-        response_model: type[TextExtractionResponse],
+        response_model: type[BaseModel],
         **kwargs: object,
-    ) -> tuple[TextExtractionResponse, object]:
-        return (
-            response_model(
-                candidates=[
-                    ExtractedCandidate(
-                        predicate="oc:uses_system_demo",
-                        roles={
-                            "subject": [
-                                ExtractedEntityFiller(
-                                    kind="entity", entity_type="oc:activity",
-                                    name="Alpha",
-                                ),
+    ) -> tuple[BaseModel, object]:
+        if response_model is TextExtractionResponse:
+            return (
+                response_model(
+                    candidates=[
+                        ExtractedCandidate(
+                            predicate="oc:uses_system_demo",
+                            roles={
+                                "subject": [
+                                    ExtractedEntityFiller(
+                                        kind="entity", entity_type="oc:activity",
+                                        name="Alpha",
+                                    ),
+                                ],
+                            },
+                            evidence_spans=[
+                                ExtractedEvidenceSpan(text="Wrong"),
                             ],
-                        },
-                        evidence_spans=[
-                            ExtractedEvidenceSpan(text="Wrong"),
-                        ],
-                    ),
-                ]
-            ),
-            SimpleNamespace(resolved_model=model),
-        )
+                        ),
+                    ]
+                ),
+                SimpleNamespace(resolved_model=model),
+            )
+        return response_model.model_validate(
+            {"judgments": [{"candidate_index": 0, "label": "supported"}]}
+        ), SimpleNamespace(resolved_model=model)
 
     monkeypatch.setattr(
         extraction_module,
@@ -444,7 +466,7 @@ def test_extract_and_submit_skips_unresolvable_evidence_spans(
         lambda: extraction_module._LLMClientAPI(
             get_model=fake_get_model,
             render_prompt=_render_prompt,
-            call_llm_structured=fake_call_llm_structured,
+            call_llm_structured=cast(Any, fake_call_llm_structured),
         ),
     )
 
@@ -459,6 +481,158 @@ def test_extract_and_submit_skips_unresolvable_evidence_spans(
     )
     # Candidate submitted but with 0 resolved evidence spans
     assert len(results) >= 0  # may be 0 or 1 depending on downstream handling
+
+
+def test_judge_candidate_uses_explicit_judge_model_override(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Single-candidate auto review must honor the explicit bounded judge model."""
+
+    review_service = _make_review_service(tmp_path)
+    submission = review_service.submit_candidate_assertion(
+        payload={
+            "predicate": "oc:uses_system_demo",
+            "roles": {
+                "subject": [
+                    {
+                        "kind": "entity",
+                        "entity_type": "oc:activity",
+                        "name": "Mission planning",
+                    }
+                ]
+            },
+        },
+        profile_id="default",
+        profile_version="1.0.0",
+        submitted_by="judge-test",
+        source_kind="text_file",
+        source_ref="text://phase4/judge-override",
+        claim_text="Mission planning is the subject.",
+    )
+    service = TextExtractionService(
+        review_service=review_service,
+        judge_model_override="judge-lite-test",
+    )
+    calls: dict[str, object] = {}
+
+    def fake_call_llm_structured(
+        model: str,
+        messages: list[dict[str, str]],
+        response_model: type[BaseModel],
+        **kwargs: object,
+    ) -> tuple[BaseModel, object]:
+        calls["model"] = model
+        calls["messages"] = messages
+        calls["kwargs"] = kwargs
+        result = response_model.model_validate(
+            {"judgments": [{"candidate_index": 0, "label": "partially_supported"}]}
+        )
+        return result, SimpleNamespace(resolved_model=model)
+
+    monkeypatch.setattr(
+        extraction_module,
+        "_load_llm_client_api",
+        lambda: extraction_module._LLMClientAPI(
+            get_model=lambda task, **kw: "unused-model",
+            render_prompt=_render_prompt,
+            call_llm_structured=cast(Any, fake_call_llm_structured),
+        ),
+    )
+
+    label = service._judge_candidate(
+        submission.candidate,
+        "Mission planning uses the radar system during the exercise.",
+        get_config(),
+    )
+
+    assert label == "partially_supported"
+    assert calls["model"] == "judge-lite-test"
+    call_kwargs = calls["kwargs"]
+    assert isinstance(call_kwargs, dict)
+    assert call_kwargs["task"] == get_config().evaluation.judge_selection_task
+    assert call_kwargs["max_budget"] == get_config().evaluation.judge_max_budget_usd
+
+
+def test_extract_and_submit_leaves_candidate_pending_when_auto_review_judge_fails(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Judge failure must leave the candidate pending instead of silently accepting it."""
+
+    base_config = get_config()
+    config_override = base_config.model_copy(
+        update={
+            "pipeline": base_config.pipeline.model_copy(update={"review_mode": "llm"}),
+            "extraction": base_config.extraction.model_copy(
+                update={"enable_judge_filter": False}
+            ),
+        }
+    )
+    monkeypatch.setattr(extraction_module, "get_config", lambda: config_override)
+    review_service = _make_review_service(tmp_path)
+    service = TextExtractionService(
+        review_service=review_service,
+        judge_model_override="judge-lite-test",
+    )
+
+    def fake_call_llm_structured(
+        model: str,
+        messages: list[dict[str, str]],
+        response_model: type[BaseModel],
+        **kwargs: object,
+    ) -> tuple[BaseModel, object]:
+        del model, messages, kwargs
+        if response_model is TextExtractionResponse:
+            return (
+                response_model(
+                    candidates=[
+                        ExtractedCandidate(
+                            predicate="oc:uses_system_demo",
+                            roles={
+                                "subject": [
+                                    ExtractedEntityFiller(
+                                        kind="entity",
+                                        entity_type="oc:activity",
+                                        name="Mission planning",
+                                    )
+                                ]
+                            },
+                            evidence_spans=[ExtractedEvidenceSpan(text="Mission planning")],
+                            claim_text="Mission planning is the subject.",
+                        )
+                    ]
+                ),
+                SimpleNamespace(resolved_model="extract-model"),
+            )
+        raise RuntimeError("judge boom")
+
+    monkeypatch.setattr(
+        extraction_module,
+        "_load_llm_client_api",
+        lambda: extraction_module._LLMClientAPI(
+            get_model=lambda task, **kw: "extract-model",
+            render_prompt=_render_prompt,
+            call_llm_structured=cast(Any, fake_call_llm_structured),
+        ),
+    )
+
+    results = service.extract_and_submit(
+        source_text="Mission planning uses the radar system during the exercise.",
+        profile_id="default",
+        profile_version="1.0.0",
+        submitted_by="analyst:text-extract",
+        source_ref="text://phase4/auto-review-failure",
+    )
+
+    assert len(results) == 1
+    persisted = review_service.list_candidate_assertions()
+    assert len(persisted) == 1
+    assert persisted[0].review_status == "pending_review"
+    promoted = CanonicalGraphService(db_path=review_service.store.db_path).list_promoted_assertions()
+    assert promoted == []
+    assert "leaving candidate pending" in caplog.text
 
 
 def test_extraction_response_accepts_entity_fillers_without_entity_id() -> None:

@@ -20,7 +20,7 @@ import json
 import logging
 from pathlib import Path
 import re
-from typing import TYPE_CHECKING, Any, Literal, Mapping, Protocol, Sequence, cast
+from typing import TYPE_CHECKING, Any, Literal, Mapping, Protocol, Sequence, TypeVar, cast
 
 from pydantic import BaseModel, ConfigDict, Field, JsonValue, model_validator
 
@@ -408,13 +408,15 @@ class _RenderPrompt(Protocol):
 class _CallStructured(Protocol):
     """Call llm_client structured output with a Pydantic response model."""
 
+    _TModel = TypeVar("_TModel", bound=BaseModel)
+
     def __call__(
         self,
         model: str,
         messages: list[dict[str, str]],
-        response_model: type[TextExtractionResponse],
+        response_model: type[_TModel],
         **kwargs: Any,
-    ) -> tuple[TextExtractionResponse, object]: ...
+    ) -> tuple[_TModel, object]: ...
 
 
 @dataclass(frozen=True)
@@ -757,7 +759,15 @@ class TextExtractionService:
 
             if review_mode == "llm":
                 # LLM-judge decides accept/reject
-                label = self._judge_candidate(candidate, source_text, config)
+                try:
+                    label = self._judge_candidate(candidate, source_text, config)
+                except Exception as exc:
+                    logger.warning(
+                        "auto-review judge failed for %s; leaving candidate pending: %s",
+                        cid,
+                        exc,
+                    )
+                    continue
                 if label == "unsupported":
                     try:
                         self._review_service.review_candidate(
@@ -789,57 +799,29 @@ class TextExtractionService:
         config: AppConfig,
     ) -> str:
         """Run LLM-judge on a single candidate, return label."""
-        try:
-            import litellm
-            from llm_client import render_prompt
+        claim = candidate.claim_text or ""
+        raw_predicate = candidate.normalized_payload.get("predicate", "")
+        predicate = raw_predicate if isinstance(raw_predicate, str) else ""
+        roles = candidate.normalized_payload.get("roles", {})
 
-            claim = getattr(candidate, "claim_text", "") or ""
-            pred = ""
-            if hasattr(candidate, "normalized_payload"):
-                raw_predicate = candidate.normalized_payload.get("predicate", "")
-                if isinstance(raw_predicate, str):
-                    pred = raw_predicate
-
-            rendered = render_prompt(
-                config.evaluation.judge_prompt_template,
-                case_id="auto_review",
-                source_ref="auto",
-                source_text=source_text[:3000],
-                candidate_assertions_json=json.dumps([{"predicate": pred, "claim_text": claim}]),
-            )
-            response = litellm.completion(
-                model=config.extraction.model_override or "gemini/gemini-2.5-flash",
-                messages=rendered,
-                response_format={
-                    "type": "json_schema",
-                    "json_schema": {
-                        "name": "judge",
-                        "schema": {
-                            "type": "object",
-                            "properties": {
-                                "candidate_judgments": {
-                                    "type": "array",
-                                    "items": {
-                                        "type": "object",
-                                        "properties": {
-                                            "label": {"type": "string", "enum": ["supported", "partially_supported", "unsupported"]},
-                                        },
-                                        "required": ["label"],
-                                    },
-                                },
-                            },
-                            "required": ["candidate_judgments"],
-                        },
-                    },
-                },
-                max_tokens=500,
-            )
-            result = json.loads(response.choices[0].message.content)
-            judgments = result.get("candidate_judgments", [])
-            return judgments[0]["label"] if judgments else "supported"
-        except Exception as exc:
-            logger.warning("judge failed, defaulting to supported: %s", exc)
-            return "supported"
+        result = _call_judge_result(
+            candidate_summaries=[
+                {
+                    "predicate": predicate,
+                    "claim_text": claim,
+                    "roles": roles,
+                }
+            ],
+            source_text=source_text,
+            config=config,
+            model_override=self._judge_model_override,
+            case_id="auto_review",
+            source_ref="auto",
+            trace_prefix="judge_single",
+        )
+        if not result.judgments:
+            raise ExtractionError("judge returned no candidate judgments for auto-review")
+        return result.judgments[0].label
 
 
 
@@ -876,15 +858,6 @@ def _apply_judge_filter(
     Calls the judge prompt on all candidates and drops those below
     the minimum label threshold. Returns the filtered list.
     """
-    try:
-        from llm_client import call_llm_structured
-        import uuid
-    except ImportError as exc:
-        raise RuntimeError(
-            "llm_client is required for judge filter; "
-            "run `pip install -e ~/projects/llm_client`"
-        ) from exc
-
     min_idx = _JUDGE_LABEL_ORDER.index(min_label) if min_label in _JUDGE_LABEL_ORDER else 0
 
     # Build judge input
@@ -898,33 +871,14 @@ def _apply_judge_filter(
         candidate_summaries.append(summary)
 
     try:
-        eval_config = config.evaluation
-        prompt_template = eval_config.judge_prompt_template
-        trace_id = f"judge_filter_{uuid.uuid4().hex[:12]}"
-
-        from llm_client import render_prompt
-        rendered = render_prompt(
-            prompt_template,
+        parsed_result = _call_judge_result(
+            candidate_summaries=candidate_summaries,
+            source_text=source_text,
+            config=config,
+            model_override=model_override,
             case_id="extraction_filter",
             source_ref="live_extraction",
-            source_text=source_text[:4000],  # Limit source text length
-            candidate_assertions_json=json.dumps(candidate_summaries, indent=2),
-        )
-
-        # Resolve model for judge calls
-        judge_model = (
-            model_override
-            or config.extraction.model_override
-            or "gemini/gemini-2.5-flash"
-        )
-
-        parsed_result, _meta = call_llm_structured(
-            judge_model,
-            rendered,
-            _JudgeResult,
-            task=eval_config.judge_selection_task,
-            trace_id=trace_id,
-            max_budget=eval_config.judge_max_budget_usd,
+            trace_prefix="judge_filter",
         )
 
         label_map = {j.candidate_index: j.label for j in parsed_result.judgments}
@@ -952,6 +906,49 @@ def _apply_judge_filter(
         # Fail loud — do not silently pass all candidates through.
         # If the judge is broken, the caller needs to know.
         raise
+
+
+def _call_judge_result(
+    *,
+    candidate_summaries: list[dict[str, JsonValue]],
+    source_text: str,
+    config: AppConfig,
+    model_override: str | None,
+    case_id: str,
+    source_ref: str,
+    trace_prefix: str,
+) -> _JudgeResult:
+    """Run the shared structured judge contract for one or more candidates."""
+
+    try:
+        import uuid
+    except ImportError as exc:
+        raise RuntimeError("uuid import failed unexpectedly") from exc
+
+    llm_client_api = _load_llm_client_api()
+    eval_config = config.evaluation
+    trace_id = f"{trace_prefix}_{uuid.uuid4().hex[:12]}"
+    rendered = llm_client_api.render_prompt(
+        eval_config.judge_prompt_template,
+        case_id=case_id,
+        source_ref=source_ref,
+        source_text=source_text[:4000],
+        candidate_assertions_json=json.dumps(candidate_summaries, indent=2),
+    )
+    judge_model = (
+        model_override
+        or config.extraction.model_override
+        or "gemini/gemini-2.5-flash"
+    )
+    parsed_result, _meta = llm_client_api.call_llm_structured(
+        judge_model,
+        rendered,
+        _JudgeResult,
+        task=eval_config.judge_selection_task,
+        trace_id=trace_id,
+        max_budget=eval_config.judge_max_budget_usd,
+    )
+    return parsed_result
 
 
 def candidate_import_from_extracted(
