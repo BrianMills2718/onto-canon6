@@ -271,6 +271,11 @@ default yet because prose-heavy chunk transfer is still negative or mixed.
 Turn the parity matrix from a preserved vision ledger into a better-ordered
 backlog after the first consumer and stability gates are real.
 
+#### Execution Surface
+
+This lane now executes through
+[0027_deferred_parity_reprioritization.md](0027_deferred_parity_reprioritization.md).
+
 #### Pre-Made Decisions
 
 1. Deferred capabilities remain visible unless explicitly abandoned with
@@ -299,6 +304,16 @@ backlog after the first consumer and stability gates are real.
 2. new work starts from intuition rather than the consumer/stability evidence;
 3. important deferred capabilities remain architecturally visible but
    operationally unowned forever.
+
+#### Current State
+
+Lane 5 now has an explicit classification surface. The current next-active
+order after the active gates is:
+
+1. finish the entity-resolution value proof under Plan 0025;
+2. plan a first browse/search surface for `onto-canon6` queryability;
+3. keep richer DIGIMON interchange consumer-blocked rather than silently
+   widening the supported v1 seam.
 
 ## Program Order
 
