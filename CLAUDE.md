@@ -249,6 +249,37 @@ The bounded execution block landed:
 `TODO.md` remains the live execution tracker pattern for future bounded blocks,
 but Plan 0029 itself is no longer active.
 
+## Active 24h Execution Block (2026-03-31)
+
+**Plan 0030: Entity resolution value proof — execute continuously until complete.**
+
+This is a bounded 24-hour implementation block, not an open-ended "work a bit"
+instruction. The required behavior is:
+
+1. finish one phase;
+2. verify it;
+3. commit it immediately; then
+4. continue directly to the next phase without waiting for another prompt.
+
+The only valid stop conditions are:
+
+1. all Plan 0030 phases are complete;
+2. a real blocker makes safe implementation impossible;
+3. a material uncertainty appears that is not already covered by Plan 0025,
+   Plan 0030, or `TODO.md`.
+
+Do **not** stop because:
+
+1. fixtures are written but metrics are not yet implemented;
+2. the evaluator is done but the runner/baseline path is not;
+3. the runner is done but the real corpus runs are not;
+4. exact results exist but the run note/docs are not updated;
+5. you have to record a new uncertainty — log it and continue.
+
+`TODO.md` is the live execution tracker for this block. Keep it current as
+phases land. Long-term planning stays in the plan docs; immediate execution
+state lives in `TODO.md`.
+
 ## Working Rules
 
 - **Autonomy is the default operating mode.** When there is an active plan or

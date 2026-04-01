@@ -14,6 +14,7 @@ This subtree owns active gaps, acceptance criteria, and verification notes.
 | 0025a | [Entity Resolution Scale-Out](0025a_entity_resolution_scale_out.md) | Deferred (activates after 0025 Phase 4) |
 | 0027 | [Deferred Parity Reprioritization](0027_deferred_parity_reprioritization.md) | Active (Lane 5 execution surface; next-active order now explicit) |
 | 0028 | [Query And Browse Surface](0028_query_browse_surface.md) | Active (first read-only slice landed and proved; wider hardening still open) |
+| 0030 | [24h Entity Resolution Value-Proof Block](0030_24h_entity_resolution_value_proof_block.md) | Active (bounded execution block to make Plan 0025 decision-grade) |
 | 0014 | [Extraction Quality Baseline](0014_extraction_quality_baseline.md) | Active (explicit promotion gate defined; operational transfer proof still open) |
 | 0020 | [Vision Gap Closure](0020_vision_gap_closure.md) | Active (tracking) |
 

@@ -3,42 +3,43 @@
 ## Current 24h Execution Block
 
 Source of truth:
-- `docs/plans/0029_24h_query_surface_execution_block.md`
+- `docs/plans/0030_24h_entity_resolution_value_proof_block.md`
 
-### Phase 1 — Shared Read Service
-- [x] Add typed query request/response models
-- [x] Implement read-only query service
-- [x] Add service-level tests
-- [x] Commit verified phase
+### Phase 1 — Freeze Corpus And Evaluation Contracts
+- [x] Add fixed cross-document question fixture
+- [x] Make scoring rules explicit in code/docs
+- [x] Define baseline report shape
+- [ ] Commit verified phase
 
-### Phase 2 — CLI Surface
-- [x] Add `search-entities`
-- [x] Add `get-entity`
-- [x] Add `search-promoted-assertions`
-- [x] Add `get-promoted-assertion`
-- [x] Add `get-evidence`
-- [x] Add CLI tests
-- [x] Commit verified phase
+### Phase 2 — Implement Decision-Grade Evaluator
+- [x] Add typed evaluation models
+- [x] Implement ground-truth matching
+- [x] Implement precision/recall + false-merge/false-split reporting
+- [x] Add evaluator tests
+- [ ] Commit verified phase
 
-### Phase 3 — MCP Surface
-- [x] Add thin MCP tools for the five operations
-- [x] Add integration coverage
-- [x] Commit verified phase
+### Phase 3 — Upgrade Runners And Operator Surface
+- [ ] Upgrade `scripts/run_scale_test.py`
+- [ ] Add bare-baseline corpus runner
+- [ ] Add/refresh Make targets
+- [ ] Commit verified phase
 
-### Phase 4 — Real-Proof Verification
-- [x] Verify entity/alias lookup on real promoted data
-- [x] Verify promoted assertion lookup on real promoted data
-- [x] Verify evidence/provenance lookup on real promoted data
-- [x] Commit verified phase
+### Phase 4 — Execute The First Full Value-Proof Slice
+- [ ] Run exact-strategy report
+- [ ] Run bare baseline report
+- [ ] Run LLM-strategy report if environment supports it cleanly
+- [ ] Write run note with concrete findings
+- [ ] Commit verified phase
 
 ### Phase 5 — Closeout
-- [x] Refresh docs/status/handoff
-- [x] Mark execution block complete
-- [x] Commit verified phase
+- [ ] Refresh docs/status/handoff
+- [ ] Mark execution block complete
+- [ ] Commit verified phase
 
 ## Longer-Term Queue
 
 - [ ] Finish Plan 0025 value proof
+- [ ] Decide whether LLM clustering should replace exact strategy as default
 - [ ] Evaluate whether Plan 0028 should widen beyond the first five operations
 - [ ] Revisit consumer-blocked richer DIGIMON interchange only through DIGIMON Plan 23
 - [ ] Revisit trusted bulk ingestion only if a real workflow makes review the bottleneck
