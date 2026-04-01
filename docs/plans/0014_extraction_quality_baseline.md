@@ -518,6 +518,28 @@ higher extraction quality resolves the Plan 0014 noise issue.
 produced 0 noise clusters in the scale test (vs 4 with gemini-2.0-flash and 1
 with gemini-2.5-flash-lite).
 
+## Transfer Evaluation (2026-04-01) — ADR 0023 gate
+
+Chunk-level transfer evaluation on 5 real PSYOP benchmark chunks:
+
+| Metric | Result |
+|---|---|
+| Model | gemini/gemini-3-flash-preview |
+| Prompt | text_to_candidate_assertions.yaml (with entity discrimination) |
+| Chunks evaluated | 5 |
+| Candidates extracted | 2 (from chunks with extractable assertions) |
+| Noise candidates | **0** (0% noise rate) |
+| Errors | 0 |
+| Correct omissions | 3/3 (alias-only, unattributed opinion) |
+
+**Transfer evidence supports prompt promotion.** The improved extraction prompt
+with entity discrimination instruction + gemini-3-flash-preview + list[RoleEntry]
+schema produces zero noise on real PSYOP text. Correct omission behavior
+confirmed (alias-only text and unattributed opinions correctly produce 0
+candidates).
+
+**Promoted as production default:** config.yaml now uses this combination.
+
 ## Known Issues (2026-03-31)
 
 1. **Noise entities from descriptive phrases**: LLM extraction produces entities
