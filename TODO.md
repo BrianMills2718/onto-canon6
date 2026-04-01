@@ -12,13 +12,13 @@ Source of truth:
 - [x] Commit verified phase
 
 ### Phase 2 — CLI Surface
-- [ ] Add `search-entities`
-- [ ] Add `get-entity`
-- [ ] Add `search-promoted-assertions`
-- [ ] Add `get-promoted-assertion`
-- [ ] Add `get-evidence`
-- [ ] Add CLI tests
-- [ ] Commit verified phase
+- [x] Add `search-entities`
+- [x] Add `get-entity`
+- [x] Add `search-promoted-assertions`
+- [x] Add `get-promoted-assertion`
+- [x] Add `get-evidence`
+- [x] Add CLI tests
+- [x] Commit verified phase
 
 ### Phase 3 — MCP Surface
 - [ ] Add thin MCP tools for the five operations

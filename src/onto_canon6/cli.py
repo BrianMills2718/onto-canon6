@@ -81,15 +81,27 @@ from .pipeline import (
     TextExtractionService,
 )
 from .surfaces import (
+    AssertionSearchRequest,
+    AssertionSearchResult,
     ChunkTransferReport,
     ChunkTransferReportService,
+    EntityDetail,
+    EntitySearchRequest,
+    EntitySearchResult,
     EpistemicReportService,
+    EvidenceBundle,
+    GetEntityRequest,
+    GetEvidenceRequest,
+    GetPromotedAssertionRequest,
     GovernedWorkflowBundle,
     GovernedWorkflowBundleService,
     IdentityReport,
     IdentityReportService,
+    PromotedAssertionDetail,
     PromotedGraphReport,
     PromotedGraphReportService,
+    QuerySurfaceError,
+    QuerySurfaceService,
     SemanticCanonicalizationReport,
     SemanticCanonicalizationReportService,
 )
@@ -114,6 +126,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         EpistemicStoreError,
         ExtractionPromptExperimentError,
         IdentityError,
+        QuerySurfaceError,
         ReviewStoreError,
         SUMOHierarchyError,
         SemanticCanonicalizationError,
@@ -862,6 +875,88 @@ def _build_parser() -> argparse.ArgumentParser:
     _add_output_arg(export_identity_report_parser, default_output=config.cli.default_output_format)
     export_identity_report_parser.set_defaults(handler=_handle_export_identity_report)
 
+    search_entities_parser = subparsers.add_parser(
+        "search-entities",
+        help="Search promoted entities and identity aliases through the read-only query surface.",
+    )
+    _add_store_args(search_entities_parser, include_overlay_root=False)
+    search_entities_parser.add_argument("--query", required=True, help="Entity-name query string.")
+    search_entities_parser.add_argument(
+        "--entity-type",
+        help="Optional promoted entity_type filter.",
+    )
+    search_entities_parser.add_argument(
+        "--limit",
+        type=int,
+        default=20,
+        help="Maximum results to return.",
+    )
+    _add_output_arg(search_entities_parser, default_output=config.cli.default_output_format)
+    search_entities_parser.set_defaults(handler=_handle_search_entities)
+
+    get_entity_parser = subparsers.add_parser(
+        "get-entity",
+        help="Return one promoted entity with identity, linked assertions, and names.",
+    )
+    _add_store_args(get_entity_parser, include_overlay_root=False)
+    entity_lookup_group = get_entity_parser.add_mutually_exclusive_group(required=True)
+    entity_lookup_group.add_argument("--entity-id", help="Promoted entity identifier.")
+    entity_lookup_group.add_argument("--identity-id", help="Stable identity identifier.")
+    _add_output_arg(get_entity_parser, default_output=config.cli.default_output_format)
+    get_entity_parser.set_defaults(handler=_handle_get_entity)
+
+    search_promoted_assertions_parser = subparsers.add_parser(
+        "search-promoted-assertions",
+        help="Search promoted assertions by predicate, entity, or claim text.",
+    )
+    _add_store_args(search_promoted_assertions_parser, include_overlay_root=False)
+    search_promoted_assertions_parser.add_argument("--predicate", help="Optional predicate filter.")
+    search_promoted_assertions_parser.add_argument("--entity-id", help="Optional linked entity filter.")
+    search_promoted_assertions_parser.add_argument(
+        "--text-query",
+        help="Optional claim-text substring filter.",
+    )
+    search_promoted_assertions_parser.add_argument(
+        "--limit",
+        type=int,
+        default=20,
+        help="Maximum results to return.",
+    )
+    _add_output_arg(
+        search_promoted_assertions_parser,
+        default_output=config.cli.default_output_format,
+    )
+    search_promoted_assertions_parser.set_defaults(handler=_handle_search_promoted_assertions)
+
+    get_promoted_assertion_parser = subparsers.add_parser(
+        "get-promoted-assertion",
+        help="Return one promoted assertion with source, evidence, and epistemic state.",
+    )
+    _add_store_args(get_promoted_assertion_parser, include_overlay_root=False)
+    get_promoted_assertion_parser.add_argument(
+        "--assertion-id",
+        required=True,
+        help="Promoted assertion identifier.",
+    )
+    _add_output_arg(
+        get_promoted_assertion_parser,
+        default_output=config.cli.default_output_format,
+    )
+    get_promoted_assertion_parser.set_defaults(handler=_handle_get_promoted_assertion)
+
+    get_evidence_parser = subparsers.add_parser(
+        "get-evidence",
+        help="Return evidence and lineage context for one promoted assertion.",
+    )
+    _add_store_args(get_evidence_parser, include_overlay_root=False)
+    get_evidence_parser.add_argument(
+        "--assertion-id",
+        required=True,
+        help="Promoted assertion identifier.",
+    )
+    _add_output_arg(get_evidence_parser, default_output=config.cli.default_output_format)
+    get_evidence_parser.set_defaults(handler=_handle_get_evidence)
+
     export_digimon_parser = subparsers.add_parser(
         "export-digimon",
         help="Export promoted graph assertions in Digimon-compatible JSONL format.",
@@ -1527,6 +1622,73 @@ def _handle_export_identity_report(args: argparse.Namespace) -> int:
     return 0
 
 
+def _handle_search_entities(args: argparse.Namespace) -> int:
+    """Search promoted entities through the shared read-only query surface."""
+
+    service = _build_query_surface_service(args)
+    result = service.search_entities(
+        EntitySearchRequest(
+            query=args.query,
+            entity_type=args.entity_type,
+            limit=args.limit,
+        )
+    )
+    _emit_output(result, output_format=args.output)
+    return 0
+
+
+def _handle_get_entity(args: argparse.Namespace) -> int:
+    """Return one entity or identity detail view from promoted state."""
+
+    service = _build_query_surface_service(args)
+    result = service.get_entity(
+        GetEntityRequest(
+            entity_id=args.entity_id,
+            identity_id=args.identity_id,
+        )
+    )
+    _emit_output(result, output_format=args.output)
+    return 0
+
+
+def _handle_search_promoted_assertions(args: argparse.Namespace) -> int:
+    """Search promoted assertions through the shared read-only query surface."""
+
+    service = _build_query_surface_service(args)
+    result = service.search_promoted_assertions(
+        AssertionSearchRequest(
+            predicate=args.predicate,
+            entity_id=args.entity_id,
+            text_query=args.text_query,
+            limit=args.limit,
+        )
+    )
+    _emit_output(result, output_format=args.output)
+    return 0
+
+
+def _handle_get_promoted_assertion(args: argparse.Namespace) -> int:
+    """Return one promoted assertion with source and epistemic context."""
+
+    service = _build_query_surface_service(args)
+    result = service.get_promoted_assertion(
+        GetPromotedAssertionRequest(assertion_id=args.assertion_id)
+    )
+    _emit_output(result, output_format=args.output)
+    return 0
+
+
+def _handle_get_evidence(args: argparse.Namespace) -> int:
+    """Return evidence and lineage context for one promoted assertion."""
+
+    service = _build_query_surface_service(args)
+    result = service.get_evidence(
+        GetEvidenceRequest(assertion_id=args.assertion_id)
+    )
+    _emit_output(result, output_format=args.output)
+    return 0
+
+
 
 def _handle_evaluate_rules(args: argparse.Namespace) -> int:
     """Evaluate ProbLog rules over promoted assertions."""
@@ -1755,6 +1917,16 @@ def _build_semantic_service(args: argparse.Namespace) -> SemanticCanonicalizatio
     return SemanticCanonicalizationService(db_path=db_path, overlay_root=overlay_root)
 
 
+def _build_query_surface_service(args: argparse.Namespace) -> QuerySurfaceService:
+    """Create the read-only query surface from config-backed defaults plus overrides."""
+
+    return QuerySurfaceService(
+        graph_service=_build_graph_service(args),
+        identity_service=_build_identity_service(args),
+        review_service=_build_review_service(args),
+    )
+
+
 def _add_store_args(parser: argparse.ArgumentParser, *, include_overlay_root: bool) -> None:
     """Add explicit mutable-store overrides to one subcommand parser."""
 
@@ -1806,16 +1978,21 @@ def _to_jsonable(value: object) -> Any:
         value,
         (
             AssertionDispositionRecord,
+            AssertionSearchResult,
             CandidateAssertionRecord,
             CandidateSubmissionResult,
             ChunkTransferReport,
             CanonicalGraphPromotionResult,
+            EntityDetail,
+            EntitySearchResult,
+            EvidenceBundle,
             ExtractionPromptExperimentReport,
             GraphExternalReferenceRecord,
             GraphIdentityMembershipRecord,
             GovernedWorkflowBundle,
             IdentityBundleRecord,
             IdentityReport,
+            PromotedAssertionDetail,
             PromotedAssertionEpistemicCollectionReport,
             ProposalRecord,
             PromotedGraphAssertionRecord,
@@ -2033,6 +2210,51 @@ def _to_text(value: object) -> str:
             f"memberships={value.summary.total_memberships} "
             f"external_references={value.summary.total_external_references} "
             f"identity_ids={identity_ids}"
+        )
+    if isinstance(value, EntitySearchResult):
+        identity_id = value.identity_id or "none"
+        return (
+            f"entity_id={value.entity_id} "
+            f"identity_id={identity_id} "
+            f"entity_type={value.entity_type} "
+            f"match_reason={value.match_reason}"
+        )
+    if isinstance(value, EntityDetail):
+        identity_id = (
+            value.identity_bundle.identity.identity_id
+            if value.identity_bundle is not None
+            else "none"
+        )
+        assertion_ids = ",".join(
+            assertion.assertion_id for assertion in value.linked_assertions
+        ) or "none"
+        return (
+            f"entity_id={value.entity.entity_id} "
+            f"identity_id={identity_id} "
+            f"display_label={value.display_label} "
+            f"linked_assertions={assertion_ids}"
+        )
+    if isinstance(value, AssertionSearchResult):
+        entity_ids = ",".join(value.entity_ids) or "none"
+        return (
+            f"assertion_id={value.assertion_id} "
+            f"predicate={value.predicate} "
+            f"epistemic_status={value.epistemic_status} "
+            f"entity_ids={entity_ids}"
+        )
+    if isinstance(value, PromotedAssertionDetail):
+        return (
+            f"assertion_id={value.promotion.assertion.assertion_id} "
+            f"source_candidate_id={value.source_candidate.candidate_id} "
+            f"epistemic_status={value.epistemic_report.epistemic_status}"
+        )
+    if isinstance(value, EvidenceBundle):
+        artifact_ids = ",".join(artifact.artifact_id for artifact in value.artifacts) or "none"
+        return (
+            f"assertion_id={value.assertion_id} "
+            f"candidate_id={value.candidate.candidate_id} "
+            f"artifacts={artifact_ids} "
+            f"evidence_spans={len(value.evidence_spans)}"
         )
     if isinstance(value, ProgressiveExtractionReport):
         return (
