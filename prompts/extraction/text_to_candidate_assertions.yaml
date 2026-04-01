@@ -90,6 +90,23 @@ messages:
       strongest descriptive predicate ID you can in `oc:*` form so the review
       workflow can decide whether to extend the ontology.
 
+      Entity discrimination — only extract REAL entities:
+
+      - An entity must be a specific, named real-world thing: a person, an
+        organization, a place, a program, a document, a unit, an event with a
+        proper name. NOT a generic action ("met"), NOT a description ("several
+        initiatives to modernize its force structure"), NOT a pronoun or
+        anaphoric reference ("the meeting", "the reforms", "a ceremony").
+      - If you cannot give the entity a proper name that a reviewer would
+        recognize as referring to a specific real-world thing, it is not an
+        entity — omit it.
+      - Generic collective nouns ("special operations forces", "intelligence
+        community", "senior military officials") are not entities unless the
+        text names a specific instance.
+      - Events are entities only if they have proper names ("Operation Enduring
+        Freedom", "the 2025 NATO Summit"). Generic event descriptions ("a
+        joint conference", "a training exercise") are context, not entities.
+
       Keep candidates atomic and reviewable:
 
       - one predicate per candidate assertion
