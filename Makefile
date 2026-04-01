@@ -192,7 +192,7 @@ endif
 
 # ─── Domain: Experiment ──────────────────────────────────────────────────────
 
-.PHONY: experiment baseline schema
+.PHONY: experiment baseline schema scale-test scale-baseline
 
 experiment:  ## Run prompt_eval extraction experiment (CASES=4, RUNS=1)
 	@$(CLI) run-extraction-prompt-experiment \
@@ -202,6 +202,15 @@ experiment:  ## Run prompt_eval extraction experiment (CASES=4, RUNS=1)
 baseline:  ## Run baseline SPO comparison (CASES=5)
 	@$(PYTHON) scripts/baseline_extraction_comparison.py \
 		--case-limit $(or $(CASES),5) --budget 0.10
+
+scale-test:  ## Run the governed entity-resolution value proof (STRATEGY=exact|fuzzy|llm)
+	@$(PYTHON) scripts/run_scale_test.py \
+		--strategy $(or $(STRATEGY),exact) \
+		--db-dir $(or $(DB_DIR),var/scale_test)
+
+scale-baseline:  ## Run the bare entity-extraction baseline on the synthetic corpus
+	@$(PYTHON) scripts/run_bare_entity_baseline.py \
+		--budget $(or $(BUDGET),0.10)
 
 schema:  ## Print the extraction JSON schema
 	@$(PYTHON) -c "\

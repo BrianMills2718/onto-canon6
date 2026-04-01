@@ -215,7 +215,7 @@ class EntityResolutionValueProofReport(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
     generated_at: str = Field(default_factory=lambda: datetime.now(UTC).isoformat())
-    db_path: str = Field(min_length=1)
+    state_ref: str = Field(min_length=1)
     strategy: str = Field(min_length=1)
     corpus_description: str = Field(min_length=1)
     scoring_rules: tuple[str, ...] = ()
@@ -256,6 +256,25 @@ def build_entity_resolution_value_proof_report(
     """Build a typed value-proof report from one promoted-graph database."""
 
     observations = collect_entity_observations(db_path=db_path)
+    return build_value_proof_report_from_observations(
+        state_ref=str(db_path),
+        observations=observations,
+        ground_truth=ground_truth,
+        questions=questions,
+        strategy=strategy,
+    )
+
+
+def build_value_proof_report_from_observations(
+    *,
+    state_ref: str,
+    observations: tuple[EntityObservation, ...],
+    ground_truth: EntityResolutionGroundTruth,
+    questions: ValueProofQuestionFixture,
+    strategy: str,
+) -> EntityResolutionValueProofReport:
+    """Build a typed value-proof report from already-collected observations."""
+
     matched_observations = match_observations_to_ground_truth(
         observations=observations,
         ground_truth=ground_truth,
@@ -266,7 +285,7 @@ def build_entity_resolution_value_proof_report(
         questions=questions,
     )
     return EntityResolutionValueProofReport(
-        db_path=str(db_path),
+        state_ref=state_ref,
         strategy=strategy,
         corpus_description=ground_truth.description,
         scoring_rules=(

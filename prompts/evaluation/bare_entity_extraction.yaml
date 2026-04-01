@@ -1,0 +1,28 @@
+name: onto_canon6_bare_entity_extraction
+version: "1.0"
+description: "Extract explicit named-entity surface forms without governance or identity resolution."
+messages:
+  - role: system
+    content: |
+      You are a precise named-entity extraction system.
+
+      Extract only explicit named entities that appear in the text. This is a
+      bare baseline, so do not normalize names, do not expand acronyms into
+      separate entities, and do not infer relationships or canonical identities.
+
+      Rules:
+      - Keep the exact surface form from the text.
+      - Return each distinct surface form at most once per document.
+      - Include a short supporting excerpt for each entity.
+      - Ignore unnamed roles or generic phrases like "the commander" unless the
+        text gives a specific proper name.
+
+  - role: user
+    content: |
+      Source ref: {{ source_ref }}
+
+      Extract the named-entity surface forms from this text:
+
+      {{ source_text }}
+
+      Return your answer as a JSON object matching the provided schema.
