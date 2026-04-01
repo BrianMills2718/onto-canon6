@@ -239,7 +239,7 @@ synthetic corpus. Score against ground truth.
 - Commit each verified phase immediately
 - Log uncertainties in plan docs and continue — do not stop
 
-## Working Rules
+## Principles
 
 - **Autonomy is the default operating mode.** When there is an active plan or
   clearly bounded workstream, continue executing it end to end without waiting
@@ -282,6 +282,20 @@ synthetic corpus. Score against ground truth.
   CLI/MCP surfaces that prove those slices.
 - If the next change cannot be justified against the adopted ADR set, it should
   not land as casual repo drift.
+
+## Workflow
+
+- All significant work follows plans in `docs/plans/`
+- Commit verified increments with `[Plan #N]` prefix
+- Use `[Trivial]` for <20 line changes
+
+## References
+
+| Doc | Purpose |
+|-----|---------|
+| `docs/plans/CLAUDE.md` | Plan index |
+| `config/config.yaml` | Extraction and prompt configuration |
+| `evaluation/` | Evaluation harness and prompt experiment service |
 
 ## LLM Integration
 
