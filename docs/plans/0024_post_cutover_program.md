@@ -311,7 +311,8 @@ Lane 5 now has an explicit classification surface. The current next-active
 order after the active gates is:
 
 1. finish the entity-resolution value proof under Plan 0025;
-2. plan a first browse/search surface for `onto-canon6` queryability;
+2. activate [0028_query_browse_surface.md](0028_query_browse_surface.md) for a
+   first browse/search surface over promoted knowledge;
 3. keep richer DIGIMON interchange consumer-blocked rather than silently
    widening the supported v1 seam.
 

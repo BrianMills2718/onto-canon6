@@ -153,7 +153,7 @@ Assuming Lane 4 remains the active extraction gate, the next deferred-capability
 order is:
 
 1. finish the value-proof stage of [0025_cross_document_entity_resolution.md](0025_cross_document_entity_resolution.md);
-2. write a dedicated browse/search execution plan for `onto-canon6` queryability;
+2. execute the browse/search execution plan in [0028_query_browse_surface.md](0028_query_browse_surface.md);
 3. keep richer DIGIMON interchange experimental and consumer-blocked under
    DIGIMON Plan 23;
 4. revisit direct CRUD / trusted fast-path ingestion only if a real bulk-source
@@ -163,13 +163,10 @@ order is:
 
 The following future execution plans are now justified when bandwidth allows:
 
-1. **Browse/search surface plan**
-   - should decide CLI vs MCP vs both
-   - should define what counts as minimum useful queryability
-2. **Trusted bulk ingestion plan**
+1. **Trusted bulk ingestion plan**
    - should only activate if a real consumer forces it
    - must preserve fail-loud governance and provenance semantics
-3. **Richer DIGIMON interchange plan**
+2. **Richer DIGIMON interchange plan**
    - remains downstream of DIGIMON Plan 23 experiment evidence
    - should be versioned as a new seam, not a silent mutation of v1
 

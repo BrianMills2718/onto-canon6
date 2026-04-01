@@ -13,6 +13,7 @@ This subtree owns active gaps, acceptance criteria, and verification notes.
 | 0025 | [Cross-Document Entity Resolution](0025_cross_document_entity_resolution.md) | In progress (Phases 1-3 landed; first scale runs done; value proof still open) |
 | 0025a | [Entity Resolution Scale-Out](0025a_entity_resolution_scale_out.md) | Deferred (activates after 0025 Phase 4) |
 | 0027 | [Deferred Parity Reprioritization](0027_deferred_parity_reprioritization.md) | Active (Lane 5 execution surface; next-active order now explicit) |
+| 0028 | [Query And Browse Surface](0028_query_browse_surface.md) | Planned (next-active queryability recovery plan; awaits activation after 0025 value proof) |
 | 0014 | [Extraction Quality Baseline](0014_extraction_quality_baseline.md) | Active (explicit promotion gate defined; operational transfer proof still open) |
 | 0020 | [Vision Gap Closure](0020_vision_gap_closure.md) | Active (tracking) |
 
