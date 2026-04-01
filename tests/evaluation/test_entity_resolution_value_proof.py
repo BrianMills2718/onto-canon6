@@ -6,6 +6,7 @@ from onto_canon6.evaluation.entity_resolution_value_proof import (
     EntityObservation,
     EntityResolutionGroundTruth,
     ValueProofQuestionFixture,
+    _source_descriptor_aliases,
     compute_pairwise_metrics,
     match_observations_to_ground_truth,
     score_value_proof_questions,
@@ -220,6 +221,16 @@ def test_match_observations_does_not_use_doc_overlap_when_named_surface_misses()
     assert matched[0].matched_ground_truth_entity_id is None
     assert matched[0].candidate_ground_truth_entity_ids == ()
     assert matched[0].match_reason == "no ground-truth variant match"
+
+
+def test_source_descriptor_aliases_recovers_the_agency_surface() -> None:
+    """Definite organization descriptors in source text should become alias surfaces."""
+
+    aliases = _source_descriptor_aliases(
+        "Eric Olson met with officials from the CIA at the agency's headquarters in Washington."
+    )
+
+    assert aliases == ("the Agency",)
 
 
 def test_compute_pairwise_metrics_reports_false_merges_and_false_splits() -> None:

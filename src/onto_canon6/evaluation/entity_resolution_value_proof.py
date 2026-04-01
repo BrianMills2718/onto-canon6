@@ -15,9 +15,11 @@ surface. It does not guess from aggregate identity counts. Instead it:
 
 from __future__ import annotations
 
+from collections import defaultdict
 from datetime import UTC, datetime
 import json
 from pathlib import Path
+import re
 import sqlite3
 from typing import Literal
 
@@ -334,7 +336,8 @@ def collect_entity_observations(*, db_path: Path) -> tuple[EntityObservation, ..
             """
             SELECT
                 pa.normalized_body_json,
-                ca.source_ref
+                ca.source_ref,
+                ca.source_text
             FROM promoted_graph_assertions pa
             JOIN candidate_assertions ca
               ON ca.candidate_id = pa.source_candidate_id
@@ -348,10 +351,15 @@ def collect_entity_observations(*, db_path: Path) -> tuple[EntityObservation, ..
     docs_by_entity: dict[str, set[str]] = {
         str(row["entity_id"]): set() for row in entity_rows
     }
+    organization_entities_by_source: dict[str, set[str]] = defaultdict(set)
+    source_text_by_source: dict[str, str] = {}
 
     for row in assertion_rows:
         normalized_body = json.loads(str(row["normalized_body_json"]))
         source_ref = str(row["source_ref"])
+        source_text = str(row["source_text"]) if row["source_text"] is not None else ""
+        if source_text:
+            source_text_by_source[source_ref] = source_text
         roles = normalized_body.get("roles")
         if not isinstance(roles, dict):
             continue
@@ -369,6 +377,18 @@ def collect_entity_observations(*, db_path: Path) -> tuple[EntityObservation, ..
                     docs_by_entity[entity_id].add(source_ref)
                     if isinstance(name, str) and name.strip():
                         names_by_entity[entity_id].add(name.strip())
+                    entity_type = str(filler.get("entity_type") or "")
+                    if _entity_resolution_family(entity_type, name if isinstance(name, str) else None) == "organization":
+                        organization_entities_by_source[source_ref].add(entity_id)
+
+    for source_ref, entity_ids in organization_entities_by_source.items():
+        if len(entity_ids) != 1:
+            continue
+        source_text = source_text_by_source.get(source_ref, "")
+        if not source_text:
+            continue
+        entity_id = next(iter(entity_ids))
+        names_by_entity[entity_id].update(_source_descriptor_aliases(source_text))
 
     observations: list[EntityObservation] = []
     for row in entity_rows:
@@ -388,6 +408,33 @@ def collect_entity_observations(*, db_path: Path) -> tuple[EntityObservation, ..
             )
         )
     return tuple(observations)
+
+
+_ORGANIZATION_DESCRIPTOR_HEADS = (
+    "agency",
+    "bureau",
+    "command",
+    "department",
+    "group",
+    "office",
+    "organization",
+    "unit",
+    "university",
+)
+
+
+def _source_descriptor_aliases(source_text: str) -> tuple[str, ...]:
+    """Return conservative organization aliases explicitly present in one source text."""
+
+    lowered = source_text.lower()
+    aliases: set[str] = set()
+    for head in _ORGANIZATION_DESCRIPTOR_HEADS:
+        if re.search(rf"\bthe {head}\b", lowered) or re.search(rf"\bthe {head}'s\b", lowered):
+            aliases.add(f"the {head.title()}")
+            continue
+        if re.search(rf"\b{head} leadership\b", lowered):
+            aliases.add(f"the {head.title()}")
+    return tuple(sorted(aliases))
 
 
 def match_observations_to_ground_truth(
