@@ -51,13 +51,3 @@ subtype of organization) but the type guard in entity resolution treats them as
 different types, preventing merge. The type guard should use type hierarchy
 (is-a relationship) not exact match.
 
-### 2026-03-31 — claude-code — best-practice
-DIGIMON export adapter models (`DigimonEntityRecord`, `DigimonRelationshipRecord`)
-lack `extra="forbid"` per the root CLAUDE.md Data Contracts rule ("Producer
-models: `extra='forbid'`"). Fix when next touching the adapter.
-
-### 2026-03-31 — claude-code — best-practice
-Decisions D1 (`require_llm_review`) and D6 (DIGIMON as first consumer) are
-documented as design decisions in Plan 0025 but do not have standalone ADRs
-in `docs/adr/`. Create ADRs 0024-0025 after the scale test (Plan 0025 Phase 4)
-validates these decisions with measured results.

@@ -328,6 +328,31 @@ claiming a value proof.
 **Current handling:** no user decision is required yet, but this must be fixed
 before Phase 4 is declared complete.
 
+### Q5: Create standalone ADRs for D1 and D6?
+**Status:** Deferred until scale test validates decisions
+**Why it matters:** D1 (require_llm_review for all merges) and D6 (DIGIMON as
+first consumer) are architectural decisions currently documented only in this
+plan's Design Decisions section. They should become ADRs 0024-0025 once the
+scale test (Phase 4) produces measured results that validate them.
+**Trigger:** Create ADRs when Phase 4 acceptance criteria are met.
+
+### Q6: DIGIMON export adapter Data Contracts compliance
+**Status:** Deferred until next adapter touch
+**Why it matters:** Root CLAUDE.md Data Contracts rule says producer models
+should use `extra="forbid"`. `DigimonEntityRecord` and `DigimonRelationshipRecord`
+in `adapters/digimon_export.py` don't have this. Low risk (no unknown fields
+expected) but technically non-compliant.
+**Trigger:** Fix when next modifying the DIGIMON export adapter.
+
+### Q7: Entity type guard should use type hierarchy, not exact match
+**Status:** Deferred
+**Why it matters:** The type guard in entity resolution uses exact entity_type
+match. But `oc:military_organization` is a subtype of `oc:organization`. The
+same entity extracted as different subtypes across documents won't merge.
+Should use the ontology's is-a hierarchy for type comparison.
+**Trigger:** Fix when entity type inconsistency shows up as false splits in
+the scale test precision/recall measurements.
+
 ## Design Decisions (2026-03-31 session)
 
 ### D1: All merges go through LLM review (configurable)
