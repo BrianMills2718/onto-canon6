@@ -183,6 +183,11 @@ A short consumer integration note or plan update naming:
 Define when the successor contracts are stable enough for other projects to rely
 on them.
 
+#### Execution Surface
+
+This lane now executes through
+[0026_schema_stability_gate.md](0026_schema_stability_gate.md).
+
 #### Tasks
 
 1. choose the contract surfaces that matter:

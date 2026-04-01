@@ -53,9 +53,10 @@ config/
 - Predicate Canon bridge, ancestor-aware evaluator, and Digimon export
   adapter operational.
 - **Active work**: extraction quality hardening (Plan 0014), vision-gap closure
-  tracking (Plan 0020), and the post-cutover execution program (Plan 0024).
-  The chunk-level transfer evaluation requirement remains active through
-  ADR 0023 and Plan 0024 even though there is no standalone Plan 0019 file.
+  tracking (Plan 0020), the post-cutover execution program (Plan 0024), and
+  the explicit schema-stability gate (Plan 0026). The chunk-level transfer
+  evaluation requirement remains active through ADR 0023 and Plans 0024/0014
+  even though there is no standalone Plan 0019 file.
 
 ## Strategic Direction (2026-03-31)
 
