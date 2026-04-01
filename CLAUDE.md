@@ -199,27 +199,45 @@ happens.
    resolution *infrastructure*. Export adapters wire the identity subsystem.
    Consumers should not have to reimplement dedup.
 
-## Active Execution Block (2026-03-31)
+## Active Execution Block (2026-03-31 night run)
 
-**Plan 0025: Cross-Document Entity Resolution — Phases 1-4.**
+**CONTINUOUS AUTONOMOUS EXECUTION. DO NOT STOP.**
 
-Execute continuously. Do NOT stop after completing one phase — immediately
-proceed to the next. The only valid stop conditions are:
-1. All 4 phases complete
-2. A real blocker that cannot be resolved from plan context
-3. A material uncertainty not covered by the pre-made decisions below
+Execute the phases below in order. When one phase completes, immediately start
+the next. Log uncertainties and continue — do not stop to ask. Commit after
+every verified phase as a rollback point. Use tasks to track progress.
 
-Pre-made decisions (do not ask about these):
-- Config defaults: `review_mode: llm`, `enable_judge_filter: true`
-- `require_llm_review: true` — all merges (even exact) go through LLM validation (D1)
-- DIGIMON is the first Lane 2 consumer — v1 export/import verified 2026-03-31 (D6)
-- Fuzzy matching is a pre-filter for LLM validation, not an independent merge strategy
-- Synthetic corpus for Phase 4 (controlled ground truth)
-- Single LLM call per entity type; batch if token count exceeds threshold
+The ONLY valid stop conditions are:
+1. All phases complete
+2. A real blocker that requires Brian's input AND cannot be worked around
+3. LLM API is down for >10 minutes (log it and try the next phase)
+
+### Phase A: Fix extraction noise (Plan 0014 known issue)
+**Goal**: Reduce noise entities ("met", "a ceremony", etc.) from extraction.
+**Success**: Re-run scale test, precision >90% (currently 77.8%).
+**Approach**: Add discriminating instruction to extraction prompt. Re-run on
+synthetic corpus. Score against ground truth.
+
+### Phase B: Plan 0025 Phase 4d — bare extraction comparison
+**Goal**: Prove onto-canon6 pipeline beats simple extraction on cross-doc tasks.
+**Success**: Documented comparison showing onto-canon6 resolves more entities.
+**Approach**: Write bare extraction script, run on same corpus, score, compare.
+
+### Phase C: Plan 0025 Phase 4e — cross-document QA evaluation
+**Goal**: Prove downstream answer quality improves with resolution.
+**Success**: 10+ cross-document questions answered measurably better.
+**Approach**: Write question set, query both pipelines, LLM-judge score.
+
+### Phase D: Update all plans with final results
+**Goal**: All plan docs reflect measured results.
+**Success**: Plan 0025 Phase 4 acceptance checked. Plan 0024 Lane 2 updated.
+
+**Pre-made decisions (apply to all phases):**
+- Config: `review_mode: llm`, `enable_judge_filter: true`, `require_llm_review: true`
+- DIGIMON is the first Lane 2 consumer (D6)
 - All LLM calls through llm_client with task/trace_id/max_budget
-- Prompt templates in `prompts/resolution/` as YAML/Jinja2
-- Off-the-shelf evaluation done: KGGen cluster() and nameparser rejected (D5)
 - Commit each verified phase immediately
+- Log uncertainties in plan docs and continue — do not stop
 
 ## Working Rules
 
