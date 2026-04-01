@@ -1,38 +1,47 @@
 # TODO
 
-## Most Recent 24h Execution Block
+## Current 24h Execution Block
+
+Source of truth:
+- `docs/plans/0032_24h_entity_resolution_recall_recovery_block.md`
+
+### Phase 1 — Freeze The Recovery Contract
+- [x] Make Plan 0032 the active execution surface
+- [x] Freeze the targeted failure families and thresholds
+- [ ] Commit verified phase
+
+### Phase 2 — Remove Extraction Document Loss
+- [ ] Reproduce and localize the `event` / malformed-unknown extraction failure
+- [ ] Fix the boundary so one malformed candidate does not lose a whole doc
+- [ ] Add/update targeted tests
+- [ ] Commit verified phase
+
+### Phase 3 — Recover Alias And Answerability Families
+- [ ] Improve org / installation alias handling
+- [ ] Improve abbreviated person unique-cluster handling
+- [ ] Keep the same-surname safety family green
+- [ ] Add/update targeted regression tests
+- [ ] Commit verified phase
+
+### Phase 4 — Refresh The LLM Value Proof
+- [ ] Rerun LLM strategy on a fresh DB
+- [ ] Write refreshed decision-grade run note
+- [ ] Commit verified phase
+
+### Phase 5 — Closeout
+- [ ] Refresh docs/status/handoff
+- [ ] Mark execution block complete
+- [ ] Commit verified phase
+
+## Most Recent Completed 24h Execution Block
 
 Source of truth:
 - `docs/plans/0031_24h_entity_resolution_hardening_block.md`
 
-### Phase 1 — Freeze The Hardening Contract
-- [x] Make Plan 0031 the active execution surface
-- [x] Freeze the targeted failure families and thresholds
-- [x] Commit verified phase
-
-### Phase 2 — Fix Auto-Review Judge Parity
-- [x] Remove or modernize the stale `_judge_candidate()` path
-- [x] Ensure explicit `judge_model_override` is honored in auto-review
-- [x] Add/update tests for the seam
-- [x] Commit verified phase
-
-### Phase 3 — Harden Resolution Decisions
-- [x] Add deterministic same-surname person disambiguation
-- [x] Make resolution type compatibility hierarchy-aware or override-aware
-- [x] Strengthen prompt or post-LLM validation accordingly
-- [x] Add targeted regression tests
-- [x] Commit verified phase
-
-### Phase 4 — Refresh The Value Proof
-- [x] Rerun exact strategy on a fresh DB
-- [x] Rerun LLM strategy on a fresh DB
-- [x] Write refreshed decision-grade run note
-- [x] Commit verified phase
-
-### Phase 5 — Closeout
-- [x] Refresh docs/status/handoff
-- [x] Mark execution block complete
-- [x] Commit verified phase
+- [x] Judge-path parity fixed
+- [x] Same-surname false-merge family removed
+- [x] Fresh exact + LLM reruns recorded
+- [x] Decision note written and block closed
 
 ## Next Active Work
 

@@ -69,6 +69,9 @@ The completed value-proof block and the follow-on hardening block showed:
 Latest decision artifact:
 
 1. `docs/runs/2026-04-01_entity_resolution_hardening_rerun.md`
+2. `docs/plans/0032_24h_entity_resolution_recall_recovery_block.md` now owns
+   the next bounded pass over the remaining document-loss and
+   alias/answerability failures.
 
 ## What Exists Today
 

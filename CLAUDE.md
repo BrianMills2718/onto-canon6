@@ -12,12 +12,13 @@ runtime.
 4. `docs/plans/0024_post_cutover_program.md`
 5. `docs/plans/0025_cross_document_entity_resolution.md` (current active implementation work)
 6. `docs/plans/0031_24h_entity_resolution_hardening_block.md` (completed hardening block; latest rerun decision)
-7. `docs/plans/0026_schema_stability_gate.md` (completed Lane 3 contract policy)
-8. `docs/plans/0014_extraction_quality_baseline.md` (active Lane 4 promotion gate)
-9. `docs/plans/0027_deferred_parity_reprioritization.md`
-10. `docs/plans/0028_query_browse_surface.md`
-11. `docs/plans/0005_v1_capability_parity_matrix.md`
-12. `docs/plans/0001_successor_roadmap.md`
+7. `docs/plans/0032_24h_entity_resolution_recall_recovery_block.md` (current active execution block)
+8. `docs/plans/0026_schema_stability_gate.md` (completed Lane 3 contract policy)
+9. `docs/plans/0014_extraction_quality_baseline.md` (active Lane 4 promotion gate)
+10. `docs/plans/0027_deferred_parity_reprioritization.md`
+11. `docs/plans/0028_query_browse_surface.md`
+12. `docs/plans/0005_v1_capability_parity_matrix.md`
+13. `docs/plans/0001_successor_roadmap.md`
 
 ## Commands
 
@@ -71,7 +72,9 @@ config/
   removed the known same-surname false-merge family, and reran the value
   proof. The result is stricter: LLM resolution is now safe on that prior
   merge family, but still not promotable as default because recall and
-  fixed-question answerability remain too weak.
+  fixed-question answerability remain too weak. The active bounded block is
+  now Plan 0032, which targets the remaining document-loss, alias-recovery,
+  and unique-cluster answerability failures on the same fixed corpus.
   The chunk-level transfer evaluation requirement remains active through
   ADR 0023 and Plans 0024/0014 even though there is no standalone Plan 0019
   file.
@@ -223,6 +226,36 @@ happens.
    *strategy* (exact name, Q-code, never merge); onto-canon6 provides the
    resolution *infrastructure*. Export adapters wire the identity subsystem.
    Consumers should not have to reimplement dedup.
+
+## Active Execution Block (2026-04-01)
+
+**Plan 0032: 24h Entity Resolution Recall Recovery Block — active until fully closed.**
+
+Execute continuously and do not pause between phases. Finish the current
+phase, update the plan/TODO surfaces, commit the verified increment, and move
+immediately to the next phase. Never stop at "one extraction fix landed" or
+"one alias family improved." The block is not done until all required phases,
+rerun artifacts, and closeout docs are finished.
+
+The only valid stop conditions are:
+
+1. all 5 phases in `docs/plans/0032_24h_entity_resolution_recall_recovery_block.md`
+   are complete and committed;
+2. a real blocker that cannot be resolved from repo context or the plan;
+3. a material uncertainty not covered by the pre-made decisions below.
+
+If a sub-phase is blocked, log the blocker in the active plan, `TODO.md`, and
+the run note, then continue with the next unblocked phase. Do not silently
+abandon a phase. Do not ask what to do next while the active block still has
+unfinished phases.
+
+Pre-made decisions (do not ask about these):
+- Work stays in the isolated `codex/onto-canon6-integration-planning` worktree
+- `exact` remains the default floor unless the block's rerun clears the new gate
+- The extraction/schema fix must remove document loss without inventing a new core filler kind
+- Alias recovery should prefer deterministic normalization and conservative validation before broad prompt churn
+- The Plan 0031 same-surname safety guard must remain intact
+- Commit each verified phase immediately
 
 ## Most Recent Execution Block (2026-04-01)
 
