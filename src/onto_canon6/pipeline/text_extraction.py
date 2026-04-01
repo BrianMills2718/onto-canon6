@@ -834,6 +834,23 @@ class TextExtractionService:
 _JUDGE_LABEL_ORDER = ["unsupported", "partially_supported", "supported"]
 
 
+class _JudgeJudgment(BaseModel):
+    """One candidate's reasonableness judgment from the LLM judge."""
+
+    model_config = ConfigDict(extra="ignore")
+
+    candidate_index: int
+    label: str  # "supported", "partially_supported", "unsupported"
+
+
+class _JudgeResult(BaseModel):
+    """LLM judge output for a batch of candidates."""
+
+    model_config = ConfigDict(extra="ignore")
+
+    judgments: list[_JudgeJudgment]
+
+
 def _apply_judge_filter(
     *,
     candidate_imports: list[CandidateAssertionImport],
@@ -847,11 +864,13 @@ def _apply_judge_filter(
     the minimum label threshold. Returns the filtered list.
     """
     try:
-        from llm_client import call_llm_structured
+        from llm_client import call_llm_structured, get_model
         import uuid
-    except ImportError:
-        logger.warning("llm_client not available — skipping judge filter")
-        return candidate_imports
+    except ImportError as exc:
+        raise RuntimeError(
+            "llm_client is required for judge filter; "
+            "run `pip install -e ~/projects/llm_client`"
+        ) from exc
 
     min_idx = _JUDGE_LABEL_ORDER.index(min_label) if min_label in _JUDGE_LABEL_ORDER else 0
 
@@ -879,41 +898,19 @@ def _apply_judge_filter(
             candidate_assertions_json=json.dumps(candidate_summaries, indent=2),
         )
 
-        response = call_llm_structured(
-            messages=rendered,
-            response_format={
-                "type": "json_schema",
-                "json_schema": {
-                    "name": "judge_result",
-                    "schema": {
-                        "type": "object",
-                        "properties": {
-                            "judgments": {
-                                "type": "array",
-                                "items": {
-                                    "type": "object",
-                                    "properties": {
-                                        "candidate_index": {"type": "integer"},
-                                        "label": {
-                                            "type": "string",
-                                            "enum": ["supported", "partially_supported", "unsupported"],
-                                        },
-                                    },
-                                    "required": ["candidate_index", "label"],
-                                },
-                            },
-                        },
-                        "required": ["judgments"],
-                    },
-                },
-            },
+        # Resolve model for judge calls
+        judge_model = config.extraction.model_override or "gemini/gemini-2.5-flash"
+
+        parsed_result, _meta = call_llm_structured(
+            judge_model,
+            rendered,
+            _JudgeResult,
             task=eval_config.judge_selection_task,
             trace_id=trace_id,
             max_budget=eval_config.judge_max_budget_usd,
         )
 
-        judgments = json.loads(response.content).get("judgments", [])
-        label_map = {j["candidate_index"]: j["label"] for j in judgments}
+        label_map = {j.candidate_index: j.label for j in parsed_result.judgments}
 
         filtered = []
         for i, ci in enumerate(candidate_imports):
@@ -934,9 +931,10 @@ def _apply_judge_filter(
         )
         return filtered
 
-    except Exception as exc:
-        logger.warning("judge filter failed, passing all candidates: %s", exc)
-        return candidate_imports
+    except Exception:
+        # Fail loud — do not silently pass all candidates through.
+        # If the judge is broken, the caller needs to know.
+        raise
 
 
 def candidate_import_from_extracted(

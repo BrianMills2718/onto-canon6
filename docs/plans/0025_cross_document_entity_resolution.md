@@ -63,14 +63,16 @@ beat the simpler alternatives clearly enough to count as the value proof?"
 
 | Capability | Status | Limitation |
 |---|---|---|
-| Exact-name grouping | Working | "Gen. Smith" ≠ "General John Smith" |
-| Fuzzy matching (rapidfuzz token_sort_ratio) | Working | Catches some variations, misses abbreviations/titles |
+| Exact-name grouping | Working | Now merges title variations via normalization |
+| Fuzzy matching (rapidfuzz token_sort_ratio) | Working | Pre-filter for LLM validation only |
 | Entity-type guard | Working | Prevents cross-type false merges |
 | Within-doc coreference (LLM) | Working | Resolves mentions within one extraction only |
 | Identity infrastructure | Working | Canonical + alias memberships, external refs |
-| **Cross-document resolution** | **Missing** | New extractions never compared to existing entities |
-| **Name normalization** | **Missing** | No title/honorific stripping |
-| **LLM-based entity clustering** | **Missing** | No "are these the same entity?" LLM calls |
+| Name normalization | **Implemented (Phase 1)** | Title/honorific stripping, abbreviation expansion |
+| LLM-based entity clustering | **Implemented (Phase 2)** | KGGen-style per-type clustering with fuzzy pre-filter |
+| Cross-document resolution | **Implemented (Phase 2+3)** | Wired into CLI + Makefile; first scale test results in docs/runs/ |
+| **All-merge LLM review** | **Design decision, not yet implemented** | Even exact matches should go through LLM validation (session 2026-03-31) |
+| **Subset/containment relationships** | **Design needed** | "USSOCOM" vs "USSOCOM headquarters" — merge vs related-but-distinct |
 
 ## Approach
 
@@ -325,6 +327,50 @@ synthetic corpora. The repo should choose one explicit canonical slice before
 claiming a value proof.
 **Current handling:** no user decision is required yet, but this must be fixed
 before Phase 4 is declared complete.
+
+## Design Decisions (2026-03-31 session)
+
+### D1: All merges go through LLM review
+
+Even exact-name matches should be validated by LLM with context before merging.
+Rationale: "CIA" could be "Culinary Institute of America" in a different context.
+Two different "John Smiths" exist. The LLM sees the assertion context and can
+distinguish. Exact and fuzzy matching become candidate-generation strategies;
+LLM always validates.
+
+**Status**: Decision made, not yet implemented. Current code auto-merges exact
+matches without LLM review. Needs design update to auto_resolution.py.
+
+### D2: Subset/containment relationships need a design decision
+
+"USSOCOM" and "USSOCOM headquarters" are related but not the same entity.
+The current identity model only supports "same entity" (merge) or "different
+entity" (don't merge). A third option is needed: "related but distinct."
+
+Options:
+1. New field on identity membership (relationship_kind: same | part_of | specification_of)
+2. Separate relationship table between identities
+3. Leave to downstream consumers (Digimon already has relationship types)
+
+**Status**: Design needed. Deferred — not blocking the value proof.
+
+### D3: Fail loud is non-negotiable
+
+Silent fallbacks (try/except that degrades gracefully) are prohibited per
+CLAUDE.md rules. The judge filter and LLM clustering both had silent fallbacks
+that hid bugs. All removed. Errors now raise.
+
+### D4: Judge filter API fixed
+
+The `call_llm_structured` call in the judge filter was using a stale API
+(missing `model` positional arg, raw JSON schema instead of Pydantic model).
+Fixed to use `_JudgeResult` Pydantic model and pass model as first arg.
+
+### D5: DIGIMON chosen as first Lane 2 consumer
+
+Per CLAUDE.md update (2026-03-31): DIGIMON is the first consumer workflow.
+The supported seam is: onto-canon6 exports flat entities.jsonl / relationships.jsonl,
+DIGIMON imports via scripts/import_onto_canon_jsonl.py.
 
 ## Relationship to Other Plans
 

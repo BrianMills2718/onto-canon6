@@ -17,3 +17,36 @@ script, not `python -m onto_canon6.cli`. `src/onto_canon6/cli.py` exposes
 onto_canon6.cli export-digimon ...` exits without writing JSONL. Use the
 console script in docs and verification commands until the module entrypoint is
 made explicit.
+
+### 2026-03-31 — claude-code — bug-pattern
+Judge filter (`_apply_judge_filter` in `text_extraction.py`) was calling
+`call_llm_structured` with a stale API: missing `model` positional arg and
+passing raw JSON Schema dict instead of Pydantic `response_model`. Fixed by
+adding `_JudgeResult` Pydantic model and passing model as first arg. The bug
+was hidden by a silent `except Exception` fallback that passed all candidates
+through — violating the fail-loud rule. Silent fallback removed.
+
+### 2026-03-31 — claude-code — bug-pattern
+LLM entity clustering (`_group_by_llm` in `auto_resolution.py`) had three
+silent fallback paths (prompt render failure, LLM call failure, parse failure)
+that all fell back to fuzzy matching without raising. On first scale test run,
+ALL entity types fell back to fuzzy because the prompt YAML format was wrong
+(bare `system`/`user` keys instead of llm_client's `messages` list format).
+The system appeared to work but was doing the wrong thing. Fixed: all fallbacks
+removed, errors raise.
+
+### 2026-03-31 — claude-code — schema-gotcha
+LLM extraction produces noise entities from descriptive phrases: "several
+initiatives to modernize its force structure", "met", "a ceremony",
+"a joint conference". These survive structural validation because they have
+valid entity types. The judge filter (now fixed) should catch these as
+unsupported, but the extraction prompt may also need a discriminating
+instruction to avoid extracting noun phrases as entities.
+
+### 2026-03-31 — claude-code — schema-gotcha
+Entity type inconsistency across documents: the same USSOCOM entity gets typed
+as `oc:military_organization` in one extraction and `oc:organization` in
+another. The ontology pack should normalize these (military_organization is a
+subtype of organization) but the type guard in entity resolution treats them as
+different types, preventing merge. The type guard should use type hierarchy
+(is-a relationship) not exact match.
