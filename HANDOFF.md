@@ -2,6 +2,51 @@
 
 ## Session Focus
 
+Plan 0031: 24h entity-resolution hardening block in the isolated
+worktree branch `codex/onto-canon6-integration-planning`.
+
+## What Landed
+
+Committed in the isolated worktree as:
+
+- `b83de81` — `Start Plan 0031 entity resolution hardening block`
+- `9a7b3c3` — `Fix auto-review judge parity for Plan 0031`
+- `78bbc8f` — `Harden Plan 0031 resolution decisions`
+- `41d8f02` — `Close Plan 0031 hardening block`
+
+Main effects:
+
+1. the stale `_judge_candidate()` seam now honors explicit bounded judge-model
+   overrides and no longer fail-opens to acceptance on judge failure;
+2. deterministic person-name hardening removed the prior same-surname false
+   merge family;
+3. subtype-equivalent org/place mentions are no longer pre-rejected before LLM
+   clustering;
+4. fresh hardened exact and LLM rerun artifacts now live in:
+   - `docs/runs/scale_test_exact_2026-04-01_073211.json`
+   - `docs/runs/scale_test_llm_2026-04-01_074236.json`
+   - `docs/runs/2026-04-01_entity_resolution_hardening_rerun.md`
+
+## Current State
+
+1. Plan 0031 is complete.
+2. The hardening block succeeded on safety, not on promotion:
+   - hardened exact: precision `1.00`, recall `0.244`, false merges `0`,
+     answer rate `0.80`, accuracy `0.40`
+   - hardened llm: precision `1.00`, recall `0.308`, false merges `0`,
+     answer rate `0.20`, accuracy `0.20`
+3. The prior `John Smith` / `James Smith` false-merge family is no longer the
+   active blocker.
+4. Plan 0025 remains active, and the next narrow frontier is:
+   - extraction/schema failure that emitted `kind: "event"` and dropped
+     `doc_06` from the hardened LLM rerun
+   - unresolved alias-heavy org / installation families
+   - weak unique-cluster resolution for abbreviated person mentions
+
+# Handoff: onto-canon6 — 2026-04-01
+
+## Session Focus
+
 Plan 0030: 24h entity-resolution value-proof execution block in the isolated
 worktree branch `codex/onto-canon6-integration-planning`.
 
