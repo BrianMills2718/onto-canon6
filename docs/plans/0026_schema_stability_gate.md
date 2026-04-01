@@ -1,8 +1,8 @@
 # Schema Stability Gate
 
-Status: active
+Status: complete (all 4 phases done, all exit criteria met)
 
-Last updated: 2026-03-31
+Last updated: 2026-04-01
 Workstream: Lane 3 of the post-cutover program
 
 ## Purpose
@@ -352,31 +352,82 @@ All tests verify that required fields are not removed and types are not
 changed. Breaking changes produce explicit assertion messages naming the
 affected model and field.
 
-### Phase 4: Classify Future Changes
+### Phase 4: Classify Future Changes — COMPLETE (2026-04-01)
 
-1. define the release-note expectation for:
-   - breaking
-   - compatibility-risking
-   - non-breaking
-2. require plan or ADR updates when a breaking change is intentional;
-3. require consumer coordination before breaking Surface C or D.
+Every change that touches a gated surface must be classified before merging.
 
-**Acceptance**
+#### Breaking changes (require ADR + consumer coordination)
 
-1. future agents can classify a change without reopening architecture debate;
-2. consumer-facing exports cannot change casually.
+A change is **breaking** if it would cause existing consumers to fail or
+produce incorrect results without code changes on their side:
+
+1. Removing or renaming a required field on any gated model.
+2. Changing a field's type incompatibly (e.g., `str` → `int`, `list` → `dict`).
+3. Changing the semantic meaning of a field (e.g., `weight` from confidence to
+   frequency) without renaming it.
+4. Changing export file names or CLI command names that consumers invoke.
+5. Changing promotion, acceptance, or review semantics that alter what data
+   appears in exports.
+
+**Required before landing a breaking change:**
+- New ADR documenting the change and rationale
+- Consumer coordination: notify DIGIMON maintainer (for Surface D) or
+  Foundation IR consumers (for Surface C) before merging
+- Update the canonical compatibility fixture to match the new schema
+- All compatibility tests must pass against the updated fixtures
+
+#### Compatibility-risking changes (require fixture review)
+
+A change is **compatibility-risking** if it might affect consumers but
+doesn't necessarily break them:
+
+1. Adding a new optional field to a gated model.
+2. Adding a new value to an enum-like string field.
+3. Changing default values for optional fields.
+4. Adding new entries to export files (e.g., new entity types).
+
+**Required before landing:**
+- Review whether any consumer parses with `extra="forbid"` (would reject new fields)
+- Update compatibility fixtures if field lists change
+- No ADR required, but document in commit message
+
+#### Non-breaking changes (no special process)
+
+1. Internal code refactoring that doesn't change model field names or types.
+2. Adding new tests or fixtures.
+3. Changing prompt templates (affects extraction quality, not schema).
+4. Changing model selection (affects extraction quality, not schema).
+5. Documentation updates.
+
+#### Examples
+
+| Change | Classification | Required |
+|--------|---------------|----------|
+| Rename `entity_name` to `name` on DigimonEntityRecord | Breaking | ADR + DIGIMON coordination |
+| Add `confidence_source: str \| None` to FoundationAssertion | Compatibility-risking | Fixture review |
+| Change extraction model from gemini-2.5-flash to gemini-3-flash | Non-breaking | Commit message |
+| Remove `description` from DigimonRelationshipRecord | Breaking | ADR + DIGIMON coordination |
+| Add new test in tests/compatibility/ | Non-breaking | Nothing special |
 
 ## Required Checks
 
-These are the current baseline checks. Phase 3 may refine them, but Lane 3
-must not claim completion without at least these classes of evidence.
+### Schema compatibility gate (Phase 3, implemented 2026-04-01)
 
-| Surface | Baseline check |
-|---------|----------------|
-| Promoted graph typed surface | `pytest -q tests/core/test_graph_service.py` |
-| Governed bundle surface | `pytest -q tests/surfaces/test_governed_bundle.py tests/integration/test_mcp_server.py` |
-| Foundation Assertion IR export | `pytest -q tests/adapters/test_foundation_assertion_export.py tests/pipeline/test_temporal_qualifiers.py` |
-| DIGIMON v1 export seam | `pytest -q tests/adapters/test_digimon_export.py` plus DIGIMON `tests/unit/test_onto_canon_import.py` |
+```bash
+pytest -q tests/compatibility/test_schema_stability.py
+```
+
+9 tests covering all 4 surfaces. Fails loud when gated fields are removed or
+types change.
+
+### Surface-specific baseline checks
+
+| Surface | Compatibility check | Functional check |
+|---------|-------------------|-----------------|
+| Promoted graph | `tests/compatibility/test_schema_stability.py::TestSurfaceA_PromotedGraph` | `tests/core/test_graph_service.py` |
+| Governed bundle | `tests/compatibility/test_schema_stability.py::TestSurfaceB_GovernedBundle` | `tests/surfaces/test_governed_bundle.py` |
+| Foundation IR | `tests/compatibility/test_schema_stability.py::TestSurfaceC_FoundationIR` | `tests/adapters/test_foundation_assertion_export.py` |
+| DIGIMON v1 export | `tests/compatibility/test_schema_stability.py::TestSurfaceD_DigimonExport` | `tests/adapters/test_digimon_export.py` + DIGIMON-side tests |
 
 ## Failure Modes
 
@@ -393,34 +444,34 @@ must not claim completion without at least these classes of evidence.
 ## Open Questions / Uncertainty Tracking
 
 ### Q1: Should Lane 3 snapshot raw JSON outputs or normalize them first?
-**Status:** Open
-**Decision pressure:** Medium
-**Current default:** normalize volatile fields first; do not snapshot raw temp
-paths or timestamps.
+**Status:** Resolved (2026-04-01)
+**Decision:** Fixture strategy is schema-contract based (field names + types),
+not snapshot-based. No volatile fields in fixtures. Normalization not needed.
 
 ### Q2: Does Surface A need a dedicated compatibility fixture beyond `test_graph_service.py`?
-**Status:** Open
-**Decision pressure:** Medium
-**Current default:** yes, eventually, but existing graph-service tests are the
-baseline owner check until Phase 2 formalizes the fixture.
+**Status:** Resolved (2026-04-01)
+**Decision:** Yes — `tests/fixtures/compatibility/promoted_graph.json` now
+exists with field contracts for all 3 models. `test_schema_stability.py`
+checks it.
 
 ### Q3: Should the DIGIMON consumer proof remain a real-data smoke artifact or become a fully automated cross-repo check?
-**Status:** Open
-**Decision pressure:** Low for now
-**Current default:** keep the real-data proof note as the baseline and defer a
-fully automated cross-repo check until the v1 seam stops shifting operationally.
+**Status:** Resolved for now
+**Decision:** Real-data proof note remains the baseline. The schema compatibility
+test (`TestSurfaceD_DigimonExport`) catches field-level breaks. Cross-repo
+automation deferred until v1 seam stabilizes further.
 
 ### Q4: Should additive optional fields on Foundation IR and governed bundle be treated as breaking by default?
-**Status:** Resolved for now
-**Decision:** treat them as compatibility-risking, not automatically safe.
-They require explicit check updates and doc review before promotion.
+**Status:** Resolved (2026-04-01)
+**Decision:** Treat as compatibility-risking (Phase 4 classification). Requires
+fixture review but not ADR or consumer coordination.
 
-## Exit Criteria
+## Exit Criteria — ALL MET (2026-04-01)
 
-Lane 3 is ready to close only when:
+| Criterion | Status |
+|---|---|
+| Four surfaces are the explicit authoritative scope | ✓ Phase 0 |
+| Each surface has written breaking-change rules | ✓ Phases 1 + 4 |
+| Each surface has at least one reproducible compatibility check | ✓ Phase 3 (9 tests) |
+| Future changes classifiable as breaking/compatible/non-breaking | ✓ Phase 4 |
 
-1. the four surfaces above are the explicit authoritative scope;
-2. each surface has written breaking-change rules;
-3. each surface has at least one reproducible compatibility owner check;
-4. the repo can name which future changes are breaking, compatibility-risking,
-   or non-breaking without reopening the plan.
+**Plan 0026 is COMPLETE.** Lane 3 of Plan 0024 is closed.
