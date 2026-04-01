@@ -200,7 +200,7 @@ happens.
    resolution *infrastructure*. Export adapters wire the identity subsystem.
    Consumers should not have to reimplement dedup.
 
-## Active Execution Block (2026-04-01)
+## Active Execution Block (2026-04-01 afternoon)
 
 **CONTINUOUS AUTONOMOUS EXECUTION. DO NOT STOP.**
 
@@ -211,44 +211,52 @@ every verified phase as a rollback point. Use tasks to track progress.
 The ONLY valid stop conditions are:
 1. All phases complete
 2. A real blocker that requires Brian's input AND cannot be worked around
-3. LLM API is down for >10 minutes (log it and try the next phase that doesn't need LLM)
+3. LLM API is down for >10 minutes (log it and try the next phase)
 
-### Phase E: Plan 0026 Phase 2 — Define compatibility artifacts
-**Goal**: Choose one deterministic compatibility artifact per schema surface.
-**Success**: Each of the 4 surfaces (promoted graph, governed bundle, Foundation
-IR, DIGIMON v1 export) has a named fixture/snapshot strategy with volatile
-field normalization rules decided.
-**Approach**: Create `tests/fixtures/compatibility/` directory. For each surface,
-generate a canonical fixture from the current code, normalize timestamps and
-nondeterministic IDs. Document normalization rules in Plan 0026.
+### Phase J: Plan 0026 Phase 4 — Change classification policy
+**Goal**: Define release-note expectations for breaking/compatible/non-breaking
+changes. Require plan or ADR updates for intentional breaking changes. Require
+consumer coordination before breaking Surface C or D.
+**Success**: Future agents can classify a change without reopening architecture
+debate. Consumer-facing exports cannot change casually.
+**Approach**: Add a "Change Classification" section to Plan 0026 with concrete
+rules and examples. This is documentation, not code.
 
-### Phase F: Plan 0026 Phase 3 — Implement minimum compatibility gate
-**Goal**: Each surface has at least one explicit compatibility check that fails
-loud when a gated field or behavior changes.
-**Success**: `make check` includes compatibility checks. All 4 surfaces have
-runnable owner checks.
-**Approach**: Write pytest fixtures that load the canonical artifacts and compare
-against current code output. Add to the test suite.
+### Phase K: Plan 0024 Lane 5 — Deferred parity reprioritization
+**Goal**: Review the parity matrix (Plan 0005) against real consumer friction
+and extraction findings. Classify each major deferred area as next-active,
+protected-deferred, consumer-blocked, or abandoned-with-rationale.
+**Success**: Parity matrix has updated dispositions. Next-active items named.
+**Approach**: Read Plan 0005, check each deferred row against what we learned
+from Plans 0025/0026/0014. Update dispositions. No code — planning only.
 
-### Phase G: Plan 0014 — Validate extraction quality on real corpus
-**Goal**: Confirm gemini-3-flash-preview + improved prompt produces clean
-extraction on non-synthetic text (e.g., the existing PSYOP benchmark).
-**Success**: Run extraction on 2-3 real PSYOP chunks. Score structural validity
-and noise entity rate. Document results in Plan 0014.
-**Approach**: Use existing benchmark fixture (`tests/fixtures/psyop_eval_slice.json`).
-Run extraction, count noise entities, compare to synthetic corpus results.
+### Phase L: Full 25-doc scale test with gemini-3-flash-preview
+**Goal**: Complete the partial scale test (previously 20/25 docs due to timeout).
+**Success**: All 25 docs extracted, resolution run, scored. Results in docs/runs/.
+**Approach**: Run scripts/run_scale_test.py with gemini-3-flash-preview. May need
+to run in background with longer timeout.
 
-### Phase H: Fix auto_resolution test hang
-**Goal**: The DB-backed auto_resolution tests (TestAutoResolveIdentities,
-TestFuzzyResolution) hang under pytest. Diagnose and fix.
-**Success**: `pytest tests/core/test_auto_resolution.py` runs to completion
-in <30 seconds.
-**Approach**: Investigate — likely SQLite lock contention or asyncio event loop
-issue from the LLM mock tests.
+### Phase M: require_llm_review integration test
+**Goal**: Test the `require_llm_review=true` flag with real data.
+**Success**: Run exact strategy with LLM validation on scale test DB. Verify
+LLM confirms correct merges and rejects false merges. Document results.
+**Approach**: Run auto_resolve_identities(strategy="exact", require_llm_review=True)
+on scale test data. Check that merges match ground truth.
 
-### Phase I: Update all plans and HANDOFF with final results
-**Goal**: All docs current after Phases E-H.
-**Success**: Plan 0026 updated. Plan 0014 updated. HANDOFF current.
+### Phase N: Data Contracts compliance (Q6)
+**Goal**: Add `extra="forbid"` to DIGIMON export adapter producer models per
+root CLAUDE.md Data Contracts rule.
+**Success**: DigimonEntityRecord and DigimonRelationshipRecord use extra="forbid".
+Tests pass.
+
+### Phase O: Module entrypoint fix (Plan 0014 known issue)
+**Goal**: Make `python -m onto_canon6.cli` work.
+**Success**: `python -m onto_canon6.cli --help` produces help text.
+**Approach**: Add `src/onto_canon6/__main__.py`.
+
+### Phase P: Update all plans and HANDOFF with final results
+**Goal**: All docs current after Phases J-O.
+**Success**: Plans 0005, 0024, 0026, 0014 updated. HANDOFF current.
 
 **Pre-made decisions (apply to all phases):**
 - Model: `gemini/gemini-3-flash-preview` (best tested)
