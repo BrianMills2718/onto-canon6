@@ -200,71 +200,41 @@ happens.
    resolution *infrastructure*. Export adapters wire the identity subsystem.
    Consumers should not have to reimplement dedup.
 
-## Active Execution Block (2026-04-01 afternoon)
+## Active Execution Block (2026-04-01 evening)
 
 **CONTINUOUS AUTONOMOUS EXECUTION. DO NOT STOP.**
 
-Execute the phases below in order. When one phase completes, immediately start
-the next. Log uncertainties and continue — do not stop to ask. Commit after
-every verified phase as a rollback point. Use tasks to track progress.
+Phases A-P complete (42 commits). Remaining work:
 
-The ONLY valid stop conditions are:
-1. All phases complete
-2. A real blocker that requires Brian's input AND cannot be worked around
-3. LLM API is down for >10 minutes (log it and try the next phase)
+### Phase Q: Concept/entity browsing CLI
+**Goal**: Agents and users can browse what's in the promoted graph — entities,
+assertions, identity clusters. This is the next-active capability from Lane 5.
+**Success**: CLI commands for: list-entities (with type filter), search-entities
+(name substring), get-entity-detail (assertions + identity + aliases).
+**Approach**: Add to cli.py. Query promoted graph store directly.
 
-### Phase J: Plan 0026 Phase 4 — Change classification policy
-**Goal**: Define release-note expectations for breaking/compatible/non-breaking
-changes. Require plan or ADR updates for intentional breaking changes. Require
-consumer coordination before breaking Surface C or D.
-**Success**: Future agents can classify a change without reopening architecture
-debate. Consumer-facing exports cannot change casually.
-**Approach**: Add a "Change Classification" section to Plan 0026 with concrete
-rules and examples. This is documentation, not code.
+### Phase R: Plan 0024 Lane 4 — Extraction quality promotion gate
+**Goal**: Formally promote the current extraction prompt + model combination
+with transfer evidence per ADR 0023.
+**Success**: Chunk-level transfer evaluation documented. Current prompt/model
+promoted as the production default with evidence.
+**Approach**: Run extraction on 2+ real PSYOP chunks, score with benchmark
+evaluator, document transfer evidence in Plan 0014.
 
-### Phase K: Plan 0024 Lane 5 — Deferred parity reprioritization
-**Goal**: Review the parity matrix (Plan 0005) against real consumer friction
-and extraction findings. Classify each major deferred area as next-active,
-protected-deferred, consumer-blocked, or abandoned-with-rationale.
-**Success**: Parity matrix has updated dispositions. Next-active items named.
-**Approach**: Read Plan 0005, check each deferred row against what we learned
-from Plans 0025/0026/0014. Update dispositions. No code — planning only.
+### Phase S: Clean up docs/runs/
+**Goal**: Remove intermediate/superseded scale test results. Keep only the
+final definitive results.
+**Success**: docs/runs/ has one result per strategy (exact, llm, exact+llm_review,
+bare_extraction, cross_doc_qa). No duplicates.
 
-### Phase L: Full 25-doc scale test with gemini-3-flash-preview
-**Goal**: Complete the partial scale test (previously 20/25 docs due to timeout).
-**Success**: All 25 docs extracted, resolution run, scored. Results in docs/runs/.
-**Approach**: Run scripts/run_scale_test.py with gemini-3-flash-preview. May need
-to run in background with longer timeout.
+### Phase T: Push to GitHub
+**Goal**: Push all 40+ commits to remote.
+**Success**: `git push` succeeds.
 
-### Phase M: require_llm_review integration test
-**Goal**: Test the `require_llm_review=true` flag with real data.
-**Success**: Run exact strategy with LLM validation on scale test DB. Verify
-LLM confirms correct merges and rejects false merges. Document results.
-**Approach**: Run auto_resolve_identities(strategy="exact", require_llm_review=True)
-on scale test data. Check that merges match ground truth.
-
-### Phase N: Data Contracts compliance (Q6)
-**Goal**: Add `extra="forbid"` to DIGIMON export adapter producer models per
-root CLAUDE.md Data Contracts rule.
-**Success**: DigimonEntityRecord and DigimonRelationshipRecord use extra="forbid".
-Tests pass.
-
-### Phase O: Module entrypoint fix (Plan 0014 known issue)
-**Goal**: Make `python -m onto_canon6.cli` work.
-**Success**: `python -m onto_canon6.cli --help` produces help text.
-**Approach**: Add `src/onto_canon6/__main__.py`.
-
-### Phase P: Update all plans and HANDOFF with final results
-**Goal**: All docs current after Phases J-O.
-**Success**: Plans 0005, 0024, 0026, 0014 updated. HANDOFF current.
-
-**Pre-made decisions (apply to all phases):**
-- Model: `gemini/gemini-3-flash-preview` (best tested)
+**Pre-made decisions:**
+- Model: `gemini/gemini-3-flash-preview`
 - Config: `review_mode: llm`, `enable_judge_filter: true`, `require_llm_review: true`
-- All LLM calls through llm_client with task/trace_id/max_budget
 - Commit each verified phase immediately
-- Log uncertainties in plan docs and continue — do not stop
-- If LLM quota hits: switch to gemini-2.5-flash-lite as fallback
 
 ## Principles
 
