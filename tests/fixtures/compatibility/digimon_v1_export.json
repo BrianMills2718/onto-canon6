@@ -1,0 +1,42 @@
+{
+  "surface": "digimon_v1_export",
+  "description": "Schema contract for DIGIMON v1 export seam.",
+  "models": {
+    "DigimonEntityRecord": {
+      "required_fields": [
+        "entity_name",
+        "source_id",
+        "entity_type",
+        "description",
+        "rank"
+      ],
+      "field_types": {
+        "entity_name": "<class 'str'>",
+        "source_id": "<class 'str'>",
+        "entity_type": "<class 'str'>",
+        "description": "<class 'str'>",
+        "rank": "<class 'int'>"
+      }
+    },
+    "DigimonRelationshipRecord": {
+      "required_fields": [
+        "src_id",
+        "tgt_id",
+        "relation_name",
+        "description",
+        "weight",
+        "keywords",
+        "source_id"
+      ],
+      "field_types": {
+        "src_id": "<class 'str'>",
+        "tgt_id": "<class 'str'>",
+        "relation_name": "<class 'str'>",
+        "description": "<class 'str'>",
+        "weight": "<class 'float'>",
+        "keywords": "<class 'str'>",
+        "source_id": "<class 'str'>"
+      }
+    }
+  }
+}
