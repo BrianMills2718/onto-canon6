@@ -166,6 +166,32 @@ The first CLI should likely add:
 The first MCP layer should mirror the CLI/service capabilities rather than
 inventing a different query grammar.
 
+### Phase 1 Contract Decisions (2026-03-31)
+
+The first implementation should use one dedicated module for typed query
+contracts plus one read service that returns those models.
+
+Recommended model set:
+
+1. `EntitySearchRequest`
+2. `EntitySearchResult`
+3. `GetEntityRequest`
+4. `EntityDetail`
+5. `AssertionSearchRequest`
+6. `AssertionSearchResult`
+7. `GetPromotedAssertionRequest`
+8. `PromotedAssertionDetail`
+9. `GetEvidenceRequest`
+10. `EvidenceBundle`
+
+Recommended service surface:
+
+1. `search_entities(request: EntitySearchRequest) -> tuple[EntitySearchResult, ...]`
+2. `get_entity(request: GetEntityRequest) -> EntityDetail`
+3. `search_promoted_assertions(request: AssertionSearchRequest) -> tuple[AssertionSearchResult, ...]`
+4. `get_promoted_assertion(request: GetPromotedAssertionRequest) -> PromotedAssertionDetail`
+5. `get_evidence(request: GetEvidenceRequest) -> EvidenceBundle`
+
 ## Search Semantics
 
 These are fixed unless a later ADR changes them.
@@ -189,6 +215,49 @@ These are fixed unless a later ADR changes them.
    - optional candidate/provenance expansion when directly available
 5. **Ordering**
    - deterministic and documented; no "best effort" ordering language
+
+## Failure Semantics
+
+These are fixed for the first slice:
+
+1. invalid filter combinations are `ValueError` at the service boundary;
+2. unsupported filter keys are not ignored silently;
+3. missing entity/assertion ids raise the repo's typed not-found errors where
+   those already exist, or a dedicated query-layer not-found error if needed;
+4. empty search results are valid and return an empty tuple, not an error;
+5. evidence lookup fails loudly if the referenced promoted assertion exists but
+   the supporting candidate/provenance link is inconsistent.
+
+## Response Content Decisions
+
+1. `EntitySearchResult` should include:
+   - canonical `identity_id` when available
+   - matched `entity_id`
+   - display label / matched name
+   - entity type
+   - match reason (`canonical_exact`, `alias_exact`, `prefix`, `substring`)
+2. `EntityDetail` should include:
+   - identity bundle when present
+   - linked promoted assertion ids
+   - linked canonical/alias memberships
+   - attached and unresolved external references
+3. `AssertionSearchResult` should include:
+   - `assertion_id`
+   - `predicate`
+   - `claim_text`
+   - linked entity ids
+   - optional confidence/disposition summary
+4. `PromotedAssertionDetail` should include:
+   - promotion result
+   - linked source candidate
+   - linked epistemic summary
+   - direct provenance refs / artifact links where available
+5. `EvidenceBundle` should include:
+   - supporting candidate id
+   - source text / claim text when available
+   - evidence spans
+   - provenance/artifact links
+   - source metadata refs when available
 
 ## Execution Plan
 
@@ -216,6 +285,8 @@ These are fixed unless a later ADR changes them.
 
 1. every operation has a typed request/response shape;
 2. unsupported filters are explicit errors, not ignored inputs.
+
+**Implementation status (2026-03-31): contract shape pre-decided**
 
 ### Phase 2: Implement Shared Read Service
 
