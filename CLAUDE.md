@@ -232,6 +232,37 @@ Pre-made decisions (do not ask about these):
 - Prompt templates in `prompts/resolution/` as YAML/Jinja2
 - Commit each verified phase immediately
 
+## Active 24h Execution Block (2026-03-31)
+
+**Plan 0029: First Query Surface — execute continuously until complete.**
+
+This is a bounded 24-hour implementation block, not an open-ended "work a bit"
+instruction. The required behavior is:
+
+1. finish one phase;
+2. verify it;
+3. commit it immediately; then
+4. continue directly to the next phase without waiting for another prompt.
+
+The only valid stop conditions are:
+
+1. all Plan 0029 phases are complete;
+2. a real blocker makes safe implementation impossible;
+3. a material uncertainty appears that is not already covered by Plan 0028,
+   Plan 0029, or `TODO.md`.
+
+Do **not** stop because:
+
+1. the service layer is done but CLI is not;
+2. CLI is done but MCP is not;
+3. tests passed for one slice but real-proof verification is still undone;
+4. documentation updates are still pending;
+5. you have to record a new uncertainty — log it and continue.
+
+`TODO.md` is the live execution tracker for this block. Keep it current as
+phases land. Long-term planning stays in the plan docs; immediate execution
+state lives in `TODO.md`.
+
 ## Working Rules
 
 - **Autonomy is the default operating mode.** When there is an active plan or
