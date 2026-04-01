@@ -717,6 +717,18 @@ class TestGroupByLLM:
             right_name="Fort Liberty",
         )
 
+    def test_entity_types_compatible_city_and_location(self) -> None:
+        """City mentions should compare with location ground truth conservatively."""
+
+        from onto_canon6.core.auto_resolution import _entity_types_compatible
+
+        assert _entity_types_compatible(
+            "oc:city",
+            "oc:location",
+            left_name="Washington",
+            right_name="Washington D.C.",
+        )
+
     def test_entity_types_compatible_university_like_names(self) -> None:
         """University mentions can compare with educational-institution ground truth."""
 

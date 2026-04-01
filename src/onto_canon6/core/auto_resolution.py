@@ -57,6 +57,7 @@ _ORGANIZATION_TYPE_SLUGS = {
 _PLACE_TYPE_SLUGS = {
     "location",
     "place",
+    "city",
     "installation",
     "military_installation",
     "military_base",

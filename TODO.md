@@ -17,10 +17,10 @@ Source of truth:
 - [x] Commit verified phase
 
 ### Phase 3 — Recover The Remaining Negative-Control Answerability
-- [ ] Localize the residual `q06` unmatched/ambiguous path after Phase 2
-- [ ] Land one bounded repair only if the residual is explicit
-- [ ] Add/update targeted regression tests
-- [ ] Commit verified phase
+- [x] Localize the residual `q06` unmatched/ambiguous path after Phase 2
+- [x] Land one bounded repair only if the residual is explicit
+- [x] Add/update targeted regression tests
+- [x] Commit verified phase
 
 ### Phase 4 — Rerun The Value Proof
 - [ ] Rerun LLM strategy on a fresh DB
