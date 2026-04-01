@@ -24,6 +24,7 @@ from onto_canon6.adapters.digimon_export import (
     export_for_digimon_from_db,
     write_digimon_jsonl,
 )
+from tests.compatibility_helpers import load_jsonl_fixture
 
 SHIELD_AI_DB = Path("var/progressive_review_v2.sqlite3")
 PSYOP_DB = Path("var/progressive_review_psyop.sqlite3")
@@ -345,6 +346,8 @@ class TestFixtureBasedExport:
         with relationships_path.open() as f:
             rel_records = [json.loads(line) for line in f if line.strip()]
         assert len(rel_records) == 2
+        assert entity_records == load_jsonl_fixture("digimon_v1", "minimal_entities.jsonl")
+        assert rel_records == load_jsonl_fixture("digimon_v1", "minimal_relationships.jsonl")
 
     def test_empty_graph_produces_empty_bundle(self, tmp_path: Path) -> None:
         """An empty promoted graph produces an empty bundle without crashing."""

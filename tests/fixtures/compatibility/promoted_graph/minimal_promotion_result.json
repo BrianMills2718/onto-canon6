@@ -1,0 +1,86 @@
+{
+  "assertion": {
+    "assertion_id": "<ASSERTION_ID>",
+    "claim_text": "Eric Olson held the commander role at USSOCOM.",
+    "normalized_body": {
+      "predicate": "oc:hold_command_role",
+      "roles": {
+        "commander": [
+          {
+            "entity_id": "ent:person:eric_olson",
+            "entity_type": "oc:person",
+            "kind": "entity"
+          }
+        ],
+        "organization": [
+          {
+            "entity_id": "ent:org:ussocom",
+            "entity_type": "oc:organization",
+            "kind": "entity"
+          }
+        ],
+        "title": [
+          {
+            "kind": "value",
+            "value": "Commander",
+            "value_kind": "string"
+          }
+        ]
+      }
+    },
+    "predicate": "oc:hold_command_role",
+    "profile": {
+      "profile_id": "default",
+      "profile_version": "1.0.0"
+    },
+    "promoted_at": "<TIMESTAMP>",
+    "promoted_by": "analyst:graph-promoter",
+    "source_candidate_id": "<CANDIDATE_ID>"
+  },
+  "entities": [
+    {
+      "created_at": "<TIMESTAMP>",
+      "entity_id": "ent:person:eric_olson",
+      "entity_type": "oc:person",
+      "first_candidate_id": "<CANDIDATE_ID>"
+    },
+    {
+      "created_at": "<TIMESTAMP>",
+      "entity_id": "ent:org:ussocom",
+      "entity_type": "oc:organization",
+      "first_candidate_id": "<CANDIDATE_ID>"
+    }
+  ],
+  "role_fillers": [
+    {
+      "assertion_id": "<ASSERTION_ID>",
+      "entity_id": "ent:person:eric_olson",
+      "entity_type": "oc:person",
+      "filler_index": 0,
+      "filler_kind": "entity",
+      "role_id": "commander",
+      "value": null,
+      "value_kind": null
+    },
+    {
+      "assertion_id": "<ASSERTION_ID>",
+      "entity_id": "ent:org:ussocom",
+      "entity_type": "oc:organization",
+      "filler_index": 0,
+      "filler_kind": "entity",
+      "role_id": "organization",
+      "value": null,
+      "value_kind": null
+    },
+    {
+      "assertion_id": "<ASSERTION_ID>",
+      "entity_id": null,
+      "entity_type": null,
+      "filler_index": 0,
+      "filler_kind": "value",
+      "role_id": "title",
+      "value": "Commander",
+      "value_kind": "string"
+    }
+  ]
+}
