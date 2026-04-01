@@ -20,6 +20,10 @@ Committed in the isolated worktree as:
 - `99fff08` — `Plan browse and search capability recovery`
 - `9412854` — `Refresh top-level docs for current plan stack`
 - `d8d6f97` — `Align legacy trackers with current program`
+- `a7489db` — `Refresh tracker metadata and handoff`
+- `4e9123c` — `Refresh consumer proof references`
+- `4c78dff` — `Complete query surface inventory`
+- `1b7d6c5` — `Pre-make query surface contracts`
 
 Main effects:
 
@@ -43,15 +47,17 @@ Main effects:
 If planning continues:
 
 1. stay on `codex/onto-canon6-integration-planning`;
-2. keep the main checkout untouched because it has unrelated dirty docs;
+2. keep the planning stream on `codex/onto-canon6-integration-planning` even
+   though the main checkout is currently clean, so queryability/planning work
+   stays isolated from active implementation threads;
 3. next implementation/planning frontier is still Plan 0025 value proof,
    followed by activating Plan 0028 for a read-only browse/search surface.
 
 ## Current State
 
 - isolated worktree branch clean after the commits above
-- main `/home/brian/projects/onto-canon6` checkout remains dirty and should not
-  be used for this planning stream
+- main `/home/brian/projects/onto-canon6` checkout is currently clean, but this
+  planning stream should still continue in the isolated worktree branch
 
 # Handoff: onto-canon6 — 2026-03-28
 

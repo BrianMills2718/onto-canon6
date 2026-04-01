@@ -82,6 +82,11 @@ config/
   cross-document resolution, every document produces isolated entity islands.
   The value proposition (accumulation, contradiction detection, cross-doc
   reasoning) cannot be demonstrated.
+- **After the current value-proof work, the next-active deferred capability is
+  queryability.** Plan 0027 now fixes the deferred-capability order, and Plan
+  0028 defines the first read-only browse/search surface over promoted
+  knowledge. Do not widen the DIGIMON seam or start broad new capability tracks
+  before Plan 0025 and the first query surface are settled.
 - **Flat filler model with strong descriptions** — discriminated unions (oneOf)
   are architecturally correct but no current model can navigate them (all produce
   empty roles). Reverted to flat model with `Field(description=...)` enforcing
