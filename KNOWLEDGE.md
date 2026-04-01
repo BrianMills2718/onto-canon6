@@ -42,11 +42,12 @@ prompt needs discriminating instruction to avoid noun-phrase entities.
 Tracked as extraction quality issue in Plan 0014.
 
 ### 2026-03-31 — claude-code — integration-issue
-LLM endpoint (gemini/gemini-2.5-flash) unreachable during overnight run
-(DNS resolution failure). Scale test re-run with improved extraction prompt
-blocked. Bare extraction baseline (Phase B) also blocked. Non-LLM work
-(scoring, documentation) can proceed. Resume LLM-dependent phases when
-connectivity returns.
+Gemini API daily quota exhausted (10,000 requests/day for gemini-2.5-flash).
+Hit during scale test runs + extraction experiments. llm_client's retry logic
+reported this as "Temporary failure in name resolution" which was misleading —
+actual error is HTTP 429 rate limit. Quota resets ~5pm PDT 2026-04-01. The
+earlier llm_client error masking should be investigated — rate limits should
+surface as RateLimitError, not DNS errors.
 
 ### 2026-03-31 — claude-code — schema-gotcha
 Entity type inconsistency across documents: the same USSOCOM entity gets typed
