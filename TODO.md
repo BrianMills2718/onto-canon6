@@ -3,31 +3,34 @@
 ## Current 24h Execution Block
 
 Source of truth:
-- `docs/plans/0033_24h_entity_resolution_answerability_block.md`
+- `docs/plans/0034_24h_entity_resolution_clean_measurement_block.md`
 
-### Phase 1 — Freeze The Answerability Contract
-- [x] Make Plan 0033 the active execution surface
-- [x] Freeze the targeted failure families and thresholds
-- [x] Commit verified phase
-
-### Phase 2 — Repair Type-Divergent Mention Families
-- [x] Localize the benchmark-critical type drift
-- [x] Implement a bounded family-level fix
-- [x] Add/update targeted tests
-- [x] Commit verified phase
-
-### Phase 3 — Recover Missing Alias Surfaces
-- [x] Localize why aliases like `the Agency` / `GWU` do not survive
-- [x] Implement a bounded family-level fix
-- [x] Add/update targeted tests
+### Phase 1 — Freeze The Clean-Measurement Contract
+- [ ] Record the Plan 0033 outcome and activate Plan 0034
+- [ ] Freeze the remaining failure classes and thresholds
 - [ ] Commit verified phase
 
-### Phase 4 — Refresh The LLM Value Proof
+### Phase 2 — Harden Measurement Hygiene
+- [ ] Localize run-scale extraction failure handling
+- [ ] Add bounded failed-doc retry behavior
+- [ ] Add/update focused tests
+- [ ] Commit verified phase
+
+### Phase 3 — Repair Institution-Family Compatibility
+- [ ] Land the bounded `university` / institution family fix
+- [ ] Add/update targeted tests
+- [ ] Keep the existing safety families green
+- [ ] Commit verified phase
+
+### Phase 4 — Run One Clean Rerun
 - [ ] Rerun LLM strategy on a fresh DB
-- [ ] Write refreshed decision-grade run note
+- [ ] Verify 25/25 document survival from the DB
+- [ ] Decide whether installation-equivalence work is still needed
 - [ ] Commit verified phase
 
-### Phase 5 — Closeout
+### Phase 5 — Conditional Installation-Equivalence Repair And Closeout
+- [ ] If needed, add the bounded `Ft. Bragg` / `Fort Liberty` repair
+- [ ] Rerun after the repair if Phase 4 still misses `q04`
 - [ ] Refresh docs/status/handoff
 - [ ] Mark execution block complete
 - [ ] Commit verified phase
@@ -70,12 +73,11 @@ Source of truth:
 Source of truth:
 - `docs/plans/0025_cross_document_entity_resolution.md`
 
-- [ ] Repair type-divergent mention families without weakening safety
-- [ ] Recover missing alias surfaces for benchmark-critical abbreviations and
-      elided references
-- [ ] Refresh the fixed-question value proof after those families land
-- [ ] Decide whether LLM is now a plausible default candidate only after the
-      next bounded block
+- [ ] Make the value-proof harness robust against transient failed-doc runs
+- [ ] Repair `oc:university` / educational-institution compatibility
+- [ ] Get one clean 25/25 answerability rerun on the fixed corpus
+- [ ] Decide whether bounded installation-equivalence work is still needed only
+      after the clean rerun
 
 ## Longer-Term Queue
 

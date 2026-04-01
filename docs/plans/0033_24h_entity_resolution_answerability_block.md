@@ -1,12 +1,12 @@
 # 24h Entity Resolution Answerability Block
 
-Status: active
+Status: completed
 Phase status:
 - Phase 1 completed
 - Phase 2 completed
 - Phase 3 completed
-- Phase 4 pending
-- Phase 5 pending
+- Phase 4 completed
+- Phase 5 completed
 
 Last updated: 2026-04-01
 Workstream: bounded follow-on hardening after Plan 0032 cleared the recovery gate
@@ -198,6 +198,27 @@ Landed changes:
 2. the run note is decision-grade and references the new artifact directly;
 3. if the LLM path is still not promotable, the blocking miss is concrete.
 
+#### Outcome
+
+Completed on 2026-04-01.
+
+The refreshed rerun artifact is:
+
+1. `docs/runs/scale_test_llm_2026-04-01_092444.json`
+
+The decision note is:
+
+1. `docs/runs/2026-04-01_entity_resolution_answerability_rerun.md`
+
+The run improved the surfaced answerability picture, but it did **not** satisfy
+the declared gate because transient provider DNS failures dropped 9 source
+documents during extraction. It still localized the remaining work cleanly:
+
+1. one real type-family miss (`oc:university` ↔ educational institution);
+2. one still-confounded installation-equivalence miss (`Ft. Bragg` /
+   `Fort Liberty`);
+3. the need for a measurement-valid clean rerun.
+
 ### Phase 5: Closeout
 
 #### Tasks
@@ -212,6 +233,14 @@ Landed changes:
 1. top-level docs describe the answerability result truthfully;
 2. the next active work is explicit;
 3. the worktree is left clean with committed checkpoints only.
+
+#### Outcome
+
+Completed on 2026-04-01.
+
+Plan 0033 now closes with an explicit localized miss and hands execution to:
+
+1. `docs/plans/0034_24h_entity_resolution_clean_measurement_block.md`
 
 ## Failure Modes
 

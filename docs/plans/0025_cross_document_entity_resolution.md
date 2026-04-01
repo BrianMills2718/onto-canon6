@@ -77,8 +77,13 @@ Latest decision artifact:
    - answer rate `0.50`
    - accuracy over all questions `0.40`
 3. the next bounded pass is now
-   `docs/plans/0033_24h_entity_resolution_answerability_block.md`, which owns
-   the remaining typed-mention and alias-surface failures.
+   `docs/plans/0033_24h_entity_resolution_answerability_block.md`, which
+   localized the remaining miss through a failed-measurement rerun;
+4. the next bounded pass is now
+   `docs/plans/0034_24h_entity_resolution_clean_measurement_block.md`, which
+   owns clean-rerun recovery, the institution-family compatibility gap, and
+   conditional installation-equivalence repair only if a clean rerun still
+   leaves `q04` wrong.
 
 ## What Exists Today
 
