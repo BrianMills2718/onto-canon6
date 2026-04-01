@@ -150,6 +150,19 @@ Progress note:
    score differences;
 2. the block no longer depends on vague "transfer gap" language.
 
+Progress note:
+
+1. Phase 2 evidence note:
+   `docs/runs/2026-04-01_extraction_transfer_gap_localization.md`
+2. chunk `003` is now localized exactly:
+   - prompt-eval parity run `0f664c022900` returned `{"candidates":[]}`
+   - live compact-v4 extraction still produced three rejected candidates
+     (`oc:limit_capability`, `oc:express_concern`, `oc:hold_command_role`)
+3. chunk `002` does not yet have the same current-generation parity/live
+   artifact pair for the compact-v4 candidate lane. That missing positive
+   control is now explicit and becomes Phase 3's reason to add the minimum
+   certification helper.
+
 ### Phase 3: Land The Minimum Certification Aid
 
 #### Tasks

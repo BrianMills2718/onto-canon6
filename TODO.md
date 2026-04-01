@@ -12,9 +12,9 @@ Source of truth:
 - [ ] Commit verified phase
 
 ### Phase 2 — Localize The Live-vs-Parity Gap
-- [ ] Compare current live output against prompt-eval parity output on chunk `003`
-- [ ] Compare the same surfaces on chunk `002`
-- [ ] Write down exact candidate/output differences plus review outcomes
+- [x] Compare current live output against prompt-eval parity output on chunk `003`
+- [~] Compare the same surfaces on chunk `002`
+- [x] Write down exact candidate/output differences plus review outcomes
 - [ ] Commit verified phase
 
 ### Phase 3 — Land The Minimum Certification Aid
