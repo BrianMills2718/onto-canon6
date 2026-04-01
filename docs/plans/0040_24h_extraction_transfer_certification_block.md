@@ -212,6 +212,27 @@ Progress note:
    - shared candidates: `0`
 3. chunk `002` still needs current-generation compact-v4 comparison coverage
    before Phase 4 can close.
+4. the remaining Phase 4 execution order is now frozen:
+   - build one current-generation full-chunk prompt-eval parity artifact for
+     chunk `002`;
+   - build one current-generation live compact-v4 chunk `002` artifact if an
+     equivalent reviewed snapshot does not already exist;
+   - diff those artifacts with the transfer-comparison helper;
+   - then decide whether the compact-v4 lane is promotable, still
+     transfer-blocked, or still blocked on parity/runtime proof.
+
+#### Phase 4 diagnostic rule
+
+If chunk `002` cannot be certified on the same full-chunk parity/live contract
+used for chunk `003`, the block must record exactly why:
+
+1. missing parity artifact shape;
+2. missing current-generation live reviewed chunk;
+3. runtime-path mismatch;
+4. or prompt/content behavior.
+
+It must not collapse those into generic "more extraction work needed"
+language.
 
 ### Phase 5: Closeout
 

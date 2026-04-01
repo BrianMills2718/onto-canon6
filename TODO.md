@@ -9,20 +9,22 @@ Source of truth:
 - [x] Name the exact compact candidate lane and prompt asset under test
 - [x] Freeze the canonical chunk pair (`002`, `003`)
 - [x] Freeze the incoming transfer artifacts from Plan 0014
-- [ ] Commit verified phase
+- [x] Commit verified phase
 
 ### Phase 2 — Localize The Live-vs-Parity Gap
 - [x] Compare current live output against prompt-eval parity output on chunk `003`
 - [~] Compare the same surfaces on chunk `002`
 - [x] Write down exact candidate/output differences plus review outcomes
-- [ ] Commit verified phase
+- [x] Commit verified phase
 
 ### Phase 3 — Land The Minimum Certification Aid
 - [x] Implement the narrowest reproducible live-vs-parity comparison helper
 - [x] Add verification for the helper
-- [ ] Commit verified phase
+- [x] Commit verified phase
 
 ### Phase 4 — Re-run The Certification Check
+- [ ] Build one current-generation full-chunk parity artifact for chunk `002`
+- [ ] Build or confirm one current-generation live compact-v4 reviewed chunk `002` artifact
 - [ ] Run the certification comparison on chunk `002`
 - [x] Run the certification comparison on chunk `003`
 - [ ] Decide whether the candidate clears or fails the transfer gate

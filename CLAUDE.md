@@ -130,6 +130,12 @@ config/
   not a suggestion: keep executing, keep rerunning, keep committing, and only
   stop when the active block is either complete or explicitly narrowed to a new
   documented blocker.
+- **Current execution rule for Plan 0040:** the next 24h sequence is already
+  pre-decided. Finish chunk `002` current-generation parity/live certification,
+  close Plan `0040` with a decision-grade extraction-transfer note, then
+  immediately activate the next bounded extraction block named by that
+  closeout. Do not pause after the closeout commit just to ask what comes next;
+  the answer must already be in the active docs.
 - **After the current value-proof work, the next-active deferred capability is
   queryability.** Plan 0027 now fixes the deferred-capability order, and Plan
   0028 now has a landed first read-only browse/search surface over promoted
