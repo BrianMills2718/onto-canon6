@@ -17,13 +17,14 @@ runtime.
 9. `docs/plans/0034_24h_entity_resolution_clean_measurement_block.md` (completed clean-measurement block)
 10. `docs/plans/0035_24h_entity_resolution_alias_family_completion_block.md` (completed alias-family closure block)
 11. `docs/plans/0036_24h_entity_resolution_negative_control_recovery_block.md` (completed negative-control recovery block)
-12. `docs/plans/0037_24h_entity_resolution_false_split_cleanup_block.md` (current active execution block)
-13. `docs/plans/0026_schema_stability_gate.md` (completed Lane 3 contract policy)
-14. `docs/plans/0014_extraction_quality_baseline.md` (active Lane 4 promotion gate)
-15. `docs/plans/0027_deferred_parity_reprioritization.md`
-16. `docs/plans/0028_query_browse_surface.md`
-17. `docs/plans/0005_v1_capability_parity_matrix.md`
-18. `docs/plans/0001_successor_roadmap.md`
+12. `docs/plans/0037_24h_entity_resolution_false_split_cleanup_block.md` (completed Rodriguez/Washington cleanup block)
+13. `docs/plans/0038_24h_entity_resolution_surface_stability_block.md` (current active execution block)
+14. `docs/plans/0026_schema_stability_gate.md` (completed Lane 3 contract policy)
+15. `docs/plans/0014_extraction_quality_baseline.md` (active Lane 4 promotion gate)
+16. `docs/plans/0027_deferred_parity_reprioritization.md`
+17. `docs/plans/0028_query_browse_surface.md`
+18. `docs/plans/0005_v1_capability_parity_matrix.md`
+19. `docs/plans/0001_successor_roadmap.md`
 
 ## Commands
 
@@ -86,10 +87,14 @@ config/
   Plan 0035 is now also complete: it closed `q02`, `q04`, and `q08`, and the
   fresh clean rerun proved that those alias families are no longer the blocker.
   Plan 0036 is now also complete: it restored same-surname person safety and
-  recovered `q05` / `q06` on a fresh rerun. The active bounded block is now
-  Plan 0037, which owns only the residual Rodriguez and Washington place-family
-  false splits while preserving the zero-false-merge and `10/10`
-  question-accuracy floor.
+  recovered `q05` / `q06` on a fresh rerun. Plan 0037 is now also complete:
+  it closed the Rodriguez and Washington residual families truthfully. The
+  active bounded block is now Plan 0038, which owns only the rerun-stable
+  residual surface-stability family:
+  generic acronym organization / university routing (`NSA`, `GWU`),
+  descriptor alias recovery (`the Agency`), and evaluator mention-key
+  stability for `Ft. Bragg` / `Fort Bragg` / `Fort Liberty`, all while
+  preserving the zero-false-merge and `10/10` answered-question floor.
   The chunk-level transfer evaluation requirement remains active through
   ADR 0023 and Plans 0024/0014 even though there is no standalone Plan 0019
   file.
@@ -111,6 +116,13 @@ config/
   cross-document resolution, every document produces isolated entity islands.
   The value proposition (accumulation, contradiction detection, cross-doc
   reasoning) cannot be demonstrated.
+- **After the current value-proof work, the next-active deferred capability is
+ - **24h execution rule: do not stop between bounded phases.** When a 24h
+  execution block is active, continue through its declared phase order
+  autonomously until the block is truthfully complete or a blocker/uncertainty
+  is explicit in the docs. Log uncertainties in the active plan, `TODO.md`,
+  and `KNOWLEDGE.md`, then keep moving on the next bounded task instead of
+  pausing for conversational check-ins.
 - **After the current value-proof work, the next-active deferred capability is
   queryability.** Plan 0027 now fixes the deferred-capability order, and Plan
   0028 now has a landed first read-only browse/search surface over promoted

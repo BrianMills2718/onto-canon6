@@ -20,7 +20,7 @@ cannot be demonstrated.
 
 This plan is no longer just planned. The value-proof harness is complete, the
 repo has decision-grade comparison artifacts, and the remaining work is now a
-narrow residual false-split cleanup pass.
+narrow residual surface-stability cleanup pass.
 
 ### Landed so far
 
@@ -46,8 +46,8 @@ surface:
 ### What is still unresolved
 
 The plan's harness and metrics gap is now closed, and the next hardening pass
-is now strictly about three remaining alias families rather than broad
-measurement validity.
+is now strictly about three remaining surface-stability families rather than
+broad measurement validity.
 
 The current question is no longer "can the repo score resolution quality?" It
 can. The current question is now narrower:
@@ -55,18 +55,20 @@ can. The current question is now narrower:
 1. can the LLM strategy close the three remaining residual misses without
    regressing the new zero-false-merge safety floor;
 2. can organization-family drift (`government_agency`,
-   missing / generic organization types) be repaired conservatively;
-3. can one bounded installation rename equivalence close the remaining
-   `Ft. Bragg` / `Fort Liberty` split.
+   missing / generic organization types, acronym short forms) be repaired
+   conservatively;
+3. can the evaluator reuse the bounded installation equivalence contract so
+   `Ft. Bragg` questions measure the runtime state honestly.
 
 The completed value-proof block and the follow-on hardening blocks showed:
 
 1. exact strategy remains the high-precision floor;
 2. bare extraction is not competitive;
 3. LLM clustering can now be made safe against the prior same-surname false
-   merges, and fixed-question answerability is now `10/10` on the latest fresh
-   rerun, but it is not yet promotable as the default because pairwise recall
-   still trails on two residual false-split families.
+   merges, and the latest fresh rerun still preserves zero false merges, but
+   it is not yet promotable as the default because pairwise recall still
+   trails on organization acronym / descriptor residuals and one evaluator
+   mention-key miss.
 
 Latest decision artifacts:
 
@@ -94,11 +96,18 @@ Latest decision artifacts:
    - it recovered `q05` and `q06` to answered-and-correct;
    - its closeout note is
      `docs/runs/2026-04-01_entity_resolution_negative_control_recovery.md`;
-8. the current bounded pass is now
-   `docs/plans/0037_24h_entity_resolution_false_split_cleanup_block.md`,
-   which owns only the remaining residual false splits:
-   - Rodriguez title-family collapse
-   - Washington place-family collapse
+8. Plan 0037 is now complete:
+   - it closed the Rodriguez title-family split;
+   - it closed the Washington place-family split;
+   - its canonical rerun artifact is
+     `docs/runs/scale_test_llm_2026-04-01_124135.json`;
+9. the current bounded pass is now
+   `docs/plans/0038_24h_entity_resolution_surface_stability_block.md`,
+   which owns only the remaining rerun-stable residuals:
+   - `National Security Agency` / `NSA`
+   - `CIA` / `Central Intelligence Agency` / `the Agency`
+   - `George Washington University` / `GWU`
+   - evaluator mention-key equivalence for `Ft. Bragg`
 
 ## What Exists Today
 

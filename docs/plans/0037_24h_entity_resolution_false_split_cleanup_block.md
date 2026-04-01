@@ -1,16 +1,16 @@
 # 24h Entity Resolution False-Split Cleanup Block
 
-Status: active
+Status: completed
 Phase status:
 - Phase 1 completed
 - Phase 2 completed
 - Phase 3 completed
-- Phase 4 pending
-- Phase 5 pending
+- Phase 4 completed
+- Phase 5 completed
 
 Last updated: 2026-04-01
-Workstream: clear the remaining Rodriguez and Washington place-family false
-splits after Plan 0036 restored safety and negative-control correctness
+Workstream: close the Rodriguez and Washington residual families truthfully and
+hand off the newly exposed surface-stability blocker family to Plan 0038
 
 ## Purpose
 
@@ -26,12 +26,34 @@ The remaining quality gap is narrower and strictly pairwise:
 2. `Washington D.C.` / `D.C.` still split from the `Washington` location
    cluster.
 
-This block owns only those residual false-split families. It must preserve the
-current safety floor:
+This block owned only those residual false-split families. It preserved the
+current safety floor while proving that the next blocker family is different:
 
 1. false merges must stay at `0`;
 2. all `25` documents must survive extraction;
 3. fixed-question answer rate and accuracy must stay at `1.00`.
+
+## Outcome
+
+This block succeeded on its own scope:
+
+1. `James Rodriguez` / `Colonel Rodriguez` / `Col. Rodriguez` now collapse in
+   one conservative person family;
+2. `Washington D.C.` / `D.C.` / `Washington` now collapse in one bounded place
+   family without crossing into `George Washington University`;
+3. the fresh rerun remained measurement-valid with `25/25` documents surviving
+   and false merges still at `0`.
+
+The fresh rerun also showed that the residual blocker family shifted. The
+active misses are now:
+
+1. generic acronym organization/university surfaces emitted under generic
+   `entity:*` types (`NSA`, `GWU`);
+2. descriptor alias recovery for organization families (`the Agency`);
+3. evaluator mention-key equivalence for `Ft. Bragg` / `Fort Bragg`.
+
+Those are now owned by
+`docs/plans/0038_24h_entity_resolution_surface_stability_block.md`.
 
 ## Scope
 
@@ -169,8 +191,8 @@ No other families are currently in scope.
 
 1. a fresh JSON artifact exists under `docs/runs/`;
 2. the rerun is measurement-valid;
-3. the artifact is sufficient to decide whether the residual false splits are
-   closed.
+3. the artifact is sufficient to decide whether the owned residual false splits
+   are closed or whether a new blocker family has become dominant.
 
 ### Phase 5: Closeout
 
@@ -185,6 +207,29 @@ No other families are currently in scope.
 
 1. top-level docs describe the current decision truthfully;
 2. the worktree is left clean with committed checkpoints only.
+
+## Canonical Rerun Artifact
+
+The canonical outgoing rerun for this block is:
+
+1. `docs/runs/scale_test_llm_2026-04-01_124135.json`
+
+Measured result:
+
+1. precision `1.00`
+2. recall `0.9241`
+3. false merges `0`
+4. false splits `6`
+5. answer rate `0.90`
+6. accuracy over all questions `0.90`
+7. accuracy over answered questions `1.00`
+
+Interpretation:
+
+1. the owned Rodriguez and Washington fixes landed successfully;
+2. the gate was missed only because a new blocker family became dominant;
+3. this block is therefore complete under its explicit exit clause and hands
+   off to Plan 0038.
 
 ## Failure Modes
 
