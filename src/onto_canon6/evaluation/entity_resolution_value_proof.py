@@ -692,6 +692,8 @@ def _candidate_ground_truth_entity_ids(
         return tuple(sorted(candidate_ids))
 
     # Fall back to ground-truth doc overlap only if the observation has no names.
+    if observation.observed_names:
+        return ()
     if not observation.source_refs:
         return ()
     for entity_id, entity in ground_truth.entities.items():

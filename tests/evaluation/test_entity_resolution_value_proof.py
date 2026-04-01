@@ -193,6 +193,35 @@ def test_match_observations_marks_ambiguous_when_type_and_docs_do_not_break_tie(
     assert matched[0].candidate_ground_truth_entity_ids == ("E001", "E011")
 
 
+def test_match_observations_does_not_use_doc_overlap_when_named_surface_misses() -> None:
+    """Named observations must not fall back to doc overlap when no variant matches."""
+
+    observations = (
+        EntityObservation(
+            entity_id="ent_overlap_only",
+            entity_type="oc:organization",
+            first_candidate_id="cand_overlap_only",
+            predicted_cluster_id="cluster_overlap_only",
+            observed_names=("special operations forces",),
+            source_refs=("doc_04",),
+            matched_ground_truth_entity_id=None,
+            match_status="unmatched",
+            match_reason="not run",
+            candidate_ground_truth_entity_ids=(),
+        ),
+    )
+
+    matched = match_observations_to_ground_truth(
+        observations,
+        ground_truth=_ground_truth(),
+    )
+
+    assert matched[0].match_status == "unmatched"
+    assert matched[0].matched_ground_truth_entity_id is None
+    assert matched[0].candidate_ground_truth_entity_ids == ()
+    assert matched[0].match_reason == "no ground-truth variant match"
+
+
 def test_compute_pairwise_metrics_reports_false_merges_and_false_splits() -> None:
     """Pairwise metrics should preserve concrete evidence for both error types."""
 
