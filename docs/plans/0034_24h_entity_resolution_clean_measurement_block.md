@@ -2,8 +2,8 @@
 
 Status: active
 Phase status:
-- Phase 1 pending
-- Phase 2 pending
+- Phase 1 completed
+- Phase 2 completed
 - Phase 3 pending
 - Phase 4 pending
 - Phase 5 pending
@@ -107,6 +107,15 @@ complete if the remaining miss is explicit and localized in the decision note.
 2. the stop conditions and phase order are explicit enough to implement
    without new questions.
 
+#### Outcome
+
+Completed on 2026-04-01.
+
+Plan 0033 is now closed honestly, the failed-measurement rerun is recorded in
+`docs/runs/2026-04-01_entity_resolution_answerability_rerun.md`, and the active
+execution surfaces (`CLAUDE.md`, `docs/plans/CLAUDE.md`, `0025`, and `TODO.md`)
+now point at Plan 0034.
+
 ### Phase 2: Harden Measurement Hygiene
 
 #### Tasks
@@ -127,6 +136,20 @@ complete if the remaining miss is explicit and localized in the decision note.
    run;
 2. the harness can retry failed docs once without manual intervention;
 3. if docs still fail after retry, the run remains explicitly invalid.
+
+#### Outcome
+
+Completed on 2026-04-01.
+
+Landed changes:
+
+1. `scripts/run_scale_test.py` now has a bounded doc-level retry pass for
+   transient extraction failures via `--retry-failed-docs` and
+   `--retry-delay-seconds`;
+2. extraction summaries now report residual failed docs and recovered docs
+   explicitly instead of collapsing everything into one opaque `errors` count;
+3. deterministic regression coverage now pins the retry bookkeeping in
+   `tests/integration/test_run_scale_test.py`.
 
 ### Phase 3: Repair Institution-Family Compatibility
 

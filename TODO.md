@@ -6,14 +6,14 @@ Source of truth:
 - `docs/plans/0034_24h_entity_resolution_clean_measurement_block.md`
 
 ### Phase 1 — Freeze The Clean-Measurement Contract
-- [ ] Record the Plan 0033 outcome and activate Plan 0034
-- [ ] Freeze the remaining failure classes and thresholds
-- [ ] Commit verified phase
+- [x] Record the Plan 0033 outcome and activate Plan 0034
+- [x] Freeze the remaining failure classes and thresholds
+- [x] Commit verified phase
 
 ### Phase 2 — Harden Measurement Hygiene
-- [ ] Localize run-scale extraction failure handling
-- [ ] Add bounded failed-doc retry behavior
-- [ ] Add/update focused tests
+- [x] Localize run-scale extraction failure handling
+- [x] Add bounded failed-doc retry behavior
+- [x] Add/update focused tests
 - [ ] Commit verified phase
 
 ### Phase 3 — Repair Institution-Family Compatibility

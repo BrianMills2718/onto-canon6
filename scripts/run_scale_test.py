@@ -16,12 +16,14 @@ Requires: llm_client configured with working API keys.
 from __future__ import annotations
 
 import argparse
+from dataclasses import dataclass
 import json
 import logging
 import sys
 import time
 from collections import defaultdict
 from pathlib import Path
+from typing import Any
 
 # Ensure src is on path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
@@ -44,6 +46,36 @@ CORPUS_DIR = Path("tests/fixtures/synthetic_corpus")
 GROUND_TRUTH_PATH = CORPUS_DIR / "ground_truth.json"
 QUESTIONS_PATH = CORPUS_DIR / "questions.json"
 RESULTS_DIR = Path("docs/runs")
+
+
+@dataclass(frozen=True)
+class ExtractionSummary:
+    """Structured summary for one scale-test extraction pass."""
+
+    extracted: int = 0
+    accepted: int = 0
+    rejected: int = 0
+    pending: int = 0
+    errors: int = 0
+    transient_failures: int = 0
+    retry_passes_used: int = 0
+    failed_docs: tuple[str, ...] = ()
+    recovered_docs: tuple[str, ...] = ()
+
+    def as_dict(self) -> dict[str, Any]:
+        """Return a stable JSON-serializable summary for CLI printing."""
+
+        return {
+            "extracted": self.extracted,
+            "accepted": self.accepted,
+            "rejected": self.rejected,
+            "pending": self.pending,
+            "errors": self.errors,
+            "transient_failures": self.transient_failures,
+            "retry_passes_used": self.retry_passes_used,
+            "failed_docs": list(self.failed_docs),
+            "recovered_docs": list(self.recovered_docs),
+        }
 
 
 def load_ground_truth() -> EntityResolutionGroundTruth:
@@ -78,7 +110,9 @@ def extract_all_documents(
     selection_task: str,
     model_override: str | None,
     judge_model_override: str | None,
-) -> dict[str, int]:
+    retry_failed_docs: int = 0,
+    retry_delay_seconds: float = 0.0,
+) -> ExtractionSummary:
     """Extract assertions from all documents in the corpus.
 
     Uses TextExtractionService.extract_and_submit which handles:
@@ -86,12 +120,13 @@ def extract_all_documents(
     - Optional LLM judge filtering (if enable_judge_filter=true in config)
     - Review mode policy (auto/llm/human per config)
 
-    Returns stats: {extracted, accepted, rejected, errors}.
+    Returns a structured summary, including any residual failed docs after the
+    bounded retry pass.
     """
     from onto_canon6.pipeline.text_extraction import TextExtractionService
 
-    stats: dict[str, int] = defaultdict(int)
     doc_files = sorted(corpus_dir.glob("doc_*.txt"))
+    docs_by_id = {doc_path.stem: doc_path for doc_path in doc_files}
 
     extraction_svc = TextExtractionService(
         review_service=review_svc,
@@ -100,7 +135,74 @@ def extract_all_documents(
         judge_model_override=judge_model_override,
     )
 
-    for doc_path in doc_files:
+    stats: dict[str, int] = defaultdict(int)
+    failed_docs = _extract_documents_once(
+        extraction_svc=extraction_svc,
+        doc_paths=doc_files,
+        stats=stats,
+    )
+    recovered_docs: list[str] = []
+    retry_passes_used = 0
+
+    for retry_index in range(retry_failed_docs):
+        if not failed_docs:
+            break
+        retry_passes_used += 1
+        failed_ids = tuple(sorted(failed_docs))
+        logging.warning(
+            "scale-test extraction retry pass %d/%d for failed docs: %s",
+            retry_index + 1,
+            retry_failed_docs,
+            ", ".join(failed_ids),
+        )
+        if retry_delay_seconds > 0:
+            time.sleep(retry_delay_seconds)
+        retry_doc_paths = [docs_by_id[doc_id] for doc_id in failed_ids]
+        retry_failures = _extract_documents_once(
+            extraction_svc=extraction_svc,
+            doc_paths=retry_doc_paths,
+            stats=stats,
+        )
+        recovered_now = sorted(set(failed_docs) - set(retry_failures))
+        if recovered_now:
+            logging.info(
+                "scale-test extraction recovered docs after retry pass %d: %s",
+                retry_index + 1,
+                ", ".join(recovered_now),
+            )
+            recovered_docs.extend(recovered_now)
+        failed_docs = retry_failures
+
+    if failed_docs:
+        logging.error(
+            "scale-test extraction left residual failed docs after %d retry pass(es): %s",
+            retry_passes_used,
+            ", ".join(sorted(failed_docs)),
+        )
+
+    return ExtractionSummary(
+        extracted=stats["extracted"],
+        accepted=stats["accepted"],
+        rejected=stats["rejected"],
+        pending=stats["pending"],
+        errors=len(failed_docs),
+        transient_failures=len(recovered_docs),
+        retry_passes_used=retry_passes_used,
+        failed_docs=tuple(sorted(failed_docs)),
+        recovered_docs=tuple(sorted(recovered_docs)),
+    )
+
+
+def _extract_documents_once(
+    *,
+    extraction_svc: Any,
+    doc_paths: list[Path],
+    stats: dict[str, int],
+) -> list[str]:
+    """Extract one list of documents and return the doc ids that still failed."""
+
+    failed_docs: list[str] = []
+    for doc_path in doc_paths:
         text = doc_path.read_text(encoding="utf-8")
         doc_id = doc_path.stem
         logging.info("Extracting from %s (%d chars)", doc_id, len(text))
@@ -127,9 +229,9 @@ def extract_all_documents(
 
         except Exception as exc:
             logging.warning("Extraction failed for %s: %s", doc_id, exc)
-            stats["errors"] += 1
+            failed_docs.append(doc_id)
 
-    return dict(stats)
+    return failed_docs
 
 
 def promote_all(review_svc: ReviewService, db_path: Path) -> int:
@@ -220,6 +322,18 @@ def main() -> int:
         default=None,
         help="Optional explicit LLM resolution model override for this run",
     )
+    parser.add_argument(
+        "--retry-failed-docs",
+        type=int,
+        default=1,
+        help="How many bounded retry passes to run over docs that fail extraction (default: 1)",
+    )
+    parser.add_argument(
+        "--retry-delay-seconds",
+        type=float,
+        default=5.0,
+        help="Seconds to wait before retrying failed docs (default: 5.0)",
+    )
     parser.add_argument("--verbose", "-v", action="store_true")
     args = parser.parse_args()
 
@@ -253,9 +367,11 @@ def main() -> int:
             selection_task=args.selection_task,
             model_override=args.model_override,
             judge_model_override=args.judge_model_override,
+            retry_failed_docs=max(args.retry_failed_docs, 0),
+            retry_delay_seconds=max(args.retry_delay_seconds, 0.0),
         )
         t1 = time.time()
-        print(f"Extraction: {extraction_stats}")
+        print(f"Extraction: {extraction_stats.as_dict()}")
         print(f"Time: {t1-t0:.1f}s")
 
         # Phase 2: Promote
