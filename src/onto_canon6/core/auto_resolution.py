@@ -1243,6 +1243,11 @@ def _collapse_equivalent_llm_groups(
             for key in surname_keys
             if person_bridge_info_by_key[key].titled_full_given_names
         ]
+        full_anchor_keys = [
+            key
+            for key in surname_keys
+            if person_bridge_info_by_key[key].full_given_names
+        ]
         initial_only_keys = [
             key
             for key in surname_keys
@@ -1272,11 +1277,15 @@ def _collapse_equivalent_llm_groups(
                 union(initial_key, candidates[0])
 
         titled_full_roots = {find(key) for key in titled_full_keys}
+        full_anchor_roots = {find(key) for key in full_anchor_keys}
         if len(titled_full_roots) != 1:
-            continue
+            if len(full_anchor_roots) != 1:
+                continue
         for surname_only_key in surname_only_keys:
             bridge_info = person_bridge_info_by_key[surname_only_key]
             anchor_candidates = titled_full_keys
+            if not anchor_candidates and len(full_anchor_roots) == 1:
+                anchor_candidates = full_anchor_keys
             if bridge_info.full_given_names:
                 anchor_candidates = [
                     full_key

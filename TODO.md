@@ -11,10 +11,10 @@ Source of truth:
 - [x] Commit verified phase
 
 ### Phase 2 — Repair The Rodriguez Title Family
-- [ ] Localize exactly why `Col. Rodriguez` stays outside the current cluster
-- [ ] Land one conservative titled-surname bridge repair for the Rodriguez family
-- [ ] Add/update targeted regression tests
-- [ ] Commit verified phase
+- [x] Localize exactly why `Col. Rodriguez` stays outside the current cluster
+- [x] Land one conservative titled-surname bridge repair for the Rodriguez family
+- [x] Add/update targeted regression tests
+- [x] Commit verified phase
 
 ### Phase 3 — Repair The Washington Place Family
 - [ ] Localize exactly why `Washington` still splits from `Washington D.C.` / `D.C.`

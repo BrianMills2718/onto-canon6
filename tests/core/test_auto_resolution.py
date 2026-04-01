@@ -892,6 +892,32 @@ class TestGroupByLLM:
             frozenset({"e3", "e4"}),
         }
 
+    def test_collapse_equivalent_llm_groups_merges_unique_titled_surname_into_single_full_anchor(self) -> None:
+        """A titled surname-only group can join one compatible full-name family when no conflict exists."""
+
+        from onto_canon6.core import auto_resolution as ar_mod
+
+        groups = ar_mod._collapse_equivalent_llm_groups(
+            {
+                "g1": ["e1", "e2"],
+                "g2": ["e3"],
+            },
+            name_map={
+                "e1": "James Rodriguez",
+                "e2": "Colonel Rodriguez",
+                "e3": "Col. Rodriguez",
+            },
+            entity_types={
+                "e1": "oc:person",
+                "e2": "oc:person",
+                "e3": "oc:person",
+            },
+        )
+
+        assert {frozenset(group) for group in groups.values()} == {
+            frozenset({"e1", "e2", "e3"}),
+        }
+
     def test_llm_clustering_postprocesses_conflicting_person_names(self) -> None:
         """Conflicting same-surname people keep one John cluster and one James cluster."""
         mock_response = MagicMock()
