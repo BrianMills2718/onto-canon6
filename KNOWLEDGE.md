@@ -58,3 +58,17 @@ drift even when the contract shape is stable. Lane 3 now normalizes those
 volatile fields in `tests/compatibility_helpers.py` before comparing snapshots;
 future compatibility fixtures should reuse that helper instead of embedding raw
 volatile values.
+
+### 2026-03-31 — codex — integration-issue
+Lightweight worktrees for `onto-canon6` do not automatically carry the heavy
+proof DB under `var/e2e_test_2026_03_25/`. Read-only real-proof verification
+from a worktree should therefore target the canonical DB in the main checkout
+explicitly, e.g. `/home/brian/projects/onto-canon6/var/e2e_test_2026_03_25/review_combined.sqlite3`.
+
+### 2026-03-31 — codex — schema-gotcha
+Exact entity search over an identity cluster with identical observed labels on
+both canonical and alias members can legitimately return both members. For the
+real proof DB, searching `USSOCOM` returns two promoted organization entities
+in the same identity cluster. Use `get-entity` to inspect canonical/alias
+membership truthfully; do not treat search-result ordering alone as proof of
+alias disambiguation.

@@ -26,10 +26,10 @@ Source of truth:
 - [x] Commit verified phase
 
 ### Phase 4 — Real-Proof Verification
-- [ ] Verify entity/alias lookup on real promoted data
-- [ ] Verify promoted assertion lookup on real promoted data
-- [ ] Verify evidence/provenance lookup on real promoted data
-- [ ] Commit verified phase
+- [x] Verify entity/alias lookup on real promoted data
+- [x] Verify promoted assertion lookup on real promoted data
+- [x] Verify evidence/provenance lookup on real promoted data
+- [x] Commit verified phase
 
 ### Phase 5 — Closeout
 - [ ] Refresh docs/status/handoff
