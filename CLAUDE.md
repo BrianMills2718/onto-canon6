@@ -211,11 +211,14 @@ proceed to the next. The only valid stop conditions are:
 
 Pre-made decisions (do not ask about these):
 - Config defaults: `review_mode: llm`, `enable_judge_filter: true`
+- `require_llm_review: true` — all merges (even exact) go through LLM validation (D1)
+- DIGIMON is the first Lane 2 consumer — v1 export/import verified 2026-03-31 (D6)
 - Fuzzy matching is a pre-filter for LLM validation, not an independent merge strategy
 - Synthetic corpus for Phase 4 (controlled ground truth)
 - Single LLM call per entity type; batch if token count exceeds threshold
 - All LLM calls through llm_client with task/trace_id/max_budget
 - Prompt templates in `prompts/resolution/` as YAML/Jinja2
+- Off-the-shelf evaluation done: KGGen cluster() and nameparser rejected (D5)
 - Commit each verified phase immediately
 
 ## Working Rules

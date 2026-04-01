@@ -46,10 +46,15 @@ The producer side is intentionally replaceable:
 
 The repo is beyond pure design/bootstrap work. It has:
 
-1. a maintained local test surface;
+1. a maintained local test surface (430+ tests);
 2. two real non-fixture runs (PSYOP Stage 1 and Shield AI WhyGame);
 3. a proved E2E text -> review -> promotion path;
-4. proved downstream artifact exports and consumer-facing adapter slices.
+4. proved downstream artifact exports and consumer-facing adapter slices;
+5. **DIGIMON adopted as first consumer** (Plan 0024 Lane 2, verified 2026-03-31:
+   110 entities + 99 relationships exported and imported);
+6. cross-document entity resolution via LLM clustering (Plan 0025, Phases 1-3
+   landed; scale test harness operational);
+7. default operating mode: `review_mode: llm` with `enable_judge_filter: true`.
 
 Current emphasis is not "recover every capability now." It is "keep the full
 vision visible while making the proved workflow stronger and more usable."

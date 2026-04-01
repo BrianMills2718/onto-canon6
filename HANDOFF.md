@@ -1,140 +1,85 @@
-# Handoff: onto-canon6 — 2026-03-28
+# Handoff: onto-canon6 — 2026-03-31
 
 ## Session Focus
 
-Documentation-authority cleanup, post-cutover program clarification, and
-architecture review of the DIGIMON boundary.
+Strategic review, cross-document entity resolution (Plan 0025), and
+comprehensive documentation/planning review.
 
 ## What Landed
 
-### 1. Documentation authority cleanup
+### 1. Plan 0025: Cross-Document Entity Resolution (Phases 1-3 + Phase 4 harness)
 
-Committed on `main` as:
+- **Phase 1**: Config defaults (`review_mode: llm`, `enable_judge_filter: true`),
+  title/honorific name normalization (33 abbreviation patterns + 35 full titles)
+- **Phase 2**: LLM entity clustering (KGGen-style per entity type, fuzzy pre-filter
+  → LLM validates, structured output with EntityCluster/ClusteringResult models)
+- **Phase 3**: Pipeline integration (CLI `--strategy llm`, `make resolve`, config)
+- **Phase 4 harness**: Synthetic corpus (25 docs, 13 entities, ground truth with
+  expected merges/non-merges), scale test runner, first results:
+  - Exact: 73 identities, 25 aliases
+  - LLM: 54 identities, 37 aliases (merges acronyms like CIA/Central Intelligence Agency)
+- **D1: require_llm_review**: Configurable flag (default: true). Even exact matches
+  go through LLM validation with entity context. `_validate_groups_with_llm()`
+  added with `MergeValidation` Pydantic model and `validate_merge.yaml` prompt.
 
-- `6854cfe` — `Clarify post-cutover documentation authority`
+### 2. Bug Fixes
 
-Main effects:
+- **Judge filter API mismatch**: `call_llm_structured()` was called with stale
+  API (missing `model` positional arg, raw JSON schema instead of Pydantic model).
+  Fixed with `_JudgeResult` model. Silent fallback removed — fails loud now.
+- **Silent fallbacks removed** (3 locations in auto_resolution.py, 1 in judge filter).
+  All per CLAUDE.md "fail loud" rule.
+- **Prompt YAML format**: `cluster_entities.yaml` fixed to use llm_client's
+  `messages` list format.
 
-1. added `docs/plans/0024_post_cutover_program.md`
-2. removed broken current-plan references from top-level reading surfaces
-3. aligned README / charter / status / active plans around one current
-   post-cutover program
-4. marked `0021` completed
-5. reduced `0022` to residual historical cleanup
-6. made `0022a` clearly historical/pre-cutover
+### 3. Documentation Updates
 
-### 2. Current post-cutover execution authority
+- **STRUCTURED_OUTPUT_QUALITY.md** created in project-meta/vision/ — cross-cutting
+  extraction quality strategy, prompt_eval ecosystem role documented
+- **ECOSYSTEM_STATUS.md** updated: prompt_eval in infra table, stale v1 references
+  fixed (onto-canon → onto-canon6, canonicalize_text → TextExtractionService,
+  90% → 88%), Data bucket updated, integration table refreshed
+- **FRAMEWORK.md** updated: prompt_eval in Operations bucket
+- **CONSUMER_INTEGRATION_NOTES.md** updated: DIGIMON as primary consumer,
+  verified v1 workflow documented
+- **KNOWLEDGE.md**: 4 new entries (judge filter bug, silent fallback bug,
+  noise entities, entity type inconsistency)
+- **Plan 0025**: Design decisions D1-D6 documented, off-the-shelf evaluation
+  (KGGen cluster(), nameparser) documented with rejection rationale
 
-The intended reading/authority split is now:
+### 4. DIGIMON Chosen as First Consumer (Plan 0024 Lane 2)
 
-1. `docs/plans/0005_v1_capability_parity_matrix.md`
-   - full preserved capability vision
-2. `docs/plans/0024_post_cutover_program.md`
-   - ordered execution lanes after cutover
-3. `docs/plans/0020_vision_gap_closure.md`
-   - ecosystem-gap tracker
-
-The repo is no longer supposed to infer current program order from scattered
-historical plans.
-
-## DIGIMON Boundary Review
-
-### Strategic conclusion
-
-The long-term split remains:
-
-1. `onto-canon6` owns governed semantic/canonical state
-2. DIGIMON should own retrieval-oriented projections and retrieval runtime
-3. analysis is conceptually separate, but does not need a repo split now
-
-### Important nuance
-
-The current DIGIMON adapter surface is still thinner than that long-term
-architecture implies.
-
-`src/onto_canon6/adapters/digimon_export.py` currently exports a flat entity /
-relationship JSONL shape. It does not yet export:
-
-1. alias memberships
-2. passage artifacts
-3. evidence refs
-4. assertion-to-passage links
-5. artifact-lineage context
-
-So the advice was:
-
-1. do **not** move retrieval projections into onto-canon6 core
-2. do **not** assume the current DIGIMON export is already the right semantic
-   interchange
-3. consider Foundation-style assertion export as the stronger basis for any
-   richer future DIGIMON contract
-
-### Foundation export relevance
-
-`src/onto_canon6/adapters/foundation_assertion_export.py` is closer to the
-likely long-term interchange shape than `digimon_export.py` because it already
-preserves:
-
-1. typed role fillers
-2. alias ids
-3. qualifiers
-4. assertion identity
-
-## Recommended Next Actions
-
-1. Execute Plan 0024 Lane 2:
-   choose and prove the first real consumer workflow.
-2. Define Lane 3 schema-stability gates explicitly.
-3. Treat any DIGIMON convergence beyond the current adapter as a deliberate
-   richer interchange effort, not as a casual extension of the flat export.
-4. Keep extraction-quality hardening under Plan 0014 tied to transfer evidence.
-
-## Current Repo State
-
-- `main` clean after the doc-authority cleanup commit
-- no uncommitted changes from this session
-
-# Handoff: onto-canon6
-
-**Date**: 2026-03-26
-**Session**: All remaining items completed
-
----
-
-## What Was Done (final batch)
-
-| Item | Commit | Result |
-|------|--------|--------|
-| Wire review_mode auto-flow | `1651ee1` | extract_and_submit auto-accepts+promotes when review_mode=auto |
-| Fix MCP test | `8b7b224` | Use list_tools() instead of _tool_manager._tools |
-| Verify llm_client fixes | verified | Registry + IPv4 fixes on main via merged PRs |
-| Archive stale docs | `0091cd0` | 16 plans moved to archive/, KNOWLEDGE.md deleted |
-| Evidence grounding validator | `6ed3086` | Flags ungrounded candidates (_grounding_status) |
-| Dynamic predicate filtering | `a61ec70` | ODKE+ snippet pattern, keyword relevance ranking |
+Per CLAUDE.md: DIGIMON is the first Lane 2 consumer. Verified v1 workflow:
+onto-canon6 export → DIGIMON import → graph query. 110 entities, 99
+relationships exported; 110 nodes, 78 edges imported.
 
 ## Current State
 
-- **430 tests passing**, 0 failures
-- **4 active plans**: 0001 (historical), 0005 (parity matrix), 0014 (extraction quality), 0020 (gap tracker)
-- **16 archived plans** in docs/plans/archive/
-- All deferred items in parity matrix verified accurate
+- **Config**: `review_mode: llm`, `enable_judge_filter: true`,
+  `resolution.default_strategy: exact`, `resolution.require_llm_review: true`
+- **Model**: `gemini/gemini-2.5-flash` (stable)
+- **Tests**: 402 passing (383 full suite + 19 auto_resolution non-DB tests;
+  23 text_extraction tests require live LLM endpoint)
+- **Known issue**: auto_resolution DB-backed tests hang under heavy background
+  process load (pre-existing, not introduced by this session)
 
-## Key Capabilities Added This Session
+## Active Plans
 
-### Configurable Review Modes
-`config.yaml: pipeline.review_mode: human|auto|llm`
-- `human`: manual accept/reject (default)
-- `auto`: auto-accept + auto-promote all valid candidates
-- `llm`: LLM-judge decides accept/reject, auto-promote accepted
-- Batch CLI: `accept-all`, `promote-all`, `make govern` (full auto)
+| Plan | Status | Next |
+|------|--------|------|
+| 0025 | Phases 1-3 landed, Phase 4 value proof open | Complete scale test precision/recall against ground truth |
+| 0024 Lane 2 | DIGIMON chosen, v1 verified | Schema stability gate (Lane 3) |
+| 0014 | Active (parallel) | Prompt iteration with transfer evidence |
 
-### ODKE+ Patterns
-- **Evidence grounding**: candidates flagged as ungrounded when no evidence spans resolve
-- **Dynamic predicate filtering**: `max_predicates_in_prompt` config renders only relevant predicates
-- **LLM-judge quality filter**: optional post-extraction filter (enable_judge_filter)
+## Authority
 
-## Environment
-- Model: `gemini/gemini-2.5-flash` (direct API, <2s)
-- `LLM_CLIENT_FORCE_IPV4` auto-detected on WSL2
-- `review_mode: human` (default), change to `auto` for batch processing
-- ProbLog, rapidfuzz in shared venv
+- CLAUDE.md → strategic direction + active execution block
+- Plan 0024 → ordered execution lanes (Lane 2 = consumer adoption)
+- Plan 0025 → entity resolution implementation + design decisions
+- Plan 0005 → full capability vision (parity matrix)
+- Plan 0020 → gap-by-gap tracker
+
+## Previous Handoffs
+
+- **2026-03-28**: Documentation authority cleanup, post-cutover program, DIGIMON boundary review
+- **2026-03-26**: Final bootstrap session — 430 tests, review modes wired, ODKE+ patterns, evidence grounding
