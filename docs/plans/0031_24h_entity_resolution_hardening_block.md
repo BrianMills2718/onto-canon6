@@ -1,12 +1,12 @@
 # 24h Entity Resolution Hardening Block
 
-Status: active
+Status: completed
 Phase status:
 - Phase 1 completed
 - Phase 2 completed
 - Phase 3 completed
-- Phase 4 pending
-- Phase 5 pending
+- Phase 4 completed
+- Phase 5 completed
 
 Last updated: 2026-04-01
 Workstream: bounded 24-hour hardening block after Plan 0030
@@ -189,6 +189,28 @@ Landed changes:
 3. if the LLM path is still not promotable, the blocking failure family is
    concrete.
 
+#### Outcome
+
+Completed on 2026-04-01.
+
+Fresh artifacts:
+
+1. `docs/runs/scale_test_exact_2026-04-01_073211.json`
+2. `docs/runs/scale_test_llm_2026-04-01_074236.json`
+3. `docs/runs/2026-04-01_entity_resolution_hardening_rerun.md`
+
+Decision summary:
+
+1. hardened exact remained the precision floor and improved recall modestly
+   (`0.204` -> `0.244`) with zero false merges;
+2. hardened LLM eliminated the prior same-surname false-merge family and
+   reached `1.00` precision with zero false merges;
+3. hardened LLM still failed the promotion gate because recall fell to
+   `0.308` and fixed-question answerability regressed to `0.20`;
+4. one extraction/schema failure dropped `doc_06` from the LLM rerun and is
+   logged as a caveat, but the dominant remaining failure families are still
+   alias / unique-cluster false splits.
+
 ### Phase 5: Closeout
 
 #### Tasks
@@ -204,6 +226,18 @@ Landed changes:
 2. the active plan stack names the next real work, not generic “improve
    entity resolution” language;
 3. the worktree is left clean with committed checkpoints only.
+
+#### Outcome
+
+Completed on 2026-04-01.
+
+Closeout truth:
+
+1. Plan 0031 succeeded as a hardening block and removed the unsafe merge
+   family that blocked the first value proof;
+2. Plan 0031 did not make the LLM strategy promotable;
+3. Plan 0025 remains active, and its next narrow work is recall /
+   answerability hardening plus the extraction-schema failure fix.
 
 ## Failure Modes
 

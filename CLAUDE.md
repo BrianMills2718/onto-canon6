@@ -11,7 +11,7 @@ runtime.
 3. `docs/STATUS.md`
 4. `docs/plans/0024_post_cutover_program.md`
 5. `docs/plans/0025_cross_document_entity_resolution.md` (current active implementation work)
-6. `docs/plans/0031_24h_entity_resolution_hardening_block.md` (current active execution block)
+6. `docs/plans/0031_24h_entity_resolution_hardening_block.md` (completed hardening block; latest rerun decision)
 7. `docs/plans/0026_schema_stability_gate.md` (completed Lane 3 contract policy)
 8. `docs/plans/0014_extraction_quality_baseline.md` (active Lane 4 promotion gate)
 9. `docs/plans/0027_deferred_parity_reprioritization.md`
@@ -66,9 +66,12 @@ config/
   Plan 0026 is now the completed contract-policy surface, and the first
   read-only query surface is now implemented end to end through Plan 0029.
   Plan 0030 is now complete and gives the first decision-grade comparison
-  between exact, bare-baseline, and LLM entity-resolution strategies. The
-  active bounded execution block is now Plan 0031, which hardens the known
-  false-merge and stale-judge seams before any LLM default-promotion decision.
+  between exact, bare-baseline, and LLM entity-resolution strategies. Plan
+  0031 is also now complete: it fixed the stale auto-review judge seam,
+  removed the known same-surname false-merge family, and reran the value
+  proof. The result is stricter: LLM resolution is now safe on that prior
+  merge family, but still not promotable as default because recall and
+  fixed-question answerability remain too weak.
   The chunk-level transfer evaluation requirement remains active through
   ADR 0023 and Plans 0024/0014 even though there is no standalone Plan 0019
   file.
@@ -221,35 +224,30 @@ happens.
    resolution *infrastructure*. Export adapters wire the identity subsystem.
    Consumers should not have to reimplement dedup.
 
-## Active Execution Block (2026-04-01)
+## Most Recent Execution Block (2026-04-01)
 
-**Plan 0031: 24h Entity Resolution Hardening Block — active until fully closed.**
+**Plan 0031: 24h Entity Resolution Hardening Block — complete.**
 
-Execute continuously and do not pause between phases. Finish the current
-phase, update the plan/TODO surfaces, commit the verified increment, and move
-immediately to the next phase. Never stop at "one seam is fixed" or "one rerun
-started." The block is not done until all required phases, rerun artifacts,
-and closeout docs are finished.
+The hardening block now has:
 
-The only valid stop conditions are:
+1. a fixed auto-review judge path that honors explicit bounded model overrides;
+2. deterministic person-name hardening that removed the prior same-surname
+   false-merge family;
+3. hierarchy-aware or override-aware resolution-family compatibility for
+   subtype-equivalent entities;
+4. fresh exact and LLM rerun artifacts plus a written decision note in
+   `docs/runs/2026-04-01_entity_resolution_hardening_rerun.md`.
 
-1. all 5 phases in `docs/plans/0031_24h_entity_resolution_hardening_block.md`
-   are complete and committed;
-2. a real blocker that cannot be resolved from repo context or the plan;
-3. a material uncertainty not covered by the pre-made decisions below.
+Decision from the block:
 
-If a sub-phase is blocked, log the blocker in the active plan, `TODO.md`, and
-the run note, then continue with the next unblocked phase. Do not silently
-abandon a phase. Do not ask what to do next while the active block still has
-unfinished phases.
+1. exact remains the default precision floor;
+2. hardened LLM now has zero false merges on the synthetic value-proof corpus;
+3. hardened LLM is still not promotable as default because recall and
+   fixed-question answerability remain too weak, and one extraction/schema
+   failure dropped `doc_06` from the rerun.
 
-Pre-made decisions (do not ask about these):
-- Work stays in the isolated `codex/onto-canon6-integration-planning` worktree
-- The stale `_judge_candidate()` path must be fixed in this block
-- Same-surname person overmerge is a deterministic hardening target, not just a prompt tweak
-- Type compatibility for resolution must become hierarchy-aware or override-aware
-- Rerun fresh exact and LLM artifacts after hardening and decide from evidence
-- Commit each verified phase immediately
+Active work therefore returns to Plan 0025's next narrow frontier: recall /
+answerability recovery and the extraction-schema failure family.
 
 ## Completed Execution Block (2026-04-01)
 

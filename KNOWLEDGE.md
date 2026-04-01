@@ -90,3 +90,18 @@ single-candidate auto-review path `_judge_candidate()` still used the stale
 `gemini-2.5-flash` default and fail-opened to `supported` on quota exhaustion.
 Treat the resulting run artifacts as decision-grade but caveated until that
 override seam is fixed and rerun.
+
+### 2026-04-01 — codex — best-practice
+The Plan 0031 hardening reruns proved that pairwise precision alone is not a
+sufficient promotion gate for entity resolution. The hardened LLM strategy
+reached `1.00` precision and `0` false merges, but benchmark answerability
+still collapsed because many mentions no longer resolved to a unique predicted
+cluster. Keep the fixed question set as a co-equal gate with pairwise metrics
+for future promotion decisions.
+
+### 2026-04-01 — codex — bug-pattern
+If a scale-test rerun suddenly loses one document, check
+`candidate_assertions.source_ref` distribution before debugging resolution.
+The hardened LLM rerun under Plan 0031 had only `24` source refs instead of
+`25`; `doc_06` was missing because extraction emitted unsupported filler kind
+`event` and failed validation before promotion or resolution even ran.

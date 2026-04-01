@@ -16,7 +16,7 @@ Without this, every document produces isolated entity islands. The scale value
 (cross-document entity resolution, contradiction detection, typed reasoning)
 cannot be demonstrated.
 
-## Progress Update (2026-03-31)
+## Progress Update (2026-04-01)
 
 This plan is no longer just planned. The first value-proof block is now
 completed and the repo has decision-grade comparison artifacts.
@@ -44,25 +44,31 @@ surface:
 
 ### What is still unresolved
 
-The plan's harness and metrics gap is now closed, but the strategy decision is
-still unresolved.
+The plan's harness and metrics gap is now closed, and the first hardening block
+after the value proof is also complete. The strategy decision is still
+unresolved, but the blocking failure family is now much narrower.
 
 The current question is no longer "can the repo score resolution quality?" It
 can. The current question is now narrower:
 
-1. can the LLM strategy recover alias-heavy merges without overmerging
-   same-surname people;
-2. can organization and installation alias handling catch up to the recall
-   gains the LLM strategy already showed;
-3. can the fixed cross-document question set improve without sacrificing the
-   current exact-match precision floor.
+1. can the LLM strategy recover alias-heavy merges without regressing the new
+   zero-false-merge safety floor;
+2. can organization and installation alias handling catch up enough to improve
+   recall and unique-cluster answerability;
+3. can the extraction/schema failure family that dropped `doc_06` in the
+   hardened LLM rerun be removed before the next comparison run.
 
-The completed value-proof block showed:
+The completed value-proof block and the follow-on hardening block showed:
 
 1. exact strategy remains the high-precision floor;
 2. bare extraction is not competitive;
-3. LLM clustering improves pairwise recall materially but is not yet safe
-   enough to promote as the default.
+3. LLM clustering can now be made safe against the prior same-surname false
+   merges, but it is not yet promotable as the default because recall and
+   fixed-question answerability remain too weak.
+
+Latest decision artifact:
+
+1. `docs/runs/2026-04-01_entity_resolution_hardening_rerun.md`
 
 ## What Exists Today
 

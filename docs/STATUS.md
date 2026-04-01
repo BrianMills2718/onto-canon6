@@ -26,9 +26,10 @@ Current post-cutover program state:
 4. the first read-only query surface is now landed and proved through
    `docs/plans/0028_query_browse_surface.md` and
    `docs/plans/0029_24h_query_surface_execution_block.md`;
-5. Plan 0025 now has decision-grade value-proof evidence, and the next active
-   question is false-merge hardening plus strategy promotion criteria for the
-   LLM path.
+5. Plan 0025 now has decision-grade value-proof evidence plus one completed
+   hardening pass; the next active question is recall / answerability recovery
+   for the LLM path, plus the extraction-schema failure that dropped `doc_06`
+   from the hardened rerun.
 
 ## What Is Proven
 

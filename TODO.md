@@ -1,6 +1,6 @@
 # TODO
 
-## Current 24h Execution Block
+## Most Recent 24h Execution Block
 
 Source of truth:
 - `docs/plans/0031_24h_entity_resolution_hardening_block.md`
@@ -21,22 +21,34 @@ Source of truth:
 - [x] Make resolution type compatibility hierarchy-aware or override-aware
 - [x] Strengthen prompt or post-LLM validation accordingly
 - [x] Add targeted regression tests
-- [ ] Commit verified phase
+- [x] Commit verified phase
 
 ### Phase 4 — Refresh The Value Proof
-- [ ] Rerun exact strategy on a fresh DB
-- [ ] Rerun LLM strategy on a fresh DB
-- [ ] Write refreshed decision-grade run note
-- [ ] Commit verified phase
+- [x] Rerun exact strategy on a fresh DB
+- [x] Rerun LLM strategy on a fresh DB
+- [x] Write refreshed decision-grade run note
+- [x] Commit verified phase
 
 ### Phase 5 — Closeout
-- [ ] Refresh docs/status/handoff
-- [ ] Mark execution block complete
-- [ ] Commit verified phase
+- [x] Refresh docs/status/handoff
+- [x] Mark execution block complete
+- [x] Commit verified phase
+
+## Next Active Work
+
+Source of truth:
+- `docs/plans/0025_cross_document_entity_resolution.md`
+
+- [ ] Fix the extraction/schema failure family that emitted `kind: \"event\"`
+- [ ] Improve alias recovery for benchmark-critical org / installation families
+- [ ] Improve unique-cluster resolution for abbreviated people without
+      reintroducing same-surname overmerges
+- [ ] Decide the next bounded execution block only after the above frontier is
+      written as an explicit phase plan
 
 ## Longer-Term Queue
 
-- [ ] Decide whether LLM clustering should replace exact strategy as default
+- [ ] Re-evaluate whether LLM clustering should replace exact strategy as default after the next recall/answerability hardening pass
 - [ ] Evaluate whether Plan 0028 should widen beyond the first five operations
 - [ ] Revisit consumer-blocked richer DIGIMON interchange only through DIGIMON Plan 23
 - [ ] Revisit trusted bulk ingestion only if a real workflow makes review the bottleneck
