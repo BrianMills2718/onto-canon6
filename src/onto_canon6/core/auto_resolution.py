@@ -220,6 +220,15 @@ class _PersonGroupBridgeInfo:
     has_titled_surname_only: bool
 
 
+@dataclass(frozen=True)
+class _PlaceGroupBridgeInfo:
+    """Group-level bridge signals for bounded district-style place collapse."""
+
+    district_heads: frozenset[str]
+    district_abbrevs: frozenset[str]
+    single_token_places: frozenset[str]
+
+
 def auto_resolve_identities(
     *,
     db_path: Path,
@@ -1010,6 +1019,44 @@ def _person_group_bridge_info(
     )
 
 
+def _place_group_bridge_info(
+    group_ids: list[str],
+    *,
+    name_map: dict[str, str],
+) -> _PlaceGroupBridgeInfo | None:
+    """Summarize one place group for bounded district-style bridge logic."""
+
+    district_heads: set[str] = set()
+    district_abbrevs: set[str] = set()
+    single_token_places: set[str] = set()
+
+    for entity_id in group_ids:
+        tokens = _alias_signature_tokens(name_map.get(entity_id, entity_id))
+        if not tokens:
+            continue
+        compact = "".join(tokens)
+        if compact == "dc":
+            district_abbrevs.add("dc")
+            continue
+        if len(tokens) >= 2 and compact.endswith("dc") and tokens[-2:] == ["d", "c"]:
+            district_abbrevs.add("dc")
+            head_tokens = tokens[:-2]
+            if len(head_tokens) == 1:
+                district_heads.add(head_tokens[0])
+            continue
+        if len(tokens) == 1:
+            single_token_places.add(tokens[0])
+
+    if not district_heads and not district_abbrevs and not single_token_places:
+        return None
+
+    return _PlaceGroupBridgeInfo(
+        district_heads=frozenset(sorted(district_heads)),
+        district_abbrevs=frozenset(sorted(district_abbrevs)),
+        single_token_places=frozenset(sorted(single_token_places)),
+    )
+
+
 def _postprocess_llm_cluster(
     entity_ids: list[str],
     *,
@@ -1302,6 +1349,30 @@ def _collapse_equivalent_llm_groups(
                 ]
             if len(anchor_candidates) == 1:
                 union(surname_only_key, anchor_candidates[0])
+
+    place_keys_by_district_head: dict[str, list[str]] = defaultdict(list)
+    place_keys_by_single_token: dict[str, list[str]] = defaultdict(list)
+    for key in keys:
+        group = groups[key]
+        if not group:
+            continue
+        representative_name = name_map.get(group[0], group[0])
+        if _entity_resolution_family(entity_types.get(group[0], ""), representative_name) != "place":
+            continue
+        place_bridge_info = _place_group_bridge_info(group, name_map=name_map)
+        if place_bridge_info is None:
+            continue
+        for district_head in place_bridge_info.district_heads:
+            place_keys_by_district_head[district_head].append(key)
+        for token in place_bridge_info.single_token_places:
+            place_keys_by_single_token[token].append(key)
+
+    for district_head, district_head_keys in place_keys_by_district_head.items():
+        if len({find(key) for key in district_head_keys}) != 1:
+            continue
+        token_keys = place_keys_by_single_token.get(district_head, [])
+        for token_key in token_keys:
+            union(token_key, district_head_keys[0])
 
     collapsed: dict[str, list[str]] = defaultdict(list)
     for key in keys:

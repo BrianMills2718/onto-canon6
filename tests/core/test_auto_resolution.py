@@ -918,6 +918,59 @@ class TestGroupByLLM:
             frozenset({"e1", "e2", "e3"}),
         }
 
+    def test_collapse_equivalent_llm_groups_merges_district_place_alias_family(self) -> None:
+        """District-style place aliases should collapse with their single-token place surface."""
+
+        from onto_canon6.core import auto_resolution as ar_mod
+
+        groups = ar_mod._collapse_equivalent_llm_groups(
+            {
+                "g1": ["e1", "e2"],
+                "g2": ["e3"],
+            },
+            name_map={
+                "e1": "Washington D.C.",
+                "e2": "D.C.",
+                "e3": "Washington",
+            },
+            entity_types={
+                "e1": "oc:location",
+                "e2": "oc:location",
+                "e3": "oc:location",
+            },
+        )
+
+        assert {frozenset(group) for group in groups.values()} == {
+            frozenset({"e1", "e2", "e3"}),
+        }
+
+    def test_collapse_equivalent_llm_groups_keeps_district_place_separate_from_institution(self) -> None:
+        """District-style place bridging must not cross the place/institution family boundary."""
+
+        from onto_canon6.core import auto_resolution as ar_mod
+
+        groups = ar_mod._collapse_equivalent_llm_groups(
+            {
+                "g1": ["e1", "e2"],
+                "g2": ["e3"],
+            },
+            name_map={
+                "e1": "Washington D.C.",
+                "e2": "D.C.",
+                "e3": "George Washington University",
+            },
+            entity_types={
+                "e1": "oc:location",
+                "e2": "oc:location",
+                "e3": "oc:university",
+            },
+        )
+
+        assert {frozenset(group) for group in groups.values()} == {
+            frozenset({"e1", "e2"}),
+            frozenset({"e3"}),
+        }
+
     def test_llm_clustering_postprocesses_conflicting_person_names(self) -> None:
         """Conflicting same-surname people keep one John cluster and one James cluster."""
         mock_response = MagicMock()

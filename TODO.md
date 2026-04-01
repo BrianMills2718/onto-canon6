@@ -17,10 +17,10 @@ Source of truth:
 - [x] Commit verified phase
 
 ### Phase 3 — Repair The Washington Place Family
-- [ ] Localize exactly why `Washington` still splits from `Washington D.C.` / `D.C.`
-- [ ] Land one bounded place-family repair
-- [ ] Add/update targeted regression tests
-- [ ] Commit verified phase
+- [x] Localize exactly why `Washington` still splits from `Washington D.C.` / `D.C.`
+- [x] Land one bounded place-family repair
+- [x] Add/update targeted regression tests
+- [x] Commit verified phase
 
 ### Phase 4 — Rerun The Value Proof
 - [ ] Rerun LLM strategy on a fresh DB
