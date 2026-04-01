@@ -6,21 +6,21 @@ Source of truth:
 - `docs/plans/0035_24h_entity_resolution_alias_family_completion_block.md`
 
 ### Phase 1 — Freeze The Residual Failure Contract
-- [ ] Record the Plan 0034 clean-measurement baseline and activate Plan 0035
-- [ ] Freeze the three residual failure families and thresholds
-- [ ] Commit verified phase
+- [x] Record the Plan 0034 clean-measurement baseline and activate Plan 0035
+- [x] Freeze the three residual failure families and thresholds
+- [x] Commit verified phase
 
 ### Phase 2 — Repair Organization-Family Drift
-- [ ] Add `government_agency` ↔ `government_organization` compatibility
-- [ ] Add bounded name-aware organization-family inference for missing / generic entity types
-- [ ] Add/update targeted tests
-- [ ] Commit verified phase
+- [x] Add `government_agency` ↔ `government_organization` compatibility
+- [x] Add bounded name-aware organization-family inference for missing / generic entity types
+- [x] Add/update targeted tests
+- [x] Commit verified phase
 
 ### Phase 3 — Land The Bounded Installation-Equivalence Repair
-- [ ] Localize the surviving `Ft. Bragg` / `Fort Liberty` split at the grouping level
-- [ ] Add one bounded installation rename / redesignation repair
-- [ ] Add/update targeted tests
-- [ ] Commit verified phase
+- [x] Localize the surviving `Ft. Bragg` / `Fort Liberty` split at the grouping level
+- [x] Add one bounded installation rename / redesignation repair
+- [x] Add/update targeted tests
+- [x] Commit verified phase
 
 ### Phase 4 — Rerun The Value Proof
 - [ ] Rerun LLM strategy on a fresh DB

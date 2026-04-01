@@ -729,6 +729,54 @@ class TestGroupByLLM:
             right_name="George Washington University",
         )
 
+    def test_entity_types_compatible_government_agency_family(self) -> None:
+        """Government-agency mentions should compare with government organizations."""
+
+        from onto_canon6.core.auto_resolution import _entity_types_compatible
+
+        assert _entity_types_compatible(
+            "oc:government_agency",
+            "oc:government_organization",
+            left_name="CIA",
+            right_name="Central Intelligence Agency",
+        )
+
+    def test_entity_types_compatible_generic_org_like_names(self) -> None:
+        """Generic / missing types can join the organization family when the name is strong."""
+
+        from onto_canon6.core.auto_resolution import _entity_types_compatible
+
+        assert _entity_types_compatible(
+            "",
+            "oc:military_organization",
+            left_name="U.S. Special Operations Command",
+            right_name="USSOCOM",
+        )
+
+    def test_collapse_equivalent_llm_groups_merges_installation_renames(self) -> None:
+        """Known installation redesignations should collapse across separate LLM groups."""
+
+        from onto_canon6.core import auto_resolution as ar_mod
+
+        groups = ar_mod._collapse_equivalent_llm_groups(
+            {
+                "g1": ["e1"],
+                "g2": ["e2"],
+            },
+            name_map={
+                "e1": "Ft. Bragg",
+                "e2": "Fort Liberty",
+            },
+            entity_types={
+                "e1": "oc:military_base",
+                "e2": "oc:military_organization",
+            },
+        )
+
+        assert {frozenset(group) for group in groups.values()} == {
+            frozenset({"e1", "e2"}),
+        }
+
     def test_llm_clustering_postprocesses_conflicting_person_names(self) -> None:
         """Conflicting same-surname people are split after the LLM response."""
         mock_response = MagicMock()

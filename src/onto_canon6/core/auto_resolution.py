@@ -46,6 +46,7 @@ _ORGANIZATION_TYPE_SLUGS = {
     "military_organization",
     "military_organization_unit",
     "government_organization",
+    "government_agency",
     "intelligence_agency",
     "educational_institution",
     "university",
@@ -71,6 +72,35 @@ _INSTALLATION_NAME_PREFIXES = (
     "base ",
     "station ",
 )
+_GENERIC_TYPE_SLUGS = {"entity", "unknown"}
+_ORGANIZATION_NAME_HINTS = {
+    "agency",
+    "bureau",
+    "center",
+    "centre",
+    "command",
+    "commands",
+    "committee",
+    "department",
+    "directorate",
+    "division",
+    "group",
+    "groups",
+    "headquarters",
+    "office",
+    "organization",
+    "university",
+    "unit",
+    "units",
+}
+_INSTALLATION_EQUIVALENCE_GROUPS = (
+    frozenset({"fort bragg", "ft bragg", "fort liberty"}),
+)
+_INSTALLATION_EQUIVALENCE_LOOKUP = {
+    normalized_name: f"installation:{index}"
+    for index, names in enumerate(_INSTALLATION_EQUIVALENCE_GROUPS, start=1)
+    for normalized_name in names
+}
 _ALIAS_STOPWORDS = {
     "a",
     "an",
@@ -786,7 +816,30 @@ def _entity_resolution_family(entity_type: str, name: str | None = None) -> str:
         return "person"
     if normalized_name.startswith(_INSTALLATION_NAME_PREFIXES):
         return "place"
+    if slug in _GENERIC_TYPE_SLUGS and _looks_like_organization_name(normalized_name):
+        return "organization"
     return base_family
+
+
+def _looks_like_organization_name(normalized_name: str) -> bool:
+    """Return whether a normalized surface form carries strong organization signal."""
+
+    tokens = [token for token in normalized_name.split() if token]
+    if not tokens:
+        return False
+    if any(token in _ORGANIZATION_NAME_HINTS for token in tokens):
+        return True
+    return len(tokens) >= 2 and bool(_acronym_signatures(normalized_name))
+
+
+def _installation_equivalence_key(name: str) -> str | None:
+    """Return the bounded installation-equivalence key for one surface form."""
+
+    tokens = _alias_signature_tokens(name)
+    if not tokens:
+        return None
+    normalized = " ".join(tokens)
+    return _INSTALLATION_EQUIVALENCE_LOOKUP.get(normalized)
 
 
 def _looks_like_person_mention(normalized_name: str) -> bool:
@@ -989,6 +1042,9 @@ def _group_alias_signatures(
         normalized = _normalize_name(observed_name)
         if normalized:
             signatures.add(f"norm:{normalized}")
+            installation_equivalence = _installation_equivalence_key(observed_name)
+            if installation_equivalence is not None:
+                signatures.add(installation_equivalence)
         if family == "person":
             info = _person_name_info(observed_name)
             if info.full_given is not None and info.surname is not None:

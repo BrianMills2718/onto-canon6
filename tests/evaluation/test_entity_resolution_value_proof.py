@@ -43,6 +43,12 @@ def _ground_truth() -> EntityResolutionGroundTruth:
                     "name_variants": ["Washington", "GWU"],
                     "appears_in_docs": ["doc_11"],
                 },
+                "E006": {
+                    "canonical_name": "Central Intelligence Agency",
+                    "type": "oc:government_organization",
+                    "name_variants": ["CIA", "Central Intelligence Agency", "the Agency"],
+                    "appears_in_docs": ["doc_04", "doc_07", "doc_11"],
+                },
             },
             "expected_merges": [],
             "expected_non_merges": [],
@@ -130,6 +136,33 @@ def test_match_observations_accepts_university_family_mentions() -> None:
 
     assert matched[0].match_status == "matched"
     assert matched[0].matched_ground_truth_entity_id == "E013"
+
+
+def test_match_observations_accepts_government_agency_family_mentions() -> None:
+    """Government-agency mentions should match government-organization ground truth."""
+
+    observations = (
+        EntityObservation(
+            entity_id="ent_agency",
+            entity_type="oc:government_agency",
+            first_candidate_id="cand_agency",
+            predicted_cluster_id="cluster_agency",
+            observed_names=("the Agency",),
+            source_refs=("doc_11",),
+            matched_ground_truth_entity_id=None,
+            match_status="unmatched",
+            match_reason="not run",
+            candidate_ground_truth_entity_ids=(),
+        ),
+    )
+
+    matched = match_observations_to_ground_truth(
+        observations,
+        ground_truth=_ground_truth(),
+    )
+
+    assert matched[0].match_status == "matched"
+    assert matched[0].matched_ground_truth_entity_id == "E006"
 
 
 def test_match_observations_marks_ambiguous_when_type_and_docs_do_not_break_tie() -> None:
