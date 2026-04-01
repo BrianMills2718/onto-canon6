@@ -1,0 +1,138 @@
+{
+  "timestamp": "2026-04-01_081810",
+  "onto_canon6": {
+    "total_questions": 10,
+    "correct": 9,
+    "accuracy": 0.9,
+    "answers": [
+      {
+        "id": "Q01",
+        "question": "How many documents mention General John Smith (under any name variant)?",
+        "resolved": true,
+        "correct": true
+      },
+      {
+        "id": "Q02",
+        "question": "How many documents mention USSOCOM (under any name)?",
+        "resolved": true,
+        "correct": true
+      },
+      {
+        "id": "Q03",
+        "question": "Which entities appear in BOTH doc_01 and doc_05?",
+        "resolved": true,
+        "correct": true
+      },
+      {
+        "id": "Q04",
+        "question": "Is 'CIA' the same entity as 'Central Intelligence Agency'?",
+        "resolved": true,
+        "correct": true
+      },
+      {
+        "id": "Q05",
+        "question": "Is 'Gen. Smith' in doc_01 the same person as 'James Smith' in doc_15?",
+        "resolved": true,
+        "correct": true
+      },
+      {
+        "id": "Q06",
+        "question": "How many distinct military organizations are mentioned across all documents?",
+        "resolved": true,
+        "correct": true
+      },
+      {
+        "id": "Q07",
+        "question": "Are 'Fort Bragg' and 'Fort Liberty' the same place?",
+        "resolved": false,
+        "correct": false
+      },
+      {
+        "id": "Q08",
+        "question": "Is 'Washington' (the location mentioned in doc_04) the same as 'George Washington University'?",
+        "resolved": true,
+        "correct": true
+      },
+      {
+        "id": "Q09",
+        "question": "How many distinct people are named across all documents?",
+        "resolved": true,
+        "correct": true
+      },
+      {
+        "id": "Q10",
+        "question": "Which person has the most document appearances?",
+        "resolved": true,
+        "correct": true
+      }
+    ]
+  },
+  "bare_extraction": {
+    "total_questions": 10,
+    "correct": 2,
+    "accuracy": 0.2,
+    "answers": [
+      {
+        "id": "Q01",
+        "question": "How many documents mention General John Smith (under any name variant)?",
+        "resolved": false,
+        "correct": false
+      },
+      {
+        "id": "Q02",
+        "question": "How many documents mention USSOCOM (under any name)?",
+        "resolved": false,
+        "correct": false
+      },
+      {
+        "id": "Q03",
+        "question": "Which entities appear in BOTH doc_01 and doc_05?",
+        "resolved": false,
+        "correct": false
+      },
+      {
+        "id": "Q04",
+        "question": "Is 'CIA' the same entity as 'Central Intelligence Agency'?",
+        "resolved": false,
+        "correct": false
+      },
+      {
+        "id": "Q05",
+        "question": "Is 'Gen. Smith' in doc_01 the same person as 'James Smith' in doc_15?",
+        "resolved": true,
+        "correct": true
+      },
+      {
+        "id": "Q06",
+        "question": "How many distinct military organizations are mentioned across all documents?",
+        "resolved": false,
+        "correct": false
+      },
+      {
+        "id": "Q07",
+        "question": "Are 'Fort Bragg' and 'Fort Liberty' the same place?",
+        "resolved": false,
+        "correct": false
+      },
+      {
+        "id": "Q08",
+        "question": "Is 'Washington' (the location mentioned in doc_04) the same as 'George Washington University'?",
+        "resolved": true,
+        "correct": true
+      },
+      {
+        "id": "Q09",
+        "question": "How many distinct people are named across all documents?",
+        "resolved": false,
+        "correct": false
+      },
+      {
+        "id": "Q10",
+        "question": "Which person has the most document appearances?",
+        "resolved": false,
+        "correct": false
+      }
+    ]
+  },
+  "delta": 0.7
+}
