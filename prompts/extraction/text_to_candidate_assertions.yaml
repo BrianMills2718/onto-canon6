@@ -51,8 +51,9 @@ messages:
       - `value`: `kind`, `value_kind`, `normalized`, optionally `raw`
       - `unknown`: `kind`, `raw`
 
-      `roles` must map each role name to an array of fillers. Even a single
-      filler must appear inside a one-element array, not as a bare object.
+      `roles` is an array of role entries. Each entry has a `role_name` (string)
+      and a `fillers` array of filler objects. Even a single filler must appear
+      inside a one-element `fillers` array.
 
       Use source punctuation directly inside string values. Do not invent
       backslash escapes for apostrophes or quotes beyond normal JSON string

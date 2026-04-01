@@ -186,6 +186,27 @@ class ExtractedEvidenceSpan(BaseModel):
         return self
 
 
+class ExtractedRoleEntry(BaseModel):
+    """One role with its fillers, as a key-value pair.
+
+    Uses explicit ``role_name`` + ``fillers`` list instead of a dict with
+    ``additionalProperties`` to avoid Gemini structured output limitations.
+    Gemini 3 models cannot fill ``additionalProperties`` with nested ``$ref``
+    arrays. This flat list-of-entries pattern is the standard workaround.
+    """
+
+    model_config = ConfigDict(extra="ignore", frozen=True)
+
+    role_name: str = Field(
+        min_length=1,
+        description="Role name from the predicate's role catalog (e.g. ARG0, agent, patient).",
+    )
+    fillers: list[ExtractedFiller] = Field(
+        min_length=1,
+        description="One or more fillers for this role.",
+    )
+
+
 class ExtractedCandidate(BaseModel):
     """One candidate assertion emitted by the structured extraction model."""
 
@@ -195,12 +216,45 @@ class ExtractedCandidate(BaseModel):
         min_length=1,
         description="Predicate identifier only, without serialized role payloads or extra prose.",
     )
-    roles: dict[str, list[ExtractedFiller]] = Field(
+    roles: list[ExtractedRoleEntry] = Field(
+        min_length=1,
         description=(
-            "Role mapping. MUST include at least one role with at least one filler. "
-            "Each role name maps to an array of filler objects."
+            "Role entries. MUST include at least one role with at least one filler. "
+            "Each entry has a role_name and an array of filler objects."
         ),
     )
+
+    @model_validator(mode="before")
+    @classmethod
+    def _convert_dict_roles(cls, data: object) -> object:
+        """Convert dict-style roles to list-of-entries for backward compatibility.
+
+        Accepts both formats:
+        - New: [{"role_name": "ARG0", "fillers": [...]}]
+        - Old: {"ARG0": [...]}  (auto-converted)
+        """
+        if not isinstance(data, Mapping):
+            return data
+        roles = data.get("roles")
+        if isinstance(roles, dict):
+            # Convert dict to list of entries
+            converted = [
+                {"role_name": k, "fillers": v if isinstance(v, list) else [v]}
+                for k, v in roles.items()
+            ]
+            data = dict(data)  # Make mutable copy
+            data["roles"] = converted
+        return data
+
+    @property
+    def roles_dict(self) -> dict[str, list[ExtractedFiller]]:
+        """Convert role entries list to dict for backward compatibility.
+
+        Internal pipeline code uses dict[str, list[ExtractedFiller]] format.
+        This property provides the conversion from the Gemini-compatible
+        list-of-entries format.
+        """
+        return {entry.role_name: list(entry.fillers) for entry in self.roles}
     evidence_spans: list[ExtractedEvidenceSpan] = Field(
         min_length=1,
         description="One or more exact evidence spans that directly support the candidate assertion.",
@@ -301,11 +355,11 @@ class ExtractedCandidate(BaseModel):
         if not self.roles:
             issues.append("empty roles")
         else:
-            for role_name, fillers in self.roles.items():
-                if not role_name.strip():
+            for entry in self.roles:
+                if not entry.role_name.strip():
                     issues.append("blank role name")
-                if not fillers:
-                    issues.append(f"role {role_name!r} has no fillers")
+                if not entry.fillers:
+                    issues.append(f"role {entry.role_name!r} has no fillers")
         if issues:
             logger.warning(
                 "candidate predicate=%s has structural issues: %s — will be filtered",
@@ -321,8 +375,8 @@ class ExtractedCandidate(BaseModel):
         if not self.roles:
             return False
         return all(
-            role_name.strip() and fillers
-            for role_name, fillers in self.roles.items()
+            entry.role_name.strip() and entry.fillers
+            for entry in self.roles
         )
 
 
@@ -956,7 +1010,7 @@ def candidate_import_from_extracted(
                 )
                 for filler in fillers
             ]
-            for role_name, fillers in candidate.roles.items()
+            for role_name, fillers in candidate.roles_dict.items()
         },
     }
     if candidate.valid_from is not None:

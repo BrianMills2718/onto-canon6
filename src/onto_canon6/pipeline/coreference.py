@@ -188,7 +188,7 @@ def _collect_entity_names(candidates: list[ExtractedCandidate]) -> list[str]:
     seen: set[str] = set()
     names: list[str] = []
     for candidate in candidates:
-        for fillers in candidate.roles.values():
+        for fillers in candidate.roles_dict.values():
             for filler in fillers:
                 if filler.kind == "entity" and filler.name:
                     normalized = filler.name.strip()
@@ -231,7 +231,7 @@ def _apply_entity_merge(
     for candidate in candidates:
         new_roles: dict[str, list[ExtractedFiller]] = {}
         changed = False
-        for role_name, fillers in candidate.roles.items():
+        for role_name, fillers in candidate.roles_dict.items():
             new_fillers: list[ExtractedFiller] = []
             for filler in fillers:
                 if (
@@ -248,7 +248,12 @@ def _apply_entity_merge(
                     new_fillers.append(filler)
             new_roles[role_name] = new_fillers
         if changed:
-            updated.append(candidate.model_copy(update={"roles": new_roles}))
+            from .text_extraction import ExtractedRoleEntry
+            new_role_entries = [
+                ExtractedRoleEntry(role_name=rn, fillers=fl)
+                for rn, fl in new_roles.items()
+            ]
+            updated.append(candidate.model_copy(update={"roles": new_role_entries}))
         else:
             updated.append(candidate)
 
@@ -294,7 +299,7 @@ def _find_vague_references(
     """Find all fillers that look like vague propositional references."""
     refs: list[_VagueReference] = []
     for c_idx, candidate in enumerate(candidates):
-        for role_name, fillers in candidate.roles.items():
+        for role_name, fillers in candidate.roles_dict.items():
             for f_idx, filler in enumerate(fillers):
                 # Only check non-entity fillers (propositions are typically
                 # kind=unknown or kind=value)
@@ -362,7 +367,7 @@ def _apply_propositional_resolutions(
     for c_idx, role_updates in candidate_updates.items():
         candidate = result[c_idx]
         new_roles: dict[str, list[ExtractedFiller]] = {
-            k: list(v) for k, v in candidate.roles.items()
+            k: list(v) for k, v in candidate.roles_dict.items()
         }
         for role_name, f_idx, new_text in role_updates:
             if role_name in new_roles and f_idx < len(new_roles[role_name]):
@@ -377,7 +382,13 @@ def _apply_propositional_resolutions(
                     update_fields["raw"] = new_text
                 new_roles[role_name][f_idx] = old_filler.model_copy(update=update_fields)
                 resolutions_applied += 1
-        result[c_idx] = candidate.model_copy(update={"roles": new_roles})
+        # Convert dict back to list[ExtractedRoleEntry] for the model
+        from .text_extraction import ExtractedRoleEntry
+        new_role_entries = [
+            ExtractedRoleEntry(role_name=rn, fillers=fl)
+            for rn, fl in new_roles.items()
+        ]
+        result[c_idx] = candidate.model_copy(update={"roles": new_role_entries})
 
     if resolutions_applied:
         logger.info(
