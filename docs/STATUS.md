@@ -16,6 +16,17 @@ The current long-term execution authority is split deliberately:
 This status page is intentionally narrower: it records what is already proved
 and where the repo still has real operational risk.
 
+Current post-cutover program state:
+
+1. Lane 2 consumer adoption is satisfied for the current thin DIGIMON v1 seam;
+2. Lane 3 schema stability is closed through
+   `docs/plans/0026_schema_stability_gate.md`;
+3. Lane 4 now has an explicit promotion policy in
+   `docs/plans/0014_extraction_quality_baseline.md`;
+4. the next-active deferred capability after current active gates is the
+   query/browse surface planned in `docs/plans/0028_query_browse_surface.md`,
+   after the value-proof stage of Plan 0025.
+
 ## What Is Proven
 
 `onto-canon6` currently proves a narrow review-and-governance slice built on a

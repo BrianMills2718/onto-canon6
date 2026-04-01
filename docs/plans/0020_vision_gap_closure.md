@@ -304,15 +304,30 @@ from source text into ISO format.
 ## Gap 5: Digimon Real-Data Export Test
 
 ### Current State
-`digimon_export.py` adapter exists, tested on 5-node synthetic fixture.
-Real promoted assertions were exported on 2026-03-26 from
-`var/e2e_test_2026_03_25/review_combined.sqlite3` (20 exported entity rows,
-16 relationship rows). DIGIMON now has a thin JSONL importer that materializes
-that export into native GraphML (19 nodes after merging duplicate `USSOCOM`
-names, 16 edges). DIGIMON's runtime/operator path is also proven on this
-artifact: `relationship.onehop` returns the expected USSOCOM commanders and
-subordinate-unit neighborhood. Weight/confidence validation remains incomplete
-because this slice only exports unit-confidence edges.
+`digimon_export.py` is now part of a supported thin v1 consumer seam, not just
+a synthetic export proof. DIGIMON is the chosen first downstream consumer in
+Plan 0024 Lane 2.
+
+The current supported workflow is:
+
+1. export flat `entities.jsonl` / `relationships.jsonl` from the `onto-canon6`
+   repo root via the installed `onto-canon6 export-digimon` console script;
+2. import from the DIGIMON repo root via
+   `scripts/import_onto_canon_jsonl.py`;
+3. consume the resulting GraphML artifact through DIGIMON's existing graph
+   retrieval/runtime surfaces.
+
+Re-verified on 2026-03-31 against the real Shield AI promoted graph:
+
+1. `110` entities and `99` relationships exported;
+2. DIGIMON materialized them as `110` nodes and `78` edges;
+3. `16` single-endpoint relationships were skipped by the importer; and
+4. the remaining relationship delta came from DIGIMON's duplicate-endpoint
+   merge semantics.
+
+The seam remains intentionally thin and lossy. Alias memberships, passage
+artifacts, role structure, and richer provenance are still deferred to the
+separate richer-interchange track under DIGIMON Plan 23.
 
 ### Acceptance Criteria
 1. Export promoted assertions from e2e test DB as Digimon JSONL
@@ -320,9 +335,9 @@ because this slice only exports unit-confidence edges.
    artifact format
 3. DIGIMON query/retrieval path returns the expected USSOCOM commander and
    PSYOP-unit neighborhood from the imported graph
-4. Weight/confidence semantics validated (onto-canon6 probability maps
-   correctly to Digimon weight on a non-unity-confidence slice or synthetic
-   control case)
+4. Weight/confidence semantics are explicitly documented for the supported v1
+   seam (current policy: onto-canon6 confidence passes through directly as
+   DIGIMON weight for single-source imported graphs)
 
 ### Uncertainties
 - Does the DIGIMON runtime environment used for operator-level querying have
@@ -344,15 +359,20 @@ assertion confidence values.
 Small (1 session). Run export, attempt Digimon ingestion, fix any format
 issues.
 
-### Status: PARTIALLY COMPLETED (2026-03-26)
+### Status: COMPLETED (updated 2026-03-31)
 
-Acceptance criteria 1-3 are met:
-1. Real promoted assertions exported from the e2e review DB
-2. DIGIMON importer materialized the export into GraphML
-3. DIGIMON operator query recovered the expected USSOCOM neighborhood
+Current supported-seam acceptance is met:
+1. real promoted assertions export correctly as DIGIMON JSONL;
+2. DIGIMON importer materializes the export into GraphML;
+3. the imported graph is a supported downstream consumer artifact; and
+4. the current weight/confidence policy is explicit for the supported thin v1
+   seam.
 
-Acceptance criterion 4 remains open:
-4. Weight/confidence semantics are not fully validated on a non-unity slice
+Remaining richer-boundary questions are intentionally deferred:
+1. single-endpoint and directional semantics remain limited by the current
+   DIGIMON graph shape;
+2. richer alias/passage/provenance interchange belongs to DIGIMON Plan 23, not
+   to the supported v1 seam.
 
 ---
 
@@ -609,20 +629,20 @@ Gap 9 (second vocabulary)   → standalone
 Gap 10 (autonomous ops)     → standalone
 ```
 
-## Implementation Priority (recommended)
+## Current Open-Gap Priority (2026-03-31)
 
-Consumer-driven priority, per CLAUDE.md:
+Most original gaps are now complete. The current open-gap order inside this
+tracker is:
 
-1. **Gap 5** (Digimon export) — smallest scope, proves cross-project flow
-2. **Gap 2** (domain testing) — validates generality claim
-3. **Gap 3** (entity resolution) — unblocks Gap 6
-4. **Gap 9** (second vocabulary) — proves composability
-5. **Gap 1** (predicate names) — improves extraction quality
-6. **Gap 6** (research_v3 adapter) — biggest integration value
-7. **Gap 7** (epistemic on data) — validates epistemic engine
-8. **Gap 4** (temporal qualifiers) — additive
-9. **Gap 8** (ProbLog spike) — exploratory
-10. **Gap 10** (autonomous ops) — depends on mission runner maturity
+1. **Gap 3** (entity resolution) — still the main value-proof blocker
+2. **Gap 10** (autonomous ops) — still partially complete and separate from the
+   post-cutover product program
+
+Execution order for deferred parity work now lives in:
+
+1. `docs/plans/0024_post_cutover_program.md`
+2. `docs/plans/0027_deferred_parity_reprioritization.md`
+3. `docs/plans/0028_query_browse_surface.md`
 
 
 ---

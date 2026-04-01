@@ -46,10 +46,10 @@ From this point forward:
 | Cross-channel corroboration | Planned `canon_find_corroborations` in v1 status doc | Narrow deterministic corroboration groups recovered over promoted assertions | Retained, narrowed | Phase 15 complete |
 | Temporal extraction and inference integration | Phase 4 plan in v1 status doc | Temporal qualifiers (valid_from/valid_to) implemented in extraction, payload storage, and Foundation IR export. Temporal inference remains deferred. | Partially recovered | Plan 0020 Gap 4. Inference deferred. |
 | Repair and recanonicalization flows over bad stored assertions | v1 repair pipeline and SUMO repair tools | Narrow promoted-assertion repair flow recovered through explicit recanonicalization events and revalidation before persistence; broader graph-wide repair remains deferred | Retained, narrowed | Phase 13 and Phase 15 |
-| Direct concept/belief CRUD (add, update, query) | `canon_add_concept`, `canon_add_belief`, `canon_add_evidence`, `canon_update_belief`, `canon_get_beliefs` | Not yet recovered; governed review workflow is the only ingestion path | Deferred | Extension point exists (services layer); add when consumer integration requires escape hatch or bulk ingestion. **Uncertainty**: will the governed workflow be usable for bulk ingestion (e.g., 10K research_v3 findings), or will a fast path be required? |
-| Concept/entity browsing and search | `canon_list_concepts`, `canon_search_concepts`, `canon_get_evidence_for_concept`, `canon_search_evidence` | Not yet recovered; only candidate/proposal listing exists | Deferred | Required for any agent to use onto-canon6 as a queryable knowledge base. **Uncertainty**: should browsing surface be MCP-only, or also CLI? |
-| DIGIMON bidirectional adapter | `canon_import_digimon_graph`, `canon_export_digimon_graph` | Export adapter operational (`digimon_export.py`), tested on real data (20 entities, 16 relationships → 19 merged nodes in GraphML). DIGIMON-side importer also built. Import adapter not yet built. | Retained, narrowed (export only) | Plan 0020 Gap 5 complete. Import adapter deferred. |
-| Lead/investigation management | `canon_create_lead`, `canon_list_leads` | Not recovered; not in original parity matrix (silently dropped) | Deferred | Lightweight investigation tracking. May be replaced by a richer consumer-side concept. **Uncertainty**: does this belong in onto-canon6 or in research_v3? |
+| Direct concept/belief CRUD (add, update, query) | `canon_add_concept`, `canon_add_belief`, `canon_add_evidence`, `canon_update_belief`, `canon_get_beliefs` | Not yet recovered; governed review workflow is the only ingestion path | Deferred | Classified as consumer-blocked in Plan 0027. Activate only if a real trusted-source or bulk-ingestion workflow proves governed review is the bottleneck. |
+| Concept/entity browsing and search | `canon_list_concepts`, `canon_search_concepts`, `canon_get_evidence_for_concept`, `canon_search_evidence` | Not yet recovered; only candidate/proposal listing exists | Deferred | Next-active deferred capability. Execution surface now defined in Plan 0028. |
+| DIGIMON bidirectional adapter | `canon_import_digimon_graph`, `canon_export_digimon_graph` | Thin v1 export seam is supported: export adapter operational, DIGIMON-side importer built, real-data export/import proof verified on 2026-03-31. Import adapter not built. | Retained, narrowed (export only) | Current v1 seam is supported. Richer or bidirectional DIGIMON interchange remains consumer-blocked under Plan 0027 and experimental under DIGIMON Plan 23. |
+| Lead/investigation management | `canon_create_lead`, `canon_list_leads` | Not recovered; not in original parity matrix (silently dropped) | Deferred | Classified as consumer-blocked in Plan 0027. Likely replaced by a consumer-side workflow unless a clear `onto-canon6` ownership case emerges. |
 | Concept dedup and merge tools | `canon_merge_concepts`, `canon_prune_orphans` | Exact-name and fuzzy matching implemented. **LLM-based cross-document clustering planned (Plan 0025)**: fuzzy pre-filter → LLM validation, per entity type, KGGen-style. Scale test on 20-50 doc corpus with ground truth. | Partially recovered, actively extending | Plan 0025 (active). Plan 0020 Gap 3 partially closed. |
 | Frame ontology interactive browsing | `canon_frame_lookup`, `canon_compress_predicates`, `canon_list_proposed_frames`, `canon_review_proposed_frame` | Not recovered; Predicate Canon bridge reads data but no interactive surface | Deferred | Low priority unless consumers need interactive frame exploration. |
 | Multi-consumer query federation | Not in v1 | Not started | Vision (beyond v1) | Multiple consumers querying the same assertion store with different resolution strategies. **Uncertainty**: requires multi-tenant identity model not yet designed. |
@@ -89,10 +89,10 @@ They must be revisited when the relevant capability moves from deferred to activ
    but no design exists. If a consumer needs temporal reasoning, this is the
    largest unresolved design question.
 
-6. **Schema stability definition.** The convergence plan with research_v3 lists
-   "onto-canon6 schema stabilization" as a prerequisite. No criteria define what
-   "stable enough" means. Propose: stable = no breaking changes to the promoted
-   graph schema (entities, assertions, identity records) for 30 days.
+6. **Schema stability definition.** Resolved by
+   `docs/plans/0026_schema_stability_gate.md`. The repo now has explicit
+   compatibility fixtures, owner checks, and change-classification rules for the
+   promoted graph, governed bundle, Foundation IR export, and DIGIMON v1 seam.
 
 ## Notes
 
@@ -113,4 +113,5 @@ Before adding new code after Phase 10, check:
 1. which row is being advanced;
 2. whether the next change is recovering, replacing, or intentionally dropping
    a v1 capability;
-3. whether the roadmap phase and acceptance evidence match that row.
+3. whether the current execution order in `0024`, `0027`, and `0028` matches
+   that row's next move.
