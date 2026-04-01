@@ -717,6 +717,18 @@ class TestGroupByLLM:
             right_name="Fort Liberty",
         )
 
+    def test_entity_types_compatible_university_like_names(self) -> None:
+        """University mentions can compare with educational-institution ground truth."""
+
+        from onto_canon6.core.auto_resolution import _entity_types_compatible
+
+        assert _entity_types_compatible(
+            "oc:university",
+            "oc:educational_institution",
+            left_name="George Washington University",
+            right_name="George Washington University",
+        )
+
     def test_llm_clustering_postprocesses_conflicting_person_names(self) -> None:
         """Conflicting same-surname people are split after the LLM response."""
         mock_response = MagicMock()

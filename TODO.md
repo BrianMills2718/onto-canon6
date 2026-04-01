@@ -14,12 +14,12 @@ Source of truth:
 - [x] Localize run-scale extraction failure handling
 - [x] Add bounded failed-doc retry behavior
 - [x] Add/update focused tests
-- [ ] Commit verified phase
+- [x] Commit verified phase
 
 ### Phase 3 — Repair Institution-Family Compatibility
-- [ ] Land the bounded `university` / institution family fix
-- [ ] Add/update targeted tests
-- [ ] Keep the existing safety families green
+- [x] Land the bounded `university` / institution family fix
+- [x] Add/update targeted tests
+- [x] Keep the existing safety families green
 - [ ] Commit verified phase
 
 ### Phase 4 — Run One Clean Rerun

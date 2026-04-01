@@ -48,6 +48,7 @@ _ORGANIZATION_TYPE_SLUGS = {
     "government_organization",
     "intelligence_agency",
     "educational_institution",
+    "university",
     "civilian_organization",
     "combatant_command",
     "unit",

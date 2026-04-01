@@ -105,6 +105,33 @@ def test_match_observations_accepts_person_like_rank_mentions() -> None:
     assert matched[0].matched_ground_truth_entity_id == "E001"
 
 
+def test_match_observations_accepts_university_family_mentions() -> None:
+    """University-typed mentions should match institution ground truth."""
+
+    observations = (
+        EntityObservation(
+            entity_id="ent_university",
+            entity_type="oc:university",
+            first_candidate_id="cand_university",
+            predicted_cluster_id="cluster_university",
+            observed_names=("George Washington University",),
+            source_refs=("doc_11",),
+            matched_ground_truth_entity_id=None,
+            match_status="unmatched",
+            match_reason="not run",
+            candidate_ground_truth_entity_ids=(),
+        ),
+    )
+
+    matched = match_observations_to_ground_truth(
+        observations,
+        ground_truth=_ground_truth(),
+    )
+
+    assert matched[0].match_status == "matched"
+    assert matched[0].matched_ground_truth_entity_id == "E013"
+
+
 def test_match_observations_marks_ambiguous_when_type_and_docs_do_not_break_tie() -> None:
     """Ambiguous Smith-like collisions must remain explicit, not guessed."""
 
@@ -287,7 +314,7 @@ def test_score_value_proof_questions_tracks_answerability_and_correctness() -> N
         ),
         EntityObservation(
             entity_id="ent_b",
-            entity_type="oc:educational_institution",
+            entity_type="oc:university",
             first_candidate_id="cand_b",
             predicted_cluster_id="cluster_2",
             observed_names=("George Washington University",),

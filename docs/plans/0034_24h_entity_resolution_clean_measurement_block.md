@@ -4,7 +4,7 @@ Status: active
 Phase status:
 - Phase 1 completed
 - Phase 2 completed
-- Phase 3 pending
+- Phase 3 completed
 - Phase 4 pending
 - Phase 5 pending
 
@@ -168,6 +168,20 @@ Landed changes:
 1. targeted regression tests pass;
 2. the repair is family-level, not benchmark-string specific;
 3. `q09` can become answerable on surviving promoted observations.
+
+#### Outcome
+
+Completed on 2026-04-01.
+
+Landed changes:
+
+1. `oc:university` now resolves within the same conservative organization /
+   institution family as `oc:educational_institution`;
+2. targeted compatibility coverage now pins this family in
+   `tests/core/test_auto_resolution.py`;
+3. the evaluator surface now exercises the real surviving `George Washington
+   University` / `GWU` path with `oc:university` observations in
+   `tests/evaluation/test_entity_resolution_value_proof.py`.
 
 ### Phase 4: Run One Clean Rerun
 
