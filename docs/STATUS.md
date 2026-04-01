@@ -270,11 +270,11 @@ Planning companion:
     fields in extraction, payload storage, and Foundation IR export
     (`sys:valid_from`, `sys:valid_to`). Proven: SEC complaint 2023-06-05,
     Zhao tenure end 2023-11 (Plan 0020 Gap 4);
-83. DIGIMON real-data export and query-path proof: 20 entities + 16
-    relationships from the e2e test DB exported as JSONL, imported into
-    DIGIMON GraphML (19 merged nodes, USSOCOM deduplicated), and queried
-    through DIGIMON's `relationship.onehop` operator to recover the expected
-    USSOCOM command neighborhood (Plan 0020 Gap 5);
+83. DIGIMON supported v1 consumer proof: 110 entities + 99 relationships from
+    the real Shield AI promoted graph exported as JSONL and imported into
+    DIGIMON GraphML as 110 nodes + 78 edges. 16 single-endpoint relationships
+    were skipped by the importer; the remaining relationship delta came from
+    DIGIMON duplicate-endpoint merge semantics (Plan 0020 Gap 5);
 84. research_v3 import adapter: FtM entity types mapped to onto-canon6 types
     (15 schemas), corroboration status to confidence scores. 48 claims from
     real Booz Allen lobbying investigation imported into review pipeline

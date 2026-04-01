@@ -121,9 +121,11 @@ config/
 - **Benchmark against a simple baseline** — compare progressive extraction vs
   bare "extract SPO triples" prompt on same corpus to prove governance value.
 - **Integration adapters are built and proven** — research_v3 import (48 claims),
-  Digimon export/import/query (19 merged nodes, operator query proven), and
-  Foundation IR (16 assertions). Next step is consumer-side adoption and
-  long-tail hardening, not more net-new adapter surfaces.
+  DIGIMON thin v1 export/import proof (110 exported entities, 99 exported
+  relationships, 110 imported nodes, 78 imported edges on the 2026-03-31
+  Shield AI proof), and Foundation IR (16 assertions). Next step is
+  consumer-side depth and long-tail hardening, not more net-new adapter
+  surfaces.
 - **DIGIMON is now the first chosen Lane 2 consumer.** The currently supported
   downstream workflow is the thin v1 seam: `onto-canon6` exports flat
   `entities.jsonl` / `relationships.jsonl` via the `onto-canon6` console
