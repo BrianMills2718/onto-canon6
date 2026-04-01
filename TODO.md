@@ -14,12 +14,12 @@ Source of truth:
 - [x] Localize the benchmark-critical type drift
 - [x] Implement a bounded family-level fix
 - [x] Add/update targeted tests
-- [ ] Commit verified phase
+- [x] Commit verified phase
 
 ### Phase 3 — Recover Missing Alias Surfaces
-- [ ] Localize why aliases like `the Agency` / `GWU` do not survive
-- [ ] Implement a bounded family-level fix
-- [ ] Add/update targeted tests
+- [x] Localize why aliases like `the Agency` / `GWU` do not survive
+- [x] Implement a bounded family-level fix
+- [x] Add/update targeted tests
 - [ ] Commit verified phase
 
 ### Phase 4 — Refresh The LLM Value Proof
@@ -63,7 +63,7 @@ Source of truth:
 ### Phase 5 — Closeout
 - [x] Refresh docs/status/handoff
 - [x] Mark execution block complete
-- [ ] Commit verified phase
+- [x] Commit verified phase
 
 ## Next Active Work
 

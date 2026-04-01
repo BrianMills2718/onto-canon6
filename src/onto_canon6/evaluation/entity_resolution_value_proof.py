@@ -23,7 +23,12 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from ..core.auto_resolution import _entity_types_compatible, _normalize_name
+from ..core.auto_resolution import (
+    _acronym_signatures,
+    _entity_resolution_family,
+    _entity_types_compatible,
+    _normalize_name,
+)
 from ..core.identity_service import IdentityService
 
 MatchStatus = Literal["matched", "ambiguous", "unmatched"]
@@ -734,12 +739,29 @@ def _build_observation_mention_index(
     index: dict[str, list[EntityObservation]] = {}
     for observation in observations:
         for name in observation.observed_names:
-            normalized = _normalize_name(name)
-            index.setdefault(normalized, []).append(observation)
+            for mention_key in _derived_mention_keys(observation, name):
+                index.setdefault(mention_key, []).append(observation)
     return {
         mention: tuple(observation_list)
         for mention, observation_list in sorted(index.items())
     }
+
+
+def _derived_mention_keys(
+    observation: EntityObservation,
+    name: str,
+) -> tuple[str, ...]:
+    """Return normalized lookup keys for one observed name."""
+
+    normalized = _normalize_name(name)
+    if not normalized:
+        return ()
+
+    keys = {normalized}
+    family = _entity_resolution_family(observation.entity_type or "", name)
+    if family != "person":
+        keys.update(_acronym_signatures(name))
+    return tuple(sorted(keys))
 
 
 def _cluster_ids_for_mention(

@@ -698,6 +698,7 @@ class TextExtractionService:
             candidate_import_from_extracted(
                 candidate=candidate,
                 profile=normalized_profile,
+                loaded_profile=profile,
                 submitted_by=submitted_by,
                 source_artifact=source_artifact,
             )
@@ -1001,6 +1002,7 @@ def candidate_import_from_extracted(
     *,
     candidate: ExtractedCandidate,
     profile: ProfileRef,
+    loaded_profile: LoadedProfile | None = None,
     submitted_by: str,
     source_artifact: SourceArtifactRef,
 ) -> CandidateAssertionImport:
@@ -1019,6 +1021,12 @@ def candidate_import_from_extracted(
             for role_name, fillers in candidate.roles.items()
         },
     }
+    if loaded_profile is not None:
+        payload["roles"] = _sanitize_optional_unknown_fillers(
+            predicate=candidate.predicate,
+            roles=cast(dict[str, JsonValue], payload["roles"]),
+            profile=loaded_profile,
+        )
     if candidate.valid_from is not None:
         payload["valid_from"] = candidate.valid_from
     if candidate.valid_to is not None:
@@ -1094,6 +1102,63 @@ def _pipeline_filler_from_extracted(
         entity_type=filler.entity_type or None,
     )
     return filler_payload
+
+
+def _sanitize_optional_unknown_fillers(
+    *,
+    predicate: str,
+    roles: dict[str, JsonValue],
+    profile: LoadedProfile,
+) -> dict[str, JsonValue]:
+    """Drop malformed unknown fillers only from roles that are truly optional.
+
+    This keeps extraction fail-loud for required malformed fillers while
+    preserving otherwise valid candidates when the only bad output is an
+    optional role filler like `role_title: {kind: "unknown", raw: "briefed"}`.
+    """
+
+    rule = profile.predicate_rules.get(predicate)
+    if rule is None:
+        return roles
+
+    sanitized: dict[str, JsonValue] = {}
+    for role_name, role_value in roles.items():
+        if not isinstance(role_value, list):
+            sanitized[role_name] = role_value
+            continue
+        if not _role_is_optional(rule, role_name):
+            sanitized[role_name] = role_value
+            continue
+
+        cleaned_fillers: list[JsonValue] = []
+        dropped_unknown = 0
+        for filler in role_value:
+            if isinstance(filler, dict) and filler.get("kind") == "unknown":
+                dropped_unknown += 1
+                continue
+            cleaned_fillers.append(filler)
+
+        if dropped_unknown:
+            logger.warning(
+                "dropping optional unknown fillers predicate=%s role=%s dropped=%d",
+                predicate,
+                role_name,
+                dropped_unknown,
+            )
+        if cleaned_fillers:
+            sanitized[role_name] = cleaned_fillers
+    return sanitized
+
+
+def _role_is_optional(rule: PackPredicateRule, role_name: str) -> bool:
+    """Return whether one role is optional under the loaded predicate rule."""
+
+    if role_name in rule.required_roles:
+        return False
+    cardinality = rule.role_cardinality.get(role_name)
+    if cardinality is None:
+        return True
+    return cardinality.min_count == 0
 
 
 def _derive_local_entity_id(

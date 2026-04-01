@@ -4,7 +4,7 @@ Status: active
 Phase status:
 - Phase 1 completed
 - Phase 2 completed
-- Phase 3 pending
+- Phase 3 completed
 - Phase 4 pending
 - Phase 5 pending
 
@@ -163,6 +163,22 @@ Landed changes:
 2. the fix improves general alias-surface coverage rather than hardcoding the
    two benchmark strings;
 3. the existing document-survival and safety floors remain intact.
+
+#### Outcome
+
+Completed on 2026-04-01.
+
+Landed changes:
+
+1. extraction import now drops malformed `unknown` fillers only from roles that
+   are actually optional under the loaded ontology rule, so alias-bearing
+   `gp:holds_role` candidates survive instead of being rejected wholesale for
+   bad optional `role_title` text;
+2. the value-proof evaluator now indexes acronym-derived mention keys for
+   non-person families, so promoted observations like `George Washington
+   University` remain answerable from bounded abbreviation surfaces like `GWU`;
+3. targeted extraction and evaluator tests now pin both the optional-filler
+   salvage behavior and the acronym-derived alias lookup.
 
 ### Phase 4: Refresh The LLM Value Proof
 

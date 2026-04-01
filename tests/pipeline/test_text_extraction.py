@@ -910,6 +910,111 @@ def test_extraction_response_normalizes_raw_only_value_filler() -> None:
     assert filler["normalized"] == "transition to a central pillar"
 
 
+def test_candidate_import_drops_optional_unknown_fillers_before_validation(tmp_path: Path) -> None:
+    """Optional unknown fillers should not invalidate an otherwise good candidate."""
+
+    review_service = _make_review_service(tmp_path)
+    loaded_profile = load_effective_profile(
+        "general_purpose_open",
+        "0.1.0",
+        overlay_root=review_service.overlay_root,
+    )
+
+    candidate_import = extraction_module.candidate_import_from_extracted(
+        candidate=ExtractedCandidate(
+            predicate="gp:holds_role",
+            roles={
+                "subject": [
+                    ExtractedEntityFiller(
+                        kind="entity",
+                        entity_type="oc:person",
+                        name="Sarah Chen",
+                    )
+                ],
+                "organization": [
+                    ExtractedEntityFiller(
+                        kind="entity",
+                        entity_type="oc:educational_institution",
+                        name="George Washington University",
+                    )
+                ],
+                "role_title": [
+                    extraction_module.ExtractedUnknownFiller(
+                        kind="unknown",
+                        raw="lectured",
+                    )
+                ],
+            },
+            evidence_spans=[ExtractedEvidenceSpan(text="George Washington University")],
+            claim_text="Sarah Chen lectured at George Washington University.",
+        ),
+        profile=ProfileRef(profile_id="general_purpose_open", profile_version="0.1.0"),
+        loaded_profile=loaded_profile,
+        submitted_by="analyst:text-extract",
+        source_artifact=SourceArtifactRef(
+            source_kind="raw_text",
+            source_ref="text://phase4/optional-unknown",
+            content_text="Sarah Chen lectured at George Washington University.",
+        ),
+    )
+
+    roles_obj = candidate_import.payload.get("roles")
+    assert isinstance(roles_obj, dict)
+    assert "role_title" not in roles_obj
+
+    submission = review_service.submit_candidate_import(candidate_import=candidate_import)
+    assert submission.candidate.validation_status == "valid"
+
+
+def test_candidate_import_keeps_required_unknown_fillers(tmp_path: Path) -> None:
+    """Required malformed fillers must still fail loud after sanitization."""
+
+    review_service = _make_review_service(tmp_path)
+    loaded_profile = load_effective_profile(
+        "general_purpose_open",
+        "0.1.0",
+        overlay_root=review_service.overlay_root,
+    )
+
+    candidate_import = extraction_module.candidate_import_from_extracted(
+        candidate=ExtractedCandidate(
+            predicate="gp:occurs_at",
+            roles={
+                "subject": [
+                    extraction_module.ExtractedUnknownFiller(
+                        kind="unknown",
+                        raw="lectured",
+                    )
+                ],
+                "location": [
+                    ExtractedEntityFiller(
+                        kind="entity",
+                        entity_type="oc:educational_institution",
+                        name="George Washington University",
+                    )
+                ],
+            },
+            evidence_spans=[ExtractedEvidenceSpan(text="George Washington University")],
+            claim_text="Sarah Chen lectured at George Washington University.",
+        ),
+        profile=ProfileRef(profile_id="general_purpose_open", profile_version="0.1.0"),
+        loaded_profile=loaded_profile,
+        submitted_by="analyst:text-extract",
+        source_artifact=SourceArtifactRef(
+            source_kind="raw_text",
+            source_ref="text://phase4/required-unknown",
+            content_text="Sarah Chen lectured at George Washington University.",
+        ),
+    )
+
+    roles_obj = candidate_import.payload.get("roles")
+    assert isinstance(roles_obj, dict)
+    assert "subject" in roles_obj
+
+    submission = review_service.submit_candidate_import(candidate_import=candidate_import)
+    assert submission.candidate.validation_status == "invalid"
+
+
 def test_render_predicate_catalog_includes_role_constraints(tmp_path: Path) -> None:
     """The prompt-facing predicate catalog should include role-level constraints."""
 

@@ -290,7 +290,7 @@ def test_score_value_proof_questions_tracks_answerability_and_correctness() -> N
             entity_type="oc:educational_institution",
             first_candidate_id="cand_b",
             predicted_cluster_id="cluster_2",
-            observed_names=("GWU",),
+            observed_names=("George Washington University",),
             source_refs=("doc_11",),
             matched_ground_truth_entity_id="E013",
             match_status="matched",
