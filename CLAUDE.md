@@ -117,13 +117,15 @@ config/
   cross-document resolution, every document produces isolated entity islands.
   The value proposition (accumulation, contradiction detection, cross-doc
   reasoning) cannot be demonstrated.
-- **After the current value-proof work, the next-active deferred capability is
- - **24h execution rule: do not stop between bounded phases.** When a 24h
+- **24h execution rule: do not stop between bounded phases.** When a 24h
   execution block is active, continue through its declared phase order
   autonomously until the block is truthfully complete or a blocker/uncertainty
   is explicit in the docs. Log uncertainties in the active plan, `TODO.md`,
   and `KNOWLEDGE.md`, then keep moving on the next bounded task instead of
-  pausing for conversational check-ins.
+  pausing for conversational check-ins. Treat this as a hard operating rule,
+  not a suggestion: keep executing, keep rerunning, keep committing, and only
+  stop when the active block is either complete or explicitly narrowed to a new
+  documented blocker.
 - **After the current value-proof work, the next-active deferred capability is
   queryability.** Plan 0027 now fixes the deferred-capability order, and Plan
   0028 now has a landed first read-only browse/search surface over promoted

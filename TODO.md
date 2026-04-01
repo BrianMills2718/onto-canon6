@@ -6,19 +6,20 @@ Source of truth:
 - `docs/plans/0039_24h_entity_resolution_rerun_stability_block.md`
 
 ### Phase 1 — Freeze The Rerun-Stability Contract
-- [ ] Close Plan 0038 truthfully in the docs
-- [ ] Activate Plan 0039 and freeze the incoming artifact pair
-- [ ] Commit verified phase
+- [x] Close Plan 0038 truthfully in the docs
+- [x] Activate Plan 0039 and freeze the incoming artifact pair
+- [x] Commit verified phase
 
 ### Phase 2 — Recover Deterministic Alias Bridges For Reopened Runtime Families
-- [ ] Localize which reopened families are still honest resolution problems
-- [ ] Land one bounded repair for each in-scope runtime family
-- [ ] Add/update targeted regression tests
-- [ ] Commit verified phase
+- [x] Localize which reopened families are still honest resolution problems
+- [x] Land the first bounded runtime repair slice for `D.C.` / `4th POG`
+- [x] Add/update targeted regression tests for the first runtime slice
+- [x] Commit verified checkpoint for the first runtime slice
+- [ ] Decide whether any descriptor-alias drift still belongs in runtime resolution
 
 ### Phase 3 — Classify Composite-Acronym Residuals Honestly
-- [ ] Determine whether `GWU` is still in resolution scope or must move to Plan 0014
-- [ ] Land one bounded repair only if it is still in resolution/evaluator scope
+- [x] Determine the provisional ownership of `GWU` from the current rerun pair
+- [ ] Confirm `GWU` ownership on the next fresh rerun
 - [ ] Record the owning plan explicitly
 - [ ] Commit verified phase
 

@@ -2,9 +2,9 @@
 
 Status: active
 Phase status:
-- Phase 1 pending
-- Phase 2 pending
-- Phase 3 pending
+- Phase 1 completed
+- Phase 2 in progress
+- Phase 3 in progress
 - Phase 4 pending
 - Phase 5 pending
 
@@ -125,6 +125,11 @@ The instability families now frozen for this block are:
 2. the rerun-stability problem is explicit enough to execute without new
    questions.
 
+Progress note:
+
+1. completed in commit `0af9a12`, which closed `0038` truthfully, activated
+   `0039`, and checked in the canonical incoming artifact pair.
+
 ### Phase 2: Recover Deterministic Alias Bridges For Reopened Runtime Families
 
 #### Tasks
@@ -143,6 +148,18 @@ The instability families now frozen for this block are:
 2. the repairs are family-level, not benchmark-id specific;
 3. the zero-false-merge floor stays green.
 
+Progress note:
+
+1. commit `f9ad185` landed the first bounded repair slice:
+   - unknown `D.C.` now has a bounded district-place bridge back into the
+     `Washington D.C.` family;
+   - `4th POG` now shares a bounded alias signature with
+     `4th PSYOP Group`;
+   - `4th POG(A)` remains separate.
+2. descriptor-alias drift is not currently pre-approved for more deterministic
+   bridge logic unless the next rerun shows the runtime evidence is explicit
+   enough to stay inside entity resolution.
+
 ### Phase 3: Classify Composite-Acronym Residuals Honestly
 
 #### Tasks
@@ -157,6 +174,18 @@ The instability families now frozen for this block are:
 
 1. the repo no longer treats `GWU` as an unspecified residual;
 2. the owning plan is explicit and justified by evidence.
+
+Current classification (provisional until the next rerun pair):
+
+1. `GWU` drift is currently treated as likely upstream extraction-shape drift,
+   not a pure resolution failure, because the reopened v4 residual is
+   `researchers at GWU` rather than a standalone `GWU` university mention.
+2. `the Agency` drift is also provisionally upstream when the rerun emits only
+   the descriptor form without any co-occurring CIA anchor in the same source
+   text.
+3. If the next fresh rerun still reopens those families after the deterministic
+   `D.C.` / `4th POG` fixes, record them under Plan `0014` rather than forcing
+   another resolution heuristic.
 
 ### Phase 4: Prove Fresh-Run Stability
 
