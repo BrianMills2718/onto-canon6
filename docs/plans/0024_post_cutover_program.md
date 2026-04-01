@@ -191,9 +191,10 @@ This lane now executes through
 #### Current State
 
 The minimum in-repo compatibility gate is now landed for the four named Lane 3
-surfaces. Lane 3 remains active until the DIGIMON consumer-proof automation
-question is resolved and the change-classification/release-note policy is
-written down.
+surfaces, the change-classification policy is written down, and the DIGIMON
+consumer-proof question is resolved. Lane 3 is complete; any future richer
+DIGIMON automation is follow-on hardening, not part of this lane's closure
+criteria.
 
 #### Tasks
 

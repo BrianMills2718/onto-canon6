@@ -1,6 +1,6 @@
 # Schema Stability Gate
 
-Status: active
+Status: complete
 
 Last updated: 2026-03-31
 Workstream: Lane 3 of the post-cutover program
@@ -15,12 +15,12 @@ Phase 2 and the minimum Phase 3 gate are now implemented in this repo:
 3. the current baseline verification command is:
    `pytest -q tests/core/test_graph_service.py tests/surfaces/test_governed_bundle.py tests/adapters/test_foundation_assertion_export.py tests/adapters/test_digimon_export.py`
 
-Lane 3 is still active because two things remain open:
+Lane 3's minimum gate and its classification policy are now in place.
 
-1. Q3: whether the DIGIMON consumer proof should become an automated
-   cross-repo check;
-2. Phase 4: classification and release-note policy for future
-   breaking/compatibility-risking changes.
+Follow-on work may still happen later, especially if the DIGIMON seam becomes
+richer, but that is no longer required for this lane to close.
+
+The exit criteria at the end of this plan are now satisfied.
 
 ## Purpose
 
@@ -460,6 +460,109 @@ surface.
 1. future agents can classify a change without reopening architecture debate;
 2. consumer-facing exports cannot change casually.
 
+**Implementation status (2026-03-31): complete**
+
+## Change Classification Policy
+
+This policy is the Phase 4 output. Use it before changing any Lane 3 surface.
+
+### Breaking
+
+A change is **breaking** when an existing consumer or owner check would need to
+change its parsing or interpretation logic to remain correct.
+
+Typical examples:
+
+1. removing or renaming a required field;
+2. changing a field type incompatibly;
+3. changing the semantic meaning of an existing field;
+4. changing file names or required file count for an export seam;
+5. changing missing-endpoint or accepted-scope behavior that a consumer relies
+   on.
+
+**Required actions**
+
+1. update this plan or a successor ADR before implementation lands;
+2. update the relevant compatibility fixture and owner check in the same
+   change;
+3. for Surface C or D, update the consumer-facing docs and note the change in
+   the integration guidance before merge;
+4. record the change in release notes or status notes as a contract change, not
+   just a refactor.
+
+### Compatibility-Risking
+
+A change is **compatibility-risking** when it is intended to preserve existing
+parsing but could still affect consumer tolerance or interpretation.
+
+Typical examples:
+
+1. adding optional fields to governed bundle or Foundation IR exports;
+2. changing ordering where the consumer may have come to rely on deterministic
+   order;
+3. changing description text generation, keyword generation, or confidence
+   population rules while keeping the same fields;
+4. broadening export coverage without changing the file shape.
+
+**Required actions**
+
+1. update or affirm the relevant fixture and owner check in the same change;
+2. review the consumer-facing docs to confirm the change is still truthfully
+   described;
+3. if Surface C or D is affected, record why the change is expected to be safe
+   without calling it "non-breaking."
+
+### Non-Breaking
+
+A change is **non-breaking** only when all existing fixtures, owner checks, and
+consumer expectations remain valid with no contract interpretation change.
+
+Typical examples:
+
+1. internal refactoring behind the typed/exported surface;
+2. performance improvements with identical serialized/model output;
+3. doc clarifications and test-only hardening;
+4. additive fields on repo-internal typed models when no existing consumer
+   contract changes and owner checks remain green unchanged.
+
+**Required actions**
+
+1. keep the existing owner checks green;
+2. do not update release notes unless the change is noteworthy for another
+   reason.
+
+## Surface-Specific Coordination Rules
+
+1. **Surface A — promoted graph typed surface**
+   Breaking and compatibility-risking changes may land with repo-local plan
+   updates and owner-check updates; no external consumer coordination is
+   required yet.
+2. **Surface B — governed bundle surface**
+   Compatibility-risking changes require doc review in this repo. Breaking
+   changes require an explicit plan/ADR update before merge.
+3. **Surface C — Foundation Assertion IR export**
+   Breaking or compatibility-risking changes require explicit consumer review
+   because this is an interchange surface.
+4. **Surface D — DIGIMON v1 export seam**
+   Breaking or compatibility-risking changes require explicit DIGIMON-side doc
+   review and consumer-check consideration. The seam is intentionally narrow;
+   richer interchange belongs in a new versioned boundary, not silent mutation
+   of v1.
+
+## DIGIMON Consumer-Proof Decision
+
+Q3 is now resolved.
+
+Lane 3 does **not** require a fully automated cross-repo DIGIMON proof to
+close. The required baseline for Surface D is:
+
+1. in-repo export fixture coverage in `tests/adapters/test_digimon_export.py`;
+2. DIGIMON-side import-unit coverage in `tests/unit/test_onto_canon_import.py`;
+3. one documented real-data proof artifact for the current supported v1 seam.
+
+A future fully automated cross-repo check is a follow-on hardening task, not a
+Lane 3 exit condition.
+
 ## Required Checks
 
 These are the current baseline checks. Phase 3 may refine them, but Lane 3
@@ -498,10 +601,10 @@ or timestamps.
 with `tests/core/test_graph_service.py` as the owner check.
 
 ### Q3: Should the DIGIMON consumer proof remain a real-data smoke artifact or become a fully automated cross-repo check?
-**Status:** Open
-**Decision pressure:** Low for now
-**Current default:** keep the real-data proof note as the baseline and defer a
-fully automated cross-repo check until the v1 seam stops shifting operationally.
+**Status:** Resolved
+**Decision:** keep the documented real-data proof plus DIGIMON import-unit
+coverage as the Lane 3 baseline. A fully automated cross-repo proof is deferred
+follow-on hardening, not a closure requirement for this lane.
 
 ### Q4: Should additive optional fields on Foundation IR and governed bundle be treated as breaking by default?
 **Status:** Resolved for now
