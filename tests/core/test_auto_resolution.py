@@ -834,6 +834,32 @@ class TestGroupByLLM:
             frozenset({"e5"}),
         }
 
+    def test_collapse_equivalent_llm_groups_merges_initial_bridge_into_unique_full_anchor(self) -> None:
+        """A titled initial-only group can join one unique full-name anchor even when the anchor is untitled."""
+
+        from onto_canon6.core import auto_resolution as ar_mod
+
+        groups = ar_mod._collapse_equivalent_llm_groups(
+            {
+                "g1": ["e1"],
+                "g2": ["e2", "e3"],
+            },
+            name_map={
+                "e1": "John Smith",
+                "e2": "Gen. J. Smith",
+                "e3": "J. Smith",
+            },
+            entity_types={
+                "e1": "oc:person",
+                "e2": "oc:person",
+                "e3": "oc:person",
+            },
+        )
+
+        assert {frozenset(group) for group in groups.values()} == {
+            frozenset({"e1", "e2", "e3"}),
+        }
+
     def test_collapse_equivalent_llm_groups_keeps_conflicting_titled_anchors_separate(self) -> None:
         """Surname-only titled mentions must stay explicit when two titled anchors compete."""
 

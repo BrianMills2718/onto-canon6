@@ -259,13 +259,29 @@ def auto_resolve_identities(
             "SELECT entity_id, entity_type FROM promoted_graph_entities "
             "ORDER BY created_at, entity_id"
         ).fetchall()
+        source_candidate_ids = [assertion.source_candidate_id for assertion in assertions]
+        source_text_by_candidate_id: dict[str, str] = {}
+        if source_candidate_ids:
+            placeholders = ",".join("?" for _ in source_candidate_ids)
+            for row in conn.execute(
+                f"SELECT candidate_id, source_text FROM candidate_assertions "
+                f"WHERE candidate_id IN ({placeholders})",
+                tuple(source_candidate_ids),
+            ).fetchall():
+                candidate_id = str(row[0])
+                source_text = str(row[1]).strip() if row[1] else ""
+                if source_text:
+                    source_text_by_candidate_id[candidate_id] = source_text
 
     entity_ids = [str(row[0]) for row in all_entities]
     entity_types = {str(row[0]): str(row[1]) if row[1] else "" for row in all_entities}
     name_map = _build_entity_name_map(assertions)
 
     if strategy == "llm":
-        context_map = _build_context_map(assertions)
+        context_map = _build_context_map(
+            assertions,
+            source_text_by_candidate_id=source_text_by_candidate_id,
+        )
         # Load resolution config
         try:
             from ..config import get_config
@@ -286,7 +302,10 @@ def auto_resolve_identities(
             )
         except Exception:
             # Fall back to config-less defaults
-            context_map = _build_context_map(assertions)
+            context_map = _build_context_map(
+                assertions,
+                source_text_by_candidate_id=source_text_by_candidate_id,
+            )
             groups = _group_by_llm(
                 entity_ids, name_map, entity_types, context_map, assertions,
                 model=(
@@ -569,12 +588,17 @@ def _build_entity_info_list(
 
 def _build_context_map(
     assertions: list[PromotedGraphAssertionRecord],
+    *,
+    source_text_by_candidate_id: dict[str, str] | None = None,
 ) -> dict[str, str]:
     """Build entity_id → context snippet map from assertion claim_text."""
     context_map: dict[str, str] = {}
+    source_text_by_candidate_id = source_text_by_candidate_id or {}
     for assertion in assertions:
-        claim_text = assertion.claim_text or ""
-        if not claim_text:
+        context_text = source_text_by_candidate_id.get(assertion.source_candidate_id)
+        if not context_text:
+            context_text = assertion.claim_text or ""
+        if not context_text:
             continue
         roles = assertion.normalized_body.get("roles")
         if not isinstance(roles, dict):
@@ -587,8 +611,8 @@ def _build_context_map(
                     continue
                 entity_id = filler.get("entity_id")
                 if isinstance(entity_id, str) and entity_id not in context_map:
-                    # Use first ~200 chars of claim_text as context
-                    context_map[entity_id] = claim_text[:200]
+                    # Prefer first ~200 chars of source text when available.
+                    context_map[entity_id] = context_text[:200]
     return context_map
 
 
@@ -1308,23 +1332,26 @@ def _collapse_equivalent_llm_groups(
             for key in surname_keys
             if person_bridge_info_by_key[key].has_titled_surname_only
         ]
+        titled_full_roots: set[str] = {find(key) for key in titled_full_keys}
+        full_anchor_roots: set[str] = {find(key) for key in full_anchor_keys}
 
         for initial_key in initial_only_keys:
             initials = person_bridge_info_by_key[initial_key].titled_initials
-            candidates = [
-                full_key
-                for full_key in titled_full_keys
-                if initials
-                & {
-                    given_name[0]
-                    for given_name in person_bridge_info_by_key[full_key].titled_full_given_names
-                }
-            ]
+            anchor_pool = titled_full_keys
+            if not anchor_pool and len(full_anchor_roots) == 1:
+                anchor_pool = full_anchor_keys
+            candidates = []
+            for full_key in anchor_pool:
+                candidate_initials = person_bridge_info_by_key[full_key].titled_initials
+                if not candidate_initials:
+                    candidate_initials = frozenset(
+                        given_name[0]
+                        for given_name in person_bridge_info_by_key[full_key].full_given_names
+                    )
+                if initials & candidate_initials:
+                    candidates.append(full_key)
             if len(candidates) == 1:
                 union(initial_key, candidates[0])
-
-        titled_full_roots = {find(key) for key in titled_full_keys}
-        full_anchor_roots = {find(key) for key in full_anchor_keys}
         if len(titled_full_roots) != 1:
             if len(full_anchor_roots) != 1:
                 continue
