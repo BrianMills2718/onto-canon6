@@ -80,20 +80,31 @@ class ResolutionConfig(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
     default_strategy: str = Field(
-        default="llm",
-        description="Resolution strategy: exact, fuzzy, or llm.",
+        default="exact",
+        description="Candidate generation strategy: exact, fuzzy, or llm.",
+    )
+    require_llm_review: bool = Field(
+        default=True,
+        description="Validate all candidate merge groups with LLM before merging. "
+        "When True, exact/fuzzy strategies generate candidates that LLM validates. "
+        "When False, exact/fuzzy auto-merge without LLM (for testing). "
+        "The llm strategy always does LLM review regardless of this flag.",
     )
     model_override: str | None = Field(
         default=None,
-        description="Model for LLM clustering calls.",
+        description="Model for LLM clustering/validation calls.",
     )
     max_budget_usd: float = Field(
         default=0.50,
         description="Max budget per resolution run.",
     )
-    prompt_template: str = Field(
+    cluster_prompt_template: str = Field(
         default="prompts/resolution/cluster_entities.yaml",
-        description="Prompt template for LLM entity clustering.",
+        description="Prompt template for LLM entity clustering (strategy=llm).",
+    )
+    validate_prompt_template: str = Field(
+        default="prompts/resolution/validate_merge.yaml",
+        description="Prompt template for LLM merge validation (require_llm_review=true).",
     )
     fuzzy_pre_filter_threshold: int = Field(
         default=80,

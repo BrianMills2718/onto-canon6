@@ -11,11 +11,13 @@ from unittest.mock import MagicMock, patch
 from onto_canon6.core.auto_resolution import (
     ClusteringResult,
     EntityCluster,
+    MergeValidation,
     _build_context_map,
     _build_entity_info_list,
     _fuzzy_pre_filter,
     _group_by_fuzzy,
     _group_by_llm,
+    _validate_groups_with_llm,
     ResolutionResult,
     auto_resolve_identities,
     _normalize_name,
@@ -480,3 +482,107 @@ class TestGroupByLLM:
                     context_map={},
                     assertions=[],
                 )
+
+
+class TestValidateGroupsWithLLM:
+    """Test LLM merge validation with mocked LLM calls."""
+
+    def test_confirm_merge(self) -> None:
+        """LLM confirms a valid merge group."""
+        mock_response = MagicMock()
+        mock_response.content = MergeValidation(
+            confirm=True,
+            reasoning="Same person — title variation of General Smith",
+        ).model_dump_json()
+
+        async def mock_acall_llm(*args: object, **kwargs: object) -> object:
+            return mock_response
+
+        with patch.dict(
+            "sys.modules",
+            {
+                "llm_client": MagicMock(
+                    render_prompt=lambda tpl, **ctx: [{"role": "user", "content": "test"}],
+                    acall_llm=mock_acall_llm,
+                    get_model=lambda task, **kw: "mock-model",
+                ),
+            },
+        ):
+            from onto_canon6.core import auto_resolution as ar_mod
+            groups = {"group_0": ["e1", "e2"]}
+            result = ar_mod._validate_groups_with_llm(
+                groups,
+                {"e1": "Gen. Smith", "e2": "General Smith"},
+                {"e1": "oc:person", "e2": "oc:person"},
+                {"e1": "commanded 3rd div", "e2": "led 3rd division"},
+            )
+
+        # Confirmed group should be preserved
+        multi = [g for g in result.values() if len(g) >= 2]
+        assert len(multi) == 1
+        assert set(multi[0]) == {"e1", "e2"}
+
+    def test_reject_merge(self) -> None:
+        """LLM rejects a false merge — entities split into singletons."""
+        mock_response = MagicMock()
+        mock_response.content = MergeValidation(
+            confirm=False,
+            reasoning="Different people — John Smith (general) vs James Smith (analyst)",
+        ).model_dump_json()
+
+        async def mock_acall_llm(*args: object, **kwargs: object) -> object:
+            return mock_response
+
+        with patch.dict(
+            "sys.modules",
+            {
+                "llm_client": MagicMock(
+                    render_prompt=lambda tpl, **ctx: [{"role": "user", "content": "test"}],
+                    acall_llm=mock_acall_llm,
+                    get_model=lambda task, **kw: "mock-model",
+                ),
+            },
+        ):
+            from onto_canon6.core import auto_resolution as ar_mod
+            groups = {"group_0": ["e1", "e2"]}
+            result = ar_mod._validate_groups_with_llm(
+                groups,
+                {"e1": "Gen. Smith", "e2": "James Smith"},
+                {"e1": "oc:person", "e2": "oc:person"},
+                {"e1": "commanded forces", "e2": "civilian analyst"},
+            )
+
+        # Rejected group should be split into singletons
+        multi = [g for g in result.values() if len(g) >= 2]
+        assert len(multi) == 0
+        assert len(result) == 2  # Two singletons
+
+    def test_singletons_pass_through(self) -> None:
+        """Single-entity groups pass through without LLM call."""
+        def _fail_render(*a: object, **k: object) -> list[dict[str, str]]:
+            raise AssertionError("render_prompt should not be called for singletons")
+
+        async def _fail_acall(*a: object, **k: object) -> object:
+            raise AssertionError("acall_llm should not be called for singletons")
+
+        with patch.dict(
+            "sys.modules",
+            {
+                "llm_client": MagicMock(
+                    render_prompt=_fail_render,
+                    acall_llm=_fail_acall,
+                    get_model=lambda task, **kw: "mock-model",
+                ),
+            },
+        ):
+            from onto_canon6.core import auto_resolution as ar_mod
+            groups = {"s0": ["e1"], "s1": ["e2"]}
+            result = ar_mod._validate_groups_with_llm(
+                groups,
+                {"e1": "Smith", "e2": "Jones"},
+                {"e1": "oc:person", "e2": "oc:person"},
+                {},
+            )
+
+        assert len(result) == 2
+        assert all(len(g) == 1 for g in result.values())

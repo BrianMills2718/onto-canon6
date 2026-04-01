@@ -89,10 +89,12 @@ evaluation:
       max_candidates_per_case: 2
       max_evidence_spans_per_candidate: 1
 resolution:
-  default_strategy: llm
+  default_strategy: exact
+  require_llm_review: true
   model_override: gemini/gemini-2.5-flash
   max_budget_usd: 0.50
-  prompt_template: prompts/resolution/cluster_entities.yaml
+  cluster_prompt_template: prompts/resolution/cluster_entities.yaml
+  validate_prompt_template: prompts/resolution/validate_merge.yaml
   fuzzy_pre_filter_threshold: 80
   batch_token_limit: 50000
   min_entities_for_llm: 2

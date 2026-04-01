@@ -851,6 +851,12 @@ def _build_parser() -> argparse.ArgumentParser:
         default=85,
         help="Minimum token_sort_ratio for fuzzy matching (0-100). Default: 85.",
     )
+    auto_resolve_parser.add_argument(
+        "--no-llm-review",
+        action="store_true",
+        default=False,
+        help="Skip LLM validation of merge groups (for testing/debugging). Default: LLM review enabled per config.",
+    )
     _add_output_arg(auto_resolve_parser, default_output=config.cli.default_output_format)
     auto_resolve_parser.set_defaults(handler=_handle_auto_resolve_identities)
 
@@ -1678,7 +1684,13 @@ def _handle_auto_resolve_identities(args: argparse.Namespace) -> int:
         except Exception:
             strategy_str = "exact"
     strategy = cast(ResolutionStrategy, strategy_str)
-    result = auto_resolve_identities(db_path=db_path, strategy=strategy, fuzzy_threshold=args.fuzzy_threshold)
+    require_llm_review = not args.no_llm_review
+    result = auto_resolve_identities(
+        db_path=db_path,
+        strategy=strategy,
+        fuzzy_threshold=args.fuzzy_threshold,
+        require_llm_review=require_llm_review,
+    )
     output = {
         "entities_scanned": result.entities_scanned,
         "groups_found": result.groups_found,

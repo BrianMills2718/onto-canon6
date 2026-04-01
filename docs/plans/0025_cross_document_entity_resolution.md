@@ -330,16 +330,59 @@ before Phase 4 is declared complete.
 
 ## Design Decisions (2026-03-31 session)
 
-### D1: All merges go through LLM review
+### D1: All merges go through LLM review (configurable)
 
 Even exact-name matches should be validated by LLM with context before merging.
 Rationale: "CIA" could be "Culinary Institute of America" in a different context.
 Two different "John Smiths" exist. The LLM sees the assertion context and can
-distinguish. Exact and fuzzy matching become candidate-generation strategies;
-LLM always validates.
+distinguish.
 
-**Status**: Decision made, not yet implemented. Current code auto-merges exact
-matches without LLM review. Needs design update to auto_resolution.py.
+**Design (Option A — separate boolean flag):**
+
+```yaml
+resolution:
+  default_strategy: exact        # candidate generation: exact, fuzzy, or llm
+  require_llm_review: true       # validate all candidate groups with LLM
+```
+
+Behavior matrix:
+
+| strategy | require_llm_review | What happens |
+|---|---|---|
+| `exact` | `false` | Normalize → group by name → auto-merge. Cheap, fast, for testing. |
+| `exact` | `true` | Normalize → group by name → LLM validates each group with context. Production default. |
+| `fuzzy` | `false` | Fuzzy groups → auto-merge. For testing only. |
+| `fuzzy` | `true` | Fuzzy groups → LLM validates. |
+| `llm` | (ignored) | LLM clusters from scratch, always validates. Most expensive. |
+
+The `llm` strategy always does LLM review regardless of the flag.
+
+**Implementation plan:**
+
+1. Add `require_llm_review: bool = True` to `ResolutionConfig`
+2. Add `require_llm_review` param to `auto_resolve_identities()`
+3. When `require_llm_review=True` and strategy is `exact` or `fuzzy`:
+   - Run the strategy to generate candidate groups (groups of 2+ entities)
+   - For each candidate group, call LLM with entity names + context + type
+   - LLM returns: confirm merge, split into subgroups, or reject
+   - Only confirmed groups proceed to identity creation
+4. Add a validation prompt template `prompts/resolution/validate_merge.yaml`:
+   - Input: proposed group of entities with names, types, contexts
+   - Output: confirm (yes/no) + reasoning
+   - Simpler than full clustering prompt — binary decision per group
+5. Update config.yaml default: `require_llm_review: true`
+6. Update CLI to accept `--no-llm-review` flag for testing
+7. Tests: mock LLM validation for unit tests
+
+**Acceptance:**
+- `auto_resolve_identities(strategy="exact", require_llm_review=True)` sends
+  each exact-match group to LLM for validation before merging
+- `auto_resolve_identities(strategy="exact", require_llm_review=False)` behaves
+  as before (auto-merge, for testing/debugging)
+- Validation prompt is simpler than clustering prompt (confirm/reject, not cluster)
+- All LLM calls through llm_client with task/trace_id/max_budget
+
+**Status**: Plan documented, implementation next.
 
 ### D2: Subset/containment relationships need a design decision
 

@@ -113,6 +113,7 @@ def auto_resolve_identities(
     db_path: Path,
     strategy: ResolutionStrategy = "exact",
     fuzzy_threshold: int = DEFAULT_FUZZY_THRESHOLD,
+    require_llm_review: bool | None = None,
 ) -> ResolutionResult:
     """Run automated entity resolution over all promoted entities.
 
@@ -120,13 +121,25 @@ def auto_resolve_identities(
     stable identities for each group. The first entity in each group
     becomes the canonical member; subsequent entities become aliases.
 
-    For ``fuzzy`` strategy, entities with token_sort_ratio >= threshold
-    AND the same entity_type are grouped together. The entity_type guard
-    prevents false positives (e.g., "USSOCOM" the org vs "USSOCOM Commander"
-    the person).
+    When ``require_llm_review`` is True (default from config), candidate
+    groups from exact/fuzzy strategies are validated by an LLM before
+    merging. The LLM sees entity names + context and confirms or rejects
+    each proposed merge. The ``llm`` strategy always does LLM review
+    regardless of this flag.
 
     Entities that already have an identity membership are skipped.
     """
+    # Load config for defaults
+    try:
+        from ..config import get_config
+        config = get_config()
+        res_cfg = config.resolution
+    except Exception:
+        res_cfg = None
+
+    if require_llm_review is None:
+        require_llm_review = res_cfg.require_llm_review if res_cfg else False
+
     graph_service = CanonicalGraphService(db_path=db_path)
     identity_service = IdentityService(db_path=db_path)
 
@@ -141,33 +154,35 @@ def auto_resolve_identities(
     entity_ids = [str(row[0]) for row in all_entities]
     entity_types = {str(row[0]): str(row[1]) if row[1] else "" for row in all_entities}
     name_map = _build_entity_name_map(assertions)
+    context_map = _build_context_map(assertions)
 
+    # Step 1: Generate candidate groups
     if strategy == "llm":
-        context_map = _build_context_map(assertions)
-        # Load resolution config
-        try:
-            from ..config import get_config
-            config = get_config()
-            res_cfg = config.resolution
-            groups = _group_by_llm(
-                entity_ids, name_map, entity_types, context_map, assertions,
-                model=res_cfg.model_override,
-                max_budget=res_cfg.max_budget_usd,
-                prompt_template=res_cfg.prompt_template,
-                fuzzy_pre_filter_threshold=res_cfg.fuzzy_pre_filter_threshold,
-                batch_token_limit=res_cfg.batch_token_limit,
-                min_entities_for_llm=res_cfg.min_entities_for_llm,
-            )
-        except Exception:
-            # Fall back to config-less defaults
-            context_map = _build_context_map(assertions)
-            groups = _group_by_llm(
-                entity_ids, name_map, entity_types, context_map, assertions,
-            )
+        groups = _group_by_llm(
+            entity_ids, name_map, entity_types, context_map, assertions,
+            model=res_cfg.model_override if res_cfg else None,
+            max_budget=res_cfg.max_budget_usd if res_cfg else 0.50,
+            prompt_template=res_cfg.cluster_prompt_template if res_cfg else "prompts/resolution/cluster_entities.yaml",
+            fuzzy_pre_filter_threshold=res_cfg.fuzzy_pre_filter_threshold if res_cfg else 80,
+            batch_token_limit=res_cfg.batch_token_limit if res_cfg else 50000,
+            min_entities_for_llm=res_cfg.min_entities_for_llm if res_cfg else 2,
+        )
+        # LLM strategy already validates — skip require_llm_review
     elif strategy == "fuzzy":
         groups = _group_by_fuzzy(entity_ids, name_map, entity_types, fuzzy_threshold)
     else:
         groups = _group_by_name(entity_ids, name_map, strategy)
+
+    # Step 2: LLM validation of candidate groups (if required and not already LLM)
+    if require_llm_review and strategy != "llm":
+        has_multi_member = any(len(g) >= 2 for g in groups.values())
+        if has_multi_member:
+            groups = _validate_groups_with_llm(
+                groups, name_map, entity_types, context_map,
+                model=res_cfg.model_override if res_cfg else None,
+                max_budget=res_cfg.max_budget_usd if res_cfg else 0.50,
+                validate_prompt_template=res_cfg.validate_prompt_template if res_cfg else "prompts/resolution/validate_merge.yaml",
+            )
 
     identities_created = 0
     aliases_attached = 0
@@ -374,7 +389,7 @@ def _group_by_fuzzy(
 
 
 # ---------------------------------------------------------------------------
-# LLM-based entity clustering (Phase 2)
+# LLM-based entity clustering and merge validation
 # ---------------------------------------------------------------------------
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -396,6 +411,15 @@ class ClusteringResult(BaseModel):
     model_config = ConfigDict(extra="ignore")
 
     clusters: list[EntityCluster]
+
+
+class MergeValidation(BaseModel):
+    """LLM output: whether a proposed merge group should be confirmed."""
+
+    model_config = ConfigDict(extra="ignore")
+
+    confirm: bool = Field(description="True if all entities in the group refer to the same real-world entity")
+    reasoning: str = Field(description="Why the merge is confirmed or rejected")
 
 
 @dataclass(frozen=True)
@@ -487,6 +511,103 @@ def _fuzzy_pre_filter(
             unclustered.extend(group_entities)
 
     return proposals, unclustered
+
+
+def _validate_groups_with_llm(
+    groups: dict[str, list[str]],
+    name_map: dict[str, str],
+    entity_types: dict[str, str],
+    context_map: dict[str, str],
+    *,
+    model: str | None = None,
+    max_budget: float = 0.50,
+    validate_prompt_template: str = "prompts/resolution/validate_merge.yaml",
+) -> dict[str, list[str]]:
+    """Validate candidate merge groups using LLM.
+
+    For each group of 2+ entities, asks the LLM whether the merge should be
+    confirmed. Confirmed groups are kept; rejected groups are split into
+    singletons. Single-entity groups pass through unchanged.
+
+    All LLM calls go through llm_client with task/trace_id/max_budget.
+    """
+    llm_mod = import_module("llm_client")
+    render_prompt = llm_mod.render_prompt
+    acall_llm = llm_mod.acall_llm
+
+    if model is None:
+        try:
+            model = llm_mod.get_model("fast_extraction", use_performance=False)
+        except Exception:
+            model = "gemini/gemini-2.5-flash"
+
+    schema = MergeValidation.model_json_schema()
+    validated_groups: dict[str, list[str]] = {}
+    group_counter = 0
+
+    for _key, group_eids in groups.items():
+        if len(group_eids) < 2:
+            # Singletons pass through without LLM call
+            validated_groups[f"singleton_{group_counter}"] = group_eids
+            group_counter += 1
+            continue
+
+        # Determine entity type for the group (all should be same type)
+        etypes = {entity_types.get(eid, "unknown") for eid in group_eids}
+        entity_type = etypes.pop() if len(etypes) == 1 else "mixed"
+
+        entities = [
+            {"entity_id": eid, "name": name_map.get(eid, eid), "context": context_map.get(eid, "")}
+            for eid in group_eids
+        ]
+
+        messages = render_prompt(
+            validate_prompt_template,
+            entity_type=entity_type,
+            entities=entities,
+        )
+
+        trace_id = f"resolution.validate.{entity_type}.{_uuid.uuid4().hex[:8]}"
+
+        result = asyncio.run(
+            acall_llm(
+                model,
+                messages,
+                task="entity_resolution_validation",
+                trace_id=trace_id,
+                max_budget=max_budget,
+                response_format={
+                    "type": "json_schema",
+                    "json_schema": {
+                        "name": "MergeValidation",
+                        "schema": schema,
+                    },
+                },
+            )
+        )
+
+        response_text = result.content if hasattr(result, "content") else str(result)
+        validation = MergeValidation.model_validate_json(response_text)
+
+        if validation.confirm:
+            logger.info(
+                "LLM confirmed merge of %d entities (type=%s): %s",
+                len(group_eids), entity_type, validation.reasoning[:100],
+            )
+            validated_groups[f"confirmed_{group_counter}"] = group_eids
+        else:
+            logger.info(
+                "LLM rejected merge of %d entities (type=%s): %s",
+                len(group_eids), entity_type, validation.reasoning[:100],
+            )
+            # Split into singletons
+            for eid in group_eids:
+                validated_groups[f"rejected_{group_counter}"] = [eid]
+                group_counter += 1
+
+        group_counter += 1
+
+    return validated_groups
 
 
 def _group_by_llm(
