@@ -1,3 +1,55 @@
+# Handoff: onto-canon6 — 2026-03-31
+
+## Session Focus
+
+Lane 3 closure, Lane 4 policy clarification, Lane 5 ordering, and next-active
+queryability planning in the isolated worktree branch
+`codex/onto-canon6-integration-planning`.
+
+## What Landed
+
+Committed in the isolated worktree as:
+
+- `e280b60` — `Plan Lane 3 compatibility artifacts`
+- `4caebdf` — `Refine Lane 3 implementation decisions`
+- `ebcb384` — `Add Lane 3 compatibility fixtures and checks`
+- `a3c598b` — `Update Lane 3 plan status after gate landing`
+- `ace01e9` — `Close Lane 3 schema gate planning`
+- `3062f49` — `Clarify Lane 4 extraction promotion gate`
+- `e8f9c8f` — `Plan Lane 5 deferred parity ordering`
+- `99fff08` — `Plan browse and search capability recovery`
+
+Main effects:
+
+1. Lane 3 is now genuinely closed in docs and tests, not just "planned":
+   deterministic compatibility fixtures exist for promoted graph, governed
+   bundle, Foundation IR, and DIGIMON v1 export.
+2. Lane 4 now has an explicit promotion gate in
+   `docs/plans/0014_extraction_quality_baseline.md`.
+3. Lane 5 now executes through
+   `docs/plans/0027_deferred_parity_reprioritization.md`, which classifies
+   deferred parity work into next-active / protected-deferred /
+   consumer-blocked / abandoned-with-rationale.
+4. The next-active queryability recovery plan now exists as
+   `docs/plans/0028_query_browse_surface.md`.
+5. `README.md`, `CLAUDE.md`, and the plans index now point to the current
+   Lane 3-5 stack instead of leaving it implicit.
+
+## Current Recommended Next Step
+
+If planning continues:
+
+1. stay on `codex/onto-canon6-integration-planning`;
+2. keep the main checkout untouched because it has unrelated dirty docs;
+3. next implementation/planning frontier is still Plan 0025 value proof,
+   followed by activating Plan 0028 for a read-only browse/search surface.
+
+## Current State
+
+- isolated worktree branch clean after the commits above
+- main `/home/brian/projects/onto-canon6` checkout remains dirty and should not
+  be used for this planning stream
+
 # Handoff: onto-canon6 — 2026-03-28
 
 ## Session Focus

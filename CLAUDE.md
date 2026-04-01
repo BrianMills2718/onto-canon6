@@ -9,10 +9,14 @@ runtime.
 1. `README.md`
 2. `docs/SUCCESSOR_CHARTER.md`
 3. `docs/STATUS.md`
-4. `docs/plans/0025_cross_document_entity_resolution.md` (current active work)
-5. `docs/plans/0024_post_cutover_program.md`
-6. `docs/plans/0005_v1_capability_parity_matrix.md`
-7. `docs/plans/0001_successor_roadmap.md`
+4. `docs/plans/0024_post_cutover_program.md`
+5. `docs/plans/0025_cross_document_entity_resolution.md` (current active implementation work)
+6. `docs/plans/0026_schema_stability_gate.md` (completed Lane 3 contract policy)
+7. `docs/plans/0014_extraction_quality_baseline.md` (active Lane 4 promotion gate)
+8. `docs/plans/0027_deferred_parity_reprioritization.md`
+9. `docs/plans/0028_query_browse_surface.md`
+10. `docs/plans/0005_v1_capability_parity_matrix.md`
+11. `docs/plans/0001_successor_roadmap.md`
 
 ## Commands
 
@@ -52,11 +56,14 @@ config/
   classification, chunk-level transfer evaluation).
 - Predicate Canon bridge, ancestor-aware evaluator, and Digimon export
   adapter operational.
-- **Active work**: extraction quality hardening (Plan 0014), vision-gap closure
-  tracking (Plan 0020), the post-cutover execution program (Plan 0024), and
-  the explicit schema-stability gate (Plan 0026). The chunk-level transfer
-  evaluation requirement remains active through ADR 0023 and Plans 0024/0014
-  even though there is no standalone Plan 0019 file.
+- **Active work**: cross-document entity resolution value proof (Plan 0025),
+  extraction quality hardening under an explicit promotion gate (Plan 0014),
+  vision-gap closure tracking (Plan 0020), the post-cutover execution program
+  (Plan 0024), and deferred parity ordering / queryability planning
+  (Plans 0027-0028). Lane 3 schema stability is no longer just planned:
+  Plan 0026 is now the completed contract-policy surface. The chunk-level
+  transfer evaluation requirement remains active through ADR 0023 and Plans
+  0024/0014 even though there is no standalone Plan 0019 file.
 
 ## Strategic Direction (2026-03-31)
 

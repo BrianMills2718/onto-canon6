@@ -139,13 +139,17 @@ High-signal reading order:
 - `docs/SUCCESSOR_CHARTER.md`
 - `docs/STATUS.md`
 - `docs/plans/0024_post_cutover_program.md`
+- `docs/plans/0026_schema_stability_gate.md`
+- `docs/plans/0014_extraction_quality_baseline.md`
+- `docs/plans/0027_deferred_parity_reprioritization.md`
+- `docs/plans/0028_query_browse_surface.md`
+- `docs/plans/0025_cross_document_entity_resolution.md`
 - `docs/plans/0005_v1_capability_parity_matrix.md`
 - `docs/plans/0020_vision_gap_closure.md`
 - `docs/plans/0021_repo_honesty_and_reproducibility_cleanup.md`
 - `docs/plans/0022_donor_absorption_and_archive_readiness.md`
 - `docs/plans/0023_24h_successor_ownership_execution_block.md`
 - `docs/plans/0001_successor_roadmap.md` (historical bootstrap baseline)
-- `docs/plans/0014_extraction_quality_baseline.md`
 - `docs/AUDIT_2026_03_26.md`
 - `docs/EXTRACTION_EXPERIMENT_RUNBOOK.md`
 - `notebooks/README.md`
