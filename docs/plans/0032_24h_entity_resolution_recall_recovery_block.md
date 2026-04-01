@@ -4,8 +4,8 @@ Status: active
 Phase status:
 - Phase 1 completed
 - Phase 2 completed
-- Phase 3 active
-- Phase 4 pending
+- Phase 3 completed
+- Phase 4 active
 - Phase 5 pending
 
 Last updated: 2026-04-01
@@ -163,6 +163,28 @@ shapes were poisoning the whole response before candidate-level salvage ran.
 1. the targeted regression tests pass;
 2. the changes are general family-level fixes, not benchmark-row patches;
 3. same-surname person false merges remain blocked.
+
+#### Outcome
+
+Completed on 2026-04-01.
+
+Landed changes:
+
+1. LLM output groups now go through a deterministic equivalence-collapse pass
+   after the existing same-surname safety guard;
+2. collapse signatures are intentionally narrow:
+   - identical normalized names across clusters
+   - same full person name across clusters
+   - acronym/long-form organization signatures for common
+     org/university/agency shapes
+3. focused tests now pin the intended safe families:
+   - `General John Smith` / `John Smith`
+   - `USSOCOM` / `U.S. Special Operations Command`
+   - acronym signature generation for `GWU`, `CIA`, and `USSOCOM`
+
+The Phase 3 contract stays narrow: it improves deterministic recovery for
+obvious alias families without weakening the Plan 0031 same-surname split
+guard.
 
 ### Phase 4: Refresh The LLM Value Proof
 

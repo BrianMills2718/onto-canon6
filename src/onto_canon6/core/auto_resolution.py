@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import re
 import uuid as _uuid
 from collections import defaultdict
 from dataclasses import dataclass
@@ -61,6 +62,31 @@ _PLACE_TYPE_SLUGS = {
     "facility",
 }
 _PERSON_TYPE_SLUGS = {"person", "gp_person"}
+_ALIAS_STOPWORDS = {
+    "a",
+    "an",
+    "and",
+    "at",
+    "for",
+    "from",
+    "in",
+    "of",
+    "on",
+    "the",
+    "to",
+    "with",
+}
+_COMPOUND_ACRONYM_PARTS = {
+    ("special", "operations"): "so",
+    ("psychological", "operations"): "po",
+}
+_WORD_ACRONYM_PARTS = {
+    "agency": "a",
+    "command": "com",
+    "group": "g",
+    "headquarters": "hq",
+    "university": "u",
+}
 
 # Title/honorific patterns for name normalization (military, government, academic, civilian)
 _TITLE_PATTERNS: list[tuple[str, str]] = [
@@ -701,7 +727,11 @@ def _group_by_llm(
                 all_groups[f"unclaimed_{group_counter}"] = [eid]
                 group_counter += 1
 
-    return all_groups
+    return _collapse_equivalent_llm_groups(
+        all_groups,
+        name_map=name_map,
+        entity_types=entity_types,
+    )
 
 
 def _entity_type_slug(entity_type: str) -> str:
@@ -816,11 +846,155 @@ def _postprocess_llm_cluster(
     return output_groups
 
 
+def _alias_signature_tokens(name: str) -> list[str]:
+    """Tokenize one surface form for conservative alias-signature generation."""
+
+    normalized = name.strip().lower()
+    if not normalized:
+        return []
+    normalized = normalized.replace("u.s.", "us")
+    normalized = re.sub(r"\bu\.s\b", "us", normalized)
+    normalized = re.sub(r"'s\b.*", "", normalized)
+    normalized = re.sub(r"[^a-z0-9]+", " ", normalized)
+    return [
+        token
+        for token in normalized.split()
+        if token and token not in _ALIAS_STOPWORDS
+    ]
+
+
+def _acronym_signatures(name: str) -> set[str]:
+    """Return high-confidence acronym signatures for organization-like names."""
+
+    tokens = _alias_signature_tokens(name)
+    if not tokens:
+        return set()
+    if len(tokens) == 1 and len(tokens[0]) >= 2:
+        compact = tokens[0]
+        signatures = {compact}
+        if compact.startswith("us") and len(compact) > 2:
+            signatures.add(compact[2:])
+        return signatures
+
+    parts: list[str] = []
+    index = 0
+    while index < len(tokens):
+        if index + 1 < len(tokens):
+            compound = _COMPOUND_ACRONYM_PARTS.get((tokens[index], tokens[index + 1]))
+            if compound is not None:
+                parts.append(compound)
+                index += 2
+                continue
+        token = tokens[index]
+        if token == "us":
+            parts.append("us")
+        elif token in _WORD_ACRONYM_PARTS:
+            parts.append(_WORD_ACRONYM_PARTS[token])
+        elif token[0].isdigit():
+            parts.append(token)
+        else:
+            parts.append(token[0])
+        index += 1
+
+    compact = "".join(parts)
+    if not compact:
+        return set()
+    signatures = {compact}
+    if compact.startswith("us") and len(compact) > 2:
+        signatures.add(compact[2:])
+    return signatures
+
+
+def _group_alias_signatures(
+    group_ids: list[str],
+    *,
+    name_map: dict[str, str],
+    entity_types: dict[str, str],
+) -> set[str]:
+    """Return deterministic merge signatures for one candidate cluster."""
+
+    if not group_ids:
+        return set()
+    representative_type = entity_types.get(group_ids[0], "")
+    family = _resolution_type_family(representative_type)
+    signatures: set[str] = set()
+    for entity_id in group_ids:
+        observed_name = name_map.get(entity_id, entity_id)
+        normalized = _normalize_name(observed_name)
+        if normalized:
+            signatures.add(f"norm:{normalized}")
+        if family == "person":
+            info = _person_name_info(observed_name)
+            if info.full_given is not None and info.surname is not None:
+                signatures.add(f"person:{info.full_given}:{info.surname}")
+            continue
+        for acronym in _acronym_signatures(observed_name):
+            signatures.add(f"acr:{acronym}")
+    return signatures
+
+
+def _collapse_equivalent_llm_groups(
+    groups: dict[str, list[str]],
+    *,
+    name_map: dict[str, str],
+    entity_types: dict[str, str],
+) -> dict[str, list[str]]:
+    """Merge LLM output groups that share high-confidence alias signatures."""
+
+    keys = list(groups.keys())
+    if len(keys) < 2:
+        return groups
+
+    signatures_by_key = {
+        key: _group_alias_signatures(
+            groups[key],
+            name_map=name_map,
+            entity_types=entity_types,
+        )
+        for key in keys
+    }
+
+    parent: dict[str, str] = {key: key for key in keys}
+
+    def find(key: str) -> str:
+        while parent[key] != key:
+            parent[key] = parent[parent[key]]
+            key = parent[key]
+        return key
+
+    def union(left: str, right: str) -> None:
+        root_left = find(left)
+        root_right = find(right)
+        if root_left != root_right:
+            parent[root_right] = root_left
+
+    for index, left in enumerate(keys):
+        left_group = groups[left]
+        left_type = entity_types.get(left_group[0], "") if left_group else ""
+        left_family = _resolution_type_family(left_type)
+        left_signatures = signatures_by_key[left]
+        if not left_signatures:
+            continue
+        for right in keys[index + 1:]:
+            right_group = groups[right]
+            right_type = entity_types.get(right_group[0], "") if right_group else ""
+            if left_family != _resolution_type_family(right_type):
+                continue
+            if left_signatures & signatures_by_key[right]:
+                union(left, right)
+
+    collapsed: dict[str, list[str]] = defaultdict(list)
+    for key in keys:
+        collapsed[find(key)].extend(groups[key])
+    return dict(collapsed)
+
+
 __all__ = [
     "ClusteringResult",
     "EntityCluster",
     "ResolutionResult",
     "ResolutionStrategy",
+    "_acronym_signatures",
     "_entity_types_compatible",
     "_postprocess_llm_cluster",
     "_resolution_type_family",

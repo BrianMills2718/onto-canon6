@@ -11,6 +11,7 @@ from unittest.mock import MagicMock, patch
 from onto_canon6.core.auto_resolution import (
     ClusteringResult,
     EntityCluster,
+    _acronym_signatures,
     _build_entity_info_list,
     _entity_types_compatible,
     _fuzzy_pre_filter,
@@ -492,6 +493,14 @@ class TestGroupByLLM:
         )
         assert groups == [["e1", "e2"]]
 
+    def test_acronym_signatures_cover_org_shortforms(self) -> None:
+        """Organization-like names expose deterministic acronym signatures."""
+
+        assert "gwu" in _acronym_signatures("George Washington University")
+        assert "cia" in _acronym_signatures("Central Intelligence Agency")
+        assert "ussocom" in _acronym_signatures("U.S. Special Operations Command")
+        assert "socom" in _acronym_signatures("USSOCOM")
+
     def test_llm_can_cluster_compatible_org_subtypes_together(self) -> None:
         """Subtype-equivalent orgs are not split before the LLM sees them."""
         mock_response = MagicMock()
@@ -583,6 +592,106 @@ class TestGroupByLLM:
         assert len(multi_groups) == 1
         assert set(multi_groups[0]) == {"e1", "e2"}
         assert len(single_groups) == 1
+
+    def test_llm_collapses_same_full_person_name_across_clusters(self) -> None:
+        """Equivalent full person names should collapse after the LLM split them."""
+
+        mock_response = MagicMock()
+        mock_response.content = ClusteringResult(
+            clusters=[
+                EntityCluster(
+                    canonical_name="General John Smith",
+                    entity_ids=["e1"],
+                    reasoning="full title form",
+                ),
+                EntityCluster(
+                    canonical_name="John Smith",
+                    entity_ids=["e2"],
+                    reasoning="plain form",
+                ),
+            ]
+        ).model_dump_json()
+
+        async def mock_acall_llm(*args: object, **kwargs: object) -> object:
+            return mock_response
+
+        with patch.dict(
+            "sys.modules",
+            {
+                "llm_client": MagicMock(
+                    render_prompt=lambda tpl, **ctx: [{"role": "user", "content": "test"}],
+                    acall_llm=mock_acall_llm,
+                    get_model=lambda task, **kw: "mock-model",
+                ),
+            },
+        ):
+            from onto_canon6.core import auto_resolution as ar_mod
+
+            groups = ar_mod._group_by_llm(
+                entity_ids=["e1", "e2"],
+                name_map={
+                    "e1": "General John Smith",
+                    "e2": "John Smith",
+                },
+                entity_types={
+                    "e1": "oc:person",
+                    "e2": "oc:person",
+                },
+                context_map={"e1": "", "e2": ""},
+                assertions=[],
+            )
+
+        assert list(groups.values()) == [["e1", "e2"]]
+
+    def test_llm_collapses_acronym_and_long_form_org_clusters(self) -> None:
+        """Equivalent acronym and long-form org clusters should collapse after LLM."""
+
+        mock_response = MagicMock()
+        mock_response.content = ClusteringResult(
+            clusters=[
+                EntityCluster(
+                    canonical_name="USSOCOM",
+                    entity_ids=["e1"],
+                    reasoning="short form mention",
+                ),
+                EntityCluster(
+                    canonical_name="U.S. Special Operations Command",
+                    entity_ids=["e2"],
+                    reasoning="long form mention",
+                ),
+            ]
+        ).model_dump_json()
+
+        async def mock_acall_llm(*args: object, **kwargs: object) -> object:
+            return mock_response
+
+        with patch.dict(
+            "sys.modules",
+            {
+                "llm_client": MagicMock(
+                    render_prompt=lambda tpl, **ctx: [{"role": "user", "content": "test"}],
+                    acall_llm=mock_acall_llm,
+                    get_model=lambda task, **kw: "mock-model",
+                ),
+            },
+        ):
+            from onto_canon6.core import auto_resolution as ar_mod
+
+            groups = ar_mod._group_by_llm(
+                entity_ids=["e1", "e2"],
+                name_map={
+                    "e1": "USSOCOM",
+                    "e2": "U.S. Special Operations Command",
+                },
+                entity_types={
+                    "e1": "oc:military_organization",
+                    "e2": "oc:military_organization",
+                },
+                context_map={"e1": "", "e2": ""},
+                assertions=[],
+            )
+
+        assert list(groups.values()) == [["e1", "e2"]]
 
     def test_llm_clustering_postprocesses_conflicting_person_names(self) -> None:
         """Conflicting same-surname people are split after the LLM response."""

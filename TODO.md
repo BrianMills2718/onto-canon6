@@ -14,13 +14,13 @@ Source of truth:
 - [x] Reproduce and localize the `event` / malformed-unknown extraction failure
 - [x] Fix the boundary so one malformed candidate does not lose a whole doc
 - [x] Add/update targeted tests
-- [ ] Commit verified phase
+- [x] Commit verified phase
 
 ### Phase 3 — Recover Alias And Answerability Families
-- [ ] Improve org / installation alias handling
-- [ ] Improve abbreviated person unique-cluster handling
-- [ ] Keep the same-surname safety family green
-- [ ] Add/update targeted regression tests
+- [x] Improve org / installation alias handling
+- [x] Improve abbreviated person unique-cluster handling
+- [x] Keep the same-surname safety family green
+- [x] Add/update targeted regression tests
 - [ ] Commit verified phase
 
 ### Phase 4 — Refresh The LLM Value Proof
