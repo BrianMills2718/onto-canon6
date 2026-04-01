@@ -16,14 +16,18 @@ script, not `python -m onto_canon6.cli`. The module lacks a `__main__.py` or
 `if __name__ == "__main__"` guard in `cli.py`, so `python -m onto_canon6.cli`
 exits without running. Use the console script in docs and CLI examples.
 
-### 2026-04-01 — claude-code — bug-pattern
-gemini-3-flash-preview structured output regression CONFIRMED still present
-(2026-04-01). The model returns candidates with empty `roles` objects
-(`"roles": {}`) — it produces predicates and evidence spans but cannot fill
-the nested filler schema (entity fillers with kind/name/entity_type). Pydantic
-rejects these as invalid → 0 candidates. gemini-2.5-flash handles the same
-schema correctly. gemini-2.0-flash handles it partially (lower recall but
-valid roles). This is NOT a pipeline bug — it's a model capability gap.
+### 2026-04-01 — claude-code — schema-gotcha
+gemini-3-flash-preview cannot fill `additionalProperties` with nested
+array-of-objects in JSON schema structured output. The extraction `roles` field
+(`dict[str, list[ExtractedFiller]]` → `additionalProperties: {type: array,
+items: {$ref: ...}}`) produces empty `"roles": {}` every time. Flat properties
+work fine — the model correctly fills subject_name, object_name, etc.
+
+Root cause: Gemini 3's structured output decoder can't navigate dynamic-key
+objects containing complex nested items. NOT a schema complexity issue —
+specifically the `additionalProperties` + nested `$ref` pattern.
+Fix options: (1) flat extraction schema + post-process into roles format,
+(2) use gemini-2.5-flash/2.5-flash-lite which handle `additionalProperties`.
 
 ### 2026-03-31 — claude-code — bug-pattern
 Judge filter (`_apply_judge_filter` in `text_extraction.py`) was calling
