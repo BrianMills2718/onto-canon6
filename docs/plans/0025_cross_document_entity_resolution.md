@@ -41,23 +41,51 @@ surface:
 3. `tests/pipeline/test_text_extraction.py`
 4. `tests/integration/test_identity_cli.py`
 
+### Phase 4c results (2026-03-31): Precision/recall scored against ground truth
+
+Scored via `scripts/score_scale_test.py` against `ground_truth.json`:
+
+|                      | Exact  | LLM    | Target |
+|----------------------|--------|--------|--------|
+| **Recall**           | 80%    | **100%** | >70% ✓ |
+| **Precision**        | 78.9%  | 77.8%  | >90% ✗ |
+| False merges         | 0      | 0      | —      |
+| Non-merge violations | 0      | 0      | —      |
+| Noise clusters       | 4      | 4      | —      |
+
+**Key findings:**
+
+1. **Entity resolution works.** 100% recall (LLM), 0 false merges, 0 non-merge
+   violations, Smith disambiguation passed.
+2. **LLM outperforms exact on recall** (100% vs 80%). Exact misses acronyms
+   (4th PSYOP Group, NSA) that normalization can't resolve.
+3. **Precision gap is entirely extraction noise, not resolution errors.**
+   4 noise clusters ("met", "a ceremony", "several initiatives...",
+   "special operations forces") are entities that shouldn't have been extracted.
+   Excluding noise: precision is 100% for both strategies.
+4. **The bottleneck is extraction quality (Plan 0014), not resolution quality.**
+   The judge filter (now fixed) should catch noise entities. The extraction
+   prompt also needs a discriminating instruction to avoid noun-phrase entities.
+5. **Type hierarchy fix (Q7) is not urgent.** LLM clustering achieved 100%
+   recall despite type inconsistencies on this corpus.
+
 ### What is still unresolved
 
-The plan's value-proof acceptance is **not** met yet.
+Phase 4c precision/recall is now measured. The resolution half of the value
+proof is convincingly positive (100% recall, 0 false merges). Remaining:
 
-The current scale-test outputs are still structural diagnostics, not the final
-quality gate:
+1. **Phase 4d (bare extraction comparison)** — not yet run. Needed to prove
+   onto-canon6 pipeline beats simple "extract entities and relationships"
+   approach on cross-document synthesis.
+2. **Phase 4e (cross-document QA)** — not yet run. Needed to prove downstream
+   answer quality improves with resolution.
+3. **Precision target (>90%) not met** due to extraction noise. This is a
+   Plan 0014 issue, not a Plan 0025 issue. The resolution itself has 100%
+   precision on real entities.
 
-1. they report identity counts and merge structure,
-2. they do **not** yet report precision / recall / false-merge / false-split
-   against ground truth,
-3. they do **not** yet include the bare-extraction comparison from Phase 4d,
-4. and they do **not** yet include the cross-document QA comparison from
-   Phase 4e.
-
-So the current question is no longer "can the repo run cross-document
-resolution at all?" It can. The current question is "does the resolved pipeline
-beat the simpler alternatives clearly enough to count as the value proof?"
+The current question is: should we close the extraction noise gap (Plan 0014)
+before running Phase 4d/4e, or run them now and accept the noise? Running
+now gives us the full comparison but with noisy inputs on both sides.
 
 ## What Exists Today
 
@@ -299,26 +327,25 @@ Not started until Phase 4 proves the approach works at 20-500 scale.
 ## Open Questions / Uncertainty Tracking
 
 ### Q1: Are the current exact-vs-llm scale-test artifacts decision-grade?
-**Status:** Open
-**Why it matters:** The checked-in run artifacts show structural merge counts,
-but not the precision/recall gate defined in Phase 4.
-**Current evidence:** both runs exist under `docs/runs/`, but they are not yet
-enough to choose the winning strategy.
+**Status:** Resolved (2026-03-31)
+**Answer:** Yes. Precision/recall scored against ground truth. LLM achieves
+100% recall vs 80% exact, 0 false merges for both. LLM is the correct
+default strategy. The precision gap (77.8%) is extraction noise, not
+resolution error.
 
 ### Q2: Is the synthetic corpus exposing resolution quality, or mostly extraction noise?
-**Status:** Open
-**Why it matters:** The run artifacts still show noisy extracted entities such
-as pronoun-like person nodes and type drift. If extraction noise dominates, the
-resolution comparison is not yet isolating the right problem.
-**Current handling:** keep judge-filtered extraction in the pipeline and score
-false merges / false splits explicitly before drawing a strategy conclusion.
+**Status:** Resolved (2026-03-31)
+**Answer:** Both. Resolution quality is excellent (100% recall, 0 false merges).
+Extraction noise creates 4 junk clusters that lower precision. The corpus
+successfully isolates the two problems — resolution is solved, extraction
+quality is the remaining bottleneck.
 
 ### Q3: Does LLM clustering materially outperform the cheaper exact/fuzzy path on the current corpus?
-**Status:** Open
-**Why it matters:** If not, the repo should not default to a more expensive
-strategy just because it exists.
-**Current handling:** the current artifacts are treated as a first baseline,
-not a promotion decision.
+**Status:** Resolved (2026-03-31)
+**Answer:** Yes on recall (100% vs 80%). Equal on precision and false merges.
+LLM catches acronyms (NSA, 4th PSYOP Group) that exact/fuzzy cannot.
+Recommended default: `strategy=exact` + `require_llm_review=true` (cheap
+candidate generation + LLM validation).
 
 ### Q4: What is the official Phase 4 value-proof corpus?
 **Status:** Open
