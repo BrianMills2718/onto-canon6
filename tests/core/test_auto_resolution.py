@@ -1076,6 +1076,30 @@ class TestGroupByLLM:
             frozenset({"e1", "e2", "e3"}),
         }
 
+    def test_collapse_equivalent_llm_groups_merges_unknown_district_abbrev_into_place_anchor(self) -> None:
+        """A generic district abbreviation can attach to one unique district-place anchor."""
+
+        from onto_canon6.core import auto_resolution as ar_mod
+
+        groups = ar_mod._collapse_equivalent_llm_groups(
+            {
+                "g1": ["e1"],
+                "g2": ["e2"],
+            },
+            name_map={
+                "e1": "Washington D.C.",
+                "e2": "D.C.",
+            },
+            entity_types={
+                "e1": "oc:location",
+                "e2": "",
+            },
+        )
+
+        assert {frozenset(group) for group in groups.values()} == {
+            frozenset({"e1", "e2"}),
+        }
+
     def test_collapse_equivalent_llm_groups_keeps_district_place_separate_from_institution(self) -> None:
         """District-style place bridging must not cross the place/institution family boundary."""
 
@@ -1128,6 +1152,34 @@ class TestGroupByLLM:
 
         assert {frozenset(group) for group in groups.values()} == {
             frozenset({"e1", "e2"}),
+        }
+
+    def test_collapse_equivalent_llm_groups_merges_acronymized_unit_alias_family(self) -> None:
+        """Acronymized military-unit aliases should collapse with their expanded family."""
+
+        from onto_canon6.core import auto_resolution as ar_mod
+
+        groups = ar_mod._collapse_equivalent_llm_groups(
+            {
+                "g1": ["e1"],
+                "g2": ["e2"],
+                "g3": ["e3"],
+            },
+            name_map={
+                "e1": "4th PSYOP Group",
+                "e2": "4th POG",
+                "e3": "4th POG(A)",
+            },
+            entity_types={
+                "e1": "oc:military_organization",
+                "e2": "oc:military_organization",
+                "e3": "oc:military_unit",
+            },
+        )
+
+        assert {frozenset(group) for group in groups.values()} == {
+            frozenset({"e1", "e2"}),
+            frozenset({"e3"}),
         }
 
     def test_collapse_equivalent_llm_groups_keeps_ambiguous_descriptor_alias_unmerged(self) -> None:

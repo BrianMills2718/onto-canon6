@@ -1260,6 +1260,23 @@ def _organization_descriptor_heads_from_text(text: str) -> set[str]:
     return heads
 
 
+def _unit_alias_signatures(name: str) -> set[str]:
+    """Return bounded unit-alias signatures for acronymized military-unit names."""
+
+    tokens = _alias_signature_tokens(name)
+    if len(tokens) < 2:
+        return set()
+    lead = tokens[0]
+    if not lead[0].isdigit():
+        return set()
+    tail = tokens[1:]
+    if tail in (["psyop", "group"], ["pog"]):
+        return {f"unitabbr:{lead}:pog"}
+    if tail in (["psyop", "group", "a"], ["pog", "a"]):
+        return {f"unitabbr:{lead}:pog:a"}
+    return set()
+
+
 def _group_alias_signatures(
     group_ids: list[str],
     *,
@@ -1291,6 +1308,7 @@ def _group_alias_signatures(
                 signatures.add(installation_equivalence)
         for acronym in _acronym_signatures(observed_name):
             signatures.add(f"acr:{acronym}")
+        signatures.update(_unit_alias_signatures(observed_name))
     return signatures
 
 
@@ -1437,6 +1455,7 @@ def _collapse_equivalent_llm_groups(
                 union(surname_only_key, anchor_candidates[0])
 
     place_keys_by_district_head: dict[str, list[str]] = defaultdict(list)
+    place_keys_by_district_abbrev: dict[str, list[str]] = defaultdict(list)
     place_keys_by_single_token: dict[str, list[str]] = defaultdict(list)
     for key in keys:
         group = groups[key]
@@ -1455,6 +1474,11 @@ def _collapse_equivalent_llm_groups(
         if representative_family == "place":
             for district_head in place_bridge_info.district_heads:
                 place_keys_by_district_head[district_head].append(key)
+            for district_abbrev in place_bridge_info.district_abbrevs:
+                place_keys_by_district_abbrev[district_abbrev].append(key)
+        elif representative_family == "unknown":
+            for district_abbrev in place_bridge_info.district_abbrevs:
+                place_keys_by_district_abbrev[district_abbrev].append(key)
         for token in place_bridge_info.single_token_places:
             place_keys_by_single_token[token].append(key)
 
@@ -1464,6 +1488,8 @@ def _collapse_equivalent_llm_groups(
         token_keys = place_keys_by_single_token.get(district_head, [])
         for token_key in token_keys:
             union(token_key, district_head_keys[0])
+        for abbrev_key in place_keys_by_district_abbrev.get("dc", []):
+            union(abbrev_key, district_head_keys[0])
 
     organization_descriptor_surface_keys: dict[str, list[str]] = defaultdict(list)
     organization_descriptor_context_keys: dict[str, list[str]] = defaultdict(list)
