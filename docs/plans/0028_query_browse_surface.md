@@ -80,6 +80,43 @@ The repo already has narrow read surfaces:
 The missing gap is a true browse/search surface over promoted knowledge and its
 supporting evidence.
 
+### Phase 0 Inventory Snapshot (2026-03-31)
+
+Existing reusable seams:
+
+1. `CanonicalGraphService`
+   - `list_promoted_assertions()`
+   - `get_promoted_assertion(assertion_id=...)`
+   - `get_promotion_result(assertion_id=...)`
+2. `IdentityService`
+   - `list_identities()`
+   - `get_identity_bundle(identity_id=...)`
+3. `ReviewService`
+   - `get_candidate_assertion(candidate_id=...)`
+   - `list_proposals(...)`
+4. report surfaces
+   - `PromotedGraphReportService`
+   - `IdentityReportService`
+   - `LineageReportService`
+   - `EpistemicReportService`
+
+Current thin CLI access points:
+
+1. `list-promoted-assertions`
+2. `list-identities`
+3. `export-identity-report`
+4. promoted-graph report export
+5. governed-bundle export
+
+What is still missing for queryability:
+
+1. entity search by canonical name / alias text
+2. direct "get entity" lookup that also returns linked promoted assertions
+3. assertion search by predicate / entity / claim-text match
+4. one direct evidence lookup path for a promoted assertion
+5. one shared read service that owns these query semantics instead of forcing
+   callers to rebuild them from report surfaces
+
 ## Target Surface
 
 The minimum useful browse/search slice should support exactly these operations:
@@ -166,6 +203,8 @@ These are fixed unless a later ADR changes them.
 
 1. implementation starts from real existing seams;
 2. the plan does not accidentally duplicate existing report logic.
+
+**Implementation status (2026-03-31): inventory complete**
 
 ### Phase 1: Define Typed Query Contracts
 
