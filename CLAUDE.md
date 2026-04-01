@@ -61,9 +61,11 @@ config/
   vision-gap closure tracking (Plan 0020), the post-cutover execution program
   (Plan 0024), and deferred parity ordering / queryability planning
   (Plans 0027-0028). Lane 3 schema stability is no longer just planned:
-  Plan 0026 is now the completed contract-policy surface. The chunk-level
-  transfer evaluation requirement remains active through ADR 0023 and Plans
-  0024/0014 even though there is no standalone Plan 0019 file.
+  Plan 0026 is now the completed contract-policy surface, and the first
+  read-only query surface is now implemented end to end through Plan 0029.
+  The chunk-level transfer evaluation requirement remains active through
+  ADR 0023 and Plans 0024/0014 even though there is no standalone Plan 0019
+  file.
 
 ## Strategic Direction (2026-03-31)
 
@@ -84,7 +86,7 @@ config/
   reasoning) cannot be demonstrated.
 - **After the current value-proof work, the next-active deferred capability is
   queryability.** Plan 0027 now fixes the deferred-capability order, and Plan
-  0028 defines the first read-only browse/search surface over promoted
+  0028 now has a landed first read-only browse/search surface over promoted
   knowledge. Do not widen the DIGIMON seam or start broad new capability tracks
   before Plan 0025 and the first query surface are settled.
 - **Flat filler model with strong descriptions** — discriminated unions (oneOf)
@@ -232,36 +234,20 @@ Pre-made decisions (do not ask about these):
 - Prompt templates in `prompts/resolution/` as YAML/Jinja2
 - Commit each verified phase immediately
 
-## Active 24h Execution Block (2026-03-31)
+## Completed 24h Execution Block (2026-03-31)
 
-**Plan 0029: First Query Surface — execute continuously until complete.**
+**Plan 0029: First Query Surface — complete.**
 
-This is a bounded 24-hour implementation block, not an open-ended "work a bit"
-instruction. The required behavior is:
+The bounded execution block landed:
 
-1. finish one phase;
-2. verify it;
-3. commit it immediately; then
-4. continue directly to the next phase without waiting for another prompt.
+1. shared read-only query service;
+2. thin CLI commands for the first five browse/search operations;
+3. thin MCP tools over the same service contracts;
+4. real-proof verification against the canonical proof DB;
+5. doc/status/closeout updates.
 
-The only valid stop conditions are:
-
-1. all Plan 0029 phases are complete;
-2. a real blocker makes safe implementation impossible;
-3. a material uncertainty appears that is not already covered by Plan 0028,
-   Plan 0029, or `TODO.md`.
-
-Do **not** stop because:
-
-1. the service layer is done but CLI is not;
-2. CLI is done but MCP is not;
-3. tests passed for one slice but real-proof verification is still undone;
-4. documentation updates are still pending;
-5. you have to record a new uncertainty — log it and continue.
-
-`TODO.md` is the live execution tracker for this block. Keep it current as
-phases land. Long-term planning stays in the plan docs; immediate execution
-state lives in `TODO.md`.
+`TODO.md` remains the live execution tracker pattern for future bounded blocks,
+but Plan 0029 itself is no longer active.
 
 ## Working Rules
 

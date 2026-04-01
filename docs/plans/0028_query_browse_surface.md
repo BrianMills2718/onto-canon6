@@ -1,6 +1,6 @@
 # Query And Browse Surface
 
-Status: planned
+Status: active
 
 Last updated: 2026-03-31
 Workstream: next-active deferred parity capability after Lane 5 ordering
@@ -300,6 +300,8 @@ These are fixed for the first slice:
 1. one service owns the query semantics;
 2. the service can satisfy the five target operations deterministically.
 
+**Implementation status (2026-03-31): complete via `QuerySurfaceService`**
+
 ### Phase 3: Add CLI Wrappers
 
 1. add the five CLI commands above;
@@ -311,6 +313,8 @@ These are fixed for the first slice:
 
 1. humans can inspect promoted knowledge without opening SQLite directly;
 2. CLI output is stable enough for scripting and review.
+
+**Implementation status (2026-03-31): complete**
 
 ### Phase 4: Add MCP Wrappers
 
@@ -324,6 +328,8 @@ These are fixed for the first slice:
 1. agents can browse the governed store directly;
 2. MCP tools do not invent a second query model.
 
+**Implementation status (2026-03-31): complete**
+
 ### Phase 5: Verify With Real Proof Data
 
 1. verify against the canonical local proof DB;
@@ -334,6 +340,9 @@ These are fixed for the first slice:
 
 1. the repo can demonstrate the query surface on real promoted data;
 2. parity row "concept/entity browsing and search" is no longer deferred.
+
+**Implementation status (2026-03-31): complete via
+`docs/runs/2026-03-31_query_surface_real_proof.md`**
 
 ## Required Checks
 
@@ -361,6 +370,10 @@ The capability is complete enough to mark the parity row recovered when:
 3. agents and humans can browse governed knowledge without direct SQLite
    inspection.
 
+**Current state (2026-03-31):** the first read-only slice is landed and proved.
+Further work under this plan is now widening/hardening work, not first-slice
+recovery.
+
 ## Failure Modes
 
 1. the first slice expands into a full retrieval platform and duplicates
@@ -375,17 +388,21 @@ The capability is complete enough to mark the parity row recovered when:
 ## Open Questions / Uncertainty Tracking
 
 ### Q1: Should the first implementation add both CLI and MCP, or land CLI first and MCP immediately after?
-**Status:** Open
-**Default direction:** implement the shared service first, then add both thin
-wrappers in one slice if practical.
+**Status:** Resolved
+**Resolution:** both thin wrappers landed in the same execution block after the
+shared service was verified.
 
 ### Q2: Should entity search include unresolved external-reference state in the first slice?
-**Status:** Open
+**Status:** Resolved
 **Why it matters:** external-reference state exists, but it may be better to
 keep the first browse surface focused on names, aliases, and promoted
 assertions.
+**Resolution:** no. The first slice keeps entity search focused on names and
+entity type. External-reference state remains available through `get-entity`.
 
 ### Q3: Should evidence lookup expose raw source-text excerpts by default or only references unless explicitly requested?
-**Status:** Open
+**Status:** Resolved
 **Why it matters:** provenance is more useful with excerpts, but source-text
 payload size and privacy may matter.
+**Resolution:** yes, for the first local/operator-facing slice. `EvidenceBundle`
+returns source text when it is already present in stored provenance.

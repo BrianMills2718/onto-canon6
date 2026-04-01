@@ -23,9 +23,11 @@ Current post-cutover program state:
    `docs/plans/0026_schema_stability_gate.md`;
 3. Lane 4 now has an explicit promotion policy in
    `docs/plans/0014_extraction_quality_baseline.md`;
-4. the next-active deferred capability after current active gates is the
-   query/browse surface planned in `docs/plans/0028_query_browse_surface.md`,
-   after the value-proof stage of Plan 0025.
+4. the first read-only query surface is now landed and proved through
+   `docs/plans/0028_query_browse_surface.md` and
+   `docs/plans/0029_24h_query_surface_execution_block.md`;
+5. the next-active unresolved implementation question after that recovery is
+   still the value-proof stage of Plan 0025.
 
 ## What Is Proven
 

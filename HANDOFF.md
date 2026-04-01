@@ -2,8 +2,8 @@
 
 ## Session Focus
 
-Lane 3 closure, Lane 4 policy clarification, Lane 5 ordering, and next-active
-queryability planning in the isolated worktree branch
+Lane 3 closure, Lane 4 policy clarification, Lane 5 ordering, and then full
+implementation of the first queryability slice in the isolated worktree branch
 `codex/onto-canon6-integration-planning`.
 
 ## What Landed
@@ -24,6 +24,11 @@ Committed in the isolated worktree as:
 - `4e9123c` — `Refresh consumer proof references`
 - `4c78dff` — `Complete query surface inventory`
 - `1b7d6c5` — `Pre-make query surface contracts`
+- `f994cb8` — `Start 24h query surface execution block`
+- `502289d` — `Add read-only query surface service`
+- `da42cbe` — `Add query surface CLI commands`
+- `754eb4d` — `Add query surface MCP tools`
+- `fc95d4e` — `Record query surface real-proof verification`
 
 Main effects:
 
@@ -37,21 +42,30 @@ Main effects:
    deferred parity work into next-active / protected-deferred /
    consumer-blocked / abandoned-with-rationale.
 4. The next-active queryability recovery plan now exists as
-   `docs/plans/0028_query_browse_surface.md`.
-5. `README.md`, `CLAUDE.md`, `docs/STATUS.md`, the plans index, the parity
+   `docs/plans/0028_query_browse_surface.md`, and its first read-only slice is
+   now landed end to end through `docs/plans/0029_24h_query_surface_execution_block.md`.
+5. The first read-only query surface now exists across:
+   - shared service: `src/onto_canon6/surfaces/query_surface.py`
+   - typed contracts: `src/onto_canon6/surfaces/query_models.py`
+   - CLI: `search-entities`, `get-entity`, `search-promoted-assertions`,
+     `get-promoted-assertion`, `get-evidence`
+   - MCP: matching `canon6_*` tools in `src/onto_canon6/mcp_server.py`
+   - proof note: `docs/runs/2026-03-31_query_surface_real_proof.md`
+6. `README.md`, `CLAUDE.md`, `docs/STATUS.md`, the plans index, the parity
    matrix, and the vision-gap tracker now point to the same current Lane 3-5
    stack instead of leaving it implicit.
 
 ## Current Recommended Next Step
 
-If planning continues:
+If work continues:
 
 1. stay on `codex/onto-canon6-integration-planning`;
 2. keep the planning stream on `codex/onto-canon6-integration-planning` even
-   though the main checkout is currently clean, so queryability/planning work
-   stays isolated from active implementation threads;
-3. next implementation/planning frontier is still Plan 0025 value proof,
-   followed by activating Plan 0028 for a read-only browse/search surface.
+   though the main checkout is currently clean, so follow-on work stays
+   isolated from active implementation threads;
+3. the next unresolved implementation frontier is still Plan 0025 value proof;
+4. queryability work after this should be hardening/widening under Plan 0028,
+   not redoing the first slice.
 
 ## Current State
 

@@ -311,8 +311,10 @@ Lane 5 now has an explicit classification surface. The current next-active
 order after the active gates is:
 
 1. finish the entity-resolution value proof under Plan 0025;
-2. activate [0028_query_browse_surface.md](0028_query_browse_surface.md) for a
-   first browse/search surface over promoted knowledge;
+2. treat the first read-only query surface as landed through
+   [0028_query_browse_surface.md](0028_query_browse_surface.md) and
+   [0029_24h_query_surface_execution_block.md](0029_24h_query_surface_execution_block.md),
+   then widen/harden it only after consumer/value evidence justifies that work;
 3. keep richer DIGIMON interchange consumer-blocked rather than silently
    widening the supported v1 seam.
 

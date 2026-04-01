@@ -32,9 +32,9 @@ Source of truth:
 - [x] Commit verified phase
 
 ### Phase 5 — Closeout
-- [ ] Refresh docs/status/handoff
-- [ ] Mark execution block complete
-- [ ] Commit verified phase
+- [x] Refresh docs/status/handoff
+- [x] Mark execution block complete
+- [x] Commit verified phase
 
 ## Longer-Term Queue
 
