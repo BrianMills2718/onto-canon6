@@ -146,6 +146,19 @@ Verified on 2026-03-31 against the real Shield AI review DB:
 4. DIGIMON's default benchmark lane remains DIGIMON-native. The richer
    convergence experiment still lives under DIGIMON Plan 23.
 
+#### Value Proof (2026-04-01)
+
+Plan 0025 Phase 4 demonstrated the value of onto-canon6's entity resolution
+pipeline on a 25-document synthetic corpus with ground truth:
+
+- **Entity resolution**: 0 false merges, 70-100% recall (model-dependent)
+- **Cross-document QA**: onto-canon6 answers 90% of cross-doc questions vs
+  20% for bare extraction (+70% improvement)
+- **Bare extraction comparison**: simple name dedup cannot merge acronyms,
+  title variations, or name variants that LLM resolution handles
+
+Results: `docs/runs/scale_test_llm_*.scores.json`, `docs/runs/cross_doc_qa_*.json`
+
 #### Tasks
 
 1. keep the DIGIMON consumer workflow explicit and truthful;

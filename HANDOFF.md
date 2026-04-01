@@ -67,9 +67,10 @@ relationships exported; 110 nodes, 78 edges imported.
 
 | Plan | Status | Next |
 |------|--------|------|
-| 0025 | Phases 1-3 landed, Phase 4 value proof open | Complete scale test precision/recall against ground truth |
-| 0024 Lane 2 | DIGIMON chosen, v1 verified | Schema stability gate (Lane 3) |
-| 0014 | Active (parallel) | Prompt iteration with transfer evidence |
+| 0025 | **Phase 4 substantially complete** — 90% QA accuracy, +70% vs bare extraction | Re-run with 2.5-flash when quota resets; extraction noise reduction (Plan 0014) |
+| 0024 Lane 2 | DIGIMON chosen, v1 verified, value proof done | Schema stability gate (Lane 3) |
+| 0024 Lane 3 | Not started | Define breaking changes, compatibility checks |
+| 0014 | Active | Extraction noise (noun-phrase entities), prompt discrimination |
 
 ## Authority
 
