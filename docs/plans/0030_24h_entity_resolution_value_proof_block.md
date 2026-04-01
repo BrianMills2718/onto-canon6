@@ -1,15 +1,35 @@
 # 24h Entity Resolution Value-Proof Block
 
-Status: active
+Status: completed
 Phase status:
 - Phase 1 completed
 - Phase 2 completed
 - Phase 3 completed
-- Phase 4 in progress
-- Phase 5 next
+- Phase 4 completed
+- Phase 5 completed
 
 Last updated: 2026-04-01
 Workstream: bounded 24-hour execution block for Plan 0025 Phase 4
+
+## Outcome
+
+Completed.
+
+The repo now has:
+
+1. a frozen value-proof corpus;
+2. a typed decision-grade evaluator;
+3. exact, bare-baseline, and LLM run artifacts;
+4. a written comparison note in
+   `docs/runs/2026-04-01_entity_resolution_value_proof.md`;
+5. refreshed top-level docs that state the result truthfully.
+
+Decision from the block:
+
+1. the bare baseline is not competitive;
+2. LLM clustering materially improves recall over exact matching;
+3. LLM clustering is not ready for default promotion yet because false merges
+   and fixed-question regressions are still real.
 
 ## Purpose
 

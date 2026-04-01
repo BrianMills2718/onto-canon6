@@ -22,23 +22,25 @@ Source of truth:
 - [x] Upgrade `scripts/run_scale_test.py`
 - [x] Add bare-baseline corpus runner
 - [x] Add/refresh Make targets
-- [ ] Commit verified phase
+- [x] Commit verified phase
 
 ### Phase 4 — Execute The First Full Value-Proof Slice
 - [x] Run exact-strategy report
 - [x] Run bare baseline report
-- [ ] Run LLM-strategy report if environment supports it cleanly
-- [ ] Write run note with concrete findings
-- [ ] Commit verified phase
+- [x] Run LLM-strategy report if environment supports it cleanly
+- [x] Write run note with concrete findings
+- [x] Commit verified phase
 
 ### Phase 5 — Closeout
-- [ ] Refresh docs/status/handoff
-- [ ] Mark execution block complete
-- [ ] Commit verified phase
+- [x] Refresh docs/status/handoff
+- [x] Mark execution block complete
+- [x] Commit verified phase
 
 ## Longer-Term Queue
 
-- [ ] Finish Plan 0025 value proof
+- [ ] Harden same-surname person disambiguation before promoting LLM resolution
+- [ ] Fix `_judge_candidate()` so auto-review uses the explicit bounded judge model
+- [ ] Improve alias recovery for USSOCOM / Fort Bragg style organization and installation variants
 - [ ] Decide whether LLM clustering should replace exact strategy as default
 - [ ] Evaluate whether Plan 0028 should widen beyond the first five operations
 - [ ] Revisit consumer-blocked richer DIGIMON interchange only through DIGIMON Plan 23

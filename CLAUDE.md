@@ -56,13 +56,16 @@ config/
   classification, chunk-level transfer evaluation).
 - Predicate Canon bridge, ancestor-aware evaluator, and Digimon export
   adapter operational.
-- **Active work**: cross-document entity resolution value proof (Plan 0025),
+- **Active work**: cross-document entity resolution hardening after the first
+  value proof (Plan 0025),
   extraction quality hardening under an explicit promotion gate (Plan 0014),
   vision-gap closure tracking (Plan 0020), the post-cutover execution program
   (Plan 0024), and deferred parity ordering / queryability planning
   (Plans 0027-0028). Lane 3 schema stability is no longer just planned:
   Plan 0026 is now the completed contract-policy surface, and the first
   read-only query surface is now implemented end to end through Plan 0029.
+  Plan 0030 is now complete and gives the first decision-grade comparison
+  between exact, bare-baseline, and LLM entity-resolution strategies.
   The chunk-level transfer evaluation requirement remains active through
   ADR 0023 and Plans 0024/0014 even though there is no standalone Plan 0019
   file.
@@ -215,36 +218,23 @@ happens.
    resolution *infrastructure*. Export adapters wire the identity subsystem.
    Consumers should not have to reimplement dedup.
 
-## Active Execution Block (2026-04-01)
+## Completed Execution Block (2026-04-01)
 
-**Plan 0030: 24h Entity Resolution Value-Proof Block — active until fully closed.**
+**Plan 0030: 24h Entity Resolution Value-Proof Block — complete.**
 
-Execute continuously and do not pause between phases. Finish the current
-phase, update the plan/TODO surfaces, commit the verified increment, and move
-immediately to the next phase. Never stop at "the harness exists" or "one run
-completed." The block is not done until all required phases, run artifacts,
-and closeout docs are finished.
+The value-proof block now has:
 
-The only valid stop conditions are:
-1. All 5 phases in `docs/plans/0030_24h_entity_resolution_value_proof_block.md`
-   complete and are committed
-2. A real blocker that cannot be resolved from repo context or the plan
-3. A material uncertainty not covered by the pre-made decisions below
+1. a frozen corpus and question set;
+2. exact, bare-baseline, and LLM strategy run artifacts;
+3. a written decision note in
+   `docs/runs/2026-04-01_entity_resolution_value_proof.md`.
 
-If a sub-phase is blocked, log the blocker in the active plan, `TODO.md`, and
-the run note, then continue with the next unblocked phase. Do not silently
-abandon a phase. Do not ask what to do next while the active block still has
-unfinished phases.
+Decision from the block:
 
-Pre-made decisions (do not ask about these):
-- Config defaults: `review_mode: llm`, `enable_judge_filter: true`
-- Fuzzy matching is a pre-filter for LLM validation, not an independent merge strategy
-- Synthetic corpus for Phase 4 (controlled ground truth)
-- Single LLM call per entity type; batch if token count exceeds threshold
-- All LLM calls through llm_client with `task`, `trace_id`, and `max_budget`
-- Prompt templates in `prompts/resolution/` as YAML/Jinja2
-- Commit each verified phase immediately
-- Work stays in the isolated `codex/onto-canon6-integration-planning` worktree
+1. exact matching remains the high-precision floor;
+2. the bare baseline is not competitive;
+3. LLM clustering improves recall materially but is not ready for default
+   promotion because false merges and question regressions remain.
 
 ## Completed 24h Execution Block (2026-03-31)
 
@@ -260,37 +250,6 @@ The bounded execution block landed:
 
 `TODO.md` remains the live execution tracker pattern for future bounded blocks,
 but Plan 0029 itself is no longer active.
-
-## Active 24h Execution Block (2026-03-31)
-
-**Plan 0030: Entity resolution value proof — execute continuously until complete.**
-
-This is a bounded 24-hour implementation block, not an open-ended "work a bit"
-instruction. The required behavior is:
-
-1. finish one phase;
-2. verify it;
-3. commit it immediately; then
-4. continue directly to the next phase without waiting for another prompt.
-
-The only valid stop conditions are:
-
-1. all Plan 0030 phases are complete;
-2. a real blocker makes safe implementation impossible;
-3. a material uncertainty appears that is not already covered by Plan 0025,
-   Plan 0030, or `TODO.md`.
-
-Do **not** stop because:
-
-1. fixtures are written but metrics are not yet implemented;
-2. the evaluator is done but the runner/baseline path is not;
-3. the runner is done but the real corpus runs are not;
-4. exact results exist but the run note/docs are not updated;
-5. you have to record a new uncertainty — log it and continue.
-
-`TODO.md` is the live execution tracker for this block. Keep it current as
-phases land. Long-term planning stays in the plan docs; immediate execution
-state lives in `TODO.md`.
 
 ## Working Rules
 

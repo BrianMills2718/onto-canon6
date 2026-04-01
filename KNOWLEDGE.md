@@ -72,3 +72,21 @@ real proof DB, searching `USSOCOM` returns two promoted organization entities
 in the same identity cluster. Use `get-entity` to inspect canonical/alias
 membership truthfully; do not treat search-result ordering alone as proof of
 alias disambiguation.
+
+### 2026-04-01 — codex — best-practice
+The first decision-grade entity-resolution value proof on
+`tests/fixtures/synthetic_corpus` showed a clear three-way split:
+exact matching is the high-precision floor, the bare baseline is not
+competitive, and LLM clustering improves recall materially but is not yet safe
+to promote because of same-surname person false merges and unresolved
+organization / installation alias splits. Use
+`docs/runs/2026-04-01_entity_resolution_value_proof.md` as the summary artifact
+before revisiting strategy promotion.
+
+### 2026-04-01 — codex — bug-pattern
+During the 2026-04-01 value-proof runs, `_apply_judge_filter()` correctly
+honored explicit `gemini/gemini-2.5-flash-lite` overrides, but the later
+single-candidate auto-review path `_judge_candidate()` still used the stale
+`gemini-2.5-flash` default and fail-opened to `supported` on quota exhaustion.
+Treat the resulting run artifacts as decision-grade but caveated until that
+override seam is fixed and rerun.

@@ -1,3 +1,36 @@
+# Handoff: onto-canon6 — 2026-04-01
+
+## Session Focus
+
+Plan 0030: 24h entity-resolution value-proof execution block in the isolated
+worktree branch `codex/onto-canon6-integration-planning`.
+
+## What Landed
+
+Committed in the isolated worktree as:
+
+- `b942ce4` — `Freeze value-proof contracts and add evaluator`
+- `d5558b6` — `Add value-proof runners and operator targets`
+- `e7e5515` — `Advance Plan 0030 with exact and bare value-proof runs`
+
+Main effects:
+
+1. Plan 0025 now has a frozen question fixture, typed evaluator, and
+   reproducible exact / bare / LLM comparison artifacts.
+2. The decision note now lives in
+   `docs/runs/2026-04-01_entity_resolution_value_proof.md`.
+3. The repo no longer truthfully says "metrics missing" for Plan 0025.
+
+## Current State
+
+1. Plan 0030 is complete.
+2. Plan 0025 remains active, but the unresolved work is now narrow:
+   - same-surname person false merges in the LLM strategy
+   - unresolved organization / installation aliases
+   - stale `_judge_candidate()` model-override seam
+3. The next decision is not "do we have evidence?" but "what hardening work is
+   required before the LLM strategy can replace exact matching as default?"
+
 # Handoff: onto-canon6 — 2026-03-31
 
 ## Session Focus

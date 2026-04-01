@@ -2,7 +2,7 @@
 
 Status: active
 
-Last updated: 2026-03-31
+Last updated: 2026-04-01
 Workstream: entity resolution for scale test (20-500 documents)
 
 ## Purpose
@@ -18,8 +18,8 @@ cannot be demonstrated.
 
 ## Progress Update (2026-03-31)
 
-This plan is no longer just planned. The first implementation slice has
-started and the scale-test harness now exists.
+This plan is no longer just planned. The first value-proof block is now
+completed and the repo has decision-grade comparison artifacts.
 
 ### Landed so far
 
@@ -29,9 +29,10 @@ started and the scale-test harness now exists.
    - additive `llm` resolution strategy with fuzzy pre-filtering
 3. **Phase 3** landed:
    - CLI / Makefile / pipeline integration for resolution
-4. **Phase 4 harness** landed:
-   - synthetic corpus + scale-test runner
-   - first exact-strategy and llm-strategy runs written under `docs/runs/`
+4. **Phase 4 value-proof** landed:
+   - official synthetic corpus + question fixture + evaluator
+   - exact, bare-baseline, and LLM strategy runs written under `docs/runs/`
+   - decision note written in `docs/runs/2026-04-01_entity_resolution_value_proof.md`
 
 Targeted regression coverage for the active slice is green on the current repo
 surface:
@@ -43,21 +44,25 @@ surface:
 
 ### What is still unresolved
 
-The plan's value-proof acceptance is **not** met yet.
+The plan's harness and metrics gap is now closed, but the strategy decision is
+still unresolved.
 
-The current scale-test outputs are still structural diagnostics, not the final
-quality gate:
+The current question is no longer "can the repo score resolution quality?" It
+can. The current question is now narrower:
 
-1. they report identity counts and merge structure,
-2. they do **not** yet report precision / recall / false-merge / false-split
-   against ground truth,
-3. they do **not** yet include the bare-extraction comparison from Phase 4d,
-4. and they do **not** yet include the cross-document QA comparison from
-   Phase 4e.
+1. can the LLM strategy recover alias-heavy merges without overmerging
+   same-surname people;
+2. can organization and installation alias handling catch up to the recall
+   gains the LLM strategy already showed;
+3. can the fixed cross-document question set improve without sacrificing the
+   current exact-match precision floor.
 
-So the current question is no longer "can the repo run cross-document
-resolution at all?" It can. The current question is "does the resolved pipeline
-beat the simpler alternatives clearly enough to count as the value proof?"
+The completed value-proof block showed:
+
+1. exact strategy remains the high-precision floor;
+2. bare extraction is not competitive;
+3. LLM clustering improves pairwise recall materially but is not yet safe
+   enough to promote as the default.
 
 ## What Exists Today
 
@@ -70,8 +75,8 @@ beat the simpler alternatives clearly enough to count as the value proof?"
 | Identity infrastructure | Working | Canonical + alias memberships, external refs |
 | Name normalization | **Implemented (Phase 1)** | Title/honorific stripping, abbreviation expansion |
 | LLM-based entity clustering | **Implemented (Phase 2)** | KGGen-style per-type clustering with fuzzy pre-filter |
-| Cross-document resolution | **Implemented (Phase 2+3)** | Wired into CLI + Makefile; first scale test results in docs/runs/ |
-| **All-merge LLM review** | **Design decision, not yet implemented** | Even exact matches should go through LLM validation (session 2026-03-31) |
+| Cross-document resolution | **Implemented (Phase 2+3)** | Wired into CLI + Makefile; value-proof runs now exist in docs/runs/ |
+| **All-merge LLM review** | **Design decision, not yet implemented** | The 2026-04-01 value proof strengthens this need for same-surname disambiguation |
 | **Subset/containment relationships** | **Design needed** | "USSOCOM" vs "USSOCOM headquarters" — merge vs related-but-distinct |
 
 ## Approach

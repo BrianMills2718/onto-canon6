@@ -162,12 +162,18 @@ def promote_all(review_svc: ReviewService, db_path: Path) -> int:
     return promoted
 
 
-def run_resolution(db_path: Path, strategy: str) -> dict[str, int | str]:
+def run_resolution(
+    db_path: Path,
+    strategy: str,
+    *,
+    resolution_model_override: str | None,
+) -> dict[str, int | str]:
     """Run entity resolution and return result."""
     from typing import cast
     result = auto_resolve_identities(
         db_path=db_path,
         strategy=cast(ResolutionStrategy, strategy),
+        model_override=resolution_model_override,
     )
     return {
         "entities_scanned": result.entities_scanned,
@@ -208,6 +214,11 @@ def main() -> int:
         "--judge-model-override",
         default=None,
         help="Optional explicit judge-model override for this run",
+    )
+    parser.add_argument(
+        "--resolution-model-override",
+        default=None,
+        help="Optional explicit LLM resolution model override for this run",
     )
     parser.add_argument("--verbose", "-v", action="store_true")
     args = parser.parse_args()
@@ -260,7 +271,11 @@ def main() -> int:
     # Phase 3: Resolution
     print(f"\n--- Phase 3: Entity Resolution (strategy={args.strategy}) ---")
     t0 = time.time()
-    resolution_stats = run_resolution(db_path, args.strategy)
+    resolution_stats = run_resolution(
+        db_path,
+        args.strategy,
+        resolution_model_override=args.resolution_model_override,
+    )
     t1 = time.time()
     print(f"Resolution: {json.dumps(resolution_stats, indent=2)}")
     print(f"Time: {t1-t0:.1f}s")

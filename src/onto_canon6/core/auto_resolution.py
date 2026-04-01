@@ -19,14 +19,15 @@ so they can be distinguished from manual identity assignments.
 from __future__ import annotations
 
 import asyncio
-import json
 import logging
 import uuid as _uuid
 from collections import defaultdict
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from importlib import import_module
 from pathlib import Path
-from typing import Any, Literal, Protocol
+from typing import Any, Literal
+
+from pydantic import BaseModel, ConfigDict, Field
 
 from .graph_models import PromotedGraphAssertionRecord
 from .graph_service import CanonicalGraphService
@@ -113,6 +114,7 @@ def auto_resolve_identities(
     db_path: Path,
     strategy: ResolutionStrategy = "exact",
     fuzzy_threshold: int = DEFAULT_FUZZY_THRESHOLD,
+    model_override: str | None = None,
 ) -> ResolutionResult:
     """Run automated entity resolution over all promoted entities.
 
@@ -151,7 +153,11 @@ def auto_resolve_identities(
             res_cfg = config.resolution
             groups = _group_by_llm(
                 entity_ids, name_map, entity_types, context_map, assertions,
-                model=res_cfg.model_override,
+                model=(
+                    model_override.strip()
+                    if model_override is not None and model_override.strip()
+                    else res_cfg.model_override
+                ),
                 max_budget=res_cfg.max_budget_usd,
                 prompt_template=res_cfg.prompt_template,
                 fuzzy_pre_filter_threshold=res_cfg.fuzzy_pre_filter_threshold,
@@ -163,6 +169,11 @@ def auto_resolve_identities(
             context_map = _build_context_map(assertions)
             groups = _group_by_llm(
                 entity_ids, name_map, entity_types, context_map, assertions,
+                model=(
+                    model_override.strip()
+                    if model_override is not None and model_override.strip()
+                    else None
+                ),
             )
     elif strategy == "fuzzy":
         groups = _group_by_fuzzy(entity_ids, name_map, entity_types, fuzzy_threshold)
@@ -377,8 +388,6 @@ def _group_by_fuzzy(
 # LLM-based entity clustering (Phase 2)
 # ---------------------------------------------------------------------------
 
-from pydantic import BaseModel, ConfigDict, Field
-
 
 class EntityCluster(BaseModel):
     """One cluster of entities that refer to the same real-world entity."""
@@ -467,8 +476,6 @@ def _fuzzy_pre_filter(
     Returns (proposals, unclustered). Proposals are groups of 2+ entities
     with fuzzy similarity above threshold. Unclustered are singletons.
     """
-    from rapidfuzz import fuzz
-
     entity_ids = [e.entity_id for e in entities]
     name_map = {e.entity_id: e.name for e in entities}
     entity_types = {e.entity_id: e.entity_type for e in entities}

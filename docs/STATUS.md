@@ -1,6 +1,6 @@
 # onto-canon6 Status
 
-Updated: 2026-03-31
+Updated: 2026-04-01
 
 ## Current Program
 
@@ -26,8 +26,9 @@ Current post-cutover program state:
 4. the first read-only query surface is now landed and proved through
    `docs/plans/0028_query_browse_surface.md` and
    `docs/plans/0029_24h_query_surface_execution_block.md`;
-5. the next-active unresolved implementation question after that recovery is
-   still the value-proof stage of Plan 0025.
+5. Plan 0025 now has decision-grade value-proof evidence, and the next active
+   question is false-merge hardening plus strategy promotion criteria for the
+   LLM path.
 
 ## What Is Proven
 
