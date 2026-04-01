@@ -1,0 +1,36 @@
+{
+  "strategy": "bare_extraction",
+  "model": "gemini/gemini-2.0-flash",
+  "timestamp": "2026-04-01_062105",
+  "extraction_stats": {
+    "docs_extracted": 25,
+    "entities": 76,
+    "relationships": 53
+  },
+  "extraction_time_s": 39.9,
+  "dedup": {
+    "before": 76,
+    "after": 58
+  },
+  "ground_truth_scores": {
+    "gt_entities_found": [
+      "E001",
+      "E002",
+      "E003",
+      "E004",
+      "E005",
+      "E006",
+      "E007",
+      "E008",
+      "E009",
+      "E010",
+      "E011",
+      "E012",
+      "E013"
+    ],
+    "gt_entities_missed": [],
+    "recall": 1.0,
+    "total_extracted_entities": 58,
+    "expected_entities": 13
+  }
+}
