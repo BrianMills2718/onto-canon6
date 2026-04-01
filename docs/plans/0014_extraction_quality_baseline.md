@@ -527,9 +527,8 @@ with gemini-2.5-flash-lite).
    (judge filter now fixed — was broken by API mismatch), (b) extraction prompt
    needs discriminating instruction to avoid treating noun phrases as entities.
 
-2. **Module entrypoint missing**: `python -m onto_canon6.cli` doesn't work.
-   Use the installed console script `onto-canon6` instead. Needs `__main__.py`
-   or `if __name__ == "__main__"` guard in `cli.py`.
+2. ~~Module entrypoint missing~~ — RESOLVED (2026-04-01). `__main__.py` exists.
+   Both `python -m onto_canon6` and `onto-canon6` console script work.
 
 ## Non-Goals
 

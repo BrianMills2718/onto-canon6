@@ -10,11 +10,9 @@ not inferred from the main workspace. `make verify-setup`, `make smoke`, and
 `make check` all passed from `/tmp/onto-canon6-isolation.*` with no sibling
 `onto-canon5` or `onto-canon` repos present.
 
-### 2026-03-31 — codex — integration-issue
-The supported DIGIMON export entrypoint is the installed `onto-canon6` console
-script, not `python -m onto_canon6.cli`. The module lacks a `__main__.py` or
-`if __name__ == "__main__"` guard in `cli.py`, so `python -m onto_canon6.cli`
-exits without running. Use the console script in docs and CLI examples.
+### 2026-03-31 — codex — integration-issue (RESOLVED 2026-04-01)
+`__main__.py` now exists — both `python -m onto_canon6 --help` and the
+installed `onto-canon6` console script work. Use either.
 
 ### 2026-04-01 — claude-code — schema-gotcha
 gemini-3-flash-preview cannot fill `additionalProperties` with nested
