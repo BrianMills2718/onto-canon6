@@ -57,8 +57,8 @@ relationships exported; 110 nodes, 78 edges imported.
 
 - **Config**: `review_mode: llm`, `enable_judge_filter: true`,
   `resolution.default_strategy: exact`, `resolution.require_llm_review: true`
-- **Model**: `gemini/gemini-3-flash-preview` (best tested; requires list[RoleEntry] schema fix)
-- **Tests**: 396+ passing (full suite minus LLM-endpoint and DB-hang tests)
+- **Model**: `gemini/gemini-3-flash-preview` (best tested; requires list[RoleEntry] schema)
+- **Tests**: 451 passing (full suite including auto_resolution; 23 text_extraction excluded — require live LLM)
 
 ## Active Plans
 
@@ -66,8 +66,8 @@ relationships exported; 110 nodes, 78 edges imported.
 |------|--------|------|
 | 0025 | **COMPLETE** — 100% precision, 100% recall, +70% QA vs bare | Scale-out deferred (0025a) |
 | 0024 Lane 2 | DIGIMON chosen, v1 verified, value proof done | Lane 3 |
-| 0024 Lane 3 | Plan 0026 written (contract rules + checks defined) | Implement compatibility artifacts (Phase 2-3) |
-| 0014 | Active | Noise entities largely solved by gemini-3-flash; prompt discrimination instruction in place |
+| 0026 | **Phases 2-3 COMPLETE** — 4 surfaces, 9 compatibility tests | Phase 4 (change classification policy) |
+| 0014 | Noise resolved — gemini-3-flash + prompt fix produces 0 noise on synthetic + real text | Ongoing; largely solved |
 
 ## Authority
 

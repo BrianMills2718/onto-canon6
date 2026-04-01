@@ -328,34 +328,29 @@ The following are explicitly insufficient:
    concrete execution surface;
 2. DIGIMON-facing docs do not overclaim richer interchange support.
 
-### Phase 2: Define Minimal Compatibility Artifacts
+### Phase 2: Define Minimal Compatibility Artifacts — COMPLETE (2026-04-01)
 
-1. choose one deterministic compatibility artifact per surface:
-   - Surface A: promoted-graph compatibility fixture or seeded-service report
-   - Surface B: governed-bundle JSON fixture or normalized snapshot
-   - Surface C: Foundation assertion JSON fixture
-   - Surface D: DIGIMON export JSONL fixture and the existing real-data proof
-2. define how volatile fields will be normalized:
-   timestamps, generated_at, temp paths, and nondeterministic IDs if any;
-3. decide whether snapshots live under `tests/fixtures/compatibility/` or
-   equivalent.
+Fixtures live under `tests/fixtures/compatibility/`:
+- `promoted_graph.json` — Surface A (3 models)
+- `governed_bundle.json` — Surface B (2 models)
+- `foundation_ir.json` — Surface C (1 model)
+- `digimon_v1_export.json` — Surface D (2 models)
 
-**Acceptance**
+Each fixture records the model's required field names and type annotations.
+Volatile fields (timestamps, nondeterministic IDs) are not in the fixture —
+only field schema contracts.
 
-1. each surface has one named compatibility artifact strategy;
-2. normalization rules are pre-decided before implementation.
+### Phase 3: Implement The Minimum Gate — COMPLETE (2026-04-01)
 
-### Phase 3: Implement The Minimum Gate
+9 tests in `tests/compatibility/test_schema_stability.py`:
+- Surface A: 3 tests (assertion, entity, role_filler field checks)
+- Surface B: 2 tests (workflow_bundle, candidate_bundle field checks)
+- Surface C: 1 test (foundation_assertion field check)
+- Surface D: 3 tests (entity fields, relationship fields, type stability)
 
-1. add or tighten the owner checks so each surface has at least one explicit
-   compatibility check;
-2. do not broaden the implementation beyond the four surfaces above;
-3. ensure the checks fail loudly when a gated field or behavior changes.
-
-**Acceptance**
-
-1. every surface has one runnable compatibility owner check;
-2. Lane 3 can point to actual commands/tests instead of intentions.
+All tests verify that required fields are not removed and types are not
+changed. Breaking changes produce explicit assertion messages naming the
+affected model and field.
 
 ### Phase 4: Classify Future Changes
 
