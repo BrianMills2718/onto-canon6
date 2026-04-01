@@ -204,6 +204,17 @@ class _PersonNameInfo:
     full_given: str | None
     initial: str | None
     surname_only: bool
+    has_title: bool
+
+
+@dataclass(frozen=True)
+class _PersonGroupBridgeInfo:
+    """Group-level bridge signals for conservative titled-person collapse."""
+
+    surname: str | None
+    titled_full_given_names: frozenset[str]
+    titled_initials: frozenset[str]
+    has_titled_surname_only: bool
 
 
 def auto_resolve_identities(
@@ -816,6 +827,8 @@ def _entity_resolution_family(entity_type: str, name: str | None = None) -> str:
         return "person"
     if normalized_name.startswith(_INSTALLATION_NAME_PREFIXES):
         return "place"
+    if slug in _GENERIC_TYPE_SLUGS and _looks_like_generic_person_name(name):
+        return "person"
     if slug in _GENERIC_TYPE_SLUGS and _looks_like_organization_name(normalized_name):
         return "organization"
     return base_family
@@ -830,6 +843,51 @@ def _looks_like_organization_name(normalized_name: str) -> bool:
     if any(token in _ORGANIZATION_NAME_HINTS for token in tokens):
         return True
     return len(tokens) >= 2 and bool(_acronym_signatures(normalized_name))
+
+
+def _has_leading_title(name: str) -> bool:
+    """Return whether a raw surface form starts with a title or rank token."""
+
+    normalized = " ".join(name.lower().split()).strip(" .,;:")
+    normalized_no_punct = re.sub(r"[.,;:]+", "", normalized)
+    if not normalized:
+        return False
+    for abbrev, _expansion in sorted(_TITLE_PATTERNS, key=lambda item: -len(item[0])):
+        cleaned = abbrev.strip(" .,;:")
+        if (
+            normalized == cleaned
+            or normalized.startswith(f"{cleaned} ")
+            or normalized_no_punct == cleaned
+            or normalized_no_punct.startswith(f"{cleaned} ")
+        ):
+            return True
+    for title in sorted(_STRIP_TITLES, key=len, reverse=True):
+        if (
+            normalized == title
+            or normalized.startswith(f"{title} ")
+            or normalized_no_punct == title
+            or normalized_no_punct.startswith(f"{title} ")
+        ):
+            return True
+    return False
+
+
+def _looks_like_generic_person_name(name: str) -> bool:
+    """Return whether a generic surface form is strongly person-like."""
+
+    normalized_name = _normalize_name(name)
+    tokens = [
+        token.strip(".,;:")
+        for token in normalized_name.split()
+        if token.strip(".,;:")
+    ]
+    if not tokens:
+        return False
+    if _has_leading_title(name):
+        return all(token.isalpha() for token in tokens) and len(tokens) <= 3
+    return len(tokens) == 2 and len(tokens[0]) == 1 and all(
+        token.isalpha() for token in tokens
+    )
 
 
 def _installation_equivalence_key(name: str) -> str | None:
@@ -883,20 +941,61 @@ def _entity_types_compatible(
 def _person_name_info(name: str) -> _PersonNameInfo:
     """Extract a conservative person-name signature for merge checks."""
 
+    has_title = _has_leading_title(name)
     normalized = _normalize_name(name)
     if not normalized:
-        return _PersonNameInfo(None, None, None, False)
+        return _PersonNameInfo(None, None, None, False, has_title)
     tokens = normalized.split()
     if not tokens:
-        return _PersonNameInfo(None, None, None, False)
+        return _PersonNameInfo(None, None, None, False, has_title)
     surname = tokens[-1]
     given_tokens = tokens[:-1]
     if not given_tokens:
-        return _PersonNameInfo(surname, None, None, True)
+        return _PersonNameInfo(surname, None, None, True, has_title)
     given = given_tokens[0].strip(".,;:")
     if len(given) == 1:
-        return _PersonNameInfo(surname, None, given, False)
-    return _PersonNameInfo(surname, given, given[0], False)
+        return _PersonNameInfo(surname, None, given, False, has_title)
+    return _PersonNameInfo(surname, given, given[0], False, has_title)
+
+
+def _person_group_bridge_info(
+    group_ids: list[str],
+    *,
+    name_map: dict[str, str],
+) -> _PersonGroupBridgeInfo | None:
+    """Summarize one candidate person group for titled-mention bridge logic."""
+
+    surnames: set[str] = set()
+    titled_full_given_names: set[str] = set()
+    titled_initials: set[str] = set()
+    has_titled_surname_only = False
+
+    for entity_id in group_ids:
+        info = _person_name_info(name_map.get(entity_id, entity_id))
+        if info.surname is None:
+            continue
+        surnames.add(info.surname)
+        if not info.has_title:
+            continue
+        if info.full_given is not None:
+            titled_full_given_names.add(info.full_given)
+            titled_initials.add(info.full_given[0])
+            continue
+        if info.initial is not None:
+            titled_initials.add(info.initial)
+            continue
+        if info.surname_only:
+            has_titled_surname_only = True
+
+    if len(surnames) != 1:
+        return None
+
+    return _PersonGroupBridgeInfo(
+        surname=next(iter(surnames)),
+        titled_full_given_names=frozenset(sorted(titled_full_given_names)),
+        titled_initials=frozenset(sorted(titled_initials)),
+        has_titled_surname_only=has_titled_surname_only,
+    )
 
 
 def _postprocess_llm_cluster(
@@ -1110,6 +1209,62 @@ def _collapse_equivalent_llm_groups(
                 continue
             if left_signatures & signatures_by_key[right]:
                 union(left, right)
+
+    person_bridge_info_by_key: dict[str, _PersonGroupBridgeInfo] = {}
+    person_keys_by_surname: dict[str, list[str]] = defaultdict(list)
+    for key in keys:
+        group = groups[key]
+        if not group:
+            continue
+        representative_name = name_map.get(group[0], group[0])
+        if _entity_resolution_family(entity_types.get(group[0], ""), representative_name) != "person":
+            continue
+        bridge_info = _person_group_bridge_info(group, name_map=name_map)
+        if bridge_info is None or bridge_info.surname is None:
+            continue
+        person_bridge_info_by_key[key] = bridge_info
+        person_keys_by_surname[bridge_info.surname].append(key)
+
+    for surname_keys in person_keys_by_surname.values():
+        titled_full_keys = [
+            key
+            for key in surname_keys
+            if person_bridge_info_by_key[key].titled_full_given_names
+        ]
+        initial_only_keys = [
+            key
+            for key in surname_keys
+            if (
+                person_bridge_info_by_key[key].titled_initials
+                and not person_bridge_info_by_key[key].titled_full_given_names
+            )
+        ]
+        surname_only_keys = [
+            key
+            for key in surname_keys
+            if person_bridge_info_by_key[key].has_titled_surname_only
+        ]
+
+        for initial_key in initial_only_keys:
+            initials = person_bridge_info_by_key[initial_key].titled_initials
+            candidates = [
+                full_key
+                for full_key in titled_full_keys
+                if initials
+                & {
+                    given_name[0]
+                    for given_name in person_bridge_info_by_key[full_key].titled_full_given_names
+                }
+            ]
+            if len(candidates) == 1:
+                union(initial_key, candidates[0])
+
+        titled_full_roots = {find(key) for key in titled_full_keys}
+        if len(titled_full_roots) != 1:
+            continue
+        anchor_root = next(iter(titled_full_roots))
+        for surname_only_key in surname_only_keys:
+            union(surname_only_key, anchor_root)
 
     collapsed: dict[str, list[str]] = defaultdict(list)
     for key in keys:

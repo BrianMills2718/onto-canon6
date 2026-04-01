@@ -753,6 +753,18 @@ class TestGroupByLLM:
             right_name="USSOCOM",
         )
 
+    def test_entity_types_compatible_generic_titled_person_names(self) -> None:
+        """Generic titled person mentions should compare with person entities."""
+
+        from onto_canon6.core.auto_resolution import _entity_types_compatible
+
+        assert _entity_types_compatible(
+            "",
+            "oc:person",
+            left_name="Gen. J. Smith",
+            right_name="General John Smith",
+        )
+
     def test_collapse_equivalent_llm_groups_merges_installation_renames(self) -> None:
         """Known installation redesignations should collapse across separate LLM groups."""
 
@@ -777,8 +789,70 @@ class TestGroupByLLM:
             frozenset({"e1", "e2"}),
         }
 
+    def test_collapse_equivalent_llm_groups_merges_titled_person_bridges(self) -> None:
+        """Titled Smith variants should collapse when only one titled anchor exists."""
+
+        from onto_canon6.core import auto_resolution as ar_mod
+
+        groups = ar_mod._collapse_equivalent_llm_groups(
+            {
+                "g1": ["e1", "e2"],
+                "g2": ["e3"],
+                "g3": ["e4"],
+                "g4": ["e5"],
+            },
+            name_map={
+                "e1": "General John Smith",
+                "e2": "John Smith",
+                "e3": "Gen. Smith",
+                "e4": "Gen. J. Smith",
+                "e5": "James Smith",
+            },
+            entity_types={
+                "e1": "oc:person",
+                "e2": "oc:person",
+                "e3": "oc:person",
+                "e4": "",
+                "e5": "oc:person",
+            },
+        )
+
+        assert {frozenset(group) for group in groups.values()} == {
+            frozenset({"e1", "e2", "e3", "e4"}),
+            frozenset({"e5"}),
+        }
+
+    def test_collapse_equivalent_llm_groups_keeps_conflicting_titled_anchors_separate(self) -> None:
+        """Surname-only titled mentions must stay explicit when two titled anchors compete."""
+
+        from onto_canon6.core import auto_resolution as ar_mod
+
+        groups = ar_mod._collapse_equivalent_llm_groups(
+            {
+                "g1": ["e1"],
+                "g2": ["e2"],
+                "g3": ["e3"],
+            },
+            name_map={
+                "e1": "General John Smith",
+                "e2": "Colonel James Smith",
+                "e3": "Gen. Smith",
+            },
+            entity_types={
+                "e1": "oc:person",
+                "e2": "oc:person",
+                "e3": "oc:person",
+            },
+        )
+
+        assert {frozenset(group) for group in groups.values()} == {
+            frozenset({"e1"}),
+            frozenset({"e2"}),
+            frozenset({"e3"}),
+        }
+
     def test_llm_clustering_postprocesses_conflicting_person_names(self) -> None:
-        """Conflicting same-surname people are split after the LLM response."""
+        """Conflicting same-surname people keep one John cluster and one James cluster."""
         mock_response = MagicMock()
         mock_response.content = ClusteringResult(
             clusters=[
@@ -822,9 +896,8 @@ class TestGroupByLLM:
             )
 
         assert {frozenset(group) for group in groups.values()} == {
-            frozenset({"e1"}),
+            frozenset({"e1", "e3"}),
             frozenset({"e2"}),
-            frozenset({"e3"}),
         }
 
     def test_llm_fails_loud_on_import_error(self) -> None:
