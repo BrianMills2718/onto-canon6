@@ -868,6 +868,52 @@ def _build_parser() -> argparse.ArgumentParser:
     _add_output_arg(export_identity_report_parser, default_output=config.cli.default_output_format)
     export_identity_report_parser.set_defaults(handler=_handle_export_identity_report)
 
+    # --- Entity browsing commands (Lane 5 next-active) ---
+
+    list_entities_parser = subparsers.add_parser(
+        "list-entities",
+        help="List promoted entities with optional type filter.",
+    )
+    _add_store_args(list_entities_parser, include_overlay_root=False)
+    list_entities_parser.add_argument(
+        "--type", default=None,
+        help="Filter by entity type (substring match, e.g. 'person', 'org').",
+    )
+    list_entities_parser.add_argument(
+        "--limit", type=int, default=50,
+        help="Max entities to return (default: 50).",
+    )
+    _add_output_arg(list_entities_parser, default_output=config.cli.default_output_format)
+    list_entities_parser.set_defaults(handler=_handle_list_entities)
+
+    search_entities_parser = subparsers.add_parser(
+        "search-entities",
+        help="Search promoted entities by name substring.",
+    )
+    _add_store_args(search_entities_parser, include_overlay_root=False)
+    search_entities_parser.add_argument(
+        "query",
+        help="Name substring to search for (case-insensitive).",
+    )
+    search_entities_parser.add_argument(
+        "--limit", type=int, default=20,
+        help="Max results (default: 20).",
+    )
+    _add_output_arg(search_entities_parser, default_output=config.cli.default_output_format)
+    search_entities_parser.set_defaults(handler=_handle_search_entities)
+
+    get_entity_parser = subparsers.add_parser(
+        "get-entity",
+        help="Get full detail for one entity: assertions, identity, aliases.",
+    )
+    _add_store_args(get_entity_parser, include_overlay_root=False)
+    get_entity_parser.add_argument(
+        "entity_id",
+        help="Entity ID to look up.",
+    )
+    _add_output_arg(get_entity_parser, default_output=config.cli.default_output_format)
+    get_entity_parser.set_defaults(handler=_handle_get_entity)
+
     export_digimon_parser = subparsers.add_parser(
         "export-digimon",
         help="Export promoted graph assertions in Digimon-compatible JSONL format.",
@@ -1532,6 +1578,156 @@ def _handle_export_identity_report(args: argparse.Namespace) -> int:
     _emit_output(report, output_format=args.output)
     return 0
 
+
+def _handle_list_entities(args: argparse.Namespace) -> int:
+    """List promoted entities with optional type filter."""
+    import sqlite3
+
+    db_path = Path(args.review_db_path)
+    conn = sqlite3.connect(str(db_path))
+
+    query = "SELECT entity_id, entity_type, created_at FROM promoted_graph_entities ORDER BY created_at"
+    rows = conn.execute(query).fetchall()
+    conn.close()
+
+    entities = [
+        {"entity_id": str(r[0]), "entity_type": str(r[1]) if r[1] else "", "created_at": str(r[2])}
+        for r in rows
+    ]
+
+    # Apply type filter
+    type_filter = args.type
+    if type_filter:
+        type_filter_lower = type_filter.lower()
+        entities = [e for e in entities if type_filter_lower in e["entity_type"].lower()]
+
+    # Apply limit
+    entities = entities[:args.limit]
+
+    output = {
+        "total": len(entities),
+        "filter": args.type or "none",
+        "entities": entities,
+    }
+    _emit_output(output, output_format=args.output)
+    return 0
+
+
+def _handle_search_entities(args: argparse.Namespace) -> int:
+    """Search promoted entities by name substring."""
+    db_path = Path(args.review_db_path)
+    graph_service = CanonicalGraphService(db_path=db_path)
+    store = graph_service._store  # noqa: SLF001
+
+    with store.transaction() as conn:
+        assertions = store.list_promoted_assertions(conn)
+
+    # Build entity_id → name map from assertion role fillers
+    from .core.auto_resolution import _build_entity_name_map
+    name_map = _build_entity_name_map(assertions)
+
+    query_lower = args.query.lower()
+    matches = [
+        {"entity_id": eid, "name": name}
+        for eid, name in name_map.items()
+        if query_lower in name.lower()
+    ][:args.limit]
+
+    output = {
+        "query": args.query,
+        "matches": len(matches),
+        "entities": matches,
+    }
+    _emit_output(output, output_format=args.output)
+    return 0
+
+
+def _handle_get_entity(args: argparse.Namespace) -> int:
+    """Get full detail for one entity: assertions, identity, aliases."""
+    import sqlite3
+
+    db_path = Path(args.review_db_path)
+    entity_id = args.entity_id
+
+    # Get entity record
+    conn = sqlite3.connect(str(db_path))
+    entity_row = conn.execute(
+        "SELECT entity_id, entity_type, created_at FROM promoted_graph_entities WHERE entity_id = ?",
+        (entity_id,),
+    ).fetchone()
+
+    if not entity_row:
+        _emit_output({"error": f"Entity not found: {entity_id}"}, output_format=args.output)
+        return 1
+
+    # Get assertions involving this entity (via role fillers)
+    filler_rows = conn.execute(
+        "SELECT assertion_id, role_id, filler_kind FROM promoted_graph_role_fillers "
+        "WHERE entity_id = ? ORDER BY assertion_id",
+        (entity_id,),
+    ).fetchall()
+
+    assertion_ids = list({str(r[0]) for r in filler_rows})
+    assertions = []
+    for aid in assertion_ids:
+        arow = conn.execute(
+            "SELECT assertion_id, predicate, claim_text FROM promoted_graph_assertions WHERE assertion_id = ?",
+            (aid,),
+        ).fetchone()
+        if arow:
+            assertions.append({
+                "assertion_id": str(arow[0]),
+                "predicate": str(arow[1]),
+                "claim_text": str(arow[2]) if arow[2] else None,
+            })
+
+    # Get identity info
+    identity_info = None
+    membership_row = conn.execute(
+        "SELECT identity_id, membership_kind FROM graph_identity_memberships WHERE entity_id = ?",
+        (entity_id,),
+    ).fetchone()
+    if membership_row:
+        identity_id = str(membership_row[0])
+        # Get all members of this identity
+        members = conn.execute(
+            "SELECT entity_id, membership_kind FROM graph_identity_memberships WHERE identity_id = ?",
+            (identity_id,),
+        ).fetchall()
+        identity_row = conn.execute(
+            "SELECT identity_id, display_label FROM graph_identities WHERE identity_id = ?",
+            (identity_id,),
+        ).fetchone()
+        identity_info = {
+            "identity_id": identity_id,
+            "display_label": str(identity_row[1]) if identity_row else None,
+            "membership_kind": str(membership_row[1]),
+            "all_members": [
+                {"entity_id": str(m[0]), "membership_kind": str(m[1])}
+                for m in members
+            ],
+        }
+
+    conn.close()
+
+    # Get entity name from assertions
+    graph_service = CanonicalGraphService(db_path=db_path)
+    store = graph_service._store  # noqa: SLF001
+    with store.transaction() as sconn:
+        all_assertions = store.list_promoted_assertions(sconn)
+    from .core.auto_resolution import _build_entity_name_map
+    name_map = _build_entity_name_map(all_assertions)
+
+    output = {
+        "entity_id": str(entity_row[0]),
+        "entity_type": str(entity_row[1]) if entity_row[1] else "",
+        "display_name": name_map.get(entity_id, entity_id),
+        "created_at": str(entity_row[2]),
+        "assertions": assertions,
+        "identity": identity_info,
+    }
+    _emit_output(output, output_format=args.output)
+    return 0
 
 
 def _handle_evaluate_rules(args: argparse.Namespace) -> int:
