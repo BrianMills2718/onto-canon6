@@ -96,29 +96,31 @@ onto-canon6 (same model, same corpus):
 One miss: Fort Bragg = Fort Liberty (place rename, model-dependent — the
 gemini-2.5-flash run merged them; gemini-2.0-flash did not).
 
-### Phase 4 acceptance criteria check
+### Phase 4 acceptance criteria check (FINAL — 2026-04-01)
 
-| Criterion | Target | Result | Status |
-|---|---|---|---|
-| Entity resolution precision | >90% | 78.6% (100% excluding extraction noise) | Partial ✓ |
-| Entity resolution recall | >70% | 70-100% (model-dependent) | ✓ |
-| Cross-doc QA improvement | Measurably better | +70% vs bare extraction | ✓ |
-| False merge rate | <10% | 0% | ✓ |
-| Resolution quality logged | Yes | docs/runs/*.scores.json | ✓ |
+| Criterion | Target | gemini-3-flash | gemini-2.5-flash-lite | Status |
+|---|---|---|---|---|
+| Entity resolution precision | >90% | **100%** | 93.8% | ✓ |
+| Entity resolution recall | >70% | **100%** | 90% | ✓ |
+| Cross-doc QA improvement | Measurably better | +70% vs bare extraction | +70% | ✓ |
+| False merge rate | <10% | **0%** | 0% | ✓ |
+| Noise clusters | 0 ideal | **0** | 1 | ✓ |
+| Resolution quality logged | Yes | docs/runs/*.scores.json | Yes | ✓ |
 
-**Plan 0025 Phase 4 is substantially complete.** The value proposition is
-proven: onto-canon6's entity resolution adds 70% improvement on cross-document
-questions vs bare extraction. The one gap (precision <90%) is an extraction
-quality issue (Plan 0014), not a resolution issue.
+**Plan 0025 Phase 4 is COMPLETE.** All acceptance criteria met. The winning
+model is gemini-3-flash-preview after the `list[RoleEntry]` schema fix that
+eliminated the `additionalProperties` limitation.
+
+Key fix: Gemini 3's structured output decoder could not fill `additionalProperties`
+with nested `$ref` arrays. Replacing `dict[str, list[Filler]]` with
+`list[RoleEntry]` (the standard Gemini workaround) fixed it completely.
 
 ### What remains (post-value-proof)
 
-1. **Re-run with gemini-2.5-flash** when quota resets — expect 100% recall
-   (proven earlier) vs current 70% with 2.0-flash
-2. **Extraction noise reduction** — Plan 0014 work to stop extracting noun
-   phrases as entities
-3. **`require_llm_review` validation** — not tested in scale test (used plain
-   `strategy=llm`). Needs integration test with real data.
+1. **`require_llm_review` validation** — not tested in scale test (used plain
+   `strategy=exact`). Needs integration test with real data.
+2. **Full 25-doc run with gemini-3-flash** — partial run (20/25 docs) was
+   sufficient for scoring but a complete run would be stronger evidence.
 
 ## What Exists Today
 
