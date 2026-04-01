@@ -366,7 +366,24 @@ The `call_llm_structured` call in the judge filter was using a stale API
 (missing `model` positional arg, raw JSON schema instead of Pydantic model).
 Fixed to use `_JudgeResult` Pydantic model and pass model as first arg.
 
-### D5: DIGIMON chosen as first Lane 2 consumer
+### D5: Off-the-shelf evaluation completed (2026-03-31)
+
+**KGGen `cluster()`**: Evaluated and rejected. Entity model is bare strings
+(no IDs, types, or context). `context` parameter is a TODO in source code.
+No type-blocked clustering. Routes through dspy, bypassing llm_client
+observability. Good idea to note for Plan 0025a: embedding-based KMeans
+pre-clustering for scale-out. But the library doesn't fit our constraints.
+
+**nameparser**: Evaluated and rejected. Destroys org names ("4th PSYOP Group"
+→ "psyop group"). Our normalizer handles both person and org names in the same
+path. All 24 test cases pass with hand-rolled code. nameparser could supplement
+for person-specific parsing (suffixes, nicknames) later — not a replacement.
+
+**Conclusion**: Keep hand-rolled implementation. It's domain-specific
+(military/government, mixed person/org), routes through llm_client, and
+passes all test cases. The off-the-shelf options don't fit the constraints.
+
+### D6: DIGIMON chosen as first Lane 2 consumer
 
 Per CLAUDE.md update (2026-03-31): DIGIMON is the first consumer workflow.
 The supported seam is: onto-canon6 exports flat entities.jsonl / relationships.jsonl,
