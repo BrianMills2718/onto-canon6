@@ -4,8 +4,8 @@ Status: active
 Phase status:
 - Phase 1 completed
 - Phase 2 in progress
-- Phase 3 pending
-- Phase 4 pending
+- Phase 3 completed
+- Phase 4 in progress
 - Phase 5 pending
 
 Last updated: 2026-04-01
@@ -177,6 +177,18 @@ Progress note:
 1. the comparison path is reproducible from the repo;
 2. the helper is narrow and does not create a second extraction runtime.
 
+Progress note:
+
+1. landed helper module:
+   `src/onto_canon6/evaluation/transfer_comparison.py`
+2. landed thin wrapper:
+   `scripts/compare_extraction_transfer.py`
+3. landed verification:
+   `tests/evaluation/test_transfer_comparison.py`
+4. the helper reads one prompt-eval item from observability plus one live
+   reviewed-candidate snapshot and emits a normalized diff over candidate
+   signatures.
+
 ### Phase 4: Re-run The Certification Check
 
 #### Tasks
@@ -189,6 +201,17 @@ Progress note:
 
 1. both canonical chunks have fresh comparison artifacts;
 2. the candidate's transfer status is evidence-backed.
+
+Progress note:
+
+1. first machine-generated comparison artifact:
+   `docs/runs/2026-04-01_chunk003_live_vs_parity_diff.json`
+2. chunk `003` is now reproducibly confirmed as:
+   - prompt-eval parity candidates: `0`
+   - live candidates: `3`
+   - shared candidates: `0`
+3. chunk `002` still needs current-generation compact-v4 comparison coverage
+   before Phase 4 can close.
 
 ### Phase 5: Closeout
 

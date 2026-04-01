@@ -18,13 +18,13 @@ Source of truth:
 - [ ] Commit verified phase
 
 ### Phase 3 — Land The Minimum Certification Aid
-- [ ] Implement the narrowest reproducible live-vs-parity comparison helper
-- [ ] Add verification for the helper
+- [x] Implement the narrowest reproducible live-vs-parity comparison helper
+- [x] Add verification for the helper
 - [ ] Commit verified phase
 
 ### Phase 4 — Re-run The Certification Check
 - [ ] Run the certification comparison on chunk `002`
-- [ ] Run the certification comparison on chunk `003`
+- [x] Run the certification comparison on chunk `003`
 - [ ] Decide whether the candidate clears or fails the transfer gate
 - [ ] Commit verified phase
 
