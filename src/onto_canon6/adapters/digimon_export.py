@@ -23,8 +23,16 @@ from pathlib import Path
 import sqlite3
 from typing import Sequence
 
-from data_contracts import boundary
 from pydantic import BaseModel, ConfigDict, Field
+
+try:
+    from data_contracts import boundary
+except ImportError:
+    def boundary(**kwargs):
+        """No-op boundary decorator until data_contracts package exists."""
+        def decorator(fn):
+            return fn
+        return decorator
 
 from ..core.graph_models import (
     PromotedGraphAssertionRecord,

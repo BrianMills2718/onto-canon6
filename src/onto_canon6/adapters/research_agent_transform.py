@@ -13,7 +13,13 @@ from pathlib import Path
 import re
 from typing import Mapping, Sequence
 
-from data_contracts import boundary
+try:
+    from data_contracts import boundary
+except ImportError:
+    def boundary(**kwargs):
+        def decorator(fn):
+            return fn
+        return decorator
 from pydantic import BaseModel, ConfigDict, Field, JsonValue, TypeAdapter
 
 from ..config import get_config

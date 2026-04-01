@@ -25,7 +25,13 @@ from __future__ import annotations
 import logging
 from typing import Sequence, cast
 
-from data_contracts import boundary
+try:
+    from data_contracts import boundary
+except ImportError:
+    def boundary(**kwargs):
+        def decorator(fn):
+            return fn
+        return decorator
 from pydantic import JsonValue
 
 from ..config import get_config

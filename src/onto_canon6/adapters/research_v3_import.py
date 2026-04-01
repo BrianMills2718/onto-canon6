@@ -14,7 +14,13 @@ import logging
 from pathlib import Path
 from typing import Any, cast
 
-from data_contracts import boundary
+try:
+    from data_contracts import boundary
+except ImportError:
+    def boundary(**kwargs):
+        def decorator(fn):
+            return fn
+        return decorator
 import yaml
 
 from ..pipeline import (

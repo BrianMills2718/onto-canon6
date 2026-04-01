@@ -23,7 +23,13 @@ from pathlib import Path
 import sqlite3
 from typing import Any
 
-from data_contracts import boundary
+try:
+    from data_contracts import boundary
+except ImportError:
+    def boundary(**kwargs):
+        def decorator(fn):
+            return fn
+        return decorator
 from pydantic import BaseModel, ConfigDict, Field, JsonValue
 
 from ..core.graph_models import PromotedGraphAssertionRecord
