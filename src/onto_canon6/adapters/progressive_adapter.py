@@ -25,6 +25,7 @@ from __future__ import annotations
 import logging
 from typing import Sequence, cast
 
+from data_contracts import boundary
 from pydantic import JsonValue
 
 from ..config import get_config
@@ -47,6 +48,14 @@ from ..pipeline.service import ReviewService
 logger = logging.getLogger(__name__)
 
 
+@boundary(
+    name="onto-canon6.convert_progressive_to_candidates",
+    version="0.1.0",
+    producer="onto-canon6",
+    consumers=["onto-canon6"],
+    validate_input=False,
+    validate_output=False,
+)
 def convert_to_candidate_imports(
     report: ProgressiveExtractionReport,
     *,
@@ -119,6 +128,14 @@ def convert_to_candidate_imports(
     return imports
 
 
+@boundary(
+    name="onto-canon6.submit_progressive_report",
+    version="0.1.0",
+    producer="onto-canon6",
+    consumers=["onto-canon6"],
+    validate_input=False,
+    validate_output=False,
+)
 def submit_progressive_report(
     report: ProgressiveExtractionReport,
     *,

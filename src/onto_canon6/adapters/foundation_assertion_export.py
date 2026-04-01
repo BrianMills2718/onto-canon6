@@ -23,6 +23,7 @@ from pathlib import Path
 import sqlite3
 from typing import Any
 
+from data_contracts import boundary
 from pydantic import BaseModel, ConfigDict, Field, JsonValue
 
 from ..core.graph_models import PromotedGraphAssertionRecord
@@ -64,6 +65,12 @@ class FoundationAssertion(BaseModel):
     provenance_refs: list[str] = Field(default_factory=list)
 
 
+@boundary(
+    name="onto-canon6.promoted_assertion_to_foundation",
+    version="0.1.0",
+    producer="onto-canon6",
+    consumers=["digimon", "research_v3"],
+)
 def promoted_assertion_to_foundation(
     assertion: PromotedGraphAssertionRecord,
     *,
@@ -186,6 +193,14 @@ def _build_alias_lookup(db_path: Path) -> dict[str, list[str]]:
     return alias_map
 
 
+@boundary(
+    name="onto-canon6.export_foundation_assertions",
+    version="0.1.0",
+    producer="onto-canon6",
+    consumers=["digimon", "research_v3"],
+    validate_input=False,
+    validate_output=False,
+)
 def export_foundation_assertions(
     db_path: Path | str,
     *,

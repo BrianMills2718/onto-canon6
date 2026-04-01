@@ -16,6 +16,7 @@ import logging
 import re
 from typing import Mapping, Sequence
 
+from data_contracts import boundary
 from pydantic import JsonValue, TypeAdapter
 
 from ..artifacts import ArtifactLineageService
@@ -94,6 +95,12 @@ class WhyGameImportService:
             artifact_label=artifact_label.strip() if artifact_label is not None else None,
         )
 
+    @boundary(
+        name="onto-canon6.whygame_import",
+        version="0.1.0",
+        producer="whygame",
+        consumers=["onto-canon6"],
+    )
     def import_request(
         self,
         *,

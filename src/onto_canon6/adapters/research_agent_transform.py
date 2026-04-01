@@ -13,6 +13,7 @@ from pathlib import Path
 import re
 from typing import Mapping, Sequence
 
+from data_contracts import boundary
 from pydantic import BaseModel, ConfigDict, Field, JsonValue, TypeAdapter
 
 from ..config import get_config
@@ -115,6 +116,14 @@ class ResearchAgentWhyGameTransformService:
             raise ValueError("research-agent entity input produced no WhyGame relationship facts")
         return tuple(facts)
 
+    @boundary(
+        name="onto-canon6.research_agent_to_whygame",
+        version="0.1.0",
+        producer="research-agent",
+        consumers=["onto-canon6"],
+        validate_input=False,
+        validate_output=False,
+    )
     def write_transformed_facts(
         self,
         *,

@@ -24,6 +24,8 @@ from pathlib import Path
 import sqlite3
 from typing import Sequence
 
+from data_contracts import boundary
+
 from ..core.graph_models import (
     PromotedGraphAssertionRecord,
     PromotedGraphEntityRecord,
@@ -84,6 +86,16 @@ class DigimonExportBundle:
     source_onto_canon_db: str
 
 
+# NOTE: Input/output types are dataclasses, not Pydantic models.
+# @boundary provides registration and call tracking but cannot do schema validation.
+@boundary(
+    name="onto-canon6.digimon_export",
+    version="0.1.0",
+    producer="onto-canon6",
+    consumers=["digimon"],
+    validate_input=False,
+    validate_output=False,
+)
 def export_for_digimon(
     *,
     graph_service: CanonicalGraphService,

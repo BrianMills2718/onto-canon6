@@ -14,6 +14,7 @@ import logging
 from pathlib import Path
 from typing import Any, cast
 
+from data_contracts import boundary
 import yaml
 
 from ..pipeline import (
@@ -93,6 +94,14 @@ def map_corroboration_to_confidence(
     return CORROBORATION_CONFIDENCE.get(corroboration_status, 0.50)
 
 
+@boundary(
+    name="onto-canon6.import_research_v3_graph",
+    version="0.1.0",
+    producer="research_v3",
+    consumers=["onto-canon6"],
+    validate_input=False,
+    validate_output=False,
+)
 def import_research_v3_graph(
     *,
     graph_path: Path,
@@ -239,6 +248,14 @@ def load_research_v3_memo(memo_path: Path) -> dict[str, Any]:
         return yaml.safe_load(f) or {}
 
 
+@boundary(
+    name="onto-canon6.import_research_v3_memo",
+    version="0.1.0",
+    producer="research_v3",
+    consumers=["onto-canon6"],
+    validate_input=False,
+    validate_output=False,
+)
 def import_research_v3_memo(
     memo_path: Path,
     *,
