@@ -212,6 +212,8 @@ class _PersonGroupBridgeInfo:
     """Group-level bridge signals for conservative titled-person collapse."""
 
     surname: str | None
+    full_given_names: frozenset[str]
+    initials: frozenset[str]
     titled_full_given_names: frozenset[str]
     titled_initials: frozenset[str]
     has_titled_surname_only: bool
@@ -966,6 +968,8 @@ def _person_group_bridge_info(
     """Summarize one candidate person group for titled-mention bridge logic."""
 
     surnames: set[str] = set()
+    full_given_names: set[str] = set()
+    initials: set[str] = set()
     titled_full_given_names: set[str] = set()
     titled_initials: set[str] = set()
     has_titled_surname_only = False
@@ -975,6 +979,11 @@ def _person_group_bridge_info(
         if info.surname is None:
             continue
         surnames.add(info.surname)
+        if info.full_given is not None:
+            full_given_names.add(info.full_given)
+            initials.add(info.full_given[0])
+        elif info.initial is not None:
+            initials.add(info.initial)
         if not info.has_title:
             continue
         if info.full_given is not None:
@@ -992,6 +1001,8 @@ def _person_group_bridge_info(
 
     return _PersonGroupBridgeInfo(
         surname=next(iter(surnames)),
+        full_given_names=frozenset(sorted(full_given_names)),
+        initials=frozenset(sorted(initials)),
         titled_full_given_names=frozenset(sorted(titled_full_given_names)),
         titled_initials=frozenset(sorted(titled_initials)),
         has_titled_surname_only=has_titled_surname_only,
@@ -1138,17 +1149,17 @@ def _group_alias_signatures(
     signatures: set[str] = set()
     for entity_id in group_ids:
         observed_name = name_map.get(entity_id, entity_id)
+        if family == "person":
+            info = _person_name_info(observed_name)
+            if info.full_given is not None and info.surname is not None:
+                signatures.add(f"person:{info.full_given}:{info.surname}")
+            continue
         normalized = _normalize_name(observed_name)
         if normalized:
             signatures.add(f"norm:{normalized}")
             installation_equivalence = _installation_equivalence_key(observed_name)
             if installation_equivalence is not None:
                 signatures.add(installation_equivalence)
-        if family == "person":
-            info = _person_name_info(observed_name)
-            if info.full_given is not None and info.surname is not None:
-                signatures.add(f"person:{info.full_given}:{info.surname}")
-            continue
         for acronym in _acronym_signatures(observed_name):
             signatures.add(f"acr:{acronym}")
     return signatures
@@ -1262,9 +1273,25 @@ def _collapse_equivalent_llm_groups(
         titled_full_roots = {find(key) for key in titled_full_keys}
         if len(titled_full_roots) != 1:
             continue
-        anchor_root = next(iter(titled_full_roots))
         for surname_only_key in surname_only_keys:
-            union(surname_only_key, anchor_root)
+            bridge_info = person_bridge_info_by_key[surname_only_key]
+            anchor_candidates = titled_full_keys
+            if bridge_info.full_given_names:
+                anchor_candidates = [
+                    full_key
+                    for full_key in anchor_candidates
+                    if bridge_info.full_given_names
+                    & person_bridge_info_by_key[full_key].titled_full_given_names
+                ]
+            elif bridge_info.initials:
+                anchor_candidates = [
+                    full_key
+                    for full_key in anchor_candidates
+                    if bridge_info.initials
+                    & person_bridge_info_by_key[full_key].titled_initials
+                ]
+            if len(anchor_candidates) == 1:
+                union(surname_only_key, anchor_candidates[0])
 
     collapsed: dict[str, list[str]] = defaultdict(list)
     for key in keys:

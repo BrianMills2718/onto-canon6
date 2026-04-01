@@ -11,10 +11,10 @@ Source of truth:
 - [x] Commit verified phase
 
 ### Phase 2 — Restore Same-Surname Person Safety
-- [ ] Localize the fresh-run `John Smith` / `James Smith` overmerge precisely
-- [ ] Tighten titled-person bridge logic without undoing positive title/initial merges
-- [ ] Add/update targeted regression tests
-- [ ] Commit verified phase
+- [x] Localize the fresh-run `John Smith` / `James Smith` overmerge precisely
+- [x] Tighten titled-person bridge logic without undoing positive title/initial merges
+- [x] Add/update targeted regression tests
+- [x] Commit verified phase
 
 ### Phase 3 — Recover The Remaining Negative-Control Answerability
 - [ ] Localize the residual `q06` unmatched/ambiguous path after Phase 2

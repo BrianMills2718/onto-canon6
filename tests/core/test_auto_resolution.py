@@ -851,6 +851,35 @@ class TestGroupByLLM:
             frozenset({"e3"}),
         }
 
+    def test_collapse_equivalent_llm_groups_does_not_merge_person_groups_on_bare_surname(self) -> None:
+        """Bare titled surnames must not glue incompatible full-name person groups together."""
+
+        from onto_canon6.core import auto_resolution as ar_mod
+
+        groups = ar_mod._collapse_equivalent_llm_groups(
+            {
+                "g1": ["e1", "e2"],
+                "g2": ["e3", "e4"],
+            },
+            name_map={
+                "e1": "General John Smith",
+                "e2": "Gen. J. Smith",
+                "e3": "James Smith",
+                "e4": "General Smith",
+            },
+            entity_types={
+                "e1": "oc:person",
+                "e2": "oc:person",
+                "e3": "oc:person",
+                "e4": "oc:person",
+            },
+        )
+
+        assert {frozenset(group) for group in groups.values()} == {
+            frozenset({"e1", "e2"}),
+            frozenset({"e3", "e4"}),
+        }
+
     def test_llm_clustering_postprocesses_conflicting_person_names(self) -> None:
         """Conflicting same-surname people keep one John cluster and one James cluster."""
         mock_response = MagicMock()
