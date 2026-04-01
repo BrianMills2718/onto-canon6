@@ -23,7 +23,7 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from ..core.auto_resolution import _normalize_name
+from ..core.auto_resolution import _entity_types_compatible, _normalize_name
 from ..core.identity_service import IdentityService
 
 MatchStatus = Literal["matched", "ambiguous", "unmatched"]
@@ -415,7 +415,10 @@ def match_observations_to_ground_truth(
         type_filtered_ids = tuple(
             candidate_id
             for candidate_id in candidate_ids
-            if _entity_type_matches(observation.entity_type, ground_truth.entities[candidate_id].type)
+            if _entity_type_matches(
+                observation,
+                ground_truth_entity=ground_truth.entities[candidate_id],
+            )
         )
         if not type_filtered_ids:
             matched.append(
@@ -692,12 +695,23 @@ def _candidate_ground_truth_entity_ids(
     return tuple(sorted(candidate_ids))
 
 
-def _entity_type_matches(observed_type: str | None, ground_truth_type: str) -> bool:
+def _entity_type_matches(
+    observation: EntityObservation,
+    *,
+    ground_truth_entity: GroundTruthEntity,
+) -> bool:
     """Return whether the observed entity type is compatible with ground truth."""
 
+    observed_type = observation.entity_type
     if observed_type is None:
         return True
-    return observed_type == ground_truth_type
+    representative_name = observation.observed_names[0] if observation.observed_names else None
+    return _entity_types_compatible(
+        observed_type,
+        ground_truth_entity.type,
+        left_name=representative_name,
+        right_name=ground_truth_entity.canonical_name,
+    )
 
 
 def _pair_reason(*, predicted_same: bool, gold_same: bool) -> str:
@@ -738,6 +752,8 @@ def _cluster_ids_for_mention(
     return {
         observation.predicted_cluster_id
         for observation in mention_index.get(normalized, ())
+        if observation.match_status == "matched"
+        and observation.matched_ground_truth_entity_id is not None
     }
 
 

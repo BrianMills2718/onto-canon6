@@ -11,9 +11,9 @@ Source of truth:
 - [x] Commit verified phase
 
 ### Phase 2 — Repair Type-Divergent Mention Families
-- [ ] Localize the benchmark-critical type drift
-- [ ] Implement a bounded family-level fix
-- [ ] Add/update targeted tests
+- [x] Localize the benchmark-critical type drift
+- [x] Implement a bounded family-level fix
+- [x] Add/update targeted tests
 - [ ] Commit verified phase
 
 ### Phase 3 — Recover Missing Alias Surfaces

@@ -62,6 +62,14 @@ _PLACE_TYPE_SLUGS = {
     "facility",
 }
 _PERSON_TYPE_SLUGS = {"person", "gp_person"}
+_PERSON_LIKE_RANK_TYPE_SLUGS = {"military_rank"}
+_INSTALLATION_NAME_PREFIXES = (
+    "fort ",
+    "ft ",
+    "camp ",
+    "base ",
+    "station ",
+)
 _ALIAS_STOPWORDS = {
     "a",
     "an",
@@ -422,7 +430,12 @@ def _group_by_fuzzy(
             type_b = entity_types.get(eid_b, "")
 
             # Entity type guard: only merge same-type entities
-            if type_a and type_b and not _entity_types_compatible(type_a, type_b):
+            if type_a and type_b and not _entity_types_compatible(
+                type_a,
+                type_b,
+                left_name=name_map.get(eid_a, eid_a),
+                right_name=name_map.get(eid_b, eid_b),
+            ):
                 continue
 
             score = fuzz.token_sort_ratio(normalized[eid_a], normalized[eid_b])
@@ -599,7 +612,7 @@ def _group_by_llm(
     type_groups: dict[str, list[str]] = defaultdict(list)
     for eid in entity_ids:
         etype = entity_types.get(eid, "unknown")
-        type_groups[_resolution_type_family(etype)].append(eid)
+        type_groups[_entity_resolution_family(etype, name_map.get(eid, eid))].append(eid)
 
     all_groups: dict[str, list[str]] = {}
     group_counter = 0
@@ -756,12 +769,61 @@ def _resolution_type_family(entity_type: str) -> str:
     return slug
 
 
-def _entity_types_compatible(left_type: str, right_type: str) -> bool:
+def _entity_resolution_family(entity_type: str, name: str | None = None) -> str:
+    """Return a conservative name-aware resolution family for one mention."""
+
+    base_family = _resolution_type_family(entity_type)
+    if not name or not name.strip():
+        return base_family
+
+    normalized_name = _normalize_name(name)
+    if not normalized_name:
+        return base_family
+
+    slug = _entity_type_slug(entity_type)
+    if slug in _PERSON_LIKE_RANK_TYPE_SLUGS and _looks_like_person_mention(normalized_name):
+        return "person"
+    if normalized_name.startswith(_INSTALLATION_NAME_PREFIXES):
+        return "place"
+    return base_family
+
+
+def _looks_like_person_mention(normalized_name: str) -> bool:
+    """Return whether a normalized name still looks like a person mention."""
+
+    tokens = [token for token in normalized_name.split() if token]
+    if not tokens:
+        return False
+    bare_rank_tokens = {
+        "general",
+        "lieutenant",
+        "major",
+        "colonel",
+        "captain",
+        "commander",
+        "admiral",
+        "sergeant",
+        "corporal",
+        "private",
+    }
+    return any(token not in bare_rank_tokens for token in tokens)
+
+
+def _entity_types_compatible(
+    left_type: str,
+    right_type: str,
+    *,
+    left_name: str | None = None,
+    right_name: str | None = None,
+) -> bool:
     """Return whether two entity types are compatible for resolution."""
 
     if left_type == right_type:
         return True
-    return _resolution_type_family(left_type) == _resolution_type_family(right_type)
+    return _entity_resolution_family(left_type, left_name) == _entity_resolution_family(
+        right_type,
+        right_name,
+    )
 
 
 def _person_name_info(name: str) -> _PersonNameInfo:
@@ -916,7 +978,10 @@ def _group_alias_signatures(
     if not group_ids:
         return set()
     representative_type = entity_types.get(group_ids[0], "")
-    family = _resolution_type_family(representative_type)
+    family = _entity_resolution_family(
+        representative_type,
+        name_map.get(group_ids[0], group_ids[0]),
+    )
     signatures: set[str] = set()
     for entity_id in group_ids:
         observed_name = name_map.get(entity_id, entity_id)
@@ -971,14 +1036,20 @@ def _collapse_equivalent_llm_groups(
     for index, left in enumerate(keys):
         left_group = groups[left]
         left_type = entity_types.get(left_group[0], "") if left_group else ""
-        left_family = _resolution_type_family(left_type)
+        left_family = _entity_resolution_family(
+            left_type,
+            name_map.get(left_group[0], left_group[0]) if left_group else None,
+        )
         left_signatures = signatures_by_key[left]
         if not left_signatures:
             continue
         for right in keys[index + 1:]:
             right_group = groups[right]
             right_type = entity_types.get(right_group[0], "") if right_group else ""
-            if left_family != _resolution_type_family(right_type):
+            if left_family != _entity_resolution_family(
+                right_type,
+                name_map.get(right_group[0], right_group[0]) if right_group else None,
+            ):
                 continue
             if left_signatures & signatures_by_key[right]:
                 union(left, right)

@@ -78,6 +78,33 @@ def test_match_observations_uses_type_guard_for_ambiguous_name() -> None:
     assert matched[0].match_reason == "unique normalized name + type match"
 
 
+def test_match_observations_accepts_person_like_rank_mentions() -> None:
+    """Rank-typed titled names should still match person ground truth."""
+
+    observations = (
+        EntityObservation(
+            entity_id="ent_rank",
+            entity_type="oc:military_rank",
+            first_candidate_id="cand_rank",
+            predicted_cluster_id="cluster_rank",
+            observed_names=("Gen. Smith",),
+            source_refs=("doc_01",),
+            matched_ground_truth_entity_id=None,
+            match_status="unmatched",
+            match_reason="not run",
+            candidate_ground_truth_entity_ids=(),
+        ),
+    )
+
+    matched = match_observations_to_ground_truth(
+        observations,
+        ground_truth=_ground_truth(),
+    )
+
+    assert matched[0].match_status == "matched"
+    assert matched[0].matched_ground_truth_entity_id == "E001"
+
+
 def test_match_observations_marks_ambiguous_when_type_and_docs_do_not_break_tie() -> None:
     """Ambiguous Smith-like collisions must remain explicit, not guessed."""
 
@@ -299,3 +326,93 @@ def test_score_value_proof_questions_tracks_answerability_and_correctness() -> N
 
     assert scores[2].answered is False
     assert scores[2].correct is False
+
+
+def test_score_value_proof_questions_ignores_unmatched_duplicate_mentions() -> None:
+    """Mention lookup should follow the matched-observation scoring contract."""
+
+    questions = ValueProofQuestionFixture.model_validate(
+        {
+            "description": "questions",
+            "questions": [
+                {
+                    "question_id": "q1",
+                    "kind": "same_entity",
+                    "prompt": "same?",
+                    "mention": "Gen. Smith",
+                    "other_mention": "General John Smith",
+                    "expected_answer": True,
+                },
+                {
+                    "question_id": "q2",
+                    "kind": "same_entity",
+                    "prompt": "different?",
+                    "mention": "General John Smith",
+                    "other_mention": "James Smith",
+                    "expected_answer": False,
+                },
+            ],
+        }
+    )
+    observations = (
+        EntityObservation(
+            entity_id="ent_person",
+            entity_type="oc:person",
+            first_candidate_id="cand_person",
+            predicted_cluster_id="cluster_e001",
+            observed_names=("Gen. Smith", "General John Smith"),
+            source_refs=("doc_01", "doc_02"),
+            matched_ground_truth_entity_id="E001",
+            match_status="matched",
+            match_reason="matched",
+            candidate_ground_truth_entity_ids=("E001",),
+        ),
+        EntityObservation(
+            entity_id="ent_rank_noise",
+            entity_type="oc:military_rank",
+            first_candidate_id="cand_rank",
+            predicted_cluster_id="cluster_rank_noise",
+            observed_names=("Gen. Smith",),
+            source_refs=("doc_01",),
+            matched_ground_truth_entity_id=None,
+            match_status="unmatched",
+            match_reason="incompatible type",
+            candidate_ground_truth_entity_ids=("E001",),
+        ),
+        EntityObservation(
+            entity_id="ent_james",
+            entity_type="oc:person",
+            first_candidate_id="cand_james",
+            predicted_cluster_id="cluster_e011",
+            observed_names=("James Smith",),
+            source_refs=("doc_15",),
+            matched_ground_truth_entity_id="E011",
+            match_status="matched",
+            match_reason="matched",
+            candidate_ground_truth_entity_ids=("E011",),
+        ),
+        EntityObservation(
+            entity_id="ent_john_noise",
+            entity_type=None,
+            first_candidate_id="cand_john_noise",
+            predicted_cluster_id="cluster_noise",
+            observed_names=("John Smith",),
+            source_refs=("doc_05",),
+            matched_ground_truth_entity_id=None,
+            match_status="unmatched",
+            match_reason="incompatible type",
+            candidate_ground_truth_entity_ids=("E001",),
+        ),
+    )
+
+    scores = score_value_proof_questions(
+        observations=observations,
+        questions=questions,
+    )
+
+    assert scores[0].answered is True
+    assert scores[0].correct is True
+    assert scores[0].predicted_answer is True
+    assert scores[1].answered is True
+    assert scores[1].correct is True
+    assert scores[1].predicted_answer is False

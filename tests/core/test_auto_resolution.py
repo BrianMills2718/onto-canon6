@@ -693,6 +693,30 @@ class TestGroupByLLM:
 
         assert list(groups.values()) == [["e1", "e2"]]
 
+    def test_entity_types_compatible_person_like_rank_mentions(self) -> None:
+        """Rank-typed titled names can still compare with person mentions."""
+
+        from onto_canon6.core.auto_resolution import _entity_types_compatible
+
+        assert _entity_types_compatible(
+            "oc:military_rank",
+            "oc:person",
+            left_name="Gen. Smith",
+            right_name="General John Smith",
+        )
+
+    def test_entity_types_compatible_installation_like_names(self) -> None:
+        """Installation-like names can compare across place/org drift."""
+
+        from onto_canon6.core.auto_resolution import _entity_types_compatible
+
+        assert _entity_types_compatible(
+            "oc:location",
+            "oc:military_organization",
+            left_name="Ft. Bragg",
+            right_name="Fort Liberty",
+        )
+
     def test_llm_clustering_postprocesses_conflicting_person_names(self) -> None:
         """Conflicting same-surname people are split after the LLM response."""
         mock_response = MagicMock()

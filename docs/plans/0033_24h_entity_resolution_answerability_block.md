@@ -3,7 +3,7 @@
 Status: active
 Phase status:
 - Phase 1 completed
-- Phase 2 pending
+- Phase 2 completed
 - Phase 3 pending
 - Phase 4 pending
 - Phase 5 pending
@@ -131,6 +131,22 @@ frozen for implementation.
 1. targeted regression tests pass;
 2. the fix is not benchmark-id specific;
 3. same-surname person non-merge safety remains green.
+
+#### Outcome
+
+Completed on 2026-04-01.
+
+Landed changes:
+
+1. resolution-family compatibility is now name-aware for two bounded families:
+   - titled person mentions that drifted into `military_rank`
+   - installation-like names that drifted between place-like and
+     organization-like types
+2. the value-proof evaluator now honors its documented contract for
+   same-entity question lookup by using the matched observation set rather than
+   letting unmatched noise observations make a mention non-unique;
+3. targeted unit coverage now pins both repaired families and the matched-only
+   scoring rule.
 
 ### Phase 3: Recover Missing Alias Surfaces
 
