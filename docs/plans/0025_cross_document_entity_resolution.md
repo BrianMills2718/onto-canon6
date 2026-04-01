@@ -1,6 +1,6 @@
 # Cross-Document Entity Resolution
 
-Status: active
+Status: complete
 
 Last updated: 2026-04-01
 Workstream: entity resolution for scale test (20-500 documents)
@@ -19,8 +19,8 @@ cannot be demonstrated.
 ## Progress Update (2026-04-01)
 
 This plan is no longer just planned. The value-proof harness is complete, the
-repo has decision-grade comparison artifacts, and the remaining work is now a
-narrow residual surface-stability cleanup pass.
+repo has decision-grade comparison artifacts, and the bounded rerun-stability
+cleanup pass is now also complete.
 
 ### Landed so far
 
@@ -45,30 +45,28 @@ surface:
 
 ### What is still unresolved
 
-The plan's harness and metrics gap is now closed, and the next hardening pass
-is now strictly about three remaining surface-stability families rather than
-broad measurement validity.
+The plan's harness and metrics gap is now closed, and the rerun-stability
+question that remained after Plan `0038` is now resolved at the declared
+question/safety gate.
 
 The current question is no longer "can the repo score resolution quality?" It
-can. The current question is now narrower:
+can. The current state is now:
 
-1. can the LLM strategy close the three remaining residual misses without
-   regressing the new zero-false-merge safety floor;
-2. can organization-family drift (`government_agency`,
-   missing / generic organization types, acronym short forms) be repaired
-   conservatively;
-3. can the evaluator reuse the bounded installation equivalence contract so
-   `Ft. Bragg` questions measure the runtime state honestly.
+1. the declared Phase 4 value-proof acceptance criteria are met;
+2. the repo has two consecutive fresh reruns with `10/10` fixed-question
+   accuracy and `0` false merges;
+3. remaining pairwise false splits are narrower follow-on quality questions,
+   not a blocker to call the Phase 4 proof complete.
 
 The completed value-proof block and the follow-on hardening blocks showed:
 
 1. exact strategy remains the high-precision floor;
 2. bare extraction is not competitive;
 3. LLM clustering can now be made safe against the prior same-surname false
-   merges, and the latest fresh rerun still preserves zero false merges, but
-   it is not yet promotable as the default because pairwise recall still
-   trails on organization acronym / descriptor residuals and one evaluator
-   mention-key miss.
+   merges, and the latest fresh reruns preserve zero false merges, but it is
+   not yet promotable as the default because pairwise false splits still drift
+   across descriptor/place families even when the fixed question set stays
+   green.
 
 Latest decision artifacts:
 
@@ -108,7 +106,31 @@ Latest decision artifacts:
      `docs/runs/scale_test_llm_2026-04-01_132119.json`;
 10. the current bounded pass is now
     `docs/plans/0039_24h_entity_resolution_rerun_stability_block.md`,
-    which owns only the fresh-run stability problem after `0038`.
+    which is now complete:
+    - `docs/runs/scale_test_llm_2026-04-01_145141.json`
+    - `docs/runs/scale_test_llm_2026-04-01_152927.json`
+    - `docs/runs/2026-04-01_entity_resolution_rerun_stability.md`
+
+## Completion Decision (2026-04-01)
+
+Plan `0025` is complete at the Phase 4 value-proof level.
+
+Why:
+
+1. pairwise precision is above the declared `>90%` threshold on the successful
+   fresh reruns;
+2. pairwise recall is above the declared `>70%` threshold on the successful
+   fresh reruns;
+3. the fixed cross-document question set is answered measurably better than the
+   bare baseline;
+4. the result is now repeatable enough on fresh DBs to treat the proof as
+   complete rather than a one-off best case.
+
+What completion does **not** mean:
+
+1. LLM clustering is not automatically promoted as the repo default;
+2. pairwise false splits are not fully closed;
+3. higher-scale work from `0025a` is not activated yet.
 
 ## What Exists Today
 

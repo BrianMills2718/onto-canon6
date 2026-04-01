@@ -1,12 +1,12 @@
 # 24h Entity Resolution Rerun Stability Block
 
-Status: active
+Status: complete
 Phase status:
 - Phase 1 completed
 - Phase 2 completed
 - Phase 3 completed
-- Phase 4 in progress
-- Phase 5 pending
+- Phase 4 completed
+- Phase 5 completed
 
 Last updated: 2026-04-01
 Workstream: convert the best `0038` rerun into a repeatable fresh-run result
@@ -186,7 +186,7 @@ Progress note:
 1. the repo no longer treats `GWU` as an unspecified residual;
 2. the owning plan is explicit and justified by evidence.
 
-Current classification (provisional until the next rerun pair):
+Current classification:
 
 1. fresh rerun `145141` emitted a standalone `George Washington University`
    mention again, and `q09` returned to answered-and-correct. `GWU` is
@@ -218,8 +218,16 @@ Progress note:
 1. first fresh rerun `docs/runs/scale_test_llm_2026-04-01_145141.json` is now
    in hand and clears the question-level gate on a new DB while preserving the
    zero-false-merge floor.
-2. one more fresh rerun is still required before this block can claim
-   repeatable stability.
+2. second fresh rerun `docs/runs/scale_test_llm_2026-04-01_152927.json` also
+   cleared the question-level gate on a new DB:
+   - precision `1.00`
+   - recall `0.9346`
+   - false merges `0`
+   - false splits `7`
+   - answer rate `1.00`
+   - accuracy over all questions `1.00`
+3. the rerun-stability gate is therefore satisfied at the question/safety
+   level even though pairwise false splits still drift across fresh reruns.
 
 ### Phase 5: Closeout
 
@@ -234,6 +242,15 @@ Progress note:
 
 1. top-level docs describe the stability decision truthfully;
 2. the worktree is left clean with committed checkpoints only.
+
+Progress note:
+
+1. decision note:
+   `docs/runs/2026-04-01_entity_resolution_rerun_stability.md`
+2. Plan `0039` is now complete. Its gate was satisfied by the fresh rerun pair
+   `145141` and `152927`.
+3. the remaining false-split drift is recorded as follow-on quality work, not
+   unfinished `0039` scope.
 
 ## Failure Modes
 
@@ -251,3 +268,23 @@ This block is complete only when:
 2. the worktree is clean;
 3. the repo contains committed code, tests, rerun artifacts, and docs for the
    rerun-stability decision.
+
+## Closeout Decision
+
+Plan `0039` is complete.
+
+Why:
+
+1. two consecutive fresh reruns on new DBs now exist;
+2. both reruns kept false merges at `0`;
+3. both reruns kept precision above the declared `0.95` floor;
+4. both reruns answered all `10/10` fixed questions correctly.
+
+What remains open after closure:
+
+1. descriptor-only `the Agency` false splits can still reopen at the pairwise
+   level;
+2. `Washington D.C.` / `Washington` / `D.C.` can still drift at the pairwise
+   level even when the fixed question set stays green;
+3. those residuals are future hardening questions, not blockers to close this
+   bounded rerun-stability block.

@@ -1,0 +1,189 @@
+# 24h Extraction Transfer Certification Block
+
+Status: active
+Phase status:
+- Phase 1 in progress
+- Phase 2 pending
+- Phase 3 pending
+- Phase 4 pending
+- Phase 5 pending
+
+Last updated: 2026-04-01
+Workstream: convert Plan `0014` from diffuse transfer-gap tracking into one
+decision-grade certification pass
+
+## Purpose
+
+Plan `0014` already has a promotion policy, named chunks, and a narrowed live
+transfer gap. What it does not yet have is one bounded execution block that
+forces a concrete decision on the current candidate extraction lane.
+
+This block exists to answer exactly one question:
+
+Can the current compact operational-parity candidate be certified honestly for
+promotion consideration, or does the chunk-transfer gap still fail in a way the
+repo can localize precisely?
+
+## Scope
+
+This block intentionally covers only:
+
+1. the current compact operational-parity extraction lane under Plan `0014`;
+2. the named real chunks already central to the transfer gate:
+   - chunk `002` as the positive transfer case
+   - chunk `003` as the prose-heavy negative/mixed transfer case
+3. direct live-vs-parity operational comparison for those chunks;
+4. the minimum harness or replay aid needed to make that comparison
+   certification-grade;
+5. a written decision on whether the current candidate is promotable,
+   blocked on transfer, or blocked on runtime/path differences.
+
+Out of scope:
+
+1. broad new prompt rewrites before the current transfer gap is localized;
+2. new ontology/runtime features;
+3. DIGIMON or query-surface work;
+4. wider corpus verification beyond the two named chunks until this block
+   finishes.
+
+## Pre-Made Decisions
+
+1. Work stays in the isolated `codex/onto-canon6-integration-planning`
+   worktree.
+2. The current candidate under test is the compact operational-parity lane
+   already named in Plan `0014`; this block does not open a second competing
+   candidate family.
+   - live extraction candidate asset:
+     `prompts/extraction/text_to_candidate_assertions_compact_v4.yaml`
+   - prompt-eval operational-parity asset:
+     `prompts/extraction/prompt_eval_text_to_candidate_assertions_compact_operational_parity_v2.yaml`
+3. The certification decision must be based on:
+   - prompt-eval artifact evidence,
+   - live extract-text artifact evidence, and
+   - real review outcomes,
+   not on prompt text inspection alone.
+4. Chunk `002` and chunk `003` remain the canonical transfer chunks for this
+   block. No additional chunks are added unless one of those becomes unusable.
+5. If the current candidate still fails chunk `003`, the block must decide
+   whether the blocker is:
+   - prompt/content behavior,
+   - live-vs-parity runtime-path difference, or
+   - longer-context transfer that requires a different certification harness.
+6. Every verified phase gets its own commit.
+
+## Gate
+
+This block succeeds only if:
+
+1. the exact candidate lane under test is frozen in the docs;
+2. the repo has one certification-grade comparison path for live vs parity
+   chunk outputs;
+3. chunk `002` and chunk `003` both have explicit live/parity comparison
+   artifacts under `docs/runs/` or `investigations/`;
+4. the closeout note states one of the following unambiguously:
+   - the candidate is promotable for further consideration;
+   - the candidate is not promotable because the transfer gap is still real;
+   - the candidate cannot be judged yet because runtime/path parity is still
+     unproven, with the missing proof named exactly.
+
+## Phase Order
+
+### Phase 1: Freeze The Certification Contract
+
+#### Tasks
+
+1. name the exact compact candidate lane, prompt asset, and model/task path
+   currently under test;
+2. freeze the canonical chunk pair (`002`, `003`);
+3. freeze the existing incoming evidence from Plan `0014` that this block will
+   use.
+
+#### Success criteria
+
+1. the candidate under test is explicit enough that no mid-block choice remains
+   about "which compact variant" is being certified;
+2. the repo has one canonical source list for the incoming transfer artifacts.
+
+Incoming artifacts frozen for this block:
+
+1. `docs/runs/2026-03-21_chunk_transfer_gate_compact2.md`
+2. `docs/runs/2026-03-22_chunk003_full_operational_parity_prompt_eval.md`
+3. `docs/runs/2026-03-22_chunk003_compact_v4_candidate_prompt_eval.md`
+4. `docs/runs/2026-03-22_compact4_real_chunk_verification_chunk003.md`
+
+### Phase 2: Localize The Live-vs-Parity Gap
+
+#### Tasks
+
+1. compare the current live extraction output against the prompt-eval
+   operational-parity output on chunk `003`;
+2. compare the same surfaces on chunk `002` so the positive control remains
+   visible;
+3. write down the exact candidate-level differences:
+   added, omitted, or reshaped candidates plus review outcomes.
+
+#### Success criteria
+
+1. the repo can point to exact candidate/output differences, not just aggregate
+   score differences;
+2. the block no longer depends on vague "transfer gap" language.
+
+### Phase 3: Land The Minimum Certification Aid
+
+#### Tasks
+
+1. implement the smallest helper needed to make the live-vs-parity comparison
+   reproducible;
+2. prefer a replay/comparison aid over another prompt rewrite;
+3. add verification for that helper.
+
+#### Success criteria
+
+1. the comparison path is reproducible from the repo;
+2. the helper is narrow and does not create a second extraction runtime.
+
+### Phase 4: Re-run The Certification Check
+
+#### Tasks
+
+1. run the certification comparison on chunk `002`;
+2. run the certification comparison on chunk `003`;
+3. verify whether the current candidate clears or fails the transfer gate.
+
+#### Success criteria
+
+1. both canonical chunks have fresh comparison artifacts;
+2. the candidate's transfer status is evidence-backed.
+
+### Phase 5: Closeout
+
+#### Tasks
+
+1. write the decision-grade certification note;
+2. refresh Plan `0014`, `CLAUDE.md`, `docs/STATUS.md`, `HANDOFF.md`,
+   `KNOWLEDGE.md`, `docs/plans/CLAUDE.md`, and `TODO.md`;
+3. either close this block or activate the next bounded extraction block based
+   on the result.
+
+#### Success criteria
+
+1. top-level docs describe the extraction-transfer decision truthfully;
+2. the next extraction step, if any, is narrowed to one explicit blocker.
+
+## Failure Modes
+
+1. the block devolves into another broad prompt-rewrite campaign;
+2. prompt-eval wins are treated as sufficient without live transfer evidence;
+3. the live/parity comparison remains aggregate-only and cannot explain the
+   current blocker;
+4. a new helper silently mutates extraction behavior instead of only making the
+   comparison path observable.
+
+## Exit Criteria
+
+This block is complete only when:
+
+1. all five phases above meet their success criteria;
+2. the worktree is clean;
+3. the repo contains committed artifacts and docs for the certification
+   decision.

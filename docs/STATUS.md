@@ -26,10 +26,12 @@ Current post-cutover program state:
 4. the first read-only query surface is now landed and proved through
    `docs/plans/0028_query_browse_surface.md` and
    `docs/plans/0029_24h_query_surface_execution_block.md`;
-5. Plan 0025 now has decision-grade value-proof evidence plus seven completed
-   bounded blocks; Plan 0036 restored same-surname safety and recovered `q05`
-   / `q06` on a fresh rerun, and the current active question is now only the
-   remaining Rodriguez and Washington place-family false splits.
+5. Plan 0025 is now complete at the Phase 4 value-proof level;
+6. Plan 0039 proved rerun stability at the question/safety gate with two fresh
+   reruns (`145141`, `152927`) that both held `10/10` question accuracy,
+   precision `1.00`, and false merges `0`;
+7. the remaining active program gate is now Lane 4 extraction-transfer
+   certification under Plan `0014`, not another entity-resolution rerun block.
 
 ## What Is Proven
 

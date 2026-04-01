@@ -10,7 +10,7 @@ runtime.
 2. `docs/SUCCESSOR_CHARTER.md`
 3. `docs/STATUS.md`
 4. `docs/plans/0024_post_cutover_program.md`
-5. `docs/plans/0025_cross_document_entity_resolution.md` (current active implementation work)
+5. `docs/plans/0025_cross_document_entity_resolution.md` (completed Phase 4 value proof)
 6. `docs/plans/0031_24h_entity_resolution_hardening_block.md` (completed hardening block)
 7. `docs/plans/0032_24h_entity_resolution_recall_recovery_block.md` (completed recall-recovery block)
 8. `docs/plans/0033_24h_entity_resolution_answerability_block.md` (completed answerability block)
@@ -19,13 +19,14 @@ runtime.
 11. `docs/plans/0036_24h_entity_resolution_negative_control_recovery_block.md` (completed negative-control recovery block)
 12. `docs/plans/0037_24h_entity_resolution_false_split_cleanup_block.md` (completed Rodriguez/Washington cleanup block)
 13. `docs/plans/0038_24h_entity_resolution_surface_stability_block.md` (completed surface-stability block)
-14. `docs/plans/0039_24h_entity_resolution_rerun_stability_block.md` (current active execution block)
-15. `docs/plans/0026_schema_stability_gate.md` (completed Lane 3 contract policy)
-16. `docs/plans/0014_extraction_quality_baseline.md` (active Lane 4 promotion gate)
-17. `docs/plans/0027_deferred_parity_reprioritization.md`
-18. `docs/plans/0028_query_browse_surface.md`
-19. `docs/plans/0005_v1_capability_parity_matrix.md`
-20. `docs/plans/0001_successor_roadmap.md`
+14. `docs/plans/0039_24h_entity_resolution_rerun_stability_block.md` (completed rerun-stability block)
+15. `docs/plans/0040_24h_extraction_transfer_certification_block.md` (current active execution block)
+16. `docs/plans/0026_schema_stability_gate.md` (completed Lane 3 contract policy)
+17. `docs/plans/0014_extraction_quality_baseline.md` (active Lane 4 promotion gate)
+18. `docs/plans/0027_deferred_parity_reprioritization.md`
+19. `docs/plans/0028_query_browse_surface.md`
+20. `docs/plans/0005_v1_capability_parity_matrix.md`
+21. `docs/plans/0001_successor_roadmap.md`
 
 ## Commands
 
@@ -65,9 +66,8 @@ config/
   classification, chunk-level transfer evaluation).
 - Predicate Canon bridge, ancestor-aware evaluator, and Digimon export
   adapter operational.
-- **Active work**: cross-document entity resolution hardening after the first
-  value proof (Plan 0025),
-  extraction quality hardening under an explicit promotion gate (Plan 0014),
+- **Active work**: extraction quality hardening under an explicit promotion
+  gate (Plan 0014),
   vision-gap closure tracking (Plan 0020), the post-cutover execution program
   (Plan 0024), and deferred parity ordering / queryability planning
   (Plans 0027-0028). Lane 3 schema stability is no longer just planned:
@@ -93,12 +93,13 @@ config/
   0038 is now also complete under its explicit exit clause: it materially
   improved the acronym/descriptor/evaluator blocker family and produced the
   near-gate `131124` fresh rerun, but the follow-on `132119` rerun proved that
-  the next blocker is rerun stability under extraction-shape drift. The active
-  bounded block is now Plan 0039, which owns only that rerun-stability
-  problem while preserving the zero-false-merge floor. The first fresh `0039`
-  rerun (`145141`) already restored `10/10` question accuracy with precision
-  `1.00`, recall `0.9643`, and false merges `0`; one more fresh rerun is still
-  required before the block can claim repeatable stability.
+  the next blocker was rerun stability under extraction-shape drift. Plan
+  0039 is now also complete: fresh reruns `145141` and `152927` both restored
+  `10/10` question accuracy while keeping precision `1.00` and false merges
+  `0`, which is enough to close the rerun-stability gate. Plan 0025 is now
+  complete at its Phase 4 value-proof level. The current active bounded block
+  is Plan 0040, which moves the frontier back to Lane 4 extraction-transfer
+  certification.
   The chunk-level transfer evaluation requirement remains active through
   ADR 0023 and Plans 0024/0014 even though there is no standalone Plan 0019
   file.
@@ -262,7 +263,7 @@ happens.
 
 ## Active Execution Block (2026-04-01)
 
-**Plan 0037: 24h Entity Resolution False-Split Cleanup Block — active until fully closed.**
+**Plan 0040: 24h Extraction Transfer Certification Block — active until fully closed.**
 
 Within an active 24h execution block, the default operating mode is continuous
 execution: finish the current phase, verify it, commit it, update the active
@@ -284,7 +285,7 @@ verify it, commit it, log any uncertainty, and continue. Do not wait for
 
 The only valid stop conditions are:
 
-1. all 5 phases in `docs/plans/0036_24h_entity_resolution_negative_control_recovery_block.md`
+1. all 5 phases in `docs/plans/0040_24h_extraction_transfer_certification_block.md`
    are complete and committed;
 2. a real blocker that cannot be resolved from repo context or the plan;
 3. a material uncertainty not covered by the pre-made decisions below.
@@ -297,10 +298,9 @@ decision note, activate the next bounded repair block, and keep going.
 
 Pre-made decisions (do not ask about these):
 - Work stays in the isolated `codex/onto-canon6-integration-planning` worktree
-- `exact` remains the default floor unless the block's rerun clears the new gate
-- The Plan 0035 `q02` / `q04` / `q08` wins must remain intact
-- The next fixes must target same-surname person safety and the residual negative-control path before any broader recall work
-- The Plan 0031 same-surname safety guard must remain intact unless a stricter replacement is landed in the same commit
+- chunk `002` and chunk `003` remain the canonical transfer chunks
+- the current compact operational-parity lane is the only candidate under test
+- no broad prompt rewrite starts before the live-vs-parity comparison is explicit
 - Commit each verified phase immediately
 
 ## Most Recent Execution Block (2026-04-01)
@@ -325,8 +325,9 @@ Decision from the block:
    fixed-question answerability remain too weak, and one extraction/schema
    failure dropped `doc_06` from the rerun.
 
-Active work therefore returns to Plan 0025's next narrow frontier: recall /
-answerability recovery and the extraction-schema failure family.
+Active work therefore returns to Plan 0014's next narrow frontier:
+certification-grade extraction transfer evidence on the current compact
+operational-parity lane.
 
 ## Completed Execution Block (2026-04-01)
 

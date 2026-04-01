@@ -151,3 +151,15 @@ question set is fully green. After `113959`, answer rate and accuracy were both
 and Washington place family were split across separate identity clusters. Use
 question accuracy and pairwise recall together when deciding whether
 entity-resolution work is actually complete.
+
+### 2026-04-01 — codex — best-practice
+Plan 0039 closed only after two consecutive fresh reruns on new DBs
+(`145141`, `152927`) both preserved `10/10` fixed-question accuracy and `0`
+false merges. One good rerun is not enough for rerun-stability claims.
+
+### 2026-04-01 — codex — bug-pattern
+Even after Plan 0039 closed, pairwise false splits can still drift across fresh
+reruns without reopening the fixed question set. The dominant residual families
+were descriptor-only `the Agency` and the `Washington D.C.` / `Washington` /
+`D.C.` place family. Treat those as follow-on quality work, not proof that the
+question-level rerun gate failed.

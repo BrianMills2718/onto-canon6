@@ -3,34 +3,33 @@
 ## Current 24h Execution Block
 
 Source of truth:
-- `docs/plans/0039_24h_entity_resolution_rerun_stability_block.md`
+- `docs/plans/0040_24h_extraction_transfer_certification_block.md`
 
-### Phase 1 — Freeze The Rerun-Stability Contract
-- [x] Close Plan 0038 truthfully in the docs
-- [x] Activate Plan 0039 and freeze the incoming artifact pair
-- [x] Commit verified phase
-
-### Phase 2 — Recover Deterministic Alias Bridges For Reopened Runtime Families
-- [x] Localize which reopened families are still honest resolution problems
-- [x] Land the first bounded runtime repair slice for `D.C.` / `4th POG`
-- [x] Add/update targeted regression tests for the first runtime slice
-- [x] Commit verified checkpoint for the first runtime slice
-- [x] Decide whether any descriptor-alias drift still belongs in runtime resolution
-
-### Phase 3 — Classify Composite-Acronym Residuals Honestly
-- [x] Determine the provisional ownership of `GWU` from the current rerun pair
-- [x] Confirm `GWU` ownership on the next fresh rerun
-- [x] Record the owning plan explicitly
+### Phase 1 — Freeze The Certification Contract
+- [ ] Name the exact compact candidate lane and prompt asset under test
+- [ ] Freeze the canonical chunk pair (`002`, `003`)
+- [ ] Freeze the incoming transfer artifacts from Plan 0014
 - [ ] Commit verified phase
 
-### Phase 4 — Prove Fresh-Run Stability
-- [~] Run two fresh reruns on new DBs
-- [~] Compare both against the gate
-- [~] Localize any remaining instability by owning layer
+### Phase 2 — Localize The Live-vs-Parity Gap
+- [ ] Compare current live output against prompt-eval parity output on chunk `003`
+- [ ] Compare the same surfaces on chunk `002`
+- [ ] Write down exact candidate/output differences plus review outcomes
+- [ ] Commit verified phase
+
+### Phase 3 — Land The Minimum Certification Aid
+- [ ] Implement the narrowest reproducible live-vs-parity comparison helper
+- [ ] Add verification for the helper
+- [ ] Commit verified phase
+
+### Phase 4 — Re-run The Certification Check
+- [ ] Run the certification comparison on chunk `002`
+- [ ] Run the certification comparison on chunk `003`
+- [ ] Decide whether the candidate clears or fails the transfer gate
 - [ ] Commit verified phase
 
 ### Phase 5 — Closeout
-- [ ] Write the decision-grade stability note
+- [ ] Write the decision-grade certification note
 - [ ] Refresh docs/status/handoff
 - [ ] Mark execution block complete
 - [ ] Commit verified phase
@@ -71,15 +70,12 @@ Source of truth:
 ## Next Active Work
 
 Source of truth:
-- `docs/plans/0025_cross_document_entity_resolution.md`
+- `docs/plans/0014_extraction_quality_baseline.md`
 
-- [x] Close the three residual misses from the clean-measurement baseline (`q02`, `q04`, `q08`)
-- [x] Preserve the `25/25` extraction-survival baseline while rerunning
-- [x] Restore fresh-run same-surname safety while preserving the `q02` / `q04` / `q08` wins
-- [x] Get `q05` back to answered-and-correct and localize/fix `q06`
-- [ ] Keep precision at or above `0.95` with zero false merges
-- [~] Convert the best `0038` rerun into a repeatable fresh-run result
-- [ ] Refresh the decision note and close the active 24h block truthfully
+- [ ] Turn the current compact operational-parity lane into one explicit certification decision
+- [ ] Keep chunk `002` as the positive control and chunk `003` as the prose-heavy stress case
+- [ ] Make the live-vs-parity gap reproducible instead of aggregate-only
+- [ ] Decide whether the current candidate is promotable or still transfer-blocked
 
 ## Longer-Term Queue
 
