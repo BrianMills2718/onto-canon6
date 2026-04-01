@@ -9,24 +9,24 @@ Source of truth:
 - [x] Add fixed cross-document question fixture
 - [x] Make scoring rules explicit in code/docs
 - [x] Define baseline report shape
-- [ ] Commit verified phase
+- [x] Commit verified phase
 
 ### Phase 2 — Implement Decision-Grade Evaluator
 - [x] Add typed evaluation models
 - [x] Implement ground-truth matching
 - [x] Implement precision/recall + false-merge/false-split reporting
 - [x] Add evaluator tests
-- [ ] Commit verified phase
+- [x] Commit verified phase
 
 ### Phase 3 — Upgrade Runners And Operator Surface
-- [ ] Upgrade `scripts/run_scale_test.py`
-- [ ] Add bare-baseline corpus runner
-- [ ] Add/refresh Make targets
+- [x] Upgrade `scripts/run_scale_test.py`
+- [x] Add bare-baseline corpus runner
+- [x] Add/refresh Make targets
 - [ ] Commit verified phase
 
 ### Phase 4 — Execute The First Full Value-Proof Slice
-- [ ] Run exact-strategy report
-- [ ] Run bare baseline report
+- [x] Run exact-strategy report
+- [x] Run bare baseline report
 - [ ] Run LLM-strategy report if environment supports it cleanly
 - [ ] Write run note with concrete findings
 - [ ] Commit verified phase

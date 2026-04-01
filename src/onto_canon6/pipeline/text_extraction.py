@@ -441,6 +441,8 @@ class TextExtractionService:
         *,
         review_service: ReviewService | None = None,
         selection_task: str | None = None,
+        model_override: str | None = None,
+        judge_model_override: str | None = None,
         prompt_template: Path | None = None,
         prompt_ref: str | None = None,
         max_candidates_per_call: int | None = None,
@@ -463,7 +465,16 @@ class TextExtractionService:
             else config.extraction.selection_task
         )
         self._selection_use_performance = config.extraction.selection_use_performance
-        self._model_override = config.extraction.model_override
+        self._model_override = (
+            model_override.strip()
+            if model_override is not None and model_override.strip()
+            else config.extraction.model_override
+        )
+        self._judge_model_override = (
+            judge_model_override.strip()
+            if judge_model_override is not None and judge_model_override.strip()
+            else self._model_override
+        )
         if (prompt_template is None) != (prompt_ref is None):
             raise ConfigError(
                 "prompt_template and prompt_ref overrides must be provided together"
@@ -700,6 +711,7 @@ class TextExtractionService:
                 source_text=source_text,
                 min_label=config.extraction.judge_filter_min_label,
                 config=config,
+                model_override=self._judge_model_override,
             )
 
         submissions = tuple(
@@ -857,6 +869,7 @@ def _apply_judge_filter(
     source_text: str,
     min_label: str,
     config: AppConfig,
+    model_override: str | None,
 ) -> list[CandidateAssertionImport]:
     """Filter candidates using LLM judge for reasonableness.
 
@@ -864,7 +877,7 @@ def _apply_judge_filter(
     the minimum label threshold. Returns the filtered list.
     """
     try:
-        from llm_client import call_llm_structured, get_model
+        from llm_client import call_llm_structured
         import uuid
     except ImportError as exc:
         raise RuntimeError(
@@ -899,7 +912,11 @@ def _apply_judge_filter(
         )
 
         # Resolve model for judge calls
-        judge_model = config.extraction.model_override or "gemini/gemini-2.5-flash"
+        judge_model = (
+            model_override
+            or config.extraction.model_override
+            or "gemini/gemini-2.5-flash"
+        )
 
         parsed_result, _meta = call_llm_structured(
             judge_model,

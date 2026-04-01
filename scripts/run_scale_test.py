@@ -74,6 +74,10 @@ def setup_db(tmp_dir: Path) -> tuple[ReviewService, Path]:
 def extract_all_documents(
     review_svc: ReviewService,
     corpus_dir: Path,
+    *,
+    selection_task: str,
+    model_override: str | None,
+    judge_model_override: str | None,
 ) -> dict[str, int]:
     """Extract assertions from all documents in the corpus.
 
@@ -89,7 +93,12 @@ def extract_all_documents(
     stats: dict[str, int] = defaultdict(int)
     doc_files = sorted(corpus_dir.glob("doc_*.txt"))
 
-    extraction_svc = TextExtractionService(review_service=review_svc)
+    extraction_svc = TextExtractionService(
+        review_service=review_svc,
+        selection_task=selection_task,
+        model_override=model_override,
+        judge_model_override=judge_model_override,
+    )
 
     for doc_path in doc_files:
         text = doc_path.read_text(encoding="utf-8")
@@ -185,6 +194,21 @@ def main() -> int:
         "--db-dir", type=Path, default=Path("var/scale_test"),
         help="Directory for test database",
     )
+    parser.add_argument(
+        "--selection-task",
+        default="fast_extraction",
+        help="llm_client task used for extraction model selection",
+    )
+    parser.add_argument(
+        "--model-override",
+        default=None,
+        help="Optional explicit extraction model override for this run",
+    )
+    parser.add_argument(
+        "--judge-model-override",
+        default=None,
+        help="Optional explicit judge-model override for this run",
+    )
     parser.add_argument("--verbose", "-v", action="store_true")
     args = parser.parse_args()
 
@@ -212,7 +236,13 @@ def main() -> int:
         # Phase 1: Extract
         print("\n--- Phase 1: Extraction ---")
         t0 = time.time()
-        extraction_stats = extract_all_documents(review_svc, CORPUS_DIR)
+        extraction_stats = extract_all_documents(
+            review_svc,
+            CORPUS_DIR,
+            selection_task=args.selection_task,
+            model_override=args.model_override,
+            judge_model_override=args.judge_model_override,
+        )
         t1 = time.time()
         print(f"Extraction: {extraction_stats}")
         print(f"Time: {t1-t0:.1f}s")

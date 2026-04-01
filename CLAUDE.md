@@ -215,24 +215,36 @@ happens.
    resolution *infrastructure*. Export adapters wire the identity subsystem.
    Consumers should not have to reimplement dedup.
 
-## Active Execution Block (2026-03-31)
+## Active Execution Block (2026-04-01)
 
-**Plan 0025: Cross-Document Entity Resolution — Phases 1-4.**
+**Plan 0030: 24h Entity Resolution Value-Proof Block — active until fully closed.**
 
-Execute continuously. Do NOT stop after completing one phase — immediately
-proceed to the next. The only valid stop conditions are:
-1. All 4 phases complete
-2. A real blocker that cannot be resolved from plan context
+Execute continuously and do not pause between phases. Finish the current
+phase, update the plan/TODO surfaces, commit the verified increment, and move
+immediately to the next phase. Never stop at "the harness exists" or "one run
+completed." The block is not done until all required phases, run artifacts,
+and closeout docs are finished.
+
+The only valid stop conditions are:
+1. All 5 phases in `docs/plans/0030_24h_entity_resolution_value_proof_block.md`
+   complete and are committed
+2. A real blocker that cannot be resolved from repo context or the plan
 3. A material uncertainty not covered by the pre-made decisions below
+
+If a sub-phase is blocked, log the blocker in the active plan, `TODO.md`, and
+the run note, then continue with the next unblocked phase. Do not silently
+abandon a phase. Do not ask what to do next while the active block still has
+unfinished phases.
 
 Pre-made decisions (do not ask about these):
 - Config defaults: `review_mode: llm`, `enable_judge_filter: true`
 - Fuzzy matching is a pre-filter for LLM validation, not an independent merge strategy
 - Synthetic corpus for Phase 4 (controlled ground truth)
 - Single LLM call per entity type; batch if token count exceeds threshold
-- All LLM calls through llm_client with task/trace_id/max_budget
+- All LLM calls through llm_client with `task`, `trace_id`, and `max_budget`
 - Prompt templates in `prompts/resolution/` as YAML/Jinja2
 - Commit each verified phase immediately
+- Work stays in the isolated `codex/onto-canon6-integration-planning` worktree
 
 ## Completed 24h Execution Block (2026-03-31)
 

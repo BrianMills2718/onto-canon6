@@ -64,6 +64,7 @@ def run_bare_entity_baseline(
     output_path: Path | None,
     selection_task: str,
     max_budget: float,
+    model_override: str | None,
 ) -> Path:
     """Run the bare baseline and write one decision-grade report."""
 
@@ -79,7 +80,11 @@ def run_bare_entity_baseline(
     call_llm_structured = llm_client.call_llm_structured
     get_model = llm_client.get_model
 
-    selected_model = get_model(selection_task, use_performance=True)
+    selected_model = (
+        model_override.strip()
+        if model_override is not None and model_override.strip()
+        else get_model(selection_task, use_performance=True)
+    )
     observations: list[EntityObservation] = []
     doc_paths = sorted(corpus_dir.glob("doc_*.txt"))
     if not doc_paths:
@@ -173,6 +178,11 @@ def main() -> int:
         default=None,
         help="Optional explicit output JSON path",
     )
+    parser.add_argument(
+        "--model-override",
+        default=None,
+        help="Optional explicit model override for bare extraction",
+    )
     args = parser.parse_args()
 
     output_path = run_bare_entity_baseline(
@@ -180,6 +190,7 @@ def main() -> int:
         output_path=args.output,
         selection_task=args.task,
         max_budget=args.budget,
+        model_override=args.model_override,
     )
     print(output_path)
     return 0
