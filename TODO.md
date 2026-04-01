@@ -8,12 +8,12 @@ Source of truth:
 ### Phase 1 — Freeze The Recovery Contract
 - [x] Make Plan 0032 the active execution surface
 - [x] Freeze the targeted failure families and thresholds
-- [ ] Commit verified phase
+- [x] Commit verified phase
 
 ### Phase 2 — Remove Extraction Document Loss
-- [ ] Reproduce and localize the `event` / malformed-unknown extraction failure
-- [ ] Fix the boundary so one malformed candidate does not lose a whole doc
-- [ ] Add/update targeted tests
+- [x] Reproduce and localize the `event` / malformed-unknown extraction failure
+- [x] Fix the boundary so one malformed candidate does not lose a whole doc
+- [x] Add/update targeted tests
 - [ ] Commit verified phase
 
 ### Phase 3 — Recover Alias And Answerability Families

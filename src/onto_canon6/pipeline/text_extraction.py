@@ -341,6 +341,52 @@ class TextExtractionResponse(BaseModel):
         description="Single required candidate array for the extractor response. Use an empty array when no candidates are supported.",
     )
 
+    @model_validator(mode="before")
+    @classmethod
+    def _drop_unparseable_candidates(cls, data: object) -> object:
+        """Drop candidate payloads that fail candidate-level parsing entirely.
+
+        Provider responses sometimes contain one malformed candidate among
+        otherwise usable candidates. If one candidate has an unsupported filler
+        kind or malformed unknown/value shape, the whole response should not be
+        lost. Validate candidates individually, keep the parseable ones, and
+        log what was dropped loudly.
+        """
+
+        if not isinstance(data, Mapping):
+            return data
+        candidates_obj = data.get("candidates")
+        if not isinstance(candidates_obj, list):
+            return data
+
+        valid_candidates: list[dict[str, object]] = []
+        dropped = 0
+        for index, raw_candidate in enumerate(candidates_obj):
+            try:
+                parsed = ExtractedCandidate.model_validate(raw_candidate)
+            except Exception as exc:
+                dropped += 1
+                logger.warning(
+                    "dropped unparseable candidate at index=%d before response parse: %s",
+                    index,
+                    exc,
+                )
+                continue
+            valid_candidates.append(
+                parsed.model_dump(mode="python", exclude_none=False)
+            )
+
+        if dropped:
+            logger.info(
+                "filtered %d/%d unparseable candidates before response parse",
+                dropped,
+                len(candidates_obj),
+            )
+            normalized = dict(data)
+            normalized["candidates"] = valid_candidates
+            return normalized
+        return data
+
     @model_validator(mode="after")
     def _filter_invalid_candidates(self) -> "TextExtractionResponse":
         """Drop candidates with structural issues instead of failing the parse.

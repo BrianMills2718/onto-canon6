@@ -151,6 +151,158 @@ def test_extract_candidate_imports_uses_llm_client_boundary(tmp_path: Path, monk
     assert "Mission planning uses the radar system during the exercise." in messages[-1]["content"]
 
 
+def test_text_extraction_response_drops_unparseable_candidates_before_response_parse() -> None:
+    """One malformed candidate should not poison an otherwise valid response."""
+
+    response = TextExtractionResponse.model_validate(
+        {
+            "candidates": [
+                {
+                    "predicate": "gp:holds_role",
+                    "roles": {
+                        "subject": [
+                            {
+                                "kind": "entity",
+                                "entity_type": "oc:person",
+                                "name": "Col. Rodriguez",
+                            }
+                        ]
+                    },
+                    "evidence_spans": [{"text": "Col. Rodriguez"}],
+                    "claim_text": "Col. Rodriguez is mentioned.",
+                },
+                {
+                    "predicate": "gp:attends",
+                    "roles": {
+                        "subject": [
+                            {
+                                "kind": "event",
+                                "entity_type": "oc:ceremony",
+                                "name": "ceremony",
+                            }
+                        ]
+                    },
+                    "evidence_spans": [{"text": "ceremony"}],
+                    "claim_text": "A ceremony occurred.",
+                },
+                {
+                    "predicate": "gp:acts_on",
+                    "roles": {
+                        "topic": [
+                            {
+                                "kind": "unknown",
+                                "name": "psychological operations community",
+                            }
+                        ]
+                    },
+                    "evidence_spans": [{"text": "psychological operations community"}],
+                    "claim_text": "The community was affected.",
+                },
+            ]
+        }
+    )
+
+    assert len(response.candidates) == 1
+    assert response.candidates[0].predicate == "gp:holds_role"
+
+
+def test_extract_candidate_imports_keeps_valid_candidates_when_one_candidate_is_malformed(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Malformed candidates should be dropped loudly without losing the document."""
+
+    service = TextExtractionService(review_service=_make_review_service(tmp_path))
+
+    def fake_get_model(task: str, *, use_performance: bool = True) -> str:
+        del task, use_performance
+        return "fake-structured-model"
+
+    def fake_call_llm_structured(
+        model: str,
+        messages: list[dict[str, str]],
+        response_model: type[BaseModel],
+        **kwargs: object,
+    ) -> tuple[BaseModel, object]:
+        del model, messages, kwargs
+        if response_model is TextExtractionResponse:
+            raw_response = {
+                "candidates": [
+                    {
+                        "predicate": "gp:holds_role",
+                        "roles": {
+                            "subject": [
+                                {
+                                    "kind": "entity",
+                                    "entity_type": "oc:person",
+                                    "name": "Col. Rodriguez",
+                                }
+                            ],
+                            "organization": [
+                                {
+                                    "kind": "entity",
+                                    "entity_type": "oc:military_organization",
+                                    "name": "4th POG",
+                                }
+                            ],
+                        },
+                        "evidence_spans": [
+                            {"text": "Col. Rodriguez"},
+                            {"text": "4th POG"},
+                        ],
+                        "claim_text": "Col. Rodriguez assumed command of the 4th POG.",
+                    },
+                    {
+                        "predicate": "gp:attends",
+                        "roles": {
+                            "subject": [
+                                {
+                                    "kind": "event",
+                                    "entity_type": "oc:ceremony",
+                                    "name": "ceremony",
+                                }
+                            ]
+                        },
+                        "evidence_spans": [{"text": "ceremony"}],
+                        "claim_text": "A ceremony occurred.",
+                    },
+                ]
+            }
+            return (
+                response_model.model_validate(raw_response),
+                SimpleNamespace(resolved_model="fake-structured-model"),
+            )
+        return (
+            response_model.model_validate(
+                {"judgments": [{"candidate_index": 0, "label": "supported"}]}
+            ),
+            SimpleNamespace(resolved_model="fake-structured-model"),
+        )
+
+    monkeypatch.setattr(
+        extraction_module,
+        "_load_llm_client_api",
+        lambda: extraction_module._LLMClientAPI(
+            get_model=fake_get_model,
+            render_prompt=_render_prompt,
+            call_llm_structured=cast(Any, fake_call_llm_structured),
+        ),
+    )
+
+    imports = service.extract_candidate_imports(
+        source_text=Path("tests/fixtures/synthetic_corpus/doc_06.txt").read_text(encoding="utf-8"),
+        profile_id="default",
+        profile_version="1.0.0",
+        submitted_by="scale_test:doc_06",
+        source_ref="doc_06",
+        source_kind="synthetic_text",
+    )
+
+    assert len(imports) == 1
+    assert imports[0].claim_text == "Col. Rodriguez assumed command of the 4th POG."
+    assert imports[0].source_artifact.source_ref == "doc_06"
+
+
 def test_extract_candidate_imports_allows_selection_task_override(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
@@ -663,20 +815,21 @@ def test_extraction_response_accepts_entity_fillers_without_entity_id() -> None:
     assert candidate.roles["commander"][0].name == "Admiral Eric Olson"
 
 
-def test_extraction_response_fails_loud_when_candidate_omits_roles() -> None:
-    """Candidates without a `roles` field should fail at schema-validation time."""
+def test_extraction_response_drops_candidate_when_roles_field_is_missing() -> None:
+    """Response parsing should salvage the document when one candidate omits roles."""
 
-    with pytest.raises(ValueError, match="Field required"):
-        TextExtractionResponse.model_validate(
-            {
-                "candidates": [
-                    {
-                        "predicate": "oc:replace_designation",
-                        "evidence_spans": [{"text": "PSYOP was officially replaced"}],
-                    }
-                ]
-            }
-        )
+    response = TextExtractionResponse.model_validate(
+        {
+            "candidates": [
+                {
+                    "predicate": "oc:replace_designation",
+                    "evidence_spans": [{"text": "PSYOP was officially replaced"}],
+                }
+            ]
+        }
+    )
+
+    assert response.candidates == []
 
 
 def test_extraction_response_schema_requires_candidates_and_roles() -> None:
@@ -905,44 +1058,24 @@ def test_entity_filler_accepts_null_entity_type() -> None:
 
 
 def test_entity_filler_rejects_missing_name() -> None:
-    """Entity filler without name must raise ValidationError."""
+    """Entity filler without name must still fail loudly at filler validation."""
 
     from pydantic import ValidationError
 
     with pytest.raises(ValidationError):
-        TextExtractionResponse.model_validate(
-            {
-                "candidates": [
-                    {
-                        "predicate": "oc:test",
-                        "roles": {
-                            "subject": [{"kind": "entity", "entity_type": "oc:person"}]
-                        },
-                        "evidence_spans": [{"text": "someone"}],
-                    }
-                ]
-            }
+        ExtractedEntityFiller.model_validate(
+            {"kind": "entity", "entity_type": "oc:person"}
         )
 
 
 def test_value_filler_rejects_missing_value_kind() -> None:
-    """Value filler without value_kind must raise ValidationError."""
+    """Value filler without value_kind must still fail loudly at filler validation."""
 
     from pydantic import ValidationError
 
     with pytest.raises(ValidationError):
-        TextExtractionResponse.model_validate(
-            {
-                "candidates": [
-                    {
-                        "predicate": "oc:test",
-                        "roles": {
-                            "topic": [{"kind": "value", "raw": "something"}]
-                        },
-                        "evidence_spans": [{"text": "something"}],
-                    }
-                ]
-            }
+        ExtractedValueFiller.model_validate(
+            {"kind": "value", "raw": "something"}
         )
 
 

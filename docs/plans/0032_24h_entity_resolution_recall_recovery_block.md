@@ -3,8 +3,8 @@
 Status: active
 Phase status:
 - Phase 1 completed
-- Phase 2 active
-- Phase 3 pending
+- Phase 2 completed
+- Phase 3 active
 - Phase 4 pending
 - Phase 5 pending
 
@@ -125,6 +125,25 @@ pass.
 2. the block has a concrete explanation for why `doc_06` was lost;
 3. the next rerun can preserve all `25` documents unless a new explicit error
    occurs.
+
+#### Outcome
+
+Completed on 2026-04-01.
+
+Landed changes:
+
+1. `TextExtractionResponse` now drops unparseable candidate payloads before the
+   whole response parse fails;
+2. malformed candidates are logged loudly and the remaining valid candidates
+   survive for the same document;
+3. targeted extraction tests now pin both contracts:
+   - filler-level validation still raises for malformed fillers
+   - response-level parsing salvages valid candidates instead of losing the
+     whole document
+
+The concrete explanation for the Plan 0031 `doc_06` loss is now narrower:
+malformed candidate payloads with unsupported filler kinds or malformed unknown
+shapes were poisoning the whole response before candidate-level salvage ran.
 
 ### Phase 3: Recover Alias And Answerability Families
 
