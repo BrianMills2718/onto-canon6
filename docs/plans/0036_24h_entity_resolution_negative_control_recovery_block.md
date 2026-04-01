@@ -1,12 +1,12 @@
 # 24h Entity Resolution Negative-Control Recovery Block
 
-Status: active
+Status: completed
 Phase status:
-- Phase 1 pending
-- Phase 2 pending
-- Phase 3 pending
-- Phase 4 pending
-- Phase 5 pending
+- Phase 1 completed
+- Phase 2 completed
+- Phase 3 completed
+- Phase 4 completed
+- Phase 5 completed
 
 Last updated: 2026-04-01
 Workstream: restore fresh-run same-surname safety and negative same-entity
@@ -182,6 +182,32 @@ current same-surname safety blocker.
 3. `q06` is still conflated with evaluator behavior rather than a real mention
    / cluster residual;
 4. the rerun regresses `q02`, `q04`, or `q08` while restoring `q05`.
+
+## Outcome
+
+Plan 0036 is complete. The canonical fresh rerun is:
+
+1. `docs/runs/scale_test_llm_2026-04-01_113959.json`
+2. `docs/runs/2026-04-01_entity_resolution_negative_control_recovery.md`
+
+That rerun cleared the active blocker:
+
+1. all `25/25` documents survived;
+2. precision `1.00`;
+3. recall `0.9417`;
+4. false merges `0`;
+5. answer rate `1.00`;
+6. accuracy over all questions `1.00`;
+7. `q05` and `q06` are both answered and correct.
+
+The remaining misses are now narrower false splits only:
+
+1. Rodriguez title-family split;
+2. Washington place-family split.
+
+The next active block is:
+
+1. `docs/plans/0037_24h_entity_resolution_false_split_cleanup_block.md`
 
 ## Exit Criteria
 

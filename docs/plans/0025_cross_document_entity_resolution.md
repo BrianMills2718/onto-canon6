@@ -18,8 +18,9 @@ cannot be demonstrated.
 
 ## Progress Update (2026-04-01)
 
-This plan is no longer just planned. The first value-proof block is now
-completed and the repo has decision-grade comparison artifacts.
+This plan is no longer just planned. The value-proof harness is complete, the
+repo has decision-grade comparison artifacts, and the remaining work is now a
+narrow residual false-split cleanup pass.
 
 ### Landed so far
 
@@ -63,8 +64,9 @@ The completed value-proof block and the follow-on hardening blocks showed:
 1. exact strategy remains the high-precision floor;
 2. bare extraction is not competitive;
 3. LLM clustering can now be made safe against the prior same-surname false
-   merges, but it is not yet promotable as the default because recall and
-   fixed-question answerability remain too weak.
+   merges, and fixed-question answerability is now `10/10` on the latest fresh
+   rerun, but it is not yet promotable as the default because pairwise recall
+   still trails on two residual false-split families.
 
 Latest decision artifacts:
 
@@ -87,12 +89,16 @@ Latest decision artifacts:
    - it closed the original residual alias families (`q02`, `q04`, `q08`);
    - its closeout note is
      `docs/runs/2026-04-01_entity_resolution_alias_family_completion.md`;
-7. the current bounded pass is now
-   `docs/plans/0036_24h_entity_resolution_negative_control_recovery_block.md`,
-   which owns the fresh-run blocker:
-   - same-surname person safety regression (`John Smith` / `James Smith`)
-   - `q05` negative-control correctness
-   - remaining `q06` answerability on the fresh rerun
+7. Plan 0036 is now complete:
+   - it restored same-surname person safety on a fresh rerun;
+   - it recovered `q05` and `q06` to answered-and-correct;
+   - its closeout note is
+     `docs/runs/2026-04-01_entity_resolution_negative_control_recovery.md`;
+8. the current bounded pass is now
+   `docs/plans/0037_24h_entity_resolution_false_split_cleanup_block.md`,
+   which owns only the remaining residual false splits:
+   - Rodriguez title-family collapse
+   - Washington place-family collapse
 
 ## What Exists Today
 

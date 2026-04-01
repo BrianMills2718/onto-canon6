@@ -16,13 +16,14 @@ runtime.
 8. `docs/plans/0033_24h_entity_resolution_answerability_block.md` (completed answerability block)
 9. `docs/plans/0034_24h_entity_resolution_clean_measurement_block.md` (completed clean-measurement block)
 10. `docs/plans/0035_24h_entity_resolution_alias_family_completion_block.md` (completed alias-family closure block)
-11. `docs/plans/0036_24h_entity_resolution_negative_control_recovery_block.md` (current active execution block)
-12. `docs/plans/0026_schema_stability_gate.md` (completed Lane 3 contract policy)
-13. `docs/plans/0014_extraction_quality_baseline.md` (active Lane 4 promotion gate)
-14. `docs/plans/0027_deferred_parity_reprioritization.md`
-15. `docs/plans/0028_query_browse_surface.md`
-16. `docs/plans/0005_v1_capability_parity_matrix.md`
-17. `docs/plans/0001_successor_roadmap.md`
+11. `docs/plans/0036_24h_entity_resolution_negative_control_recovery_block.md` (completed negative-control recovery block)
+12. `docs/plans/0037_24h_entity_resolution_false_split_cleanup_block.md` (current active execution block)
+13. `docs/plans/0026_schema_stability_gate.md` (completed Lane 3 contract policy)
+14. `docs/plans/0014_extraction_quality_baseline.md` (active Lane 4 promotion gate)
+15. `docs/plans/0027_deferred_parity_reprioritization.md`
+16. `docs/plans/0028_query_browse_surface.md`
+17. `docs/plans/0005_v1_capability_parity_matrix.md`
+18. `docs/plans/0001_successor_roadmap.md`
 
 ## Commands
 
@@ -84,9 +85,11 @@ config/
   to `0.746`, and narrowed the remaining work to three residual alias families.
   Plan 0035 is now also complete: it closed `q02`, `q04`, and `q08`, and the
   fresh clean rerun proved that those alias families are no longer the blocker.
-  The active bounded block is now Plan 0036, which owns the reopened
-  same-surname person safety regression (`John Smith` / `James Smith`) plus
-  the remaining `q05` / `q06` negative-control question behavior.
+  Plan 0036 is now also complete: it restored same-surname person safety and
+  recovered `q05` / `q06` on a fresh rerun. The active bounded block is now
+  Plan 0037, which owns only the residual Rodriguez and Washington place-family
+  false splits while preserving the zero-false-merge and `10/10`
+  question-accuracy floor.
   The chunk-level transfer evaluation requirement remains active through
   ADR 0023 and Plans 0024/0014 even though there is no standalone Plan 0019
   file.
@@ -241,7 +244,7 @@ happens.
 
 ## Active Execution Block (2026-04-01)
 
-**Plan 0036: 24h Entity Resolution Negative-Control Recovery Block — active until fully closed.**
+**Plan 0037: 24h Entity Resolution False-Split Cleanup Block — active until fully closed.**
 
 Within an active 24h execution block, the default operating mode is continuous
 execution: finish the current phase, verify it, commit it, update the active

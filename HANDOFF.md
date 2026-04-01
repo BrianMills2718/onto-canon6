@@ -2,6 +2,50 @@
 
 ## Session Focus
 
+Plan 0036 closeout and Plan 0037 activation in the isolated worktree branch
+`codex/onto-canon6-integration-planning`.
+
+## What Landed
+
+1. Plan 0036 is now truthfully closed from the canonical timeout-enabled fresh
+   rerun:
+   - `docs/runs/scale_test_llm_2026-04-01_113959.json`
+   - `docs/runs/2026-04-01_entity_resolution_negative_control_recovery.md`
+2. same-surname person safety is restored and both negative-control questions
+   now score correctly on a fresh rerun:
+   - `q05` correct
+   - `q06` correct
+3. the remaining active frontier is narrower:
+   - Rodriguez title-family false split
+   - Washington place-family false split
+4. Plan 0037 is now the active bounded execution surface.
+
+## Current State
+
+1. Plan 0036 is complete.
+2. The canonical fresh rerun now shows:
+   - precision `1.00`
+   - recall `0.9417`
+   - false merges `0`
+   - false splits `6`
+   - answer rate `1.00`
+   - accuracy `1.00`
+3. The remaining misses are false splits only.
+
+## Recommended Next Step
+
+If work continues:
+
+1. stay on `codex/onto-canon6-integration-planning`;
+2. execute Plan 0037 in order:
+   - repair the Rodriguez title-family split
+   - repair the Washington place-family split
+   - rerun on a fresh DB with `LLM_CLIENT_TIMEOUT_POLICY=allow`
+3. preserve the zero-false-merge and `10/10` question-accuracy floor from
+   `113959`.
+
+## Session Focus
+
 Plan 0035 closeout and Plan 0036 activation in the isolated worktree branch
 `codex/onto-canon6-integration-planning`.
 

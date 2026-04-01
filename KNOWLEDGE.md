@@ -136,3 +136,18 @@ decision-grade entity-resolution evidence. Identity memberships and prior
 resolution state can change answerability in misleading ways. Use a fresh DB
 for closeout reruns, and treat repeated-resolution artifacts as diagnostics
 only.
+
+### 2026-04-01 — codex — workaround
+Long-running scale-test reruns can hang indefinitely unless
+`LLM_CLIENT_TIMEOUT_POLICY=allow` is set for the process. The first fresh rerun
+attempt for Plan 0036 stalled until manually killed; the canonical decision
+artifact `docs/runs/scale_test_llm_2026-04-01_113959.json` came from the same
+command with timeout policy explicitly enabled.
+
+### 2026-04-01 — codex — best-practice
+Plan 0036 proved that pairwise false splits can remain even after the benchmark
+question set is fully green. After `113959`, answer rate and accuracy were both
+`1.00`, but pairwise recall still trailed because the Rodriguez title family
+and Washington place family were split across separate identity clusters. Use
+question accuracy and pairwise recall together when deciding whether
+entity-resolution work is actually complete.

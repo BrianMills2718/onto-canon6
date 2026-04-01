@@ -26,10 +26,10 @@ Current post-cutover program state:
 4. the first read-only query surface is now landed and proved through
    `docs/plans/0028_query_browse_surface.md` and
    `docs/plans/0029_24h_query_surface_execution_block.md`;
-5. Plan 0025 now has decision-grade value-proof evidence plus six completed
-   bounded blocks; the current active question is narrower fresh-run
-   same-surname safety recovery plus the remaining `q06` negative-control
-   answerability after Plan 0035 closed `q02`, `q04`, and `q08`.
+5. Plan 0025 now has decision-grade value-proof evidence plus seven completed
+   bounded blocks; Plan 0036 restored same-surname safety and recovered `q05`
+   / `q06` on a fresh rerun, and the current active question is now only the
+   remaining Rodriguez and Washington place-family false splits.
 
 ## What Is Proven
 
