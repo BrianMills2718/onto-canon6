@@ -91,8 +91,9 @@ Plan `0040` narrowed the blocker more precisely than before:
    chunks, so prompt-eval cannot certify promotion by itself.
 
 The current blocker is therefore no longer "missing positive-control transfer
-evidence." The current blocker is the residual full-chunk prompt-eval/live
-parity gap now tracked under Plan `0041`.
+evidence." Plan `0041` closed the prompt-surface uncertainty and showed the
+remaining blocker is semantic transfer residuals, now tracked under Plan
+`0042`.
 
 ## Current State
 

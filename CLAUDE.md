@@ -21,13 +21,14 @@ runtime.
 13. `docs/plans/0038_24h_entity_resolution_surface_stability_block.md` (completed surface-stability block)
 14. `docs/plans/0039_24h_entity_resolution_rerun_stability_block.md` (completed rerun-stability block)
 15. `docs/plans/0040_24h_extraction_transfer_certification_block.md` (completed certification decision block)
-16. `docs/plans/0041_24h_full_chunk_transfer_parity_block.md` (current active execution block)
-17. `docs/plans/0026_schema_stability_gate.md` (completed Lane 3 contract policy)
-18. `docs/plans/0014_extraction_quality_baseline.md` (active Lane 4 promotion gate)
-19. `docs/plans/0027_deferred_parity_reprioritization.md`
-20. `docs/plans/0028_query_browse_surface.md`
-21. `docs/plans/0005_v1_capability_parity_matrix.md`
-22. `docs/plans/0001_successor_roadmap.md`
+16. `docs/plans/0041_24h_full_chunk_transfer_parity_block.md` (completed parity-localization block)
+17. `docs/plans/0042_24h_semantic_transfer_residual_block.md` (current active execution block)
+18. `docs/plans/0026_schema_stability_gate.md` (completed Lane 3 contract policy)
+19. `docs/plans/0014_extraction_quality_baseline.md` (active Lane 4 promotion gate)
+20. `docs/plans/0027_deferred_parity_reprioritization.md`
+21. `docs/plans/0028_query_browse_surface.md`
+22. `docs/plans/0005_v1_capability_parity_matrix.md`
+23. `docs/plans/0001_successor_roadmap.md`
 
 ## Commands
 
@@ -101,9 +102,11 @@ config/
   complete at its Phase 4 value-proof level. Plan 0040 is now also complete:
   chunk `002` proved positive live transfer for compact-v4, but chunk `003`
   remained negative and full-chunk prompt-eval/live parity still diverged on
-  both named chunks. The current active bounded block is therefore Plan 0041,
-  which narrows that residual parity blocker instead of reopening broad prompt
-  churn.
+  both named chunks. Plan 0041 is now complete: it proved the prompt-surface
+  difference is stable and bounded, but not the dominant blocker family. The
+  current active bounded block is therefore Plan 0042, which targets the
+  remaining semantic transfer residual directly instead of reopening prompt
+  surface uncertainty or broad prompt churn.
   The chunk-level transfer evaluation requirement remains active through
   ADR 0023 and Plans 0024/0014 even though there is no standalone Plan 0019
   file.
@@ -134,12 +137,13 @@ config/
   not a suggestion: keep executing, keep rerunning, keep committing, and only
   stop when the active block is either complete or explicitly narrowed to a new
   documented blocker.
-- **Current execution rule for Plan 0041:** the next 24h sequence is already
-  pre-decided. Localize the remaining full-chunk prompt-eval/live disagreement
-  on chunks `002` and `003`, close Plan `0041` with a decision-grade parity
-  note, then immediately activate the next bounded extraction block named by
-  that closeout. Do not pause after the closeout commit just to ask what comes
-  next; the answer must already be in the active docs.
+- **Current execution rule for Plan 0042:** the next 24h sequence is already
+  pre-decided. Freeze the semantic residual contract from chunks `002` and
+  `003`, land a body-level comparison aid, make one bounded compact-prompt
+  revision, verify it first in prompt-eval and then on a live chunk rerun, and
+  close the block with a decision note. Do not pause between those phases for a
+  conversational check-in unless the active docs record a real blocker or
+  uncertainty that changes the plan.
 - **After the current value-proof work, the next-active deferred capability is
   queryability.** Plan 0027 now fixes the deferred-capability order, and Plan
   0028 now has a landed first read-only browse/search surface over promoted
@@ -273,7 +277,7 @@ happens.
 
 ## Active Execution Block (2026-04-01)
 
-**Plan 0041: 24h Full-Chunk Transfer Parity Block — active until fully closed.**
+**Plan 0042: 24h Semantic Transfer Residual Block — active until fully closed.**
 
 Within an active 24h execution block, the default operating mode is continuous
 execution: finish the current phase, verify it, commit it, update the active
@@ -295,7 +299,7 @@ verify it, commit it, log any uncertainty, and continue. Do not wait for
 
 The only valid stop conditions are:
 
-1. all 5 phases in `docs/plans/0041_24h_full_chunk_transfer_parity_block.md`
+1. all 5 phases in `docs/plans/0042_24h_semantic_transfer_residual_block.md`
    are complete and committed;
 2. a real blocker that cannot be resolved from repo context or the plan;
 3. a material uncertainty not covered by the pre-made decisions below.
@@ -310,20 +314,20 @@ Pre-made decisions (do not ask about these):
 - Work stays in the isolated `codex/onto-canon6-integration-planning` worktree
 - chunk `002` and chunk `003` remain the canonical transfer chunks
 - the current compact operational-parity lane is the only candidate under test
-- no broad prompt rewrite starts before the live-vs-parity comparison is explicit
+- no broad prompt rewrite starts before the semantic residual is explicit
 - Commit each verified phase immediately
 
 ## Most Recent Execution Block (2026-04-01)
 
-**Plan 0031: 24h Entity Resolution Hardening Block — complete.**
+**Plan 0041: 24h Full-Chunk Transfer Parity Block — complete.**
 
-The hardening block now has:
+The parity-localization block now has:
 
-1. a fixed auto-review judge path that honors explicit bounded model overrides;
-2. deterministic person-name hardening that removed the prior same-surname
-   false-merge family;
-3. hierarchy-aware or override-aware resolution-family compatibility for
-   subtype-equivalent entities;
+1. a reproducible prompt-surface comparison helper;
+2. canonical chunk-002 and chunk-003 prompt-surface artifacts;
+3. a decision note proving the prompt-surface delta is stable and bounded; and
+4. an explicit conclusion that semantic extraction behavior, not prompt-asset
+   confusion, is now the dominant transfer blocker family.
 4. fresh exact and LLM rerun artifacts plus a written decision note in
    `docs/runs/2026-04-01_entity_resolution_hardening_rerun.md`.
 

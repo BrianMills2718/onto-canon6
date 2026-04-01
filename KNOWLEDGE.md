@@ -176,3 +176,11 @@ Prompt-eval report `execution_id` is not the same key as
 `experiment_items.run_id` in the observability DB. For transfer-comparison
 work, recover the real per-variant `run_id` from `experiment_runs`
 (`config.variant_kwargs.prompt_ref`) before querying `experiment_items`.
+
+### 2026-04-01 — codex — best-practice
+For full-chunk prompt-surface diagnosis, treat prompt-eval as a two-step
+surface: template messages still contain literal `{input}`, and the effective
+runtime surface appears only after `prompt_eval.runner._substitute_input()`
+applies the case payload. Plan 0041 proved that the live vs prompt-eval system
+messages are identical and the remaining user-surface delta is a stable wrapper
+family (`Case input:` plus wording drift), not an unknown prompt-asset mixup.

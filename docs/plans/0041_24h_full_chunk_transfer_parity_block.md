@@ -1,12 +1,12 @@
 # 24h Full-Chunk Transfer Parity Block
 
-Status: active
+Status: complete
 Phase status:
 - Phase 1 completed
-- Phase 2 pending
-- Phase 3 pending
-- Phase 4 pending
-- Phase 5 pending
+- Phase 2 completed
+- Phase 3 completed
+- Phase 4 completed
+- Phase 5 completed
 
 Last updated: 2026-04-01
 Workstream: narrow the residual full-chunk prompt-eval/live disagreement left
@@ -117,6 +117,20 @@ Progress note:
 1. the repo can show the prompt/context delta directly;
 2. the delta is saved under `docs/runs/` or `var/` as a reproducible artifact.
 
+Progress note:
+
+1. prompt-surface reconstruction is now reproducible through:
+   - `src/onto_canon6/evaluation/prompt_surface_parity.py`
+   - `scripts/render_prompt_surface_parity.py`
+2. canonical chunk artifacts now exist:
+   - `docs/runs/2026-04-01_chunk002_prompt_surface_parity.json`
+   - `docs/runs/2026-04-01_chunk003_prompt_surface_parity.json`
+3. both chunks now prove the same bounded surface difference:
+   - identical system messages;
+   - prompt-eval template `{input}` placeholder;
+   - effective prompt-eval `Case input:` wrapper that the live path does not
+     include.
+
 ### Phase 3: Land The Minimum Parity Aid
 
 #### Tasks
@@ -129,6 +143,15 @@ Progress note:
 
 1. future parity diagnosis no longer depends on ad hoc shell reconstruction;
 2. the helper does not become a second extraction runtime.
+
+Progress note:
+
+1. the parity helper landed as a bounded render-and-diff aid rather than a
+   second extraction path;
+2. focused verification now exists in
+   `tests/evaluation/test_prompt_surface_parity.py`;
+3. the helper can render from fixture cases directly, so the repo no longer
+   depends on transient chunk files to reproduce the comparison.
 
 ### Phase 4: Classify The Dominant Residual
 
@@ -145,6 +168,20 @@ Progress note:
 2. the decision is backed by chunk `002` and chunk `003`, not by one chunk
    only.
 
+Progress note:
+
+1. chunk `002` shows the prompt-surface wrapper difference, but the residual is
+   still mostly semantic body drift:
+   - `7` shared bodies
+   - `3` live-only bodies
+   - `3` prompt-eval-only bodies
+2. chunk `003` shows the same wrapper difference, but the residual is fully
+   semantic:
+   - prompt-eval emits `0` candidates
+   - live emits `3` unsupported analytical-overreach candidates
+3. the dominant blocker is therefore semantic extraction behavior, not prompt
+   asset confusion.
+
 ### Phase 5: Closeout
 
 #### Tasks
@@ -159,6 +196,13 @@ Progress note:
 
 1. the next extraction block is narrowed to one explicit blocker family;
 2. top-level docs truthfully reflect the new active block.
+
+Progress note:
+
+1. the decision-grade closeout note now exists:
+   `docs/runs/2026-04-01_full_chunk_transfer_parity_decision.md`
+2. the next bounded extraction block is now explicit:
+   `docs/plans/0042_24h_semantic_transfer_residual_block.md`
 
 ## Failure Modes
 
@@ -177,3 +221,15 @@ This block is complete only when:
 2. the worktree is clean;
 3. the repo contains committed parity-localization artifacts and a decision
    note.
+
+## Closeout
+
+Plan `0041` is complete.
+
+It answered the only question it owned:
+
+1. yes, a stable prompt/render contract difference exists; but
+2. no, that difference is not the dominant residual blocker family.
+
+The active extraction frontier is now Plan `0042`, which targets semantic
+transfer residuals directly.

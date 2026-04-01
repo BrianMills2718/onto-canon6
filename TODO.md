@@ -3,32 +3,35 @@
 ## Current 24h Execution Block
 
 Source of truth:
-- `docs/plans/0041_24h_full_chunk_transfer_parity_block.md`
+- `docs/plans/0042_24h_semantic_transfer_residual_block.md`
 
-### Phase 1 — Freeze The Residual Contract
-- [x] Restate the Plan 0040 result as the incoming contract
-- [x] Enumerate the exact residual mismatches on chunks `002` and `003`
+### Phase 1 — Freeze The Semantic Residual Contract
+- [ ] Restate the Plan 0041 decision as the incoming contract
+- [ ] Enumerate the chunk `002` body-level residuals
+- [ ] Enumerate the chunk `003` live-only overreach families
 - [x] Record the execution caveats (`PYTHONPATH=src`, run-id mapping)
 - [ ] Commit verified phase
 
-### Phase 2 — Reconstruct Prompt Surfaces
-- [ ] Reconstruct the live extraction prompt surface for a named chunk
-- [ ] Reconstruct the prompt-eval parity prompt surface for the same chunk
-- [ ] Save the exact message/context delta
+### Phase 2 — Land A Body-Level Comparison Aid
+- [ ] Extend or add the narrowest helper for body-level comparison
+- [ ] Add targeted verification for that helper
+- [ ] Save semantic residual artifacts for chunks `002` and `003`
 - [ ] Commit verified phase
 
-### Phase 3 — Land The Minimum Parity Aid
-- [ ] Implement the narrowest reproducible prompt-surface comparison helper
-- [ ] Add verification for the helper
+### Phase 3 — Make One Bounded Prompt Revision
+- [ ] Update the compact extraction prompt candidate only where the residual justifies it
+- [ ] Target analytical narrator overreach and unsupported subject/speaker invention
+- [ ] Keep the diff small and traceable
 - [ ] Commit verified phase
 
-### Phase 4 — Classify The Dominant Residual
-- [ ] Run the parity aid on chunks `002` and `003`
-- [ ] Decide whether the dominant blocker is prompt/render contract or semantic extraction
+### Phase 4 — Verify The Revision
+- [ ] Rerun bounded prompt-eval verification on chunks `002` and `003`
+- [ ] Run at least one live chunk rerun if prompt-eval improves honestly
+- [ ] Decide whether the candidate advanced or stayed promotion-blocking
 - [ ] Commit verified phase
 
 ### Phase 5 — Closeout
-- [ ] Write the decision-grade parity note
+- [ ] Write the decision-grade semantic residual note
 - [ ] Refresh docs/status/handoff
 - [ ] Mark execution block complete
 - [ ] Commit verified phase
@@ -36,35 +39,32 @@ Source of truth:
 ## Most Recent Completed 24h Execution Block
 
 Source of truth:
-- `docs/plans/0040_24h_extraction_transfer_certification_block.md`
+- `docs/plans/0041_24h_full_chunk_transfer_parity_block.md`
 
-### Phase 1 — Freeze The Certification Contract
-- [x] Name the exact compact candidate lane and prompt asset under test
-- [x] Freeze the canonical chunk pair (`002`, `003`)
-- [x] Freeze the incoming transfer artifacts from Plan 0014
+### Phase 1 — Freeze The Residual Contract
+- [x] Restate the Plan 0040 result as the incoming contract
+- [x] Enumerate the exact residual mismatches on chunks `002` and `003`
+- [x] Record the execution caveats (`PYTHONPATH=src`, run-id mapping)
 - [x] Commit verified phase
 
-### Phase 2 — Localize The Live-vs-Parity Gap
-- [x] Compare current live output against prompt-eval parity output on chunk `003`
-- [~] Compare the same surfaces on chunk `002`
-- [x] Write down exact candidate/output differences plus review outcomes
+### Phase 2 — Reconstruct Prompt Surfaces
+- [x] Reconstruct the live extraction prompt surface for a named chunk
+- [x] Reconstruct the prompt-eval parity prompt surface for the same chunk
+- [x] Save the exact message/context delta
 - [x] Commit verified phase
 
-### Phase 3 — Land The Minimum Certification Aid
-- [x] Implement the narrowest reproducible live-vs-parity comparison helper
+### Phase 3 — Land The Minimum Parity Aid
+- [x] Implement the narrowest reproducible prompt-surface comparison helper
 - [x] Add verification for the helper
 - [x] Commit verified phase
 
-### Phase 4 — Re-run The Certification Check
-- [x] Build one current-generation full-chunk parity artifact for chunk `002`
-- [x] Build or confirm one current-generation live compact-v4 reviewed chunk `002` artifact
-- [x] Run the certification comparison on chunk `002`
-- [x] Run the certification comparison on chunk `003`
-- [x] Decide whether the candidate clears or fails the transfer gate
+### Phase 4 — Classify The Dominant Residual
+- [x] Run the parity aid on chunks `002` and `003`
+- [x] Decide whether the dominant blocker is prompt/render contract or semantic extraction
 - [x] Commit verified phase
 
 ### Phase 5 — Closeout
-- [x] Write the decision-grade certification note
+- [x] Write the decision-grade parity note
 - [x] Refresh docs/status/handoff
 - [x] Mark execution block complete
 - [x] Commit verified phase
@@ -111,7 +111,8 @@ Source of truth:
 - [x] Keep chunk `002` as the positive control and chunk `003` as the prose-heavy stress case
 - [x] Make the live-vs-parity gap reproducible instead of aggregate-only
 - [x] Decide whether the current candidate is promotable or still transfer-blocked
-- [ ] Narrow the remaining full-chunk prompt-eval/live residual into one dominant blocker family
+- [x] Narrow the remaining full-chunk prompt-eval/live residual into one dominant blocker family
+- [ ] Reduce the remaining semantic transfer residual to one bounded prompt-revision target
 
 ## Longer-Term Queue
 
