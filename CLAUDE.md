@@ -200,7 +200,7 @@ happens.
    resolution *infrastructure*. Export adapters wire the identity subsystem.
    Consumers should not have to reimplement dedup.
 
-## Active Execution Block (2026-03-31 night run)
+## Active Execution Block (2026-04-01)
 
 **CONTINUOUS AUTONOMOUS EXECUTION. DO NOT STOP.**
 
@@ -211,34 +211,52 @@ every verified phase as a rollback point. Use tasks to track progress.
 The ONLY valid stop conditions are:
 1. All phases complete
 2. A real blocker that requires Brian's input AND cannot be worked around
-3. LLM API is down for >10 minutes (log it and try the next phase)
+3. LLM API is down for >10 minutes (log it and try the next phase that doesn't need LLM)
 
-### Phase A: Fix extraction noise (Plan 0014 known issue)
-**Goal**: Reduce noise entities ("met", "a ceremony", etc.) from extraction.
-**Success**: Re-run scale test, precision >90% (currently 77.8%).
-**Approach**: Add discriminating instruction to extraction prompt. Re-run on
-synthetic corpus. Score against ground truth.
+### Phase E: Plan 0026 Phase 2 — Define compatibility artifacts
+**Goal**: Choose one deterministic compatibility artifact per schema surface.
+**Success**: Each of the 4 surfaces (promoted graph, governed bundle, Foundation
+IR, DIGIMON v1 export) has a named fixture/snapshot strategy with volatile
+field normalization rules decided.
+**Approach**: Create `tests/fixtures/compatibility/` directory. For each surface,
+generate a canonical fixture from the current code, normalize timestamps and
+nondeterministic IDs. Document normalization rules in Plan 0026.
 
-### Phase B: Plan 0025 Phase 4d — bare extraction comparison
-**Goal**: Prove onto-canon6 pipeline beats simple extraction on cross-doc tasks.
-**Success**: Documented comparison showing onto-canon6 resolves more entities.
-**Approach**: Write bare extraction script, run on same corpus, score, compare.
+### Phase F: Plan 0026 Phase 3 — Implement minimum compatibility gate
+**Goal**: Each surface has at least one explicit compatibility check that fails
+loud when a gated field or behavior changes.
+**Success**: `make check` includes compatibility checks. All 4 surfaces have
+runnable owner checks.
+**Approach**: Write pytest fixtures that load the canonical artifacts and compare
+against current code output. Add to the test suite.
 
-### Phase C: Plan 0025 Phase 4e — cross-document QA evaluation
-**Goal**: Prove downstream answer quality improves with resolution.
-**Success**: 10+ cross-document questions answered measurably better.
-**Approach**: Write question set, query both pipelines, LLM-judge score.
+### Phase G: Plan 0014 — Validate extraction quality on real corpus
+**Goal**: Confirm gemini-3-flash-preview + improved prompt produces clean
+extraction on non-synthetic text (e.g., the existing PSYOP benchmark).
+**Success**: Run extraction on 2-3 real PSYOP chunks. Score structural validity
+and noise entity rate. Document results in Plan 0014.
+**Approach**: Use existing benchmark fixture (`tests/fixtures/psyop_eval_slice.json`).
+Run extraction, count noise entities, compare to synthetic corpus results.
 
-### Phase D: Update all plans with final results
-**Goal**: All plan docs reflect measured results.
-**Success**: Plan 0025 Phase 4 acceptance checked. Plan 0024 Lane 2 updated.
+### Phase H: Fix auto_resolution test hang
+**Goal**: The DB-backed auto_resolution tests (TestAutoResolveIdentities,
+TestFuzzyResolution) hang under pytest. Diagnose and fix.
+**Success**: `pytest tests/core/test_auto_resolution.py` runs to completion
+in <30 seconds.
+**Approach**: Investigate — likely SQLite lock contention or asyncio event loop
+issue from the LLM mock tests.
+
+### Phase I: Update all plans and HANDOFF with final results
+**Goal**: All docs current after Phases E-H.
+**Success**: Plan 0026 updated. Plan 0014 updated. HANDOFF current.
 
 **Pre-made decisions (apply to all phases):**
+- Model: `gemini/gemini-3-flash-preview` (best tested)
 - Config: `review_mode: llm`, `enable_judge_filter: true`, `require_llm_review: true`
-- DIGIMON is the first Lane 2 consumer (D6)
 - All LLM calls through llm_client with task/trace_id/max_budget
 - Commit each verified phase immediately
 - Log uncertainties in plan docs and continue — do not stop
+- If LLM quota hits: switch to gemini-2.5-flash-lite as fallback
 
 ## Principles
 
