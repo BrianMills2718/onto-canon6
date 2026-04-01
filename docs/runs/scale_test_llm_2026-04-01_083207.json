@@ -1,0 +1,2885 @@
+{
+  "generated_at": "2026-04-01T15:32:07.781506+00:00",
+  "state_ref": "var/scale_test_llm_recovery/scale_test.sqlite3",
+  "strategy": "llm",
+  "corpus_description": "Synthetic corpus for entity resolution scale test. 25 documents about overlapping military/intelligence entities. Ground truth for measuring precision and recall of entity resolution.",
+  "scoring_rules": [
+    "Ground-truth matching uses auto-resolution name normalization plus source-doc overlap as a tiebreaker.",
+    "Pairwise precision/recall are computed only over observations that match the ground-truth registry uniquely.",
+    "Observations with no unique ground-truth match remain explicit as unmatched or ambiguous and are not silently discarded.",
+    "Questions are scored against the matched observation set; unanswered questions lower answer rate and overall accuracy."
+  ],
+  "ground_truth_summary": {
+    "entity_count": 13,
+    "expected_merge_count": 10,
+    "expected_non_merge_count": 3
+  },
+  "observations": [
+    {
+      "entity_id": "ent:auto:05be3bc7:oc_organization:national_security_agency",
+      "entity_type": "oc:organization",
+      "first_candidate_id": "cand_b78340c0608d4773870ae1bf",
+      "predicted_cluster_id": "gid_5b84a569a8557c21ea3c6fe5",
+      "observed_names": [
+        "National Security Agency"
+      ],
+      "source_refs": [
+        "doc_24"
+      ],
+      "matched_ground_truth_entity_id": null,
+      "match_status": "unmatched",
+      "match_reason": "name matched only ground-truth entities with incompatible types",
+      "candidate_ground_truth_entity_ids": [
+        "E009"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:05be3bc7:oc_organization:signals_intelligence",
+      "entity_type": "oc:organization",
+      "first_candidate_id": "cand_35d8f4a2b8f145f094cbdc79",
+      "predicted_cluster_id": "gid_2fe96a9db338794d078bb79a",
+      "observed_names": [
+        "signals intelligence"
+      ],
+      "source_refs": [
+        "doc_24"
+      ],
+      "matched_ground_truth_entity_id": null,
+      "match_status": "unmatched",
+      "match_reason": "name matched only ground-truth entities with incompatible types",
+      "candidate_ground_truth_entity_ids": [
+        "E009"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:05be3bc7:oc_organization:special_operations",
+      "entity_type": "oc:organization",
+      "first_candidate_id": "cand_35d8f4a2b8f145f094cbdc79",
+      "predicted_cluster_id": "gid_3c3f6ccef9c744218a2df107",
+      "observed_names": [
+        "special operations"
+      ],
+      "source_refs": [
+        "doc_24"
+      ],
+      "matched_ground_truth_entity_id": null,
+      "match_status": "unmatched",
+      "match_reason": "name matched only ground-truth entities with incompatible types",
+      "candidate_ground_truth_entity_ids": [
+        "E009"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:05be3bc7:oc_organization:special_operations_forces",
+      "entity_type": "oc:organization",
+      "first_candidate_id": "cand_b78340c0608d4773870ae1bf",
+      "predicted_cluster_id": "gid_4f78c8b89afb887fbee1de47",
+      "observed_names": [
+        "special operations forces"
+      ],
+      "source_refs": [
+        "doc_24"
+      ],
+      "matched_ground_truth_entity_id": null,
+      "match_status": "unmatched",
+      "match_reason": "name matched only ground-truth entities with incompatible types",
+      "candidate_ground_truth_entity_ids": [
+        "E009"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:20ba9f32:unknown:john_smith",
+      "entity_type": "unknown",
+      "first_candidate_id": "cand_85b84b982f104aa9a3b81ff4",
+      "predicted_cluster_id": "gid_5a04bbea2f78899bbfded53b",
+      "observed_names": [
+        "John Smith"
+      ],
+      "source_refs": [
+        "doc_05"
+      ],
+      "matched_ground_truth_entity_id": null,
+      "match_status": "unmatched",
+      "match_reason": "name matched only ground-truth entities with incompatible types",
+      "candidate_ground_truth_entity_ids": [
+        "E001"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:20ba9f32:unknown:new_training_programs_and_equipment_upgrades",
+      "entity_type": "unknown",
+      "first_candidate_id": "cand_f7c2617bf5c447dcb7f1f0ee",
+      "predicted_cluster_id": "gid_f1e9873c2908533f6f2a24ff",
+      "observed_names": [
+        "new training programs and equipment upgrades"
+      ],
+      "source_refs": [
+        "doc_05"
+      ],
+      "matched_ground_truth_entity_id": null,
+      "match_status": "unmatched",
+      "match_reason": "name matched only ground-truth entities with incompatible types",
+      "candidate_ground_truth_entity_ids": [
+        "E001",
+        "E002"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:20ba9f32:unknown:several_initiatives_to_modernize_its_force_structure",
+      "entity_type": "unknown",
+      "first_candidate_id": "cand_7b57794a57ab457b88f1b5fb",
+      "predicted_cluster_id": "gid_c3d1661507837d27eeff6afd",
+      "observed_names": [
+        "several initiatives to modernize its force structure"
+      ],
+      "source_refs": [
+        "doc_05"
+      ],
+      "matched_ground_truth_entity_id": null,
+      "match_status": "unmatched",
+      "match_reason": "name matched only ground-truth entities with incompatible types",
+      "candidate_ground_truth_entity_ids": [
+        "E001",
+        "E002"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:20ba9f32:unknown:special_operations_command",
+      "entity_type": "unknown",
+      "first_candidate_id": "cand_85b84b982f104aa9a3b81ff4",
+      "predicted_cluster_id": "gid_80a2bbbb11276a5648f1dfd4",
+      "observed_names": [
+        "Special Operations Command"
+      ],
+      "source_refs": [
+        "doc_05"
+      ],
+      "matched_ground_truth_entity_id": null,
+      "match_status": "unmatched",
+      "match_reason": "name matched only ground-truth entities with incompatible types",
+      "candidate_ground_truth_entity_ids": [
+        "E002"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:20ba9f32:unknown:the_reforms",
+      "entity_type": "unknown",
+      "first_candidate_id": "cand_f7c2617bf5c447dcb7f1f0ee",
+      "predicted_cluster_id": "gid_162883b2c7b4f84914565c6e",
+      "observed_names": [
+        "The reforms"
+      ],
+      "source_refs": [
+        "doc_05"
+      ],
+      "matched_ground_truth_entity_id": null,
+      "match_status": "unmatched",
+      "match_reason": "name matched only ground-truth entities with incompatible types",
+      "candidate_ground_truth_entity_ids": [
+        "E001",
+        "E002"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:2652e0ef:entity:expanded_training_programs",
+      "entity_type": null,
+      "first_candidate_id": "cand_78c04e6c3dbc490ab653ea5d",
+      "predicted_cluster_id": "gid_04511ccd8a9e6f368eabcb41",
+      "observed_names": [
+        "expanded training programs"
+      ],
+      "source_refs": [
+        "doc_21"
+      ],
+      "matched_ground_truth_entity_id": "E005",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E005"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:2652e0ef:entity:fort_bragg",
+      "entity_type": null,
+      "first_candidate_id": "cand_cf48d62784ba43cfb6fbe106",
+      "predicted_cluster_id": "gid_7970ec33a31a41487c96207d",
+      "observed_names": [
+        "Fort Bragg"
+      ],
+      "source_refs": [
+        "doc_21"
+      ],
+      "matched_ground_truth_entity_id": "E005",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E005"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:2652e0ef:entity:new_facilities",
+      "entity_type": null,
+      "first_candidate_id": "cand_cf48d62784ba43cfb6fbe106",
+      "predicted_cluster_id": "gid_aef79a5ad46b8886e5caa27c",
+      "observed_names": [
+        "New facilities"
+      ],
+      "source_refs": [
+        "doc_21"
+      ],
+      "matched_ground_truth_entity_id": "E005",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E005"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:2652e0ef:entity:the_installation",
+      "entity_type": null,
+      "first_candidate_id": "cand_8a9a7feac62940a59a650cc0",
+      "predicted_cluster_id": "gid_99c7206697a9bd85b9bcae66",
+      "observed_names": [
+        "The installation"
+      ],
+      "source_refs": [
+        "doc_21"
+      ],
+      "matched_ground_truth_entity_id": "E005",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E005"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:34766658:oc_event:a_ceremony",
+      "entity_type": "oc:event",
+      "first_candidate_id": "cand_6f81e0015f4848fcb25ba102",
+      "predicted_cluster_id": "gid_2b0d8660ee7dcf5771ac3348",
+      "observed_names": [
+        "a ceremony"
+      ],
+      "source_refs": [
+        "doc_22"
+      ],
+      "matched_ground_truth_entity_id": null,
+      "match_status": "unmatched",
+      "match_reason": "name matched only ground-truth entities with incompatible types",
+      "candidate_ground_truth_entity_ids": [
+        "E002",
+        "E010"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:34766658:oc_event:exceptional_service",
+      "entity_type": "oc:event",
+      "first_candidate_id": "cand_bf0780f29ada45608dfd2eb5",
+      "predicted_cluster_id": "gid_2c2b7102d98fb2787a6e4324",
+      "observed_names": [
+        "exceptional service"
+      ],
+      "source_refs": [
+        "doc_22"
+      ],
+      "matched_ground_truth_entity_id": null,
+      "match_status": "unmatched",
+      "match_reason": "name matched only ground-truth entities with incompatible types",
+      "candidate_ground_truth_entity_ids": [
+        "E002",
+        "E010"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:34766658:oc_facility:ussocom_headquarters",
+      "entity_type": "oc:facility",
+      "first_candidate_id": "cand_8b5ed915c3aa4f11b24ec824",
+      "predicted_cluster_id": "gid_9ffd071d50c00932bd9ed219",
+      "observed_names": [
+        "USSOCOM headquarters"
+      ],
+      "source_refs": [
+        "doc_22"
+      ],
+      "matched_ground_truth_entity_id": null,
+      "match_status": "unmatched",
+      "match_reason": "name matched only ground-truth entities with incompatible types",
+      "candidate_ground_truth_entity_ids": [
+        "E002",
+        "E010"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:34766658:oc_military_organization:ussocom",
+      "entity_type": "oc:military_organization",
+      "first_candidate_id": "cand_d6195a40aceb435b89bf144f",
+      "predicted_cluster_id": "gid_325e5501c37ec328ffa0eceb",
+      "observed_names": [
+        "USSOCOM"
+      ],
+      "source_refs": [
+        "doc_22"
+      ],
+      "matched_ground_truth_entity_id": "E002",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E002"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:34766658:oc_mission:diverse_mission_set",
+      "entity_type": "oc:mission",
+      "first_candidate_id": "cand_c6fe72f188e642438d0accaf",
+      "predicted_cluster_id": "gid_69571c1eb7b8529fea2475d0",
+      "observed_names": [
+        "diverse mission set"
+      ],
+      "source_refs": [
+        "doc_22"
+      ],
+      "matched_ground_truth_entity_id": null,
+      "match_status": "unmatched",
+      "match_reason": "name matched only ground-truth entities with incompatible types",
+      "candidate_ground_truth_entity_ids": [
+        "E002",
+        "E010"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:34766658:oc_person:michael_torres",
+      "entity_type": "oc:person",
+      "first_candidate_id": "cand_d6195a40aceb435b89bf144f",
+      "predicted_cluster_id": "gid_dfee8001f06ff1147fec8252",
+      "observed_names": [
+        "Michael Torres"
+      ],
+      "source_refs": [
+        "doc_22"
+      ],
+      "matched_ground_truth_entity_id": "E010",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E010"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:4324487e:oc_military_organization:ussocom",
+      "entity_type": "oc:military_organization",
+      "first_candidate_id": "cand_fdf0abf82db64022b468a6f0",
+      "predicted_cluster_id": "gid_325e5501c37ec328ffa0eceb",
+      "observed_names": [
+        "USSOCOM"
+      ],
+      "source_refs": [
+        "doc_09"
+      ],
+      "matched_ground_truth_entity_id": "E002",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E002"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:4324487e:oc_person:adm_eric_olson",
+      "entity_type": "oc:person",
+      "first_candidate_id": "cand_e87f137d43f641e68e22dfca",
+      "predicted_cluster_id": "gid_3027a6e88ffb7cfe8ee3f9ce",
+      "observed_names": [
+        "Adm. Eric Olson"
+      ],
+      "source_refs": [
+        "doc_09"
+      ],
+      "matched_ground_truth_entity_id": "E003",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E003"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:4324487e:oc_person:lt_gen_torres",
+      "entity_type": "oc:person",
+      "first_candidate_id": "cand_fdf0abf82db64022b468a6f0",
+      "predicted_cluster_id": "gid_dfee8001f06ff1147fec8252",
+      "observed_names": [
+        "Lt. Gen. Torres"
+      ],
+      "source_refs": [
+        "doc_09"
+      ],
+      "matched_ground_truth_entity_id": "E010",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E010"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:4b3a13a1:oc_military_organization:psychological_operations",
+      "entity_type": "oc:military_organization",
+      "first_candidate_id": "cand_2ed949b174c04a98b29f6dae",
+      "predicted_cluster_id": "gid_31b33100b197a099a5c394da",
+      "observed_names": [
+        "psychological operations"
+      ],
+      "source_refs": [
+        "doc_02"
+      ],
+      "matched_ground_truth_entity_id": null,
+      "match_status": "unmatched",
+      "match_reason": "name matched only ground-truth entities with incompatible types",
+      "candidate_ground_truth_entity_ids": [
+        "E001",
+        "E003"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:4b3a13a1:oc_military_organization:the_command_s_counterterrorism_capabilities",
+      "entity_type": "oc:military_organization",
+      "first_candidate_id": "cand_5d5f8a2112e4438d94bacc5a",
+      "predicted_cluster_id": "gid_f454d81e2625ee79fd2b427d",
+      "observed_names": [
+        "the command's counterterrorism capabilities"
+      ],
+      "source_refs": [
+        "doc_02"
+      ],
+      "matched_ground_truth_entity_id": null,
+      "match_status": "unmatched",
+      "match_reason": "name matched only ground-truth entities with incompatible types",
+      "candidate_ground_truth_entity_ids": [
+        "E001",
+        "E003"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:4b3a13a1:oc_military_organization:u_s_special_operations_command",
+      "entity_type": "oc:military_organization",
+      "first_candidate_id": "cand_4296db572e644a4dae6ab59c",
+      "predicted_cluster_id": "gid_325e5501c37ec328ffa0eceb",
+      "observed_names": [
+        "U.S. Special Operations Command"
+      ],
+      "source_refs": [
+        "doc_02"
+      ],
+      "matched_ground_truth_entity_id": "E002",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E002"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:4b3a13a1:oc_person:adm_olson",
+      "entity_type": "oc:person",
+      "first_candidate_id": "cand_4296db572e644a4dae6ab59c",
+      "predicted_cluster_id": "gid_3027a6e88ffb7cfe8ee3f9ce",
+      "observed_names": [
+        "Adm. Olson"
+      ],
+      "source_refs": [
+        "doc_02"
+      ],
+      "matched_ground_truth_entity_id": "E003",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E003"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:4b3a13a1:oc_person:general_john_smith",
+      "entity_type": "oc:person",
+      "first_candidate_id": "cand_2ed949b174c04a98b29f6dae",
+      "predicted_cluster_id": "gid_7ad40e142ead51e93c10055d",
+      "observed_names": [
+        "General John Smith"
+      ],
+      "source_refs": [
+        "doc_02"
+      ],
+      "matched_ground_truth_entity_id": "E001",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E001"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:6d646836:oc_government_agency:national_security_agency",
+      "entity_type": "oc:government_agency",
+      "first_candidate_id": "cand_0466f3fc8dfe4f379a684cf6",
+      "predicted_cluster_id": "gid_a56471831a4ea7af88a0d1a6",
+      "observed_names": [
+        "National Security Agency"
+      ],
+      "source_refs": [
+        "doc_12"
+      ],
+      "matched_ground_truth_entity_id": null,
+      "match_status": "unmatched",
+      "match_reason": "name matched only ground-truth entities with incompatible types",
+      "candidate_ground_truth_entity_ids": [
+        "E009"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:6d646836:oc_intelligence_operation:growing_integration",
+      "entity_type": "oc:intelligence_operation",
+      "first_candidate_id": "cand_3cc790aed8304ff4a46ccd87",
+      "predicted_cluster_id": "gid_d55a5360f063e055d8f175b2",
+      "observed_names": [
+        "growing integration"
+      ],
+      "source_refs": [
+        "doc_12"
+      ],
+      "matched_ground_truth_entity_id": null,
+      "match_status": "unmatched",
+      "match_reason": "name matched only ground-truth entities with incompatible types",
+      "candidate_ground_truth_entity_ids": [
+        "E001",
+        "E009"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:6d646836:oc_intelligence_operation:sensitive_collection_operation",
+      "entity_type": "oc:intelligence_operation",
+      "first_candidate_id": "cand_21664e089eae43999941c1de",
+      "predicted_cluster_id": "gid_a96720036ee6ece123366e89",
+      "observed_names": [
+        "sensitive collection operation"
+      ],
+      "source_refs": [
+        "doc_12"
+      ],
+      "matched_ground_truth_entity_id": null,
+      "match_status": "unmatched",
+      "match_reason": "name matched only ground-truth entities with incompatible types",
+      "candidate_ground_truth_entity_ids": [
+        "E001",
+        "E009"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:6d646836:oc_intelligence_operation:signals_intelligence",
+      "entity_type": "oc:intelligence_operation",
+      "first_candidate_id": "cand_ba11d1b21306495b8735d794",
+      "predicted_cluster_id": "gid_aa5105240e94e74f14390746",
+      "observed_names": [
+        "signals intelligence"
+      ],
+      "source_refs": [
+        "doc_12"
+      ],
+      "matched_ground_truth_entity_id": null,
+      "match_status": "unmatched",
+      "match_reason": "name matched only ground-truth entities with incompatible types",
+      "candidate_ground_truth_entity_ids": [
+        "E001",
+        "E009"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:6d646836:oc_intelligence_operation:special_operations",
+      "entity_type": "oc:intelligence_operation",
+      "first_candidate_id": "cand_6d5cad84778d46f69bb6a96e",
+      "predicted_cluster_id": "gid_a60ae9bf58dd8fe2308d908c",
+      "observed_names": [
+        "special operations"
+      ],
+      "source_refs": [
+        "doc_12"
+      ],
+      "matched_ground_truth_entity_id": null,
+      "match_status": "unmatched",
+      "match_reason": "name matched only ground-truth entities with incompatible types",
+      "candidate_ground_truth_entity_ids": [
+        "E001",
+        "E009"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:6d646836:oc_intelligence_operation:the_operation",
+      "entity_type": "oc:intelligence_operation",
+      "first_candidate_id": "cand_3cc790aed8304ff4a46ccd87",
+      "predicted_cluster_id": "gid_f615a2967fe27ecd7b4e0708",
+      "observed_names": [
+        "The operation"
+      ],
+      "source_refs": [
+        "doc_12"
+      ],
+      "matched_ground_truth_entity_id": null,
+      "match_status": "unmatched",
+      "match_reason": "name matched only ground-truth entities with incompatible types",
+      "candidate_ground_truth_entity_ids": [
+        "E001",
+        "E009"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:6d646836:oc_military_organization:joint_task_force",
+      "entity_type": "oc:military_organization",
+      "first_candidate_id": "cand_a3620c4aedc046c88366a05c",
+      "predicted_cluster_id": "gid_2ce9f7df7c700c7194a127ee",
+      "observed_names": [
+        "joint task force"
+      ],
+      "source_refs": [
+        "doc_12"
+      ],
+      "matched_ground_truth_entity_id": null,
+      "match_status": "unmatched",
+      "match_reason": "name matched only ground-truth entities with incompatible types",
+      "candidate_ground_truth_entity_ids": [
+        "E001",
+        "E009"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:6d646836:oc_person:gen_smith",
+      "entity_type": "oc:person",
+      "first_candidate_id": "cand_a3620c4aedc046c88366a05c",
+      "predicted_cluster_id": "gid_7ad40e142ead51e93c10055d",
+      "observed_names": [
+        "Gen. Smith"
+      ],
+      "source_refs": [
+        "doc_12"
+      ],
+      "matched_ground_truth_entity_id": "E001",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E001"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:7bcc6a28:entity:4th_psyop_group",
+      "entity_type": null,
+      "first_candidate_id": "cand_b0ed4cecb6bd4345ab8cedcd",
+      "predicted_cluster_id": "gid_cbd91f0aff38354c97cb35ba",
+      "observed_names": [
+        "4th PSYOP Group"
+      ],
+      "source_refs": [
+        "doc_17"
+      ],
+      "matched_ground_truth_entity_id": "E004",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E004"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:7bcc6a28:oc_capability:new_capabilities_for_operating_in_the_digital_information_space",
+      "entity_type": "oc:capability",
+      "first_candidate_id": "cand_9007ea4cb3a74b4d8244abfb",
+      "predicted_cluster_id": "gid_f3f1d8049cd874987295b026",
+      "observed_names": [
+        "new capabilities for operating in the digital information space"
+      ],
+      "source_refs": [
+        "doc_17"
+      ],
+      "matched_ground_truth_entity_id": null,
+      "match_status": "unmatched",
+      "match_reason": "name matched only ground-truth entities with incompatible types",
+      "candidate_ground_truth_entity_ids": [
+        "E004",
+        "E007"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:7bcc6a28:oc_military_organization:4th_psyop_group",
+      "entity_type": "oc:military_organization",
+      "first_candidate_id": "cand_9007ea4cb3a74b4d8244abfb",
+      "predicted_cluster_id": "gid_ca81d185ea531f330a107d2c",
+      "observed_names": [
+        "4th PSYOP Group"
+      ],
+      "source_refs": [
+        "doc_17"
+      ],
+      "matched_ground_truth_entity_id": "E004",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E004"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:7bcc6a28:oc_person:james_rodriguez",
+      "entity_type": "oc:person",
+      "first_candidate_id": "cand_b0ed4cecb6bd4345ab8cedcd",
+      "predicted_cluster_id": "gid_8aac3653a565be010ddb98d6",
+      "observed_names": [
+        "James Rodriguez"
+      ],
+      "source_refs": [
+        "doc_17"
+      ],
+      "matched_ground_truth_entity_id": "E007",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E007"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:7bcc6a28:oc_person:soldiers",
+      "entity_type": "oc:person",
+      "first_candidate_id": "cand_a5ec50775cfb4a6a8cb7583c",
+      "predicted_cluster_id": "gid_ed96e1c35384039dd058a0fd",
+      "observed_names": [
+        "soldiers"
+      ],
+      "source_refs": [
+        "doc_17"
+      ],
+      "matched_ground_truth_entity_id": "E007",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E007"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:7bcc6a28:oc_skill:content_creation",
+      "entity_type": "oc:skill",
+      "first_candidate_id": "cand_1cd2a4eb19964496b6a4bb87",
+      "predicted_cluster_id": "gid_b9941d7bfa4e031645ccd586",
+      "observed_names": [
+        "content creation"
+      ],
+      "source_refs": [
+        "doc_17"
+      ],
+      "matched_ground_truth_entity_id": null,
+      "match_status": "unmatched",
+      "match_reason": "name matched only ground-truth entities with incompatible types",
+      "candidate_ground_truth_entity_ids": [
+        "E004",
+        "E007"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:7bcc6a28:oc_skill:social_media_analysis",
+      "entity_type": "oc:skill",
+      "first_candidate_id": "cand_9070ef960ca14a57a7e2b77d",
+      "predicted_cluster_id": "gid_2310e22ec5aa840ff5c18cbe",
+      "observed_names": [
+        "social media analysis"
+      ],
+      "source_refs": [
+        "doc_17"
+      ],
+      "matched_ground_truth_entity_id": null,
+      "match_status": "unmatched",
+      "match_reason": "name matched only ground-truth entities with incompatible types",
+      "candidate_ground_truth_entity_ids": [
+        "E004",
+        "E007"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:7d7e3d80:entity:a_strategy_document",
+      "entity_type": null,
+      "first_candidate_id": "cand_d34fb8d758654a728cd8317c",
+      "predicted_cluster_id": "gid_c9f1cefce5e8dc72e192fce9",
+      "observed_names": [
+        "a strategy document"
+      ],
+      "source_refs": [
+        "doc_15"
+      ],
+      "matched_ground_truth_entity_id": null,
+      "match_status": "ambiguous",
+      "match_reason": "multiple ground-truth candidates remain after type and doc-overlap checks",
+      "candidate_ground_truth_entity_ids": [
+        "E001",
+        "E006",
+        "E011"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:7d7e3d80:entity:cia",
+      "entity_type": null,
+      "first_candidate_id": "cand_14135a443d0b4df69ab193d4",
+      "predicted_cluster_id": "gid_035c0a9fcfed8a0cc41f8dd1",
+      "observed_names": [
+        "CIA"
+      ],
+      "source_refs": [
+        "doc_15"
+      ],
+      "matched_ground_truth_entity_id": "E006",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E006"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:7d7e3d80:entity:general_smith",
+      "entity_type": null,
+      "first_candidate_id": "cand_d34fb8d758654a728cd8317c",
+      "predicted_cluster_id": "gid_54138be5dac4850ac9d06f03",
+      "observed_names": [
+        "General Smith"
+      ],
+      "source_refs": [
+        "doc_15"
+      ],
+      "matched_ground_truth_entity_id": "E001",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E001"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:7d7e3d80:entity:james_smith",
+      "entity_type": null,
+      "first_candidate_id": "cand_f3bee8f5084a40358dab48fd",
+      "predicted_cluster_id": "gid_5a04bbea2f78899bbfded53b",
+      "observed_names": [
+        "James Smith"
+      ],
+      "source_refs": [
+        "doc_15"
+      ],
+      "matched_ground_truth_entity_id": "E011",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E011"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:8bd2dacc:oc_government_organization:congress",
+      "entity_type": "oc:government_organization",
+      "first_candidate_id": "cand_d81833debc064214a3dc1bc1",
+      "predicted_cluster_id": "gid_a29950f09539bbb79730c29b",
+      "observed_names": [
+        "Congress"
+      ],
+      "source_refs": [
+        "doc_14"
+      ],
+      "matched_ground_truth_entity_id": null,
+      "match_status": "unmatched",
+      "match_reason": "name matched only ground-truth entities with incompatible types",
+      "candidate_ground_truth_entity_ids": [
+        "E002",
+        "E010"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:8bd2dacc:oc_person:general_torres",
+      "entity_type": "oc:person",
+      "first_candidate_id": "cand_d81833debc064214a3dc1bc1",
+      "predicted_cluster_id": "gid_dfee8001f06ff1147fec8252",
+      "observed_names": [
+        "General Torres"
+      ],
+      "source_refs": [
+        "doc_14"
+      ],
+      "matched_ground_truth_entity_id": "E010",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E010"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:98e9cbb2:oc_location:fort_bragg",
+      "entity_type": "oc:location",
+      "first_candidate_id": "cand_dce76e1695cf431684815cbf",
+      "predicted_cluster_id": "gid_13fad2e9e7f629b7e448e8c4",
+      "observed_names": [
+        "Fort Bragg"
+      ],
+      "source_refs": [
+        "doc_03"
+      ],
+      "matched_ground_truth_entity_id": null,
+      "match_status": "unmatched",
+      "match_reason": "name matched only ground-truth entities with incompatible types",
+      "candidate_ground_truth_entity_ids": [
+        "E005"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:98e9cbb2:oc_military_organization:us_special_operations_command",
+      "entity_type": "oc:military_organization",
+      "first_candidate_id": "cand_d5a6af3f71704ba9a0283af0",
+      "predicted_cluster_id": "gid_325e5501c37ec328ffa0eceb",
+      "observed_names": [
+        "US Special Operations Command"
+      ],
+      "source_refs": [
+        "doc_03"
+      ],
+      "matched_ground_truth_entity_id": "E002",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E002"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:98e9cbb2:oc_military_unit:4th_psyop_group",
+      "entity_type": "oc:military_unit",
+      "first_candidate_id": "cand_dce76e1695cf431684815cbf",
+      "predicted_cluster_id": "gid_76facfede53c03da41300953",
+      "observed_names": [
+        "4th PSYOP Group"
+      ],
+      "source_refs": [
+        "doc_03"
+      ],
+      "matched_ground_truth_entity_id": null,
+      "match_status": "unmatched",
+      "match_reason": "name matched only ground-truth entities with incompatible types",
+      "candidate_ground_truth_entity_ids": [
+        "E004"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:9ba22d95:oc_event:joint_conference",
+      "entity_type": "oc:event",
+      "first_candidate_id": "cand_6575a7f22de64d5586d4b0d2",
+      "predicted_cluster_id": "gid_fd46661381a05eaf59820300",
+      "observed_names": [
+        "joint conference"
+      ],
+      "source_refs": [
+        "doc_08"
+      ],
+      "matched_ground_truth_entity_id": null,
+      "match_status": "unmatched",
+      "match_reason": "name matched only ground-truth entities with incompatible types",
+      "candidate_ground_truth_entity_ids": [
+        "E001",
+        "E009",
+        "E012"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:9ba22d95:oc_event:the_conference",
+      "entity_type": "oc:event",
+      "first_candidate_id": "cand_eaf698d8b9974abe9fa7a3bd",
+      "predicted_cluster_id": "gid_fd46661381a05eaf59820300",
+      "observed_names": [
+        "The conference"
+      ],
+      "source_refs": [
+        "doc_08"
+      ],
+      "matched_ground_truth_entity_id": null,
+      "match_status": "unmatched",
+      "match_reason": "name matched only ground-truth entities with incompatible types",
+      "candidate_ground_truth_entity_ids": [
+        "E001",
+        "E009",
+        "E012"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:9ba22d95:oc_location:washington_d_c",
+      "entity_type": "oc:location",
+      "first_candidate_id": "cand_6575a7f22de64d5586d4b0d2",
+      "predicted_cluster_id": "gid_4bfad7d8543be9fa931abc96",
+      "observed_names": [
+        "Washington D.C."
+      ],
+      "source_refs": [
+        "doc_08"
+      ],
+      "matched_ground_truth_entity_id": "E012",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E012"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:9ba22d95:oc_organization:nsa",
+      "entity_type": "oc:organization",
+      "first_candidate_id": "cand_4884c601334d4d768c877cc7",
+      "predicted_cluster_id": "gid_5b84a569a8557c21ea3c6fe5",
+      "observed_names": [
+        "NSA"
+      ],
+      "source_refs": [
+        "doc_08"
+      ],
+      "matched_ground_truth_entity_id": null,
+      "match_status": "unmatched",
+      "match_reason": "name matched only ground-truth entities with incompatible types",
+      "candidate_ground_truth_entity_ids": [
+        "E009"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:9ba22d95:oc_person:gen_j_smith",
+      "entity_type": "oc:person",
+      "first_candidate_id": "cand_4884c601334d4d768c877cc7",
+      "predicted_cluster_id": "gid_7ad40e142ead51e93c10055d",
+      "observed_names": [
+        "Gen. J. Smith"
+      ],
+      "source_refs": [
+        "doc_08"
+      ],
+      "matched_ground_truth_entity_id": "E001",
+      "match_status": "matched",
+      "match_reason": "resolved by source-doc overlap after multi-entity name collision",
+      "candidate_ground_truth_entity_ids": [
+        "E001",
+        "E011"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:9ba22d95:oc_topic:signals_intelligence_support_to_special_operations_forces_deployed_overseas",
+      "entity_type": "oc:topic",
+      "first_candidate_id": "cand_eaf698d8b9974abe9fa7a3bd",
+      "predicted_cluster_id": "gid_4a8ec8e103c4504779b145cd",
+      "observed_names": [
+        "signals intelligence support to special operations forces deployed overseas"
+      ],
+      "source_refs": [
+        "doc_08"
+      ],
+      "matched_ground_truth_entity_id": null,
+      "match_status": "unmatched",
+      "match_reason": "name matched only ground-truth entities with incompatible types",
+      "candidate_ground_truth_entity_ids": [
+        "E001",
+        "E009",
+        "E012"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:a62049dc:oc_military_operation:military_operations",
+      "entity_type": "oc:military_operation",
+      "first_candidate_id": "cand_dd229586823b4dc296d4aa25",
+      "predicted_cluster_id": "gid_5b4374de031d98d1cc1dd1d3",
+      "observed_names": [
+        "military operations"
+      ],
+      "source_refs": [
+        "doc_25"
+      ],
+      "matched_ground_truth_entity_id": null,
+      "match_status": "unmatched",
+      "match_reason": "no ground-truth variant match",
+      "candidate_ground_truth_entity_ids": []
+    },
+    {
+      "entity_id": "ent:auto:a62049dc:oc_military_organization:all_combatant_commands",
+      "entity_type": "oc:military_organization",
+      "first_candidate_id": "cand_97e753d610b942a09b731b44",
+      "predicted_cluster_id": "gid_89d5dfd8b087d19099304c9d",
+      "observed_names": [
+        "all combatant commands"
+      ],
+      "source_refs": [
+        "doc_25"
+      ],
+      "matched_ground_truth_entity_id": null,
+      "match_status": "unmatched",
+      "match_reason": "no ground-truth variant match",
+      "candidate_ground_truth_entity_ids": []
+    },
+    {
+      "entity_id": "ent:auto:a62049dc:oc_military_organization:information_support_to_military_operations",
+      "entity_type": "oc:military_organization",
+      "first_candidate_id": "cand_97e753d610b942a09b731b44",
+      "predicted_cluster_id": "gid_6d03364f38d9de0cf6a45920",
+      "observed_names": [
+        "information support to military operations"
+      ],
+      "source_refs": [
+        "doc_25"
+      ],
+      "matched_ground_truth_entity_id": null,
+      "match_status": "unmatched",
+      "match_reason": "no ground-truth variant match",
+      "candidate_ground_truth_entity_ids": []
+    },
+    {
+      "entity_id": "ent:auto:a62049dc:oc_military_organization:military_psychological_operations",
+      "entity_type": "oc:military_organization",
+      "first_candidate_id": "cand_dd229586823b4dc296d4aa25",
+      "predicted_cluster_id": "gid_31b33100b197a099a5c394da",
+      "observed_names": [
+        "military psychological operations"
+      ],
+      "source_refs": [
+        "doc_25"
+      ],
+      "matched_ground_truth_entity_id": null,
+      "match_status": "unmatched",
+      "match_reason": "no ground-truth variant match",
+      "candidate_ground_truth_entity_ids": []
+    },
+    {
+      "entity_id": "ent:auto:a8917635:oc_military_organization:u_s_special_operations_command",
+      "entity_type": "oc:military_organization",
+      "first_candidate_id": "cand_513b66d140b74043a181cbd2",
+      "predicted_cluster_id": "gid_325e5501c37ec328ffa0eceb",
+      "observed_names": [
+        "U.S. Special Operations Command"
+      ],
+      "source_refs": [
+        "doc_18"
+      ],
+      "matched_ground_truth_entity_id": "E002",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E002"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:a8917635:oc_military_organization:u_s_special_operations_command_s_force_posture_in_the_pacific_region",
+      "entity_type": "oc:military_organization",
+      "first_candidate_id": "cand_d0b9c1b7c8c4477694ef981d",
+      "predicted_cluster_id": "gid_325e5501c37ec328ffa0eceb",
+      "observed_names": [
+        "U.S. Special Operations Command's force posture in the Pacific region"
+      ],
+      "source_refs": [
+        "doc_18"
+      ],
+      "matched_ground_truth_entity_id": "E002",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E002"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:a8917635:oc_person:michael_torres",
+      "entity_type": "oc:person",
+      "first_candidate_id": "cand_513b66d140b74043a181cbd2",
+      "predicted_cluster_id": "gid_dfee8001f06ff1147fec8252",
+      "observed_names": [
+        "Michael Torres"
+      ],
+      "source_refs": [
+        "doc_18"
+      ],
+      "matched_ground_truth_entity_id": "E010",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E010"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:b7eaf40d:oc_military_installation:a_forward_base_near_fort_bragg",
+      "entity_type": "oc:military_installation",
+      "first_candidate_id": "cand_09faba5910a443abbbad6458",
+      "predicted_cluster_id": "gid_475ed74623228cc8dc68e0a4",
+      "observed_names": [
+        "a forward base near Fort Bragg"
+      ],
+      "source_refs": [
+        "doc_13"
+      ],
+      "matched_ground_truth_entity_id": "E005",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E005"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:b7eaf40d:oc_military_operation:combat_operations",
+      "entity_type": "oc:military_operation",
+      "first_candidate_id": "cand_ccedc5c2f2154126a115a8d2",
+      "predicted_cluster_id": "gid_83c18f00dfdda5e429e7f480",
+      "observed_names": [
+        "combat operations"
+      ],
+      "source_refs": [
+        "doc_13"
+      ],
+      "matched_ground_truth_entity_id": null,
+      "match_status": "unmatched",
+      "match_reason": "name matched only ground-truth entities with incompatible types",
+      "candidate_ground_truth_entity_ids": [
+        "E004",
+        "E005",
+        "E007"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:b7eaf40d:oc_military_unit:4th_pog_a",
+      "entity_type": "oc:military_unit",
+      "first_candidate_id": "cand_ccedc5c2f2154126a115a8d2",
+      "predicted_cluster_id": "gid_76facfede53c03da41300953",
+      "observed_names": [
+        "4th POG(A)"
+      ],
+      "source_refs": [
+        "doc_13"
+      ],
+      "matched_ground_truth_entity_id": null,
+      "match_status": "unmatched",
+      "match_reason": "name matched only ground-truth entities with incompatible types",
+      "candidate_ground_truth_entity_ids": [
+        "E004"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:b7eaf40d:oc_military_unit:the_group",
+      "entity_type": "oc:military_unit",
+      "first_candidate_id": "cand_09faba5910a443abbbad6458",
+      "predicted_cluster_id": "gid_f473402724cb74a0fa8f54aa",
+      "observed_names": [
+        "The group"
+      ],
+      "source_refs": [
+        "doc_13"
+      ],
+      "matched_ground_truth_entity_id": null,
+      "match_status": "unmatched",
+      "match_reason": "name matched only ground-truth entities with incompatible types",
+      "candidate_ground_truth_entity_ids": [
+        "E004",
+        "E005",
+        "E007"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:b7eaf40d:oc_person:adversary_decision_makers",
+      "entity_type": "oc:person",
+      "first_candidate_id": "cand_a3c001e3993a4ed2a676b723",
+      "predicted_cluster_id": "gid_320cb4fd8ef4e6990d7df98f",
+      "observed_names": [
+        "adversary decision-makers"
+      ],
+      "source_refs": [
+        "doc_13"
+      ],
+      "matched_ground_truth_entity_id": "E007",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E007"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:b7eaf40d:oc_person:james_rodriguez",
+      "entity_type": "oc:person",
+      "first_candidate_id": "cand_9bf5e5c47cd448a78158a779",
+      "predicted_cluster_id": "gid_8aac3653a565be010ddb98d6",
+      "observed_names": [
+        "James Rodriguez"
+      ],
+      "source_refs": [
+        "doc_13"
+      ],
+      "matched_ground_truth_entity_id": "E007",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E007"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:d3289154:oc_location:d_c",
+      "entity_type": "oc:location",
+      "first_candidate_id": "cand_c78f46110d224fd5a4ff82c0",
+      "predicted_cluster_id": "gid_4bfad7d8543be9fa931abc96",
+      "observed_names": [
+        "D.C."
+      ],
+      "source_refs": [
+        "doc_16"
+      ],
+      "matched_ground_truth_entity_id": "E012",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E012"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:d3289154:oc_organization:defense_think_tanks",
+      "entity_type": "oc:organization",
+      "first_candidate_id": "cand_affc88ea522e4a9aa17f4a47",
+      "predicted_cluster_id": "gid_73f090c7945afa7efa10c285",
+      "observed_names": [
+        "defense think tanks"
+      ],
+      "source_refs": [
+        "doc_16"
+      ],
+      "matched_ground_truth_entity_id": null,
+      "match_status": "unmatched",
+      "match_reason": "name matched only ground-truth entities with incompatible types",
+      "candidate_ground_truth_entity_ids": [
+        "E003",
+        "E012"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:d3289154:oc_person:adm_olson",
+      "entity_type": "oc:person",
+      "first_candidate_id": "cand_c78f46110d224fd5a4ff82c0",
+      "predicted_cluster_id": "gid_3027a6e88ffb7cfe8ee3f9ce",
+      "observed_names": [
+        "Adm. Olson"
+      ],
+      "source_refs": [
+        "doc_16"
+      ],
+      "matched_ground_truth_entity_id": "E003",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E003"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:d3289154:oc_policy_community:special_operations_policy_community",
+      "entity_type": "oc:policy_community",
+      "first_candidate_id": "cand_3c71900bce5d4cbd9f4771c1",
+      "predicted_cluster_id": "gid_3a0c2a626aa9cf89ed666bc4",
+      "observed_names": [
+        "special operations policy community"
+      ],
+      "source_refs": [
+        "doc_16"
+      ],
+      "matched_ground_truth_entity_id": null,
+      "match_status": "unmatched",
+      "match_reason": "name matched only ground-truth entities with incompatible types",
+      "candidate_ground_truth_entity_ids": [
+        "E003",
+        "E012"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:de49ab90:oc_military_operation:a_training_exercise",
+      "entity_type": "oc:military_operation",
+      "first_candidate_id": "cand_f0619c7e9d694c70a99ab8d8",
+      "predicted_cluster_id": "gid_5623e6e8033bf717964693ad",
+      "observed_names": [
+        "a training exercise"
+      ],
+      "source_refs": [
+        "doc_10"
+      ],
+      "matched_ground_truth_entity_id": null,
+      "match_status": "unmatched",
+      "match_reason": "name matched only ground-truth entities with incompatible types",
+      "candidate_ground_truth_entity_ids": [
+        "E004",
+        "E005",
+        "E007"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:de49ab90:oc_military_operation:adversary_information_campaigns",
+      "entity_type": "oc:military_operation",
+      "first_candidate_id": "cand_a6081899fed84cc79e5d2a95",
+      "predicted_cluster_id": "gid_b744983258106c3ca7982bc8",
+      "observed_names": [
+        "adversary information campaigns"
+      ],
+      "source_refs": [
+        "doc_10"
+      ],
+      "matched_ground_truth_entity_id": null,
+      "match_status": "unmatched",
+      "match_reason": "name matched only ground-truth entities with incompatible types",
+      "candidate_ground_truth_entity_ids": [
+        "E004",
+        "E005",
+        "E007"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:de49ab90:oc_military_operation:new_psychological_operations_techniques",
+      "entity_type": "oc:military_operation",
+      "first_candidate_id": "cand_4a586685a5314864a15dc396",
+      "predicted_cluster_id": "gid_c309a27be9d768fa0ba7a241",
+      "observed_names": [
+        "new psychological operations techniques"
+      ],
+      "source_refs": [
+        "doc_10"
+      ],
+      "matched_ground_truth_entity_id": null,
+      "match_status": "unmatched",
+      "match_reason": "name matched only ground-truth entities with incompatible types",
+      "candidate_ground_truth_entity_ids": [
+        "E004",
+        "E005",
+        "E007"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:de49ab90:oc_military_operation:the_exercise",
+      "entity_type": "oc:military_operation",
+      "first_candidate_id": "cand_4a586685a5314864a15dc396",
+      "predicted_cluster_id": "gid_16a9739a68d9c941dcca5e7d",
+      "observed_names": [
+        "The exercise"
+      ],
+      "source_refs": [
+        "doc_10"
+      ],
+      "matched_ground_truth_entity_id": null,
+      "match_status": "unmatched",
+      "match_reason": "name matched only ground-truth entities with incompatible types",
+      "candidate_ground_truth_entity_ids": [
+        "E004",
+        "E005",
+        "E007"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:de49ab90:oc_military_organization:fort_liberty",
+      "entity_type": "oc:military_organization",
+      "first_candidate_id": "cand_a2a795cc8b5646d386e4c550",
+      "predicted_cluster_id": "gid_d534e805a9334b44bc4d50dd",
+      "observed_names": [
+        "Fort Liberty"
+      ],
+      "source_refs": [
+        "doc_10"
+      ],
+      "matched_ground_truth_entity_id": null,
+      "match_status": "unmatched",
+      "match_reason": "name matched only ground-truth entities with incompatible types",
+      "candidate_ground_truth_entity_ids": [
+        "E005"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:de49ab90:oc_military_unit:the_4th_psychological_operations_group",
+      "entity_type": "oc:military_unit",
+      "first_candidate_id": "cand_56f8b5efc20b47c7b4af4996",
+      "predicted_cluster_id": "gid_76facfede53c03da41300953",
+      "observed_names": [
+        "the 4th Psychological Operations Group"
+      ],
+      "source_refs": [
+        "doc_10"
+      ],
+      "matched_ground_truth_entity_id": null,
+      "match_status": "unmatched",
+      "match_reason": "name matched only ground-truth entities with incompatible types",
+      "candidate_ground_truth_entity_ids": [
+        "E004",
+        "E005",
+        "E007"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:de49ab90:oc_person:colonel_rodriguez",
+      "entity_type": "oc:person",
+      "first_candidate_id": "cand_a2a795cc8b5646d386e4c550",
+      "predicted_cluster_id": "gid_8aac3653a565be010ddb98d6",
+      "observed_names": [
+        "Colonel Rodriguez"
+      ],
+      "source_refs": [
+        "doc_10"
+      ],
+      "matched_ground_truth_entity_id": "E007",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E007"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:df618304:oc_city:washington",
+      "entity_type": "oc:city",
+      "first_candidate_id": "cand_42809fb442e3442a8abde4ae",
+      "predicted_cluster_id": "gid_b7fef2da758072cd71ba1f7a",
+      "observed_names": [
+        "Washington"
+      ],
+      "source_refs": [
+        "doc_04"
+      ],
+      "matched_ground_truth_entity_id": null,
+      "match_status": "unmatched",
+      "match_reason": "name matched only ground-truth entities with incompatible types",
+      "candidate_ground_truth_entity_ids": [
+        "E012"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:df618304:oc_intelligence_agency:cia",
+      "entity_type": "oc:intelligence_agency",
+      "first_candidate_id": "cand_40cd126f75e74531a39ea9c5",
+      "predicted_cluster_id": "gid_bd05670f295b45ee77b25a9e",
+      "observed_names": [
+        "CIA"
+      ],
+      "source_refs": [
+        "doc_04"
+      ],
+      "matched_ground_truth_entity_id": null,
+      "match_status": "unmatched",
+      "match_reason": "name matched only ground-truth entities with incompatible types",
+      "candidate_ground_truth_entity_ids": [
+        "E006"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:df618304:oc_organization:cia_s_headquarters",
+      "entity_type": "oc:organization",
+      "first_candidate_id": "cand_42809fb442e3442a8abde4ae",
+      "predicted_cluster_id": "gid_bd05670f295b45ee77b25a9e",
+      "observed_names": [
+        "CIA's headquarters"
+      ],
+      "source_refs": [
+        "doc_04"
+      ],
+      "matched_ground_truth_entity_id": null,
+      "match_status": "unmatched",
+      "match_reason": "name matched only ground-truth entities with incompatible types",
+      "candidate_ground_truth_entity_ids": [
+        "E003",
+        "E006",
+        "E012"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:df618304:oc_organization:intelligence_community",
+      "entity_type": "oc:organization",
+      "first_candidate_id": "cand_2790a54ea0c94ee49aaf9599",
+      "predicted_cluster_id": "gid_2b98bbe5741b2308e108657a",
+      "observed_names": [
+        "intelligence community"
+      ],
+      "source_refs": [
+        "doc_04"
+      ],
+      "matched_ground_truth_entity_id": null,
+      "match_status": "unmatched",
+      "match_reason": "name matched only ground-truth entities with incompatible types",
+      "candidate_ground_truth_entity_ids": [
+        "E003",
+        "E006",
+        "E012"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:df618304:oc_organization:special_operations_forces",
+      "entity_type": "oc:organization",
+      "first_candidate_id": "cand_2790a54ea0c94ee49aaf9599",
+      "predicted_cluster_id": "gid_4f78c8b89afb887fbee1de47",
+      "observed_names": [
+        "special operations forces"
+      ],
+      "source_refs": [
+        "doc_04"
+      ],
+      "matched_ground_truth_entity_id": null,
+      "match_status": "unmatched",
+      "match_reason": "name matched only ground-truth entities with incompatible types",
+      "candidate_ground_truth_entity_ids": [
+        "E003",
+        "E006",
+        "E012"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:df618304:oc_person:eric_olson",
+      "entity_type": "oc:person",
+      "first_candidate_id": "cand_40cd126f75e74531a39ea9c5",
+      "predicted_cluster_id": "gid_3027a6e88ffb7cfe8ee3f9ce",
+      "observed_names": [
+        "Eric Olson"
+      ],
+      "source_refs": [
+        "doc_04"
+      ],
+      "matched_ground_truth_entity_id": "E003",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E003"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:e2365aa6:entity:a_classified_assessment_of_information_warfare_capabilities",
+      "entity_type": null,
+      "first_candidate_id": "cand_958b56e4561b48b6ae536e55",
+      "predicted_cluster_id": "gid_8b4f7ae72d3795d2fbe5df73",
+      "observed_names": [
+        "a classified assessment of information warfare capabilities"
+      ],
+      "source_refs": [
+        "doc_07"
+      ],
+      "matched_ground_truth_entity_id": null,
+      "match_status": "ambiguous",
+      "match_reason": "multiple ground-truth candidates remain after type and doc-overlap checks",
+      "candidate_ground_truth_entity_ids": [
+        "E002",
+        "E006",
+        "E008"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:e2365aa6:entity:central_intelligence_agency",
+      "entity_type": null,
+      "first_candidate_id": "cand_5c290886c422403a8a05a77b",
+      "predicted_cluster_id": "gid_035c0a9fcfed8a0cc41f8dd1",
+      "observed_names": [
+        "Central Intelligence Agency"
+      ],
+      "source_refs": [
+        "doc_07"
+      ],
+      "matched_ground_truth_entity_id": "E006",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E006"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:e2365aa6:entity:dr_chen",
+      "entity_type": null,
+      "first_candidate_id": "cand_5c290886c422403a8a05a77b",
+      "predicted_cluster_id": "gid_5e02dc06867849217f835465",
+      "observed_names": [
+        "Dr. Chen"
+      ],
+      "source_refs": [
+        "doc_07"
+      ],
+      "matched_ground_truth_entity_id": "E008",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E008"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:e2365aa6:entity:how_ussocom_coordinates_with_the_intelligence_community_on_influence_operations",
+      "entity_type": null,
+      "first_candidate_id": "cand_6c301c8eca5c4b1484171042",
+      "predicted_cluster_id": "gid_65c9a6d603bac1a4431a29f3",
+      "observed_names": [
+        "how USSOCOM coordinates with the intelligence community on influence operations"
+      ],
+      "source_refs": [
+        "doc_07"
+      ],
+      "matched_ground_truth_entity_id": null,
+      "match_status": "ambiguous",
+      "match_reason": "multiple ground-truth candidates remain after type and doc-overlap checks",
+      "candidate_ground_truth_entity_ids": [
+        "E002",
+        "E006",
+        "E008"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:e2365aa6:entity:the_report",
+      "entity_type": null,
+      "first_candidate_id": "cand_6c301c8eca5c4b1484171042",
+      "predicted_cluster_id": "gid_5cc8165d7cdf93626d06ef0f",
+      "observed_names": [
+        "The report"
+      ],
+      "source_refs": [
+        "doc_07"
+      ],
+      "matched_ground_truth_entity_id": null,
+      "match_status": "ambiguous",
+      "match_reason": "multiple ground-truth candidates remain after type and doc-overlap checks",
+      "candidate_ground_truth_entity_ids": [
+        "E002",
+        "E006",
+        "E008"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:e470fa0d:oc_military_organization:ussocom",
+      "entity_type": "oc:military_organization",
+      "first_candidate_id": "cand_32f44ba5c9504692896014fb",
+      "predicted_cluster_id": "gid_325e5501c37ec328ffa0eceb",
+      "observed_names": [
+        "USSOCOM"
+      ],
+      "source_refs": [
+        "doc_01"
+      ],
+      "matched_ground_truth_entity_id": "E002",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E002"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:e470fa0d:oc_military_rank:gen_smith",
+      "entity_type": "oc:military_rank",
+      "first_candidate_id": "cand_32f44ba5c9504692896014fb",
+      "predicted_cluster_id": "gid_4ad96c88a30b2cde29bffc27",
+      "observed_names": [
+        "Gen. Smith"
+      ],
+      "source_refs": [
+        "doc_01"
+      ],
+      "matched_ground_truth_entity_id": null,
+      "match_status": "unmatched",
+      "match_reason": "name matched only ground-truth entities with incompatible types",
+      "candidate_ground_truth_entity_ids": [
+        "E001"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:e470fa0d:oc_military_rank:general_smith",
+      "entity_type": "oc:military_rank",
+      "first_candidate_id": "cand_94f874e7ff8f47b28b509f6e",
+      "predicted_cluster_id": "gid_4ad96c88a30b2cde29bffc27",
+      "observed_names": [
+        "General Smith"
+      ],
+      "source_refs": [
+        "doc_01"
+      ],
+      "matched_ground_truth_entity_id": null,
+      "match_status": "unmatched",
+      "match_reason": "name matched only ground-truth entities with incompatible types",
+      "candidate_ground_truth_entity_ids": [
+        "E001"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:e6b74170:oc_concept:new_chapter",
+      "entity_type": "oc:concept",
+      "first_candidate_id": "cand_ddb1366dc33a4b73893274da",
+      "predicted_cluster_id": "gid_5f0019cfdde4ab038f14a239",
+      "observed_names": [
+        "new chapter"
+      ],
+      "source_refs": [
+        "doc_06"
+      ],
+      "matched_ground_truth_entity_id": null,
+      "match_status": "unmatched",
+      "match_reason": "name matched only ground-truth entities with incompatible types",
+      "candidate_ground_truth_entity_ids": [
+        "E004",
+        "E005",
+        "E007"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:e6b74170:oc_event:ceremony",
+      "entity_type": "oc:event",
+      "first_candidate_id": "cand_44c2c64725464738a025e459",
+      "predicted_cluster_id": "gid_2b0d8660ee7dcf5771ac3348",
+      "observed_names": [
+        "ceremony"
+      ],
+      "source_refs": [
+        "doc_06"
+      ],
+      "matched_ground_truth_entity_id": null,
+      "match_status": "unmatched",
+      "match_reason": "name matched only ground-truth entities with incompatible types",
+      "candidate_ground_truth_entity_ids": [
+        "E004",
+        "E005",
+        "E007"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:e6b74170:oc_event:change_of_command",
+      "entity_type": "oc:event",
+      "first_candidate_id": "cand_ddb1366dc33a4b73893274da",
+      "predicted_cluster_id": "gid_1196900b71294a934733c100",
+      "observed_names": [
+        "change of command"
+      ],
+      "source_refs": [
+        "doc_06"
+      ],
+      "matched_ground_truth_entity_id": null,
+      "match_status": "unmatched",
+      "match_reason": "name matched only ground-truth entities with incompatible types",
+      "candidate_ground_truth_entity_ids": [
+        "E004",
+        "E005",
+        "E007"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:e6b74170:oc_location:ft_bragg",
+      "entity_type": "oc:location",
+      "first_candidate_id": "cand_88305e5585bd4eb6ad7b6a30",
+      "predicted_cluster_id": "gid_13fad2e9e7f629b7e448e8c4",
+      "observed_names": [
+        "Ft. Bragg"
+      ],
+      "source_refs": [
+        "doc_06"
+      ],
+      "matched_ground_truth_entity_id": null,
+      "match_status": "unmatched",
+      "match_reason": "name matched only ground-truth entities with incompatible types",
+      "candidate_ground_truth_entity_ids": [
+        "E005"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:e6b74170:oc_military_organization:4th_pog",
+      "entity_type": "oc:military_organization",
+      "first_candidate_id": "cand_b0bcadbcabed4538977b7e8f",
+      "predicted_cluster_id": "gid_ca81d185ea531f330a107d2c",
+      "observed_names": [
+        "4th POG"
+      ],
+      "source_refs": [
+        "doc_06"
+      ],
+      "matched_ground_truth_entity_id": "E004",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E004"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:e6b74170:oc_person:col_rodriguez",
+      "entity_type": "oc:person",
+      "first_candidate_id": "cand_b0bcadbcabed4538977b7e8f",
+      "predicted_cluster_id": "gid_8aac3653a565be010ddb98d6",
+      "observed_names": [
+        "Col. Rodriguez"
+      ],
+      "source_refs": [
+        "doc_06"
+      ],
+      "matched_ground_truth_entity_id": "E007",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E007"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:e6b74170:oc_person:senior_military_officials",
+      "entity_type": "oc:person",
+      "first_candidate_id": "cand_a9989b9beae24faaaea8d311",
+      "predicted_cluster_id": "gid_37b2dd0bd05109a56785d56e",
+      "observed_names": [
+        "senior military officials"
+      ],
+      "source_refs": [
+        "doc_06"
+      ],
+      "matched_ground_truth_entity_id": "E007",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E007"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:ec02b08e:entity:a_study_of_adversary_influence_operations",
+      "entity_type": null,
+      "first_candidate_id": "cand_0ab8860ce09841ebb8bb8053",
+      "predicted_cluster_id": "gid_bbf696ea3f0fa33f78430f10",
+      "observed_names": [
+        "a study of adversary influence operations"
+      ],
+      "source_refs": [
+        "doc_19"
+      ],
+      "matched_ground_truth_entity_id": null,
+      "match_status": "ambiguous",
+      "match_reason": "multiple ground-truth candidates remain after type and doc-overlap checks",
+      "candidate_ground_truth_entity_ids": [
+        "E006",
+        "E008",
+        "E009",
+        "E013"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:ec02b08e:entity:additional_data",
+      "entity_type": null,
+      "first_candidate_id": "cand_d16bd54feef04c72ac68fb88",
+      "predicted_cluster_id": "gid_0b33daef9b9ac114b5640e9f",
+      "observed_names": [
+        "additional data"
+      ],
+      "source_refs": [
+        "doc_19"
+      ],
+      "matched_ground_truth_entity_id": null,
+      "match_status": "ambiguous",
+      "match_reason": "multiple ground-truth candidates remain after type and doc-overlap checks",
+      "candidate_ground_truth_entity_ids": [
+        "E006",
+        "E008",
+        "E009",
+        "E013"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:ec02b08e:entity:analysts_from_the_nsa",
+      "entity_type": null,
+      "first_candidate_id": "cand_951ca246f4874289828ce91a",
+      "predicted_cluster_id": "gid_102783177efcfdd176f60e2d",
+      "observed_names": [
+        "analysts from the NSA"
+      ],
+      "source_refs": [
+        "doc_19"
+      ],
+      "matched_ground_truth_entity_id": null,
+      "match_status": "ambiguous",
+      "match_reason": "multiple ground-truth candidates remain after type and doc-overlap checks",
+      "candidate_ground_truth_entity_ids": [
+        "E006",
+        "E008",
+        "E009",
+        "E013"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:ec02b08e:entity:central_intelligence_agency",
+      "entity_type": null,
+      "first_candidate_id": "cand_d16bd54feef04c72ac68fb88",
+      "predicted_cluster_id": "gid_035c0a9fcfed8a0cc41f8dd1",
+      "observed_names": [
+        "Central Intelligence Agency"
+      ],
+      "source_refs": [
+        "doc_19"
+      ],
+      "matched_ground_truth_entity_id": "E006",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E006"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:ec02b08e:entity:dr_sarah_chen",
+      "entity_type": null,
+      "first_candidate_id": "cand_ad5d23168d854ffd8fadf251",
+      "predicted_cluster_id": "gid_5e02dc06867849217f835465",
+      "observed_names": [
+        "Dr. Sarah Chen"
+      ],
+      "source_refs": [
+        "doc_19"
+      ],
+      "matched_ground_truth_entity_id": "E008",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E008"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:ec02b08e:entity:research_effort",
+      "entity_type": null,
+      "first_candidate_id": "cand_742eb749503d4019a2f4c75f",
+      "predicted_cluster_id": "gid_0deeb5cf1c8c37e987513d1e",
+      "observed_names": [
+        "research effort"
+      ],
+      "source_refs": [
+        "doc_19"
+      ],
+      "matched_ground_truth_entity_id": null,
+      "match_status": "ambiguous",
+      "match_reason": "multiple ground-truth candidates remain after type and doc-overlap checks",
+      "candidate_ground_truth_entity_ids": [
+        "E006",
+        "E008",
+        "E009",
+        "E013"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:ec02b08e:entity:researchers_at_gwu",
+      "entity_type": null,
+      "first_candidate_id": "cand_ad5d23168d854ffd8fadf251",
+      "predicted_cluster_id": "gid_ef0c1b9ec9fb9694434d5848",
+      "observed_names": [
+        "researchers at GWU"
+      ],
+      "source_refs": [
+        "doc_19"
+      ],
+      "matched_ground_truth_entity_id": null,
+      "match_status": "ambiguous",
+      "match_reason": "multiple ground-truth candidates remain after type and doc-overlap checks",
+      "candidate_ground_truth_entity_ids": [
+        "E006",
+        "E008",
+        "E009",
+        "E013"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:f027dc3a:oc_organization:cia",
+      "entity_type": "oc:organization",
+      "first_candidate_id": "cand_2c479b24098d4107a94d7b94",
+      "predicted_cluster_id": "gid_bd05670f295b45ee77b25a9e",
+      "observed_names": [
+        "CIA"
+      ],
+      "source_refs": [
+        "doc_23"
+      ],
+      "matched_ground_truth_entity_id": null,
+      "match_status": "unmatched",
+      "match_reason": "name matched only ground-truth entities with incompatible types",
+      "candidate_ground_truth_entity_ids": [
+        "E006"
+      ]
+    },
+    {
+      "entity_id": "ent:auto:f027dc3a:oc_organization:pentagon",
+      "entity_type": "oc:organization",
+      "first_candidate_id": "cand_c99238a659694e7bbe33006f",
+      "predicted_cluster_id": "gid_51a2000c47593708f1b023dd",
+      "observed_names": [
+        "Pentagon"
+      ],
+      "source_refs": [
+        "doc_23"
+      ],
+      "matched_ground_truth_entity_id": null,
+      "match_status": "unmatched",
+      "match_reason": "name matched only ground-truth entities with incompatible types",
+      "candidate_ground_truth_entity_ids": [
+        "E006",
+        "E012"
+      ]
+    }
+  ],
+  "pairwise_metrics": {
+    "matched_observation_count": 42,
+    "unmatched_observation_count": 60,
+    "ambiguous_observation_count": 9,
+    "predicted_positive_pairs": 48,
+    "gold_positive_pairs": 78,
+    "true_positive_pairs": 48,
+    "false_positive_pairs": 0,
+    "false_negative_pairs": 30,
+    "precision": 1.0,
+    "recall": 0.6153846153846154,
+    "false_merge_pairs": [],
+    "false_split_pairs": [
+      {
+        "left_entity_id": "ent:auto:2652e0ef:entity:expanded_training_programs",
+        "right_entity_id": "ent:auto:2652e0ef:entity:fort_bragg",
+        "left_ground_truth_entity_id": "E005",
+        "right_ground_truth_entity_id": "E005",
+        "left_names": [
+          "expanded training programs"
+        ],
+        "right_names": [
+          "Fort Bragg"
+        ],
+        "left_source_refs": [
+          "doc_21"
+        ],
+        "right_source_refs": [
+          "doc_21"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "ent:auto:2652e0ef:entity:expanded_training_programs",
+        "right_entity_id": "ent:auto:2652e0ef:entity:new_facilities",
+        "left_ground_truth_entity_id": "E005",
+        "right_ground_truth_entity_id": "E005",
+        "left_names": [
+          "expanded training programs"
+        ],
+        "right_names": [
+          "New facilities"
+        ],
+        "left_source_refs": [
+          "doc_21"
+        ],
+        "right_source_refs": [
+          "doc_21"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "ent:auto:2652e0ef:entity:expanded_training_programs",
+        "right_entity_id": "ent:auto:2652e0ef:entity:the_installation",
+        "left_ground_truth_entity_id": "E005",
+        "right_ground_truth_entity_id": "E005",
+        "left_names": [
+          "expanded training programs"
+        ],
+        "right_names": [
+          "The installation"
+        ],
+        "left_source_refs": [
+          "doc_21"
+        ],
+        "right_source_refs": [
+          "doc_21"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "ent:auto:2652e0ef:entity:expanded_training_programs",
+        "right_entity_id": "ent:auto:b7eaf40d:oc_military_installation:a_forward_base_near_fort_bragg",
+        "left_ground_truth_entity_id": "E005",
+        "right_ground_truth_entity_id": "E005",
+        "left_names": [
+          "expanded training programs"
+        ],
+        "right_names": [
+          "a forward base near Fort Bragg"
+        ],
+        "left_source_refs": [
+          "doc_21"
+        ],
+        "right_source_refs": [
+          "doc_13"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "ent:auto:2652e0ef:entity:fort_bragg",
+        "right_entity_id": "ent:auto:2652e0ef:entity:new_facilities",
+        "left_ground_truth_entity_id": "E005",
+        "right_ground_truth_entity_id": "E005",
+        "left_names": [
+          "Fort Bragg"
+        ],
+        "right_names": [
+          "New facilities"
+        ],
+        "left_source_refs": [
+          "doc_21"
+        ],
+        "right_source_refs": [
+          "doc_21"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "ent:auto:2652e0ef:entity:fort_bragg",
+        "right_entity_id": "ent:auto:2652e0ef:entity:the_installation",
+        "left_ground_truth_entity_id": "E005",
+        "right_ground_truth_entity_id": "E005",
+        "left_names": [
+          "Fort Bragg"
+        ],
+        "right_names": [
+          "The installation"
+        ],
+        "left_source_refs": [
+          "doc_21"
+        ],
+        "right_source_refs": [
+          "doc_21"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "ent:auto:2652e0ef:entity:fort_bragg",
+        "right_entity_id": "ent:auto:b7eaf40d:oc_military_installation:a_forward_base_near_fort_bragg",
+        "left_ground_truth_entity_id": "E005",
+        "right_ground_truth_entity_id": "E005",
+        "left_names": [
+          "Fort Bragg"
+        ],
+        "right_names": [
+          "a forward base near Fort Bragg"
+        ],
+        "left_source_refs": [
+          "doc_21"
+        ],
+        "right_source_refs": [
+          "doc_13"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "ent:auto:2652e0ef:entity:new_facilities",
+        "right_entity_id": "ent:auto:2652e0ef:entity:the_installation",
+        "left_ground_truth_entity_id": "E005",
+        "right_ground_truth_entity_id": "E005",
+        "left_names": [
+          "New facilities"
+        ],
+        "right_names": [
+          "The installation"
+        ],
+        "left_source_refs": [
+          "doc_21"
+        ],
+        "right_source_refs": [
+          "doc_21"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "ent:auto:2652e0ef:entity:new_facilities",
+        "right_entity_id": "ent:auto:b7eaf40d:oc_military_installation:a_forward_base_near_fort_bragg",
+        "left_ground_truth_entity_id": "E005",
+        "right_ground_truth_entity_id": "E005",
+        "left_names": [
+          "New facilities"
+        ],
+        "right_names": [
+          "a forward base near Fort Bragg"
+        ],
+        "left_source_refs": [
+          "doc_21"
+        ],
+        "right_source_refs": [
+          "doc_13"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "ent:auto:2652e0ef:entity:the_installation",
+        "right_entity_id": "ent:auto:b7eaf40d:oc_military_installation:a_forward_base_near_fort_bragg",
+        "left_ground_truth_entity_id": "E005",
+        "right_ground_truth_entity_id": "E005",
+        "left_names": [
+          "The installation"
+        ],
+        "right_names": [
+          "a forward base near Fort Bragg"
+        ],
+        "left_source_refs": [
+          "doc_21"
+        ],
+        "right_source_refs": [
+          "doc_13"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "ent:auto:4b3a13a1:oc_person:general_john_smith",
+        "right_entity_id": "ent:auto:7d7e3d80:entity:general_smith",
+        "left_ground_truth_entity_id": "E001",
+        "right_ground_truth_entity_id": "E001",
+        "left_names": [
+          "General John Smith"
+        ],
+        "right_names": [
+          "General Smith"
+        ],
+        "left_source_refs": [
+          "doc_02"
+        ],
+        "right_source_refs": [
+          "doc_15"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "ent:auto:6d646836:oc_person:gen_smith",
+        "right_entity_id": "ent:auto:7d7e3d80:entity:general_smith",
+        "left_ground_truth_entity_id": "E001",
+        "right_ground_truth_entity_id": "E001",
+        "left_names": [
+          "Gen. Smith"
+        ],
+        "right_names": [
+          "General Smith"
+        ],
+        "left_source_refs": [
+          "doc_12"
+        ],
+        "right_source_refs": [
+          "doc_15"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "ent:auto:7bcc6a28:entity:4th_psyop_group",
+        "right_entity_id": "ent:auto:7bcc6a28:oc_military_organization:4th_psyop_group",
+        "left_ground_truth_entity_id": "E004",
+        "right_ground_truth_entity_id": "E004",
+        "left_names": [
+          "4th PSYOP Group"
+        ],
+        "right_names": [
+          "4th PSYOP Group"
+        ],
+        "left_source_refs": [
+          "doc_17"
+        ],
+        "right_source_refs": [
+          "doc_17"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "ent:auto:7bcc6a28:entity:4th_psyop_group",
+        "right_entity_id": "ent:auto:e6b74170:oc_military_organization:4th_pog",
+        "left_ground_truth_entity_id": "E004",
+        "right_ground_truth_entity_id": "E004",
+        "left_names": [
+          "4th PSYOP Group"
+        ],
+        "right_names": [
+          "4th POG"
+        ],
+        "left_source_refs": [
+          "doc_17"
+        ],
+        "right_source_refs": [
+          "doc_06"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "ent:auto:7bcc6a28:oc_person:james_rodriguez",
+        "right_entity_id": "ent:auto:7bcc6a28:oc_person:soldiers",
+        "left_ground_truth_entity_id": "E007",
+        "right_ground_truth_entity_id": "E007",
+        "left_names": [
+          "James Rodriguez"
+        ],
+        "right_names": [
+          "soldiers"
+        ],
+        "left_source_refs": [
+          "doc_17"
+        ],
+        "right_source_refs": [
+          "doc_17"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "ent:auto:7bcc6a28:oc_person:james_rodriguez",
+        "right_entity_id": "ent:auto:b7eaf40d:oc_person:adversary_decision_makers",
+        "left_ground_truth_entity_id": "E007",
+        "right_ground_truth_entity_id": "E007",
+        "left_names": [
+          "James Rodriguez"
+        ],
+        "right_names": [
+          "adversary decision-makers"
+        ],
+        "left_source_refs": [
+          "doc_17"
+        ],
+        "right_source_refs": [
+          "doc_13"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "ent:auto:7bcc6a28:oc_person:james_rodriguez",
+        "right_entity_id": "ent:auto:e6b74170:oc_person:senior_military_officials",
+        "left_ground_truth_entity_id": "E007",
+        "right_ground_truth_entity_id": "E007",
+        "left_names": [
+          "James Rodriguez"
+        ],
+        "right_names": [
+          "senior military officials"
+        ],
+        "left_source_refs": [
+          "doc_17"
+        ],
+        "right_source_refs": [
+          "doc_06"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "ent:auto:7bcc6a28:oc_person:soldiers",
+        "right_entity_id": "ent:auto:b7eaf40d:oc_person:adversary_decision_makers",
+        "left_ground_truth_entity_id": "E007",
+        "right_ground_truth_entity_id": "E007",
+        "left_names": [
+          "soldiers"
+        ],
+        "right_names": [
+          "adversary decision-makers"
+        ],
+        "left_source_refs": [
+          "doc_17"
+        ],
+        "right_source_refs": [
+          "doc_13"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "ent:auto:7bcc6a28:oc_person:soldiers",
+        "right_entity_id": "ent:auto:b7eaf40d:oc_person:james_rodriguez",
+        "left_ground_truth_entity_id": "E007",
+        "right_ground_truth_entity_id": "E007",
+        "left_names": [
+          "soldiers"
+        ],
+        "right_names": [
+          "James Rodriguez"
+        ],
+        "left_source_refs": [
+          "doc_17"
+        ],
+        "right_source_refs": [
+          "doc_13"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "ent:auto:7bcc6a28:oc_person:soldiers",
+        "right_entity_id": "ent:auto:de49ab90:oc_person:colonel_rodriguez",
+        "left_ground_truth_entity_id": "E007",
+        "right_ground_truth_entity_id": "E007",
+        "left_names": [
+          "soldiers"
+        ],
+        "right_names": [
+          "Colonel Rodriguez"
+        ],
+        "left_source_refs": [
+          "doc_17"
+        ],
+        "right_source_refs": [
+          "doc_10"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "ent:auto:7bcc6a28:oc_person:soldiers",
+        "right_entity_id": "ent:auto:e6b74170:oc_person:col_rodriguez",
+        "left_ground_truth_entity_id": "E007",
+        "right_ground_truth_entity_id": "E007",
+        "left_names": [
+          "soldiers"
+        ],
+        "right_names": [
+          "Col. Rodriguez"
+        ],
+        "left_source_refs": [
+          "doc_17"
+        ],
+        "right_source_refs": [
+          "doc_06"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "ent:auto:7bcc6a28:oc_person:soldiers",
+        "right_entity_id": "ent:auto:e6b74170:oc_person:senior_military_officials",
+        "left_ground_truth_entity_id": "E007",
+        "right_ground_truth_entity_id": "E007",
+        "left_names": [
+          "soldiers"
+        ],
+        "right_names": [
+          "senior military officials"
+        ],
+        "left_source_refs": [
+          "doc_17"
+        ],
+        "right_source_refs": [
+          "doc_06"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "ent:auto:7d7e3d80:entity:general_smith",
+        "right_entity_id": "ent:auto:9ba22d95:oc_person:gen_j_smith",
+        "left_ground_truth_entity_id": "E001",
+        "right_ground_truth_entity_id": "E001",
+        "left_names": [
+          "General Smith"
+        ],
+        "right_names": [
+          "Gen. J. Smith"
+        ],
+        "left_source_refs": [
+          "doc_15"
+        ],
+        "right_source_refs": [
+          "doc_08"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "ent:auto:b7eaf40d:oc_person:adversary_decision_makers",
+        "right_entity_id": "ent:auto:b7eaf40d:oc_person:james_rodriguez",
+        "left_ground_truth_entity_id": "E007",
+        "right_ground_truth_entity_id": "E007",
+        "left_names": [
+          "adversary decision-makers"
+        ],
+        "right_names": [
+          "James Rodriguez"
+        ],
+        "left_source_refs": [
+          "doc_13"
+        ],
+        "right_source_refs": [
+          "doc_13"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "ent:auto:b7eaf40d:oc_person:adversary_decision_makers",
+        "right_entity_id": "ent:auto:de49ab90:oc_person:colonel_rodriguez",
+        "left_ground_truth_entity_id": "E007",
+        "right_ground_truth_entity_id": "E007",
+        "left_names": [
+          "adversary decision-makers"
+        ],
+        "right_names": [
+          "Colonel Rodriguez"
+        ],
+        "left_source_refs": [
+          "doc_13"
+        ],
+        "right_source_refs": [
+          "doc_10"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "ent:auto:b7eaf40d:oc_person:adversary_decision_makers",
+        "right_entity_id": "ent:auto:e6b74170:oc_person:col_rodriguez",
+        "left_ground_truth_entity_id": "E007",
+        "right_ground_truth_entity_id": "E007",
+        "left_names": [
+          "adversary decision-makers"
+        ],
+        "right_names": [
+          "Col. Rodriguez"
+        ],
+        "left_source_refs": [
+          "doc_13"
+        ],
+        "right_source_refs": [
+          "doc_06"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "ent:auto:b7eaf40d:oc_person:adversary_decision_makers",
+        "right_entity_id": "ent:auto:e6b74170:oc_person:senior_military_officials",
+        "left_ground_truth_entity_id": "E007",
+        "right_ground_truth_entity_id": "E007",
+        "left_names": [
+          "adversary decision-makers"
+        ],
+        "right_names": [
+          "senior military officials"
+        ],
+        "left_source_refs": [
+          "doc_13"
+        ],
+        "right_source_refs": [
+          "doc_06"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "ent:auto:b7eaf40d:oc_person:james_rodriguez",
+        "right_entity_id": "ent:auto:e6b74170:oc_person:senior_military_officials",
+        "left_ground_truth_entity_id": "E007",
+        "right_ground_truth_entity_id": "E007",
+        "left_names": [
+          "James Rodriguez"
+        ],
+        "right_names": [
+          "senior military officials"
+        ],
+        "left_source_refs": [
+          "doc_13"
+        ],
+        "right_source_refs": [
+          "doc_06"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "ent:auto:de49ab90:oc_person:colonel_rodriguez",
+        "right_entity_id": "ent:auto:e6b74170:oc_person:senior_military_officials",
+        "left_ground_truth_entity_id": "E007",
+        "right_ground_truth_entity_id": "E007",
+        "left_names": [
+          "Colonel Rodriguez"
+        ],
+        "right_names": [
+          "senior military officials"
+        ],
+        "left_source_refs": [
+          "doc_10"
+        ],
+        "right_source_refs": [
+          "doc_06"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "ent:auto:e6b74170:oc_person:col_rodriguez",
+        "right_entity_id": "ent:auto:e6b74170:oc_person:senior_military_officials",
+        "left_ground_truth_entity_id": "E007",
+        "right_ground_truth_entity_id": "E007",
+        "left_names": [
+          "Col. Rodriguez"
+        ],
+        "right_names": [
+          "senior military officials"
+        ],
+        "left_source_refs": [
+          "doc_06"
+        ],
+        "right_source_refs": [
+          "doc_06"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      }
+    ],
+    "unmatched_observation_ids": [
+      "ent:auto:05be3bc7:oc_organization:national_security_agency",
+      "ent:auto:05be3bc7:oc_organization:signals_intelligence",
+      "ent:auto:05be3bc7:oc_organization:special_operations",
+      "ent:auto:05be3bc7:oc_organization:special_operations_forces",
+      "ent:auto:20ba9f32:unknown:john_smith",
+      "ent:auto:20ba9f32:unknown:new_training_programs_and_equipment_upgrades",
+      "ent:auto:20ba9f32:unknown:several_initiatives_to_modernize_its_force_structure",
+      "ent:auto:20ba9f32:unknown:special_operations_command",
+      "ent:auto:20ba9f32:unknown:the_reforms",
+      "ent:auto:34766658:oc_event:a_ceremony",
+      "ent:auto:34766658:oc_event:exceptional_service",
+      "ent:auto:34766658:oc_facility:ussocom_headquarters",
+      "ent:auto:34766658:oc_mission:diverse_mission_set",
+      "ent:auto:4b3a13a1:oc_military_organization:psychological_operations",
+      "ent:auto:4b3a13a1:oc_military_organization:the_command_s_counterterrorism_capabilities",
+      "ent:auto:6d646836:oc_government_agency:national_security_agency",
+      "ent:auto:6d646836:oc_intelligence_operation:growing_integration",
+      "ent:auto:6d646836:oc_intelligence_operation:sensitive_collection_operation",
+      "ent:auto:6d646836:oc_intelligence_operation:signals_intelligence",
+      "ent:auto:6d646836:oc_intelligence_operation:special_operations",
+      "ent:auto:6d646836:oc_intelligence_operation:the_operation",
+      "ent:auto:6d646836:oc_military_organization:joint_task_force",
+      "ent:auto:7bcc6a28:oc_capability:new_capabilities_for_operating_in_the_digital_information_space",
+      "ent:auto:7bcc6a28:oc_skill:content_creation",
+      "ent:auto:7bcc6a28:oc_skill:social_media_analysis",
+      "ent:auto:8bd2dacc:oc_government_organization:congress",
+      "ent:auto:98e9cbb2:oc_location:fort_bragg",
+      "ent:auto:98e9cbb2:oc_military_unit:4th_psyop_group",
+      "ent:auto:9ba22d95:oc_event:joint_conference",
+      "ent:auto:9ba22d95:oc_event:the_conference",
+      "ent:auto:9ba22d95:oc_organization:nsa",
+      "ent:auto:9ba22d95:oc_topic:signals_intelligence_support_to_special_operations_forces_deployed_overseas",
+      "ent:auto:a62049dc:oc_military_operation:military_operations",
+      "ent:auto:a62049dc:oc_military_organization:all_combatant_commands",
+      "ent:auto:a62049dc:oc_military_organization:information_support_to_military_operations",
+      "ent:auto:a62049dc:oc_military_organization:military_psychological_operations",
+      "ent:auto:b7eaf40d:oc_military_operation:combat_operations",
+      "ent:auto:b7eaf40d:oc_military_unit:4th_pog_a",
+      "ent:auto:b7eaf40d:oc_military_unit:the_group",
+      "ent:auto:d3289154:oc_organization:defense_think_tanks",
+      "ent:auto:d3289154:oc_policy_community:special_operations_policy_community",
+      "ent:auto:de49ab90:oc_military_operation:a_training_exercise",
+      "ent:auto:de49ab90:oc_military_operation:adversary_information_campaigns",
+      "ent:auto:de49ab90:oc_military_operation:new_psychological_operations_techniques",
+      "ent:auto:de49ab90:oc_military_operation:the_exercise",
+      "ent:auto:de49ab90:oc_military_organization:fort_liberty",
+      "ent:auto:de49ab90:oc_military_unit:the_4th_psychological_operations_group",
+      "ent:auto:df618304:oc_city:washington",
+      "ent:auto:df618304:oc_intelligence_agency:cia",
+      "ent:auto:df618304:oc_organization:cia_s_headquarters",
+      "ent:auto:df618304:oc_organization:intelligence_community",
+      "ent:auto:df618304:oc_organization:special_operations_forces",
+      "ent:auto:e470fa0d:oc_military_rank:gen_smith",
+      "ent:auto:e470fa0d:oc_military_rank:general_smith",
+      "ent:auto:e6b74170:oc_concept:new_chapter",
+      "ent:auto:e6b74170:oc_event:ceremony",
+      "ent:auto:e6b74170:oc_event:change_of_command",
+      "ent:auto:e6b74170:oc_location:ft_bragg",
+      "ent:auto:f027dc3a:oc_organization:cia",
+      "ent:auto:f027dc3a:oc_organization:pentagon"
+    ],
+    "ambiguous_observation_ids": [
+      "ent:auto:7d7e3d80:entity:a_strategy_document",
+      "ent:auto:e2365aa6:entity:a_classified_assessment_of_information_warfare_capabilities",
+      "ent:auto:e2365aa6:entity:how_ussocom_coordinates_with_the_intelligence_community_on_influence_operations",
+      "ent:auto:e2365aa6:entity:the_report",
+      "ent:auto:ec02b08e:entity:a_study_of_adversary_influence_operations",
+      "ent:auto:ec02b08e:entity:additional_data",
+      "ent:auto:ec02b08e:entity:analysts_from_the_nsa",
+      "ent:auto:ec02b08e:entity:research_effort",
+      "ent:auto:ec02b08e:entity:researchers_at_gwu"
+    ]
+  },
+  "question_summary": {
+    "total_questions": 10,
+    "answered_questions": 5,
+    "correct_questions": 4,
+    "answer_rate": 0.5,
+    "accuracy_over_all_questions": 0.4,
+    "accuracy_over_answered_questions": 0.8
+  },
+  "question_scores": [
+    {
+      "question_id": "q01",
+      "kind": "same_entity",
+      "prompt": "Do 'Gen. Smith' and 'General John Smith' refer to the same real-world entity?",
+      "answered": false,
+      "correct": false,
+      "predicted_answer": null,
+      "predicted_ground_truth_entity_id": null,
+      "note": "could not resolve one or both mentions to a unique predicted cluster"
+    },
+    {
+      "question_id": "q02",
+      "kind": "same_entity",
+      "prompt": "Do 'USSOCOM' and 'U.S. Special Operations Command' refer to the same organization?",
+      "answered": true,
+      "correct": true,
+      "predicted_answer": true,
+      "predicted_ground_truth_entity_id": null,
+      "note": "scored from unique predicted cluster ids for both mentions"
+    },
+    {
+      "question_id": "q03",
+      "kind": "same_entity",
+      "prompt": "Do 'Adm. Olson' and 'Eric Olson' refer to the same person?",
+      "answered": true,
+      "correct": true,
+      "predicted_answer": true,
+      "predicted_ground_truth_entity_id": null,
+      "note": "scored from unique predicted cluster ids for both mentions"
+    },
+    {
+      "question_id": "q04",
+      "kind": "same_entity",
+      "prompt": "Do 'Ft. Bragg' and 'Fort Liberty' refer to the same installation?",
+      "answered": true,
+      "correct": false,
+      "predicted_answer": false,
+      "predicted_ground_truth_entity_id": null,
+      "note": "scored from unique predicted cluster ids for both mentions"
+    },
+    {
+      "question_id": "q05",
+      "kind": "same_entity",
+      "prompt": "Do 'General John Smith' and 'James Smith' refer to the same person?",
+      "answered": false,
+      "correct": false,
+      "predicted_answer": null,
+      "predicted_ground_truth_entity_id": null,
+      "note": "could not resolve one or both mentions to a unique predicted cluster"
+    },
+    {
+      "question_id": "q06",
+      "kind": "same_entity",
+      "prompt": "Do 'Washington' and 'George Washington University' refer to the same entity?",
+      "answered": false,
+      "correct": false,
+      "predicted_answer": null,
+      "predicted_ground_truth_entity_id": null,
+      "note": "could not resolve one or both mentions to a unique predicted cluster"
+    },
+    {
+      "question_id": "q07",
+      "kind": "canonical_entity",
+      "prompt": "Which canonical entity does 'Gen. J. Smith' resolve to?",
+      "answered": true,
+      "correct": true,
+      "predicted_answer": null,
+      "predicted_ground_truth_entity_id": "E001",
+      "note": "scored from uniquely matched promoted observation(s)"
+    },
+    {
+      "question_id": "q08",
+      "kind": "canonical_entity",
+      "prompt": "Which canonical entity does 'the Agency' resolve to?",
+      "answered": false,
+      "correct": false,
+      "predicted_answer": null,
+      "predicted_ground_truth_entity_id": null,
+      "note": "could not resolve mention to a unique matched ground-truth entity"
+    },
+    {
+      "question_id": "q09",
+      "kind": "canonical_entity",
+      "prompt": "Which canonical entity does 'GWU' resolve to?",
+      "answered": false,
+      "correct": false,
+      "predicted_answer": null,
+      "predicted_ground_truth_entity_id": null,
+      "note": "could not resolve mention to a unique matched ground-truth entity"
+    },
+    {
+      "question_id": "q10",
+      "kind": "canonical_entity",
+      "prompt": "Which canonical entity does 'Lt. Gen. Michael Torres' resolve to?",
+      "answered": true,
+      "correct": true,
+      "predicted_answer": null,
+      "predicted_ground_truth_entity_id": "E010",
+      "note": "scored from uniquely matched promoted observation(s)"
+    }
+  ]
+}

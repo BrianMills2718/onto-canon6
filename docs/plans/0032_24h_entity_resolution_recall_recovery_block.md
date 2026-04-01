@@ -1,12 +1,12 @@
 # 24h Entity Resolution Recall Recovery Block
 
-Status: active
+Status: completed
 Phase status:
 - Phase 1 completed
 - Phase 2 completed
 - Phase 3 completed
-- Phase 4 active
-- Phase 5 pending
+- Phase 4 completed
+- Phase 5 completed
 
 Last updated: 2026-04-01
 Workstream: bounded 24-hour recall/answerability recovery after Plan 0031
@@ -206,6 +206,28 @@ guard.
 2. the run note is decision-grade and references the new artifact directly;
 3. if the LLM path is still not promotable, the blocking miss is concrete.
 
+#### Outcome
+
+Completed on 2026-04-01.
+
+Fresh rerun artifacts now exist:
+
+1. `docs/runs/scale_test_llm_2026-04-01_083207.json`
+2. `docs/runs/2026-04-01_entity_resolution_recall_recovery_rerun.md`
+
+The rerun cleared the bounded recovery gate:
+
+1. all `25` source documents survived extraction;
+2. precision `1.00`;
+3. recall `0.615`;
+4. false merges `0`;
+5. answer rate `0.50`;
+6. accuracy over all questions `0.40`.
+
+This block therefore closes as a success. The remaining misses are no longer
+document-loss blockers; they are narrower answerability families that now move
+to the next bounded execution block.
+
 ### Phase 5: Closeout
 
 #### Tasks
@@ -220,6 +242,13 @@ guard.
 1. top-level docs describe the recall-recovery result truthfully;
 2. the next active work is explicit;
 3. the worktree is left clean with committed checkpoints only.
+
+#### Outcome
+
+Completed on 2026-04-01.
+
+The top-level docs now record Plan 0032 as complete, and the next active
+bounded execution surface is Plan 0033.
 
 ## Failure Modes
 

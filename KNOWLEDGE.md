@@ -105,3 +105,19 @@ If a scale-test rerun suddenly loses one document, check
 The hardened LLM rerun under Plan 0031 had only `24` source refs instead of
 `25`; `doc_06` was missing because extraction emitted unsupported filler kind
 `event` and failed validation before promotion or resolution even ran.
+
+### 2026-04-01 — codex — workaround
+Response-level salvage in `TextExtractionResponse` is sufficient to keep the
+scale-test corpus intact even when Gemini emits malformed sibling candidates.
+After the Plan 0032 fix, the refreshed LLM rerun preserved all `25`
+`candidate_assertions.source_ref` values despite continuing to log malformed
+`event` / malformed-unknown candidate payloads.
+
+### 2026-04-01 — codex — bug-pattern
+The remaining fixed-question misses after the successful Plan 0032 rerun are
+not dominated by false merges. They cluster into two narrower families:
+type-divergent mention surfaces (`Gen. Smith` as `person` vs `military_rank`,
+`Ft. Bragg` as `location` vs `Fort Liberty` as `military_organization`) and
+alias-surface absence (`the Agency`, `GWU`, `George Washington University`
+never surviving as promoted matched observations). Treat the next block as
+answerability hardening, not generic clustering churn.

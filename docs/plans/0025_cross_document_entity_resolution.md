@@ -69,9 +69,16 @@ The completed value-proof block and the follow-on hardening block showed:
 Latest decision artifact:
 
 1. `docs/runs/2026-04-01_entity_resolution_hardening_rerun.md`
-2. `docs/plans/0032_24h_entity_resolution_recall_recovery_block.md` now owns
-   the next bounded pass over the remaining document-loss and
-   alias/answerability failures.
+2. `docs/plans/0032_24h_entity_resolution_recall_recovery_block.md` is now
+   completed with a successful bounded rerun:
+   - precision `1.00`
+   - recall `0.615`
+   - false merges `0`
+   - answer rate `0.50`
+   - accuracy over all questions `0.40`
+3. the next bounded pass is now
+   `docs/plans/0033_24h_entity_resolution_answerability_block.md`, which owns
+   the remaining typed-mention and alias-surface failures.
 
 ## What Exists Today
 

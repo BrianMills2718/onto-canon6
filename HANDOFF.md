@@ -2,6 +2,56 @@
 
 ## Session Focus
 
+Plan 0032 closeout and Plan 0033 activation in the isolated worktree branch
+`codex/onto-canon6-integration-planning`.
+
+## What Landed
+
+Committed in the isolated worktree as:
+
+- `8bc7682` — `Fix extraction document loss for Plan 0032`
+- `aac507d` — `Add safe alias recovery for Plan 0032`
+
+Main effects:
+
+1. malformed extraction candidates no longer poison a whole document response;
+2. deterministic post-LLM equivalence collapse now safely repairs obvious
+   full-name and acronym/long-form alias splits;
+3. fresh successful rerun artifacts now live in:
+   - `docs/runs/scale_test_llm_2026-04-01_083207.json`
+   - `docs/runs/2026-04-01_entity_resolution_recall_recovery_rerun.md`
+
+## Current State
+
+1. Plan 0032 is complete and cleared its declared gate:
+   - precision `1.00`
+   - recall `0.615`
+   - false merges `0`
+   - answer rate `0.50`
+   - accuracy `0.40`
+   - all `25` docs survived extraction
+2. The remaining misses are narrower:
+   - typed mention-family drift (`Gen. Smith`, `Ft. Bragg` / `Fort Liberty`)
+   - alias-surface gaps (`the Agency`, `GWU`)
+   - university/place answerability (`Washington` / `George Washington University`)
+3. Plan 0033 is now the active bounded execution surface.
+
+## Recommended Next Step
+
+If work continues:
+
+1. stay on `codex/onto-canon6-integration-planning`;
+2. execute Plan 0033 in order:
+   - freeze the answerability contract
+   - repair type-divergent mention families
+   - recover missing alias surfaces
+   - rerun the fixed value proof
+3. do not widen the evaluator or relax the same-surname safety guard.
+
+# Handoff: onto-canon6 — 2026-04-01
+
+## Session Focus
+
 Plan 0031: 24h entity-resolution hardening block in the isolated
 worktree branch `codex/onto-canon6-integration-planning`.
 
