@@ -21,9 +21,9 @@ Source of truth:
 - [x] Commit verified phase
 
 ### Phase 3 — MCP Surface
-- [ ] Add thin MCP tools for the five operations
-- [ ] Add integration coverage
-- [ ] Commit verified phase
+- [x] Add thin MCP tools for the five operations
+- [x] Add integration coverage
+- [x] Commit verified phase
 
 ### Phase 4 — Real-Proof Verification
 - [ ] Verify entity/alias lookup on real promoted data
