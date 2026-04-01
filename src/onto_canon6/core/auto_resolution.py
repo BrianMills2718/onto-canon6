@@ -94,6 +94,17 @@ _ORGANIZATION_NAME_HINTS = {
     "unit",
     "units",
 }
+_ORGANIZATION_DESCRIPTOR_HEADS = (
+    "agency",
+    "bureau",
+    "command",
+    "department",
+    "group",
+    "office",
+    "organization",
+    "unit",
+    "university",
+)
 _INSTALLATION_EQUIVALENCE_GROUPS = (
     frozenset({"fort bragg", "ft bragg", "fort liberty"}),
 )
@@ -822,6 +833,7 @@ def _group_by_llm(
         all_groups,
         name_map=name_map,
         entity_types=entity_types,
+        context_map=context_map,
     )
 
 
@@ -865,20 +877,36 @@ def _entity_resolution_family(entity_type: str, name: str | None = None) -> str:
         return "place"
     if slug in _GENERIC_TYPE_SLUGS and _looks_like_generic_person_name(name):
         return "person"
-    if slug in _GENERIC_TYPE_SLUGS and _looks_like_organization_name(normalized_name):
+    if slug in _GENERIC_TYPE_SLUGS and _looks_like_organization_name(
+        name,
+        normalized_name=normalized_name,
+    ):
         return "organization"
     return base_family
 
 
-def _looks_like_organization_name(normalized_name: str) -> bool:
+def _looks_like_organization_name(
+    name: str,
+    *,
+    normalized_name: str | None = None,
+) -> bool:
     """Return whether a normalized surface form carries strong organization signal."""
 
+    normalized_name = normalized_name or _normalize_name(name)
     tokens = [token for token in normalized_name.split() if token]
     if not tokens:
         return False
     if any(token in _ORGANIZATION_NAME_HINTS for token in tokens):
         return True
-    return len(tokens) >= 2 and bool(_acronym_signatures(normalized_name))
+    if len(tokens) >= 2 and bool(_acronym_signatures(normalized_name)):
+        return True
+    compact_raw = re.sub(r"[^A-Za-z0-9]+", "", name.strip())
+    return (
+        len(tokens) == 1
+        and len(compact_raw) >= 3
+        and any(character.isalpha() for character in compact_raw)
+        and compact_raw.upper() == compact_raw
+    )
 
 
 def _has_leading_title(name: str) -> bool:
@@ -1203,6 +1231,35 @@ def _acronym_signatures(name: str) -> set[str]:
     return signatures
 
 
+def _organization_descriptor_heads_from_name(name: str) -> set[str]:
+    """Return bounded descriptor heads from definite organization alias names."""
+
+    lowered = " ".join(name.lower().split()).strip()
+    if not lowered.startswith("the "):
+        return set()
+    head = re.sub(r"[^a-z0-9]+", " ", lowered[4:]).strip()
+    if head in _ORGANIZATION_DESCRIPTOR_HEADS:
+        return {head}
+    return set()
+
+
+def _organization_descriptor_heads_from_text(text: str) -> set[str]:
+    """Return bounded descriptor heads explicitly attested in one source text."""
+
+    lowered = text.lower()
+    heads: set[str] = set()
+    for head in _ORGANIZATION_DESCRIPTOR_HEADS:
+        if re.search(rf"\bthe {head}\b", lowered) or re.search(
+            rf"\bthe {head}'s\b",
+            lowered,
+        ):
+            heads.add(head)
+            continue
+        if re.search(rf"\b{head} leadership\b", lowered):
+            heads.add(head)
+    return heads
+
+
 def _group_alias_signatures(
     group_ids: list[str],
     *,
@@ -1242,9 +1299,11 @@ def _collapse_equivalent_llm_groups(
     *,
     name_map: dict[str, str],
     entity_types: dict[str, str],
+    context_map: dict[str, str] | None = None,
 ) -> dict[str, list[str]]:
     """Merge LLM output groups that share high-confidence alias signatures."""
 
+    context_map = context_map or {}
     keys = list(groups.keys())
     if len(keys) < 2:
         return groups
@@ -1400,6 +1459,51 @@ def _collapse_equivalent_llm_groups(
         token_keys = place_keys_by_single_token.get(district_head, [])
         for token_key in token_keys:
             union(token_key, district_head_keys[0])
+
+    organization_descriptor_surface_keys: dict[str, list[str]] = defaultdict(list)
+    organization_descriptor_context_keys: dict[str, list[str]] = defaultdict(list)
+    for key in keys:
+        group = groups[key]
+        if not group:
+            continue
+        representative_name = name_map.get(group[0], group[0])
+        if (
+            _entity_resolution_family(
+                entity_types.get(group[0], ""),
+                representative_name,
+            )
+            != "organization"
+        ):
+            continue
+        descriptor_heads_from_names: set[str] = set()
+        descriptor_heads_from_context: set[str] = set()
+        for entity_id in group:
+            observed_name = name_map.get(entity_id, entity_id)
+            descriptor_heads_from_names.update(
+                _organization_descriptor_heads_from_name(observed_name),
+            )
+            descriptor_heads_from_context.update(
+                _organization_descriptor_heads_from_text(
+                    context_map.get(entity_id, ""),
+                ),
+            )
+        for descriptor_head in descriptor_heads_from_names:
+            organization_descriptor_surface_keys[descriptor_head].append(key)
+        for descriptor_head in descriptor_heads_from_context:
+            organization_descriptor_context_keys[descriptor_head].append(key)
+
+    for descriptor_head, surface_keys in organization_descriptor_surface_keys.items():
+        surface_roots = {find(key) for key in surface_keys}
+        context_roots = {
+            find(key)
+            for key in organization_descriptor_context_keys.get(descriptor_head, [])
+        }
+        if len(surface_roots) != 1 or len(context_roots) != 1:
+            continue
+        surface_root = next(iter(surface_roots))
+        context_root = next(iter(context_roots))
+        if surface_root != context_root:
+            union(surface_root, context_root)
 
     collapsed: dict[str, list[str]] = defaultdict(list)
     for key in keys:

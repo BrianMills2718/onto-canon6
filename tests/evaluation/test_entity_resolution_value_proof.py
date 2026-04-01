@@ -516,3 +516,46 @@ def test_score_value_proof_questions_ignores_unmatched_duplicate_mentions() -> N
     assert scores[1].answered is True
     assert scores[1].correct is True
     assert scores[1].predicted_answer is False
+
+
+def test_score_value_proof_questions_uses_installation_equivalence_lookup_keys() -> None:
+    """Same-entity questions should reuse bounded installation-equivalence keys."""
+
+    questions = ValueProofQuestionFixture.model_validate(
+        {
+            "description": "questions",
+            "questions": [
+                {
+                    "question_id": "q_installation",
+                    "kind": "same_entity",
+                    "prompt": "same installation?",
+                    "mention": "Ft. Bragg",
+                    "other_mention": "Fort Liberty",
+                    "expected_answer": True,
+                },
+            ],
+        }
+    )
+    observations = (
+        EntityObservation(
+            entity_id="ent_installation",
+            entity_type="oc:military_base",
+            first_candidate_id="cand_installation",
+            predicted_cluster_id="cluster_installation",
+            observed_names=("Fort Bragg", "Fort Liberty"),
+            source_refs=("doc_21", "doc_24"),
+            matched_ground_truth_entity_id="E999",
+            match_status="matched",
+            match_reason="matched",
+            candidate_ground_truth_entity_ids=("E999",),
+        ),
+    )
+
+    scores = score_value_proof_questions(
+        observations=observations,
+        questions=questions,
+    )
+
+    assert scores[0].answered is True
+    assert scores[0].correct is True
+    assert scores[0].predicted_answer is True

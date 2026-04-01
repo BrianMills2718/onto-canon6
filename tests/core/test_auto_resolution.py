@@ -693,6 +693,56 @@ class TestGroupByLLM:
 
         assert list(groups.values()) == [["e1", "e2"]]
 
+    def test_llm_collapses_generic_acronym_and_long_form_org_clusters(self) -> None:
+        """Generic acronym organization surfaces should still share one LLM family."""
+
+        mock_response = MagicMock()
+        mock_response.content = ClusteringResult(
+            clusters=[
+                EntityCluster(
+                    canonical_name="NSA",
+                    entity_ids=["e1"],
+                    reasoning="short form mention",
+                ),
+                EntityCluster(
+                    canonical_name="National Security Agency",
+                    entity_ids=["e2"],
+                    reasoning="long form mention",
+                ),
+            ]
+        ).model_dump_json()
+
+        async def mock_acall_llm(*args: object, **kwargs: object) -> object:
+            return mock_response
+
+        with patch.dict(
+            "sys.modules",
+            {
+                "llm_client": MagicMock(
+                    render_prompt=lambda tpl, **ctx: [{"role": "user", "content": "test"}],
+                    acall_llm=mock_acall_llm,
+                    get_model=lambda task, **kw: "mock-model",
+                ),
+            },
+        ):
+            from onto_canon6.core import auto_resolution as ar_mod
+
+            groups = ar_mod._group_by_llm(
+                entity_ids=["e1", "e2"],
+                name_map={
+                    "e1": "NSA",
+                    "e2": "National Security Agency",
+                },
+                entity_types={
+                    "e1": "",
+                    "e2": "oc:government_agency",
+                },
+                context_map={"e1": "", "e2": ""},
+                assertions=[],
+            )
+
+        assert list(groups.values()) == [["e1", "e2"]]
+
     def test_entity_types_compatible_person_like_rank_mentions(self) -> None:
         """Rank-typed titled names can still compare with person mentions."""
 
@@ -763,6 +813,36 @@ class TestGroupByLLM:
             "oc:military_organization",
             left_name="U.S. Special Operations Command",
             right_name="USSOCOM",
+        )
+
+    def test_entity_types_compatible_generic_acronym_org_like_names(self) -> None:
+        """Single-token uppercase acronyms can still route into the organization family."""
+
+        from onto_canon6.core.auto_resolution import _entity_types_compatible
+
+        assert _entity_types_compatible(
+            "",
+            "oc:government_agency",
+            left_name="NSA",
+            right_name="National Security Agency",
+        )
+        assert _entity_types_compatible(
+            "",
+            "oc:university",
+            left_name="GWU",
+            right_name="George Washington University",
+        )
+
+    def test_entity_types_compatible_does_not_treat_short_place_abbrev_as_org(self) -> None:
+        """Short place abbreviations must not be rerouted into the organization family."""
+
+        from onto_canon6.core.auto_resolution import _entity_types_compatible
+
+        assert not _entity_types_compatible(
+            "",
+            "oc:location",
+            left_name="D.C.",
+            right_name="Washington D.C.",
         )
 
     def test_entity_types_compatible_generic_titled_person_names(self) -> None:
@@ -994,6 +1074,66 @@ class TestGroupByLLM:
 
         assert {frozenset(group) for group in groups.values()} == {
             frozenset({"e1", "e2"}),
+            frozenset({"e3"}),
+        }
+
+    def test_collapse_equivalent_llm_groups_merges_unique_descriptor_alias_family(self) -> None:
+        """One bounded descriptor-only organization group can join one unique source-backed anchor."""
+
+        from onto_canon6.core import auto_resolution as ar_mod
+
+        groups = ar_mod._collapse_equivalent_llm_groups(
+            {
+                "g1": ["e1"],
+                "g2": ["e2"],
+            },
+            name_map={
+                "e1": "the Agency",
+                "e2": "CIA",
+            },
+            entity_types={
+                "e1": "oc:organization",
+                "e2": "oc:government_agency",
+            },
+            context_map={
+                "e2": "Eric Olson met with officials from the CIA at the agency's headquarters in Washington.",
+            },
+        )
+
+        assert {frozenset(group) for group in groups.values()} == {
+            frozenset({"e1", "e2"}),
+        }
+
+    def test_collapse_equivalent_llm_groups_keeps_ambiguous_descriptor_alias_unmerged(self) -> None:
+        """Descriptor-only organization groups must stay explicit when two anchors advertise the same head."""
+
+        from onto_canon6.core import auto_resolution as ar_mod
+
+        groups = ar_mod._collapse_equivalent_llm_groups(
+            {
+                "g1": ["e1"],
+                "g2": ["e2"],
+                "g3": ["e3"],
+            },
+            name_map={
+                "e1": "the Agency",
+                "e2": "CIA",
+                "e3": "NSA",
+            },
+            entity_types={
+                "e1": "oc:organization",
+                "e2": "oc:government_agency",
+                "e3": "oc:government_agency",
+            },
+            context_map={
+                "e2": "Officials from the CIA arrived at the agency's headquarters.",
+                "e3": "Analysts from the NSA said the agency's budget increased.",
+            },
+        )
+
+        assert {frozenset(group) for group in groups.values()} == {
+            frozenset({"e1"}),
+            frozenset({"e2"}),
             frozenset({"e3"}),
         }
 

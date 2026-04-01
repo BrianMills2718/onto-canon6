@@ -6,27 +6,27 @@ Source of truth:
 - `docs/plans/0038_24h_entity_resolution_surface_stability_block.md`
 
 ### Phase 1 — Freeze The Surface-Stability Contract
-- [ ] Close Plan 0037 truthfully in the docs
-- [ ] Activate Plan 0038 and freeze the residual blocker families
+- [x] Close Plan 0037 truthfully in the docs
+- [x] Activate Plan 0038 and freeze the residual blocker families
 - [x] Commit verified phase
 
 ### Phase 2 — Recover Generic Acronym Organization Families
-- [ ] Localize exactly why generic acronym org surfaces stay outside long-form clusters
-- [ ] Land one conservative family-level acronym routing repair
-- [ ] Add/update targeted regression tests
-- [ ] Commit verified phase
+- [x] Localize exactly why generic acronym org surfaces stay outside long-form clusters
+- [x] Land one conservative family-level acronym routing repair
+- [x] Add/update targeted regression tests
+- [x] Commit verified phase
 
 ### Phase 3 — Recover Organization Descriptor Alias Collapse
-- [ ] Localize exactly why `the Agency` still stays outside the CIA cluster
-- [ ] Land one bounded descriptor-alias repair
-- [ ] Add/update targeted regression tests
-- [ ] Commit verified phase
+- [x] Localize exactly why `the Agency` still stays outside the CIA cluster
+- [x] Land one bounded descriptor-alias repair
+- [x] Add/update targeted regression tests
+- [x] Commit verified phase
 
 ### Phase 4 — Repair Evaluator Mention-Key Stability
-- [ ] Localize exactly why `q04` still misses despite the runtime merge
-- [ ] Land one bounded installation-equivalence mention-key repair
-- [ ] Add/update targeted regression tests
-- [ ] Commit verified phase
+- [x] Localize exactly why `q04` still misses despite the runtime merge
+- [x] Land one bounded installation-equivalence mention-key repair
+- [x] Add/update targeted regression tests
+- [x] Commit verified phase
 
 ### Phase 5 — Rerun The Value Proof And Closeout
 - [ ] Rerun LLM strategy on a fresh DB

@@ -29,6 +29,7 @@ from ..core.auto_resolution import (
     _acronym_signatures,
     _entity_resolution_family,
     _entity_types_compatible,
+    _installation_equivalence_key,
     _normalize_name,
 )
 from ..core.identity_service import IdentityService
@@ -810,6 +811,22 @@ def _derived_mention_keys(
     family = _entity_resolution_family(observation.entity_type or "", name)
     if family != "person":
         keys.update(_acronym_signatures(name))
+        installation_equivalence = _installation_equivalence_key(name)
+        if installation_equivalence is not None:
+            keys.add(installation_equivalence)
+    return tuple(sorted(keys))
+
+
+def _lookup_keys_for_mention(mention: str) -> tuple[str, ...]:
+    """Return the bounded lookup keys for one question mention surface."""
+
+    normalized = _normalize_name(mention)
+    if not normalized:
+        return ()
+    keys = {normalized}
+    installation_equivalence = _installation_equivalence_key(mention)
+    if installation_equivalence is not None:
+        keys.add(installation_equivalence)
     return tuple(sorted(keys))
 
 
@@ -819,13 +836,15 @@ def _cluster_ids_for_mention(
 ) -> set[str]:
     """Return the predicted cluster ids for one mention."""
 
-    normalized = _normalize_name(mention)
-    return {
-        observation.predicted_cluster_id
-        for observation in mention_index.get(normalized, ())
-        if observation.match_status == "matched"
-        and observation.matched_ground_truth_entity_id is not None
-    }
+    cluster_ids: set[str] = set()
+    for lookup_key in _lookup_keys_for_mention(mention):
+        cluster_ids.update(
+            observation.predicted_cluster_id
+            for observation in mention_index.get(lookup_key, ())
+            if observation.match_status == "matched"
+            and observation.matched_ground_truth_entity_id is not None
+        )
+    return cluster_ids
 
 
 def _ground_truth_ids_for_mention(
@@ -834,13 +853,15 @@ def _ground_truth_ids_for_mention(
 ) -> set[str]:
     """Return uniquely matched ground-truth ids for one mention."""
 
-    normalized = _normalize_name(mention)
-    return {
-        observation.matched_ground_truth_entity_id
-        for observation in mention_index.get(normalized, ())
-        if observation.match_status == "matched"
-        and observation.matched_ground_truth_entity_id is not None
-    }
+    ground_truth_ids: set[str] = set()
+    for lookup_key in _lookup_keys_for_mention(mention):
+        ground_truth_ids.update(
+            observation.matched_ground_truth_entity_id
+            for observation in mention_index.get(lookup_key, ())
+            if observation.match_status == "matched"
+            and observation.matched_ground_truth_entity_id is not None
+        )
+    return ground_truth_ids
 
 
 def _summarize_question_scores(

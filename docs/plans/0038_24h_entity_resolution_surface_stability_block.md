@@ -2,10 +2,10 @@
 
 Status: active
 Phase status:
-- Phase 1 pending
-- Phase 2 pending
-- Phase 3 pending
-- Phase 4 pending
+- Phase 1 completed
+- Phase 2 completed
+- Phase 3 completed
+- Phase 4 completed
 - Phase 5 pending
 
 Last updated: 2026-04-01
@@ -126,6 +126,11 @@ No other families are in scope.
 2. the owned residual families and rerun policy are explicit enough to execute
    without new questions.
 
+Progress note:
+
+1. completed in commit `613efa9`, which closed Plan 0037 truthfully, activated
+   Plan 0038, and checked in the canonical incoming rerun artifacts.
+
 ### Phase 2: Recover Generic Acronym Organization Families
 
 #### Tasks
@@ -147,6 +152,11 @@ No other families are in scope.
 2. the repair is family-level, not benchmark-id specific;
 3. existing person/place family boundaries stay green.
 
+Progress note:
+
+1. landed in `src/onto_canon6/core/auto_resolution.py` with targeted regression
+   coverage for `NSA`, `GWU`, and short place-abbreviation safety.
+
 ### Phase 3: Recover Organization Descriptor Alias Collapse
 
 #### Tasks
@@ -165,6 +175,11 @@ No other families are in scope.
 1. targeted tests pass;
 2. the repair is source-evidence-bound and deterministic;
 3. descriptor aliasing does not introduce false merges.
+
+Progress note:
+
+1. landed as a one-to-one descriptor bridge between definite descriptor-only
+   organization groups and unique source-backed anchors.
 
 ### Phase 4: Repair Evaluator Mention-Key Stability
 
@@ -185,6 +200,12 @@ No other families are in scope.
 2. the evaluator uses the same bounded equivalence contract as runtime
    resolution;
 3. the fix is measurement-surface only, not a data-fixture hack.
+
+Progress note:
+
+1. `_derived_mention_keys()`, `_cluster_ids_for_mention()`, and
+   `_ground_truth_ids_for_mention()` now reuse the bounded installation
+   equivalence contract.
 
 ### Phase 5: Rerun The Fresh Value Proof And Close Out
 
