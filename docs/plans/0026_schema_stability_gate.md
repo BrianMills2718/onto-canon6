@@ -397,6 +397,29 @@ surface.
 2. do not broaden the implementation beyond the four surfaces above;
 3. ensure the checks fail loudly when a gated field or behavior changes.
 
+#### Phase 3 Pre-Made Decisions
+
+1. **Extend the existing owner tests instead of creating a new compatibility
+   test suite.**
+   The compatibility assertions should live in:
+   - `tests/core/test_graph_service.py`
+   - `tests/surfaces/test_governed_bundle.py`
+   - `tests/adapters/test_foundation_assertion_export.py`
+   - `tests/adapters/test_digimon_export.py`
+2. **Put shared snapshot/normalization helpers in one dedicated test helper
+   module rather than copying logic into each test file.**
+   Default location:
+   `tests/compatibility_helpers.py`
+3. **Do not add a new Make target for Lane 3 yet.**
+   The first implementation slice should rely on the existing targeted pytest
+   commands listed in this plan.
+4. **Use file-based expected artifacts checked into the repo, not inline giant
+   Python literals.**
+   The tests should load the files under `tests/fixtures/compatibility/`.
+5. **Do not automate cross-repo DIGIMON proof execution in this first slice.**
+   Keep the DIGIMON import unit as the automated consumer-side owner check and
+   keep the real Shield AI proof as documented supplemental evidence.
+
 **Acceptance**
 
 1. every surface has one runnable compatibility owner check;
@@ -448,10 +471,10 @@ must not claim completion without at least these classes of evidence.
 or timestamps.
 
 ### Q2: Does Surface A need a dedicated compatibility fixture beyond `test_graph_service.py`?
-**Status:** Open
-**Decision pressure:** Medium
-**Current default:** yes, eventually, but existing graph-service tests are the
-baseline owner check until Phase 2 formalizes the fixture.
+**Status:** Resolved
+**Decision:** yes. Surface A will use
+`tests/fixtures/compatibility/promoted_graph/minimal_promotion_result.json`
+with `tests/core/test_graph_service.py` as the owner check.
 
 ### Q3: Should the DIGIMON consumer proof remain a real-data smoke artifact or become a fully automated cross-repo check?
 **Status:** Open
