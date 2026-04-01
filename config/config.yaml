@@ -19,7 +19,7 @@ ontology_runtime:
 extraction:
   selection_task: fast_extraction
   selection_use_performance: false
-  model_override: gemini/gemini-2.0-flash
+  model_override: gemini/gemini-2.5-flash-lite
   default_extraction_goal: Extract all factual assertions directly supported by the
     source text.
   prompt_template: prompts/extraction/text_to_candidate_assertions.yaml
@@ -55,7 +55,7 @@ evaluation:
     observability_phase: evaluation
     selection_task: fast_extraction
     selection_use_performance: false
-    model_override: gemini/gemini-2.0-flash
+    model_override: gemini/gemini-2.5-flash-lite
     n_runs: 2
     temperature: 0.0
     timeout_seconds: 60
@@ -91,7 +91,7 @@ evaluation:
 resolution:
   default_strategy: exact
   require_llm_review: true
-  model_override: gemini/gemini-2.0-flash
+  model_override: gemini/gemini-3-flash-preview
   max_budget_usd: 0.50
   cluster_prompt_template: prompts/resolution/cluster_entities.yaml
   validate_prompt_template: prompts/resolution/validate_merge.yaml
