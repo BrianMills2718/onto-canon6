@@ -64,10 +64,11 @@ relationships exported; 110 nodes, 78 edges imported.
 
 | Plan | Status | Next |
 |------|--------|------|
-| 0025 | **COMPLETE** — 100% precision, 100% recall, +70% QA vs bare | Scale-out deferred (0025a) |
-| 0024 Lane 2 | DIGIMON chosen, v1 verified, value proof done | Lane 3 |
-| 0026 | **Phases 2-3 COMPLETE** — 4 surfaces, 9 compatibility tests | Phase 4 (change classification policy) |
-| 0014 | Noise resolved — gemini-3-flash + prompt fix produces 0 noise on synthetic + real text | Ongoing; largely solved |
+| 0025 | **COMPLETE** — 100% precision, 100% recall (exact+LLM review), +70% QA | Scale-out deferred (0025a) |
+| 0026 | **COMPLETE** — all 4 phases, 9 tests, change classification policy | — |
+| 0024 | Lanes 1-3 done, Lane 5 done. **Lane 4** (extraction quality promotion gate) remaining. | Extraction quality promotion with transfer evidence |
+| 0014 | Noise resolved. gemini-3-flash + prompt fix. Real PSYOP validated. | Ongoing; largely solved |
+| 0005 | Lane 5 reprioritization done. Next-active: concept/entity browsing. | Plan new browsing surface |
 
 ## Authority
 
