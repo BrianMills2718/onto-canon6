@@ -39,6 +39,28 @@ ResolutionStrategy = Literal["exact", "fuzzy", "llm"]
 
 ACTOR_ID = "auto:resolution"
 DEFAULT_FUZZY_THRESHOLD = 85
+_ORGANIZATION_TYPE_SLUGS = {
+    "org",
+    "organization",
+    "military_organization",
+    "military_organization_unit",
+    "government_organization",
+    "intelligence_agency",
+    "educational_institution",
+    "civilian_organization",
+    "combatant_command",
+    "unit",
+}
+_PLACE_TYPE_SLUGS = {
+    "location",
+    "place",
+    "installation",
+    "military_installation",
+    "military_base",
+    "base",
+    "facility",
+}
+_PERSON_TYPE_SLUGS = {"person", "gp_person"}
 
 # Title/honorific patterns for name normalization (military, government, academic, civilian)
 _TITLE_PATTERNS: list[tuple[str, str]] = [
@@ -109,6 +131,16 @@ class ResolutionResult:
     strategy: str
 
 
+@dataclass(frozen=True)
+class _PersonNameInfo:
+    """Minimal person-name decomposition for conservative merge checks."""
+
+    surname: str | None
+    full_given: str | None
+    initial: str | None
+    surname_only: bool
+
+
 def auto_resolve_identities(
     *,
     db_path: Path,
@@ -123,7 +155,7 @@ def auto_resolve_identities(
     becomes the canonical member; subsequent entities become aliases.
 
     For ``fuzzy`` strategy, entities with token_sort_ratio >= threshold
-    AND the same entity_type are grouped together. The entity_type guard
+    AND a compatible resolution family are grouped together. The family guard
     prevents false positives (e.g., "USSOCOM" the org vs "USSOCOM Commander"
     the person).
 
@@ -335,7 +367,7 @@ def _group_by_fuzzy(
     Uses rapidfuzz token_sort_ratio for similarity scoring. Two entities
     are grouped only if:
     1. Their normalized names score >= threshold on token_sort_ratio
-    2. They share the same entity_type (false-positive guard)
+    2. They share a compatible resolution family (false-positive guard)
 
     Uses union-find for transitive closure of fuzzy matches.
     """
@@ -364,7 +396,7 @@ def _group_by_fuzzy(
             type_b = entity_types.get(eid_b, "")
 
             # Entity type guard: only merge same-type entities
-            if type_a and type_b and type_a != type_b:
+            if type_a and type_b and not _entity_types_compatible(type_a, type_b):
                 continue
 
             score = fuzz.token_sort_ratio(normalized[eid_a], normalized[eid_b])
@@ -536,16 +568,17 @@ def _group_by_llm(
         except Exception:
             model = "gemini/gemini-2.5-flash"
 
-    # Group entities by type
+    # Group entities by compatibility family so subtype-equivalent org and place
+    # mentions can still be compared in one LLM call.
     type_groups: dict[str, list[str]] = defaultdict(list)
     for eid in entity_ids:
         etype = entity_types.get(eid, "unknown")
-        type_groups[etype].append(eid)
+        type_groups[_resolution_type_family(etype)].append(eid)
 
     all_groups: dict[str, list[str]] = {}
     group_counter = 0
 
-    for entity_type, type_eids in type_groups.items():
+    for entity_type_family, type_eids in type_groups.items():
         if len(type_eids) < min_entities_for_llm:
             # Single entity — no clustering needed
             for eid in type_eids:
@@ -566,25 +599,40 @@ def _group_by_llm(
             )
 
         # Build prompt context
-        prompt_context: dict[str, Any] = {"entity_type": entity_type}
+        prompt_context: dict[str, Any] = {"entity_type_family": entity_type_family}
 
         if fuzzy_proposals is not None and unclustered is not None:
             prompt_context["fuzzy_proposals"] = [
                 {
                     "entities": [
-                        {"entity_id": e.entity_id, "name": e.name, "context": e.context}
+                        {
+                            "entity_id": e.entity_id,
+                            "name": e.name,
+                            "entity_type": e.entity_type,
+                            "context": e.context,
+                        }
                         for e in p.entities
                     ]
                 }
                 for p in fuzzy_proposals
             ]
             prompt_context["unclustered_entities"] = [
-                {"entity_id": e.entity_id, "name": e.name, "context": e.context}
+                {
+                    "entity_id": e.entity_id,
+                    "name": e.name,
+                    "entity_type": e.entity_type,
+                    "context": e.context,
+                }
                 for e in unclustered
             ]
         else:
             prompt_context["entities"] = [
-                {"entity_id": e.entity_id, "name": e.name, "context": e.context}
+                {
+                    "entity_id": e.entity_id,
+                    "name": e.name,
+                    "entity_type": e.entity_type,
+                    "context": e.context,
+                }
                 for e in entities
             ]
 
@@ -592,7 +640,9 @@ def _group_by_llm(
         messages = render_prompt(prompt_template, **prompt_context)
 
         # Call LLM
-        trace_id = f"resolution.cluster.{entity_type}.{_uuid.uuid4().hex[:8]}"
+        trace_id = (
+            f"resolution.cluster.{entity_type_family}.{_uuid.uuid4().hex[:8]}"
+        )
         schema = ClusteringResult.model_json_schema()
 
         # Call LLM — fail loud on errors
@@ -618,9 +668,9 @@ def _group_by_llm(
         clustering = ClusteringResult.model_validate_json(response_text)
 
         logger.info(
-            "LLM clustering for type %s: %d entities → %d clusters "
+            "LLM clustering for family %s: %d entities → %d clusters "
             "(entity_count=%d, trace=%s)",
-            entity_type, len(type_eids), len(clustering.clusters),
+            entity_type_family, len(type_eids), len(clustering.clusters),
             len(type_eids), trace_id,
         )
 
@@ -634,9 +684,15 @@ def _group_by_llm(
                 eid for eid in cluster.entity_ids
                 if eid in valid_eids and eid not in claimed_ids
             ]
-            if valid_cluster_ids:
-                all_groups[f"llm_{group_counter}"] = valid_cluster_ids
-                claimed_ids.update(valid_cluster_ids)
+            if not valid_cluster_ids:
+                continue
+            for subgroup in _postprocess_llm_cluster(
+                valid_cluster_ids,
+                name_map=name_map,
+                entity_types=entity_types,
+            ):
+                all_groups[f"llm_{group_counter}"] = subgroup
+                claimed_ids.update(subgroup)
                 group_counter += 1
 
         # Any entities not claimed by LLM clusters get singleton groups
@@ -648,10 +704,125 @@ def _group_by_llm(
     return all_groups
 
 
+def _entity_type_slug(entity_type: str) -> str:
+    """Return the normalized type slug without CURIE prefix."""
+
+    normalized = entity_type.strip().lower()
+    if not normalized:
+        return "unknown"
+    return normalized.split(":")[-1]
+
+
+def _resolution_type_family(entity_type: str) -> str:
+    """Map fine-grained entity types into conservative resolution families."""
+
+    slug = _entity_type_slug(entity_type)
+    if slug in _PERSON_TYPE_SLUGS:
+        return "person"
+    if slug in _ORGANIZATION_TYPE_SLUGS:
+        return "organization"
+    if slug in _PLACE_TYPE_SLUGS:
+        return "place"
+    return slug
+
+
+def _entity_types_compatible(left_type: str, right_type: str) -> bool:
+    """Return whether two entity types are compatible for resolution."""
+
+    if left_type == right_type:
+        return True
+    return _resolution_type_family(left_type) == _resolution_type_family(right_type)
+
+
+def _person_name_info(name: str) -> _PersonNameInfo:
+    """Extract a conservative person-name signature for merge checks."""
+
+    normalized = _normalize_name(name)
+    if not normalized:
+        return _PersonNameInfo(None, None, None, False)
+    tokens = normalized.split()
+    if not tokens:
+        return _PersonNameInfo(None, None, None, False)
+    surname = tokens[-1]
+    given_tokens = tokens[:-1]
+    if not given_tokens:
+        return _PersonNameInfo(surname, None, None, True)
+    given = given_tokens[0].strip(".,;:")
+    if len(given) == 1:
+        return _PersonNameInfo(surname, None, given, False)
+    return _PersonNameInfo(surname, given, given[0], False)
+
+
+def _postprocess_llm_cluster(
+    entity_ids: list[str],
+    *,
+    name_map: dict[str, str],
+    entity_types: dict[str, str],
+) -> list[list[str]]:
+    """Apply deterministic safety guards to one LLM-proposed cluster."""
+
+    if len(entity_ids) < 2:
+        return [entity_ids]
+
+    representative_type = entity_types.get(entity_ids[0], "")
+    if _resolution_type_family(representative_type) != "person":
+        return [entity_ids]
+
+    infos = {
+        eid: _person_name_info(name_map.get(eid, eid))
+        for eid in entity_ids
+    }
+    surname_groups: dict[str, list[str]] = defaultdict(list)
+    for eid, info in infos.items():
+        surname_groups[info.surname or eid].append(eid)
+
+    output_groups: list[list[str]] = []
+    for group_ids in surname_groups.values():
+        full_given_names: set[str] = set()
+        for eid in group_ids:
+            full_given = infos[eid].full_given
+            if full_given is not None:
+                full_given_names.add(full_given)
+        if len(full_given_names) <= 1:
+            output_groups.append(group_ids)
+            continue
+
+        anchored_groups: dict[str, list[str]] = {
+            given_name: []
+            for given_name in sorted(full_given_names)
+        }
+        ambiguous_ids: list[str] = []
+        for eid in group_ids:
+            info = infos[eid]
+            if info.full_given is not None:
+                anchored_groups[info.full_given].append(eid)
+                continue
+            if info.initial is not None:
+                matching_full = [
+                    given_name
+                    for given_name in anchored_groups
+                    if given_name.startswith(info.initial)
+                ]
+                if len(matching_full) == 1:
+                    anchored_groups[matching_full[0]].append(eid)
+                    continue
+            ambiguous_ids.append(eid)
+
+        output_groups.extend(
+            [members for members in anchored_groups.values() if members]
+        )
+        output_groups.extend([[eid] for eid in ambiguous_ids])
+
+    return output_groups
+
+
 __all__ = [
     "ClusteringResult",
     "EntityCluster",
     "ResolutionResult",
     "ResolutionStrategy",
+    "_entity_types_compatible",
+    "_postprocess_llm_cluster",
+    "_resolution_type_family",
     "auto_resolve_identities",
 ]

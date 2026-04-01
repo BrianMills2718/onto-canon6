@@ -14,13 +14,13 @@ Source of truth:
 - [x] Remove or modernize the stale `_judge_candidate()` path
 - [x] Ensure explicit `judge_model_override` is honored in auto-review
 - [x] Add/update tests for the seam
-- [ ] Commit verified phase
+- [x] Commit verified phase
 
 ### Phase 3 — Harden Resolution Decisions
-- [ ] Add deterministic same-surname person disambiguation
-- [ ] Make resolution type compatibility hierarchy-aware or override-aware
-- [ ] Strengthen prompt or post-LLM validation accordingly
-- [ ] Add targeted regression tests
+- [x] Add deterministic same-surname person disambiguation
+- [x] Make resolution type compatibility hierarchy-aware or override-aware
+- [x] Strengthen prompt or post-LLM validation accordingly
+- [x] Add targeted regression tests
 - [ ] Commit verified phase
 
 ### Phase 4 — Refresh The Value Proof

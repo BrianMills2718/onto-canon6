@@ -11,15 +11,15 @@ from unittest.mock import MagicMock, patch
 from onto_canon6.core.auto_resolution import (
     ClusteringResult,
     EntityCluster,
-    _build_context_map,
     _build_entity_info_list,
+    _entity_types_compatible,
     _fuzzy_pre_filter,
     _group_by_fuzzy,
-    _group_by_llm,
-    ResolutionResult,
-    auto_resolve_identities,
-    _normalize_name,
     _group_by_name,
+    _normalize_name,
+    _postprocess_llm_cluster,
+    _resolution_type_family,
+    auto_resolve_identities,
 )
 from onto_canon6.core import CanonicalGraphService, IdentityService
 from onto_canon6.pipeline import ReviewService
@@ -143,7 +143,7 @@ class TestGroupByName:
 
     def test_no_name_uses_entity_id(self) -> None:
         entity_ids = ["ent_1"]
-        name_map = {}
+        name_map: dict[str, str] = {}
         groups = _group_by_name(entity_ids, name_map, "exact")
         assert "ent_1" in groups
 
@@ -420,6 +420,122 @@ class TestFuzzyPreFilter:
 class TestGroupByLLM:
     """Test LLM clustering with mocked LLM calls."""
 
+    def test_resolution_type_family_maps_subtypes_together(self) -> None:
+        """Related organization and place subtypes share a resolution family."""
+        assert _resolution_type_family("oc:military_organization") == "organization"
+        assert _resolution_type_family("oc:organization") == "organization"
+        assert _resolution_type_family("oc:military_installation") == "place"
+        assert _resolution_type_family("oc:location") == "place"
+
+    def test_entity_type_compatibility_uses_resolution_family(self) -> None:
+        """Compatibility is broader than exact string equality for safe subtype pairs."""
+        assert _entity_types_compatible(
+            "oc:military_organization",
+            "oc:organization",
+        )
+        assert _entity_types_compatible(
+            "oc:military_installation",
+            "oc:location",
+        )
+        assert not _entity_types_compatible("oc:person", "oc:organization")
+
+    def test_postprocess_llm_cluster_splits_conflicting_full_given_names(self) -> None:
+        """Conflicting full first names with the same surname do not remain merged."""
+        groups = _postprocess_llm_cluster(
+            ["e1", "e2", "e3", "e4"],
+            name_map={
+                "e1": "General John Smith",
+                "e2": "James Smith",
+                "e3": "Gen. J. Smith",
+                "e4": "General Smith",
+            },
+            entity_types={
+                "e1": "oc:person",
+                "e2": "oc:person",
+                "e3": "oc:person",
+                "e4": "oc:person",
+            },
+        )
+        normalized_groups = {frozenset(group) for group in groups}
+        assert frozenset({"e1"}) in normalized_groups
+        assert frozenset({"e2"}) in normalized_groups
+        assert frozenset({"e3"}) in normalized_groups
+        assert frozenset({"e4"}) in normalized_groups
+
+    def test_postprocess_llm_cluster_keeps_unique_initial_with_full_name(self) -> None:
+        """Initial-only variants stay attached when they match exactly one full name."""
+        groups = _postprocess_llm_cluster(
+            ["e1", "e2"],
+            name_map={
+                "e1": "General John Smith",
+                "e2": "Gen. J. Smith",
+            },
+            entity_types={
+                "e1": "oc:person",
+                "e2": "oc:person",
+            },
+        )
+        assert groups == [["e1", "e2"]]
+
+    def test_postprocess_llm_cluster_leaves_non_people_unchanged(self) -> None:
+        """Only person clusters get the extra deterministic split guard."""
+        groups = _postprocess_llm_cluster(
+            ["e1", "e2"],
+            name_map={
+                "e1": "USSOCOM",
+                "e2": "U.S. Special Operations Command",
+            },
+            entity_types={
+                "e1": "oc:military_organization",
+                "e2": "oc:organization",
+            },
+        )
+        assert groups == [["e1", "e2"]]
+
+    def test_llm_can_cluster_compatible_org_subtypes_together(self) -> None:
+        """Subtype-equivalent orgs are not split before the LLM sees them."""
+        mock_response = MagicMock()
+        mock_response.content = ClusteringResult(
+            clusters=[
+                EntityCluster(
+                    canonical_name="U.S. Special Operations Command",
+                    entity_ids=["e1", "e2"],
+                    reasoning="Same organization under short and expanded names",
+                ),
+            ]
+        ).model_dump_json()
+
+        async def mock_acall_llm(*args: object, **kwargs: object) -> object:
+            return mock_response
+
+        with patch.dict(
+            "sys.modules",
+            {
+                "llm_client": MagicMock(
+                    render_prompt=lambda tpl, **ctx: [{"role": "user", "content": "test"}],
+                    acall_llm=mock_acall_llm,
+                    get_model=lambda task, **kw: "mock-model",
+                ),
+            },
+        ):
+            from onto_canon6.core import auto_resolution as ar_mod
+
+            groups = ar_mod._group_by_llm(
+                entity_ids=["e1", "e2"],
+                name_map={
+                    "e1": "USSOCOM",
+                    "e2": "U.S. Special Operations Command",
+                },
+                entity_types={
+                    "e1": "oc:military_organization",
+                    "e2": "oc:organization",
+                },
+                context_map={"e1": "", "e2": ""},
+                assertions=[],
+            )
+
+        assert list(groups.values()) == [["e1", "e2"]]
+
     def test_llm_clustering_with_mock(self) -> None:
         """LLM clustering produces correct groups from mocked response."""
         mock_response = MagicMock()
@@ -467,6 +583,56 @@ class TestGroupByLLM:
         assert len(multi_groups) == 1
         assert set(multi_groups[0]) == {"e1", "e2"}
         assert len(single_groups) == 1
+
+    def test_llm_clustering_postprocesses_conflicting_person_names(self) -> None:
+        """Conflicting same-surname people are split after the LLM response."""
+        mock_response = MagicMock()
+        mock_response.content = ClusteringResult(
+            clusters=[
+                EntityCluster(
+                    canonical_name="Smith",
+                    entity_ids=["e1", "e2", "e3"],
+                    reasoning="All appear to be Smith references",
+                ),
+            ]
+        ).model_dump_json()
+
+        async def mock_acall_llm(*args: object, **kwargs: object) -> object:
+            return mock_response
+
+        with patch.dict(
+            "sys.modules",
+            {
+                "llm_client": MagicMock(
+                    render_prompt=lambda tpl, **ctx: [{"role": "user", "content": "test"}],
+                    acall_llm=mock_acall_llm,
+                    get_model=lambda task, **kw: "mock-model",
+                ),
+            },
+        ):
+            from onto_canon6.core import auto_resolution as ar_mod
+
+            groups = ar_mod._group_by_llm(
+                entity_ids=["e1", "e2", "e3"],
+                name_map={
+                    "e1": "General John Smith",
+                    "e2": "James Smith",
+                    "e3": "Gen. J. Smith",
+                },
+                entity_types={
+                    "e1": "oc:person",
+                    "e2": "oc:person",
+                    "e3": "oc:person",
+                },
+                context_map={"e1": "", "e2": "", "e3": ""},
+                assertions=[],
+            )
+
+        assert {frozenset(group) for group in groups.values()} == {
+            frozenset({"e1"}),
+            frozenset({"e2"}),
+            frozenset({"e3"}),
+        }
 
     def test_llm_fails_loud_on_import_error(self) -> None:
         """Raises RuntimeError when llm_client unavailable (fail loud, no silent fallback)."""

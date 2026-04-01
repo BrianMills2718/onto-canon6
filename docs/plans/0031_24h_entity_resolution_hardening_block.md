@@ -4,7 +4,7 @@ Status: active
 Phase status:
 - Phase 1 completed
 - Phase 2 completed
-- Phase 3 pending
+- Phase 3 completed
 - Phase 4 pending
 - Phase 5 pending
 
@@ -152,6 +152,21 @@ mode is explicit and localized.
    just prompt hope;
 3. subtype-equivalent org aliases are no longer ruled out before the LLM sees
    them.
+
+#### Outcome
+
+Completed on 2026-04-01.
+
+Landed changes:
+
+1. deterministic post-LLM person-cluster splitting for conflicting full given
+   names;
+2. conservative resolution-family compatibility so subtype-equivalent
+   organization and place mentions are not pre-rejected;
+3. prompt updates that expose both resolution family and concrete entity type to
+   the clustering model;
+4. focused regression coverage for the Smith-family false-merge case and
+   subtype-compatible organization clustering eligibility.
 
 ### Phase 4: Refresh The Value Proof
 
