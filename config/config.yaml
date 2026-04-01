@@ -13,7 +13,7 @@ paths:
 pipeline:
   default_acceptance_policy: record_only
   permissive_review: false
-  review_mode: auto
+  review_mode: llm
 ontology_runtime:
   overlay_pack_suffix: __overlay
 extraction:
@@ -27,7 +27,7 @@ extraction:
   timeout_seconds: 60
   num_retries: 2
   max_budget_usd: 0.25
-  enable_judge_filter: false
+  enable_judge_filter: true
   judge_filter_min_label: partially_supported
 chunking:
   target_max_chars: 4000

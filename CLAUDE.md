@@ -82,10 +82,11 @@ config/
   roles (providers don't enforce it; post-parse validator catches empty roles).
 - **E2E pipeline proven (2026-03-25).** Text → extraction → validation → review
   → promotion → durable graph. 5 USSOCOM commanders extracted with correct
-  ontology types, 100% acceptance. Model: `gemini/gemini-2.5-flash` (stable).
-  Root cause of prior empty-roles failures: `gemini-3-flash-preview` regressed
-  on structured output between 2026-03-21 and 2026-03-25. OpenRouter routing
-  models (gpt-5.4-mini) also failed. Stable Gemini model works.
+  ontology types, 100% acceptance. Model: `gemini/gemini-3-flash-preview`
+  (best tested — 100% precision/recall on scale test). The earlier empty-roles
+  regression was caused by `additionalProperties` in the JSON schema, not the
+  model. Fixed by replacing `dict[str, list[Filler]]` with `list[RoleEntry]`
+  (standard Gemini workaround). See KNOWLEDGE.md for details.
 - **Observability gap closed**: llm_client now stores the raw model response on
   validation failure (not just the error message). Query with:
   `SELECT response, error FROM llm_calls WHERE error IS NOT NULL AND task='fast_extraction'`

@@ -57,20 +57,17 @@ relationships exported; 110 nodes, 78 edges imported.
 
 - **Config**: `review_mode: llm`, `enable_judge_filter: true`,
   `resolution.default_strategy: exact`, `resolution.require_llm_review: true`
-- **Model**: `gemini/gemini-2.5-flash` (stable)
-- **Tests**: 402 passing (383 full suite + 19 auto_resolution non-DB tests;
-  23 text_extraction tests require live LLM endpoint)
-- **Known issue**: auto_resolution DB-backed tests hang under heavy background
-  process load (pre-existing, not introduced by this session)
+- **Model**: `gemini/gemini-3-flash-preview` (best tested; requires list[RoleEntry] schema fix)
+- **Tests**: 396+ passing (full suite minus LLM-endpoint and DB-hang tests)
 
 ## Active Plans
 
 | Plan | Status | Next |
 |------|--------|------|
-| 0025 | **Phase 4 substantially complete** — 90% QA accuracy, +70% vs bare extraction | Re-run with 2.5-flash when quota resets; extraction noise reduction (Plan 0014) |
-| 0024 Lane 2 | DIGIMON chosen, v1 verified, value proof done | Schema stability gate (Lane 3) |
-| 0024 Lane 3 | Not started | Define breaking changes, compatibility checks |
-| 0014 | Active | Extraction noise (noun-phrase entities), prompt discrimination |
+| 0025 | **COMPLETE** — 100% precision, 100% recall, +70% QA vs bare | Scale-out deferred (0025a) |
+| 0024 Lane 2 | DIGIMON chosen, v1 verified, value proof done | Lane 3 |
+| 0024 Lane 3 | Plan 0026 written (contract rules + checks defined) | Implement compatibility artifacts (Phase 2-3) |
+| 0014 | Active | Noise entities largely solved by gemini-3-flash; prompt discrimination instruction in place |
 
 ## Authority
 

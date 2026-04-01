@@ -1,8 +1,8 @@
 # Cross-Document Entity Resolution
 
-Status: active
+Status: complete (Phases 1-4 done; scale-out deferred to Plan 0025a)
 
-Last updated: 2026-03-31
+Last updated: 2026-04-01
 Workstream: entity resolution for scale test (20-500 documents)
 
 ## Purpose
