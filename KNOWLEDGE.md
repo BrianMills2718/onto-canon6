@@ -14,6 +14,15 @@ not inferred from the main workspace. `make verify-setup`, `make smoke`, and
 `__main__.py` now exists — both `python -m onto_canon6 --help` and the
 installed `onto-canon6` console script work. Use either.
 
+### 2026-04-01 — claude-code — best-practice
+First real value demonstration (Booz Allen lobbying network analysis):
+9 extracted facts from 2 investigations → ProbLog inference rules derived
+14 new facts including: strongest lobbying tie (DLA Piper — dual relationship),
+corporate lobby reach through subsidiary structure, 6 distinct lobbying firms
+identified across documents. None of these answers were in any single source
+document. The neurosymbolic pipeline (extraction + resolution + inference)
+produces intelligence that raw text search cannot.
+
 ### 2026-04-01 — claude-code — schema-gotcha
 gemini-3-flash-preview cannot fill `additionalProperties` with nested
 array-of-objects in JSON schema structured output. The extraction `roles` field
