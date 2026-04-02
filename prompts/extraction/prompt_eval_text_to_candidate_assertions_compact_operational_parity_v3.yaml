@@ -166,6 +166,13 @@ messages:
         `impact`, or `credibility`, and broad retrospective labels such as
         `"hearts and minds" campaigns` or `PSYOP messages`, are not enough by
         themselves on analytical prose
+      - if `limit_capability` would use only an abstract evaluative filler
+        such as `effectiveness`, `impact`, or `credibility` for the capability
+        role, omit the candidate instead of treating that evaluative noun as a
+        capability
+      - if `limit_capability` depends on retrospective labels such as
+        `"hearts and minds" campaigns` or `PSYOP messages` without a more
+        concrete operational capability in the same span, omit it
       - do not turn possessive topic phrases such as `USSOCOM's PSYOP
         programs` into the `limit_capability` subject unless the same clause
         explicitly says that named program, unit, or organization was limited
@@ -188,6 +195,10 @@ messages:
         `a substantial proportion`, or `personnel were dedicated to` are not
         `belongs_to_organization` facts unless the same evidence span names a
         concrete member unit belonging to a distinct named organization
+      - `send_report` requires an explicit delivery or submission event with a
+        named sender, named recipient, and named report in the same span;
+        citation titles, bibliography mentions, linked fact-book references,
+        and passive phrases like `was reported` are not `send_report` events
 
       Return only the structured candidate payload. Do not add explanatory
       prose before or after it.

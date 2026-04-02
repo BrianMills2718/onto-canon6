@@ -927,6 +927,8 @@ def test_run_prompt_experiment_builds_report_and_variant_comparison(
     assert "aggregate resource or staffing summaries such as `total strength`" in compact_operational_parity_messages[0]["content"]
     assert "`express_concern` requires the cited span to show the named speaker" in compact_operational_parity_messages[0]["content"]
     assert "`limit_capability` is for concrete operational capabilities, named" in compact_operational_parity_messages[0]["content"]
+    assert "if `limit_capability` would use only an abstract evaluative filler" in compact_operational_parity_messages[0]["content"]
+    assert "`send_report` requires an explicit delivery or submission event" in compact_operational_parity_messages[0]["content"]
     assert "{input}" in compact_operational_parity_messages[-1]["content"]
     assert "Case input:" not in compact_operational_parity_messages[-1]["content"]
     assert "Return exactly one structured response object" in single_response_messages[0]["content"]
