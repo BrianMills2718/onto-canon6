@@ -2,7 +2,7 @@
 
 ## Session Focus
 
-Plan `0053` closeout and Plan `0054` activation in the isolated worktree
+Plan `0054` closeout and Plan `0055` activation in the isolated worktree
 branch `codex/onto-canon6-integration-planning`.
 
 ## What Landed
@@ -26,6 +26,7 @@ Committed and documented in the isolated worktree:
    invalid family;
 8. Plan `0053` is now complete as a failed hard-negative prompt attempt;
 9. Plan `0054` is now complete.
+10. Plan `0055` is now active.
 
 ## Current State
 
@@ -39,22 +40,21 @@ Committed and documented in the isolated worktree:
    - latest (`81cffac9c8df`): 6 candidates
    - new spillover: `oc:create_organizational_unit` from the `JPOTF model`
      sentence
-5. The active frontier is therefore no longer just prompt wording. It is now a
-   user contract decision for the full-chunk strict-omit case after Plan
-   `0054`.
+5. The active frontier is now the approved chunk-017 contract cutover and one
+   corrected-fixture benchmark rerun under Plan `0055`.
 
 ## Recommended Next Step
 
 If work continues:
 
 1. stay on `codex/onto-canon6-integration-planning`;
-2. the next step is one narrow user decision on chunk `017`:
-   - keep it strict omit
-   - remove/demote it in favor of the local strict-omit controls
-   - or convert it to a mixed-allow / accepted-alternatives case
+2. execute Plan `0055` in order:
+   - cut over the approved chunk-017 removal/demotion
+   - rerun the bounded prompt-eval benchmark on the corrected fixture
+   - write the next truthful blocker
 3. keep all worktree runtime commands on `PYTHONPATH=src`;
-4. do not reopen `Case id`, `Case input`, or more prompt-wording churn unless
-   the contract decision keeps chunk `017` as strict omit.
+4. do not reopen `Case id`, `Case input`, or more prompt-wording churn in this
+   block.
 
 # Handoff: onto-canon6 — 2026-04-01
 

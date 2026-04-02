@@ -3,32 +3,26 @@
 ## Current 24h Execution Block
 
 Source of truth:
-- `docs/plans/0054_24h_full_chunk_strict_omit_contract_audit.md`
+- `docs/plans/0055_24h_chunk017_contract_cutover_and_rebaseline_block.md`
 
-### Phase 1 — Freeze The Contract Question
-- [x] Freeze the `0053` surviving full-chunk family
-- [x] Enumerate the overlapping local strict-omit cases
-- [x] Commit verified phase
+### Phase 1 — Freeze The Approved Contract
+- [x] Create and activate Plan `0055`
+- [x] Refresh authority docs so chunk `017` is no longer waiting on user sign-off
+- [ ] Commit verified phase
 
-### Phase 2 — Compare Full-Chunk Contract To Local Controls
-- [x] Compare chunk `017` to local strict-omit cases `008` through `016`
-- [x] Classify whether chunk `017` is a valid full-chunk negative control, a redundant aggregate, or a mixed-content mismatch
-- [x] Commit verified phase
+### Phase 2 — Cut Over The Fixture And Tests
+- [ ] Remove chunk `017` from the strict-omit benchmark fixture
+- [ ] Bump the fixture revision and update service tests
+- [ ] Commit verified phase
 
-### Phase 3 — Define The Allowed Next Moves
-- [x] Write the explicit option set if the contract is ambiguous
-- [x] Mark which options need user sign-off
-- [x] Commit verified phase
+### Phase 3 — Rebaseline The Corrected Benchmark
+- [ ] Run one bounded prompt-eval rerun on the corrected fixture
+- [ ] Save the rerun artifact and write the blocker note
+- [ ] Commit verified phase
 
-### Phase 4 — Record The Audit Result
-- [x] Write the contract-audit decision note
-- [x] Update the active extraction-quality plan to point at the real blocker
-- [x] Commit verified phase
-
-### Phase 5 — Closeout
-- [x] Refresh docs/status/handoff
-- [x] Either activate the next implementation block or isolate one user contract decision
-- [x] Mark execution block complete
+### Phase 4 — Closeout
+- [ ] Refresh docs/status/handoff/knowledge
+- [ ] Mark execution block complete and state the next blocker explicitly
 - [ ] Commit verified phase
 
 ## Most Recent Completed 24h Execution Block
@@ -116,7 +110,7 @@ Source of truth:
 - [x] Localize the remaining post-wrapper extraction-path divergence to one dominant surface
 - [x] Localize and repair the remaining prompt-side parity residual through Plans `0046`-`0049`
 - [x] Run one bounded post-parity semantic recovery attempt and classify it honestly
-- [ ] Recover semantic chunk-003 behavior under the repaired parity surface
+- [ ] Recover semantic chunk-003 behavior under the corrected benchmark contract
 
 ## Longer-Term Queue
 

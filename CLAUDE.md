@@ -34,13 +34,14 @@ runtime.
 26. `docs/plans/0051_24h_analytical_section_suppression_block.md` (completed failed section-level suppression attempt)
 27. `docs/plans/0052_24h_predicate_locality_gate_block.md` (completed narrowing block)
 28. `docs/plans/0053_24h_abstract_result_and_citation_block.md` (completed failed hard-negative attempt)
-29. `docs/plans/0054_24h_full_chunk_strict_omit_contract_audit.md` (current active execution block)
-30. `docs/plans/0026_schema_stability_gate.md` (completed Lane 3 contract policy)
-31. `docs/plans/0014_extraction_quality_baseline.md` (active Lane 4 promotion gate)
-32. `docs/plans/0027_deferred_parity_reprioritization.md`
-33. `docs/plans/0028_query_browse_surface.md`
-34. `docs/plans/0005_v1_capability_parity_matrix.md`
-35. `docs/plans/0001_successor_roadmap.md`
+29. `docs/plans/0054_24h_full_chunk_strict_omit_contract_audit.md` (completed audit block)
+30. `docs/plans/0055_24h_chunk017_contract_cutover_and_rebaseline_block.md` (current active execution block)
+31. `docs/plans/0026_schema_stability_gate.md` (completed Lane 3 contract policy)
+32. `docs/plans/0014_extraction_quality_baseline.md` (active Lane 4 promotion gate)
+33. `docs/plans/0027_deferred_parity_reprioritization.md`
+34. `docs/plans/0028_query_browse_surface.md`
+35. `docs/plans/0005_v1_capability_parity_matrix.md`
+36. `docs/plans/0001_successor_roadmap.md`
 
 ## Commands
 
@@ -129,7 +130,8 @@ config/
   proved that even stronger hard-negative prompt wording still widened the
   family again. Plan `0054` then answered the next question: chunk `017` is a
   mixed-content benchmark-contract problem, not a clean prompt hardening
-  target. The next step is now a user decision on the benchmark contract.
+  target. The user approved the recommended removal/demotion, and Plan `0055`
+  now owns the fixture cutover plus one corrected-fixture rerun.
   The chunk-level transfer evaluation requirement remains active through
   ADR 0023 and Plans 0024/0014 even though there is no standalone Plan 0019
   file.
@@ -160,11 +162,17 @@ config/
   not a suggestion: keep executing, keep rerunning, keep committing, and only
   stop when the active block is either complete or explicitly narrowed to a new
   documented blocker.
-- **Current extraction-quality stop condition:** Plan `0054` completed the
-  remaining autonomous audit work. Do not start another prompt-hardening block
-  until the user chooses the chunk `017` contract policy:
-  keep strict omit, remove/demote it in favor of the local controls, or
-  convert it to a mixed-allow case.
+- **Current extraction-quality execution rule:** Plan `0054` is done and the
+  chunk-017 contract decision is already made. Plan `0055` must now run
+  straight through fixture cutover, corrected-fixture rerun, and blocker
+  restatement before stopping. Do not pause at "decision recorded" or "plan
+  written" while this block is active.
+- **Continuous execution rule is hard, not advisory.** When a 24h block is
+  active, keep executing until the approved contract is implemented, the
+  bounded rerun is recorded, the next blocker is written down, and the block is
+  truthfully closed. If a new uncertainty appears, log it in the active plan,
+  `TODO.md`, and `KNOWLEDGE.md`, then continue on the next bounded task unless
+  the uncertainty changes the contract itself.
 - **After the current value-proof work, the next-active deferred capability is
   queryability.** Plan 0027 now fixes the deferred-capability order, and Plan
   0028 now has a landed first read-only browse/search surface over promoted
@@ -318,16 +326,16 @@ active, the required behavior is: plan the next concrete phase, execute it,
 verify it, commit it, log any uncertainty, and continue. Do not wait for
 "what next?" confirmation mid-block.
 
-The current valid stop condition is met:
+The current valid stop condition is no longer the `0054` audit boundary.
 
-1. all 5 phases in `docs/plans/0054_24h_full_chunk_strict_omit_contract_audit.md`
-   are complete and committed; and
-2. the remaining blocker is a user contract decision, not an undiscovered repo
-   task.
+1. Plan `0054` is complete and committed.
+2. The user approved the chunk-017 contract cutover.
+3. Plan `0055` is now the active block and must run through fixture cutover,
+   corrected-fixture rerun, and blocker restatement before stopping.
 
-If the chunk `017` contract decision is still pending, do not silently reopen
-prompt churn. Log the benchmark-contract boundary in the active plan, `TODO.md`,
-and the audit note, then wait for the user decision.
+Do not silently reopen prompt churn inside Plan `0055`. Implement the approved
+contract, rerun the corrected benchmark, write the next blocker, and only then
+close the block.
 
 Pre-made decisions (do not ask about these):
 - Work stays in the isolated `codex/onto-canon6-integration-planning` worktree
