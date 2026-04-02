@@ -39,9 +39,9 @@ onto-canon6 is done when:
 | grounded-research → onto-canon6 E2E | **DONE** | 8 EU sanctions claims stored |
 | research_v3 → shared contracts | **DONE** | 123 claims exported with FtM IDs |
 | Evidence quality utils | **DONE** | estimate_recency + detect_staleness extracted |
-| LLM resolution on real corpus | Not started | Exact-name found 0 aliases — need LLM |
-| Source-artifact query | Next active | Per Plan 0028, HANDOFF recommendation |
-| One-command consumer flow | Not started | Currently requires CLI in each repo |
+| LLM resolution on real corpus | **DONE** | 1 merge found (Booz Allen name variant). Confidence weight fix landed. |
+| Source-artifact query | **DONE** | list-sources, search-sources, get-source (CLI + MCP) |
+| One-command consumer flow | **DONE** | make pipeline INPUT=graph.yaml |
 
 ### Tier 2: Scale & Quality
 
@@ -50,7 +50,7 @@ onto-canon6 is done when:
 | Diverse domain extraction | 0014 | Compact default promoted; ongoing |
 | Entity resolution 500+ docs | 0025a | Deferred — tiered pipeline design exists |
 | Cross-investigation conflict | — | Tension detection exists, no cross-investigation policy |
-| DIGIMON weight validation | 0020 Gap 5 | Non-unity confidence untested |
+| DIGIMON weight validation | 0020 Gap 5 | **DONE** — 6 distinct weights (0.1-1.0) verified |
 
 ### Tier 3: Capability Expansion (deferred-but-protected)
 
