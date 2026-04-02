@@ -201,11 +201,11 @@ criteria.
 The extraction-transfer rescue chain is complete through Plans `0055`-`0062`.
 Lane 4 still owns the promotion policy reference in
 [0014_extraction_quality_baseline.md](0014_extraction_quality_baseline.md), but
-it no longer owns an active 24h rescue block. The next active 24h block is
-queryability widening through active Plan `0064`, which implements
-identity/external-reference-aware browse over the landed query surface. The
-next queryability choice after that remains first-class source-artifact query
-unless block closeout evidence changes the order.
+it no longer owns an active 24h rescue block. Queryability widening through
+Plan `0064` is now complete: the landed browse surface can now filter and
+search over identity/external-reference state. The next narrowed queryability
+choice is first-class source-artifact query unless later evidence changes the
+order.
 
 #### Tasks
 
@@ -321,11 +321,10 @@ This lane now executes through
 Lane 5 now has an explicit classification surface. The current next-active
 order after the active gates is:
 
-1. finish the active identity/external-reference browse widening block under
-   [0064_24h_identity_external_reference_browse_block.md](0064_24h_identity_external_reference_browse_block.md);
-2. choose the next narrowed queryability follow-on under
-   [0028_query_browse_surface.md](0028_query_browse_surface.md);
-3. keep richer DIGIMON interchange consumer-blocked rather than silently
+1. choose the next narrowed queryability follow-on under
+   [0028_query_browse_surface.md](0028_query_browse_surface.md), with
+   source-artifact query currently first in line;
+2. keep richer DIGIMON interchange consumer-blocked rather than silently
    widening the supported v1 seam.
 
 ## Program Order

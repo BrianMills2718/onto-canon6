@@ -25,8 +25,9 @@ Current post-cutover program state:
    `docs/plans/0014_extraction_quality_baseline.md`;
 4. the query surface is now widened beyond the first read-only slice through
    `docs/plans/0028_query_browse_surface.md`,
-   `docs/plans/0029_24h_query_surface_execution_block.md`, and
-   `docs/plans/0063_24h_query_browse_widening_block.md`;
+   `docs/plans/0029_24h_query_surface_execution_block.md`,
+   `docs/plans/0063_24h_query_browse_widening_block.md`, and
+   `docs/plans/0064_24h_identity_external_reference_browse_block.md`;
 5. Plan 0025 is now complete at the Phase 4 value-proof level;
 6. Plan 0039 proved rerun stability at the question/safety gate with two fresh
    reruns (`145141`, `152927`) that both held `10/10` question accuracy,
@@ -73,7 +74,10 @@ Current post-cutover program state:
     candidate is the repo-default extraction surface; and
 26. no active extraction-transfer cleanup block remains under Plan `0014`; and
 27. Plan `0063` is now complete and proved entity browse plus source-centric
-    assertion browse on the real Booz Allen promoted DB.
+    assertion browse on the real Booz Allen promoted DB; and
+28. Plan `0064` is now complete and proved identity/external-reference-aware
+    browse and search on a copy of that real promoted DB with explicitly seeded
+    identity/external-reference rows.
 
 ## What Is Proven
 

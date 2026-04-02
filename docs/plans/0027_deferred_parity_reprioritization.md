@@ -86,9 +86,9 @@ and the replacement path is explicit.
    - owner: [0028_query_browse_surface.md](0028_query_browse_surface.md),
      [0063_24h_query_browse_widening_block.md](0063_24h_query_browse_widening_block.md),
      and [0064_24h_identity_external_reference_browse_block.md](0064_24h_identity_external_reference_browse_block.md)
-   - rationale: the first browse surface is landed and the next highest-value
-     follow-on is now identity/external-reference-aware browse over the same
-     promoted-state contract.
+   - rationale: the first browse surface plus identity/external-reference
+     widening are now landed; the next highest-value follow-on is first-class
+     source-artifact query over the same promoted-state contract.
 2. **Cross-document entity resolution scale-out**
    - parity rows: concept dedup and merge tools; cross-investigation entity
      resolution at scale
@@ -102,7 +102,7 @@ and the replacement path is explicit.
    - parity row: canonical concept/belief graph with system beliefs
    - rationale: the narrowed promoted-graph slice is enough for current
      consumers; broader system-belief recovery is not yet consumer-driven
-2. **Stable identity and external references beyond the active query widening slice**
+2. **Stable identity and external references beyond the landed query widening slice**
    - parity row: stable identity and external references, including Q-code-like
      cross-investigation identity
    - rationale: the active follow-on now covers browse/query visibility for
@@ -153,13 +153,12 @@ None in this pass.
 Assuming Lane 4 remains the active extraction gate, the next deferred-capability
 order is:
 
-1. finish the active identity/external-reference browse widening block under
-   [0064_24h_identity_external_reference_browse_block.md](0064_24h_identity_external_reference_browse_block.md);
-2. choose the next narrowed queryability follow-on under
-   [0028_query_browse_surface.md](0028_query_browse_surface.md);
-3. keep richer DIGIMON interchange experimental and consumer-blocked under
+1. choose the next narrowed queryability follow-on under
+   [0028_query_browse_surface.md](0028_query_browse_surface.md), with
+   source-artifact query currently first in line;
+2. keep richer DIGIMON interchange experimental and consumer-blocked under
    DIGIMON Plan 23;
-4. revisit direct CRUD / trusted fast-path ingestion only if a real bulk-source
+3. revisit direct CRUD / trusted fast-path ingestion only if a real bulk-source
    workflow makes governed review the bottleneck.
 
 ## Future Plan Requirements
@@ -195,10 +194,11 @@ This plan is complete enough for Lane 5 when:
 
 ## Open Questions / Uncertainty Tracking
 
-### Q1: After `0064`, is first-class source-artifact query still the right next queryability follow-on?
+### Q1: Is first-class source-artifact query still the right next queryability follow-on after `0064`?
 **Status:** Open
-**Why it matters:** If operators mostly need identity-aware browse and not
-artifact-first navigation, the next queryability order may need to change.
+**Why it matters:** If operators now mostly need cross-entity/source linking via
+artifacts rather than another identity-facing widening, the next queryability
+order should stay as-is; otherwise the queue may need to change.
 
 ### Q2: Does lead/investigation management belong in onto-canon6 or should it be replaced by consumer-side workflows?
 **Status:** Open

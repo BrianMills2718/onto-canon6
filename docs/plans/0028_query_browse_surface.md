@@ -1,6 +1,6 @@
 # Query And Browse Surface
 
-Status: active (first browse widening slice landed)
+Status: active (identity/external-reference browse widening landed)
 
 Last updated: 2026-04-02
 Workstream: next-active deferred parity capability after Lane 5 ordering
@@ -76,9 +76,9 @@ The repo already has narrow read surfaces:
    - DIGIMON export
 
 The missing gap was a true browse/search surface over promoted knowledge and its
-supporting evidence. Plans `0029` and `0063` now land that base surface plus the
-first widening step. The remaining question is not whether queryability exists,
-but which bounded follow-on should widen it next.
+supporting evidence. Plans `0029`, `0063`, and `0064` now land that base
+surface plus the first two widening steps. The remaining question is not
+whether queryability exists, but which bounded follow-on should widen it next.
 
 ### Phase 0 Inventory Snapshot (2026-03-31)
 
@@ -108,11 +108,10 @@ Current thin CLI access points:
 4. promoted-graph report export
 5. governed-bundle export
 
-What is still missing for queryability after Plans `0029` and `0063`:
+What is still missing for queryability after Plans `0029`, `0063`, and `0064`:
 
-1. identity/external-reference-aware browse and filters
-2. first-class source-artifact query beyond source-centric assertion filters
-3. any broader read surface beyond promoted-state browse/search/get
+1. first-class source-artifact query beyond source-centric assertion filters
+2. any broader read surface beyond promoted-state browse/search/get
 
 ## Target Surface
 
@@ -196,11 +195,14 @@ These are fixed unless a later ADR changes them.
 1. **Entity search ranking**
    - exact canonical-name match
    - exact alias match
+   - exact external-id / reference-label match
    - prefix match
    - substring match
 2. **Entity search filters**
    - `query`
    - optional `entity_type`
+   - optional `provider`
+   - optional `reference_status`
    - optional `limit`
 3. **Assertion search filters**
    - optional `predicate`
@@ -232,7 +234,7 @@ These are fixed for the first slice:
    - matched `entity_id`
    - display label / matched name
    - entity type
-   - match reason (`canonical_exact`, `alias_exact`, `prefix`, `substring`)
+   - match reason including external-id/reference-label matches
 2. `EntityDetail` should include:
    - identity bundle when present
    - linked promoted assertion ids

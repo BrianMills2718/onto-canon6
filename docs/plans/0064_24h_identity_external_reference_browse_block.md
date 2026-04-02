@@ -1,6 +1,6 @@
 # 24h Identity / External-Reference Browse Block
 
-Status: active
+Status: complete
 
 Last updated: 2026-04-02
 Workstream: query-surface widening after Plan `0063`
