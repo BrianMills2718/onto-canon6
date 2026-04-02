@@ -108,10 +108,12 @@ def export_for_digimon(
         entity_name_map = _build_entity_name_map(assertions)
         filler_map = _build_filler_map(conn, store, assertions)
         epistemic_confidence = _load_epistemic_confidence(conn)
+        payload_confidence = _load_payload_confidence(conn)
 
     digimon_entities = _convert_entities(all_entities, entity_name_map)
     digimon_relationships = _convert_relationships(
         assertions, filler_map, entity_name_map, epistemic_confidence,
+        payload_confidence=payload_confidence,
     )
 
     bundle = DigimonExportBundle(
@@ -296,11 +298,35 @@ def _load_epistemic_confidence(conn: sqlite3.Connection) -> dict[str, float]:
         return {}
 
 
+def _load_payload_confidence(conn: sqlite3.Connection) -> dict[str, float]:
+    """Load raw payload confidence keyed by candidate_id.
+
+    The canonical_assertion_body strips 'confidence' from normalized_payload,
+    so this reads from the raw payload_json instead.
+    """
+    import json as _json
+
+    try:
+        rows = conn.execute(
+            "SELECT candidate_id, payload_json FROM candidate_assertions"
+        ).fetchall()
+        result = {}
+        for row in rows:
+            payload = _json.loads(row["payload_json"]) if row["payload_json"] else {}
+            conf = payload.get("confidence")
+            if isinstance(conf, (int, float)):
+                result[str(row["candidate_id"])] = float(conf)
+        return result
+    except Exception:
+        return {}
+
+
 def _convert_relationships(
     assertions: Sequence[PromotedGraphAssertionRecord],
     filler_map: dict[str, tuple[PromotedGraphRoleFillerRecord, ...]],
     name_map: dict[str, str],
     epistemic_confidence: dict[str, float] | None = None,
+    payload_confidence: dict[str, float] | None = None,
 ) -> list[DigimonRelationshipRecord]:
     """Convert promoted assertions to Digimon relationship records.
 
@@ -342,11 +368,19 @@ def _convert_relationships(
             epistemic_confidence.get(assertion.source_candidate_id)
             if epistemic_confidence else None
         )
-        payload_conf = assertion.normalized_body.get("confidence")
+        raw_payload_conf = (
+            payload_confidence.get(assertion.source_candidate_id)
+            if payload_confidence else None
+        )
+        # normalized_body may also have confidence (e.g. direct SQL inserts
+        # that bypass canonical_assertion_body stripping)
+        normalized_conf = assertion.normalized_body.get("confidence")
         if epistemic_conf is not None:
             weight = float(epistemic_conf)
-        elif isinstance(payload_conf, (int, float)):
-            weight = float(payload_conf)
+        elif raw_payload_conf is not None:
+            weight = float(raw_payload_conf)
+        elif isinstance(normalized_conf, (int, float)):
+            weight = float(normalized_conf)
         else:
             weight = 1.0
 
