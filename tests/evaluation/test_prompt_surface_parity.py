@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+
 from onto_canon6.evaluation.prompt_surface_parity import compare_prompt_surfaces
 
 
@@ -35,3 +37,23 @@ def test_compare_prompt_surfaces_exposes_user_wrapper_difference() -> None:
     assert comparison.prompt_eval_input_content in parity_effective_user
     assert comparison.user_diff == ()
     assert any("hold_command_role" in line for line in comparison.system_diff)
+
+
+def test_live_compact_v5_surface_includes_chunk003_residual_guards() -> None:
+    """The live compact-v5 surface should carry the late analytical-prose omission rules."""
+
+    project_root = Path(__file__).resolve().parents[2]
+    comparison = compare_prompt_surfaces(
+        source_text="By 2013, a substantial proportion of personnel were dedicated to PSYOP.",
+        profile_id="psyop_seed",
+        profile_version="0.1.0",
+        source_kind="text_file",
+        source_ref="text://test/chunk_003",
+        source_label="chunk_003.md",
+        case_id="case-003",
+        live_prompt_template=project_root / "prompts" / "extraction" / "text_to_candidate_assertions_compact_v5.yaml",
+    )
+
+    live_system = comparison.live_messages[0]["content"]
+    assert "retrospective assessment prose such as `was limited`, `was hampered`" in live_system
+    assert "aggregate resource or staffing summaries such as `total strength`" in live_system

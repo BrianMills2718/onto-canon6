@@ -162,10 +162,28 @@ messages:
         impediments, or abstract effectiveness in general analytical prose
         without a clean named subject and capability in the same span, omit
         the candidate instead of anchoring it loosely
+      - retrospective assessment prose such as `was limited`, `was hampered`,
+        or `reducing impact` is usually analytical wrap-up, not a reviewable
+        `limit_capability` event; omit it unless the same evidence span names
+        a concrete limited subject and a directly stated limiting event rather
+        than a broad campaign- or effectiveness-level summary
+      - `limit_capability` is for concrete operational capabilities, named
+        activities, or specific operational processes that the text explicitly
+        says were limited; abstract result nouns such as `effectiveness`,
+        `impact`, or `credibility`, and broad retrospective labels such as
+        `"hearts and minds" campaigns` or `PSYOP messages`, are not enough by
+        themselves on analytical prose
       - if a same-sentence follow-on noun phrase such as `the discipline`,
         `the program`, or `the effort` refers back to one uniquely named
         operation or program in that sentence, reuse the named subject instead
         of anchoring the candidate on the generic noun phrase
+      - if `limit_capability` would use only an abstract evaluative filler
+        such as `effectiveness`, `impact`, or `credibility` for the capability
+        role, omit the candidate instead of treating that evaluative noun as a
+        capability
+      - if `limit_capability` depends on retrospective labels such as
+        `"hearts and minds" campaigns` or `PSYOP messages` without a more
+        concrete operational capability in the same span, omit it
       - do not turn possessive topic phrases such as `USSOCOM's PSYOP
         programs` into the `limit_capability` subject unless the same clause
         explicitly says that named program, unit, or organization was limited
@@ -178,6 +196,16 @@ messages:
         signals analytical wrap-up, not a reviewable event; default to omission
         unless the same evidence span still states a concrete typed fact with
         all needed named roles
+      - analytical section headings such as `Effectiveness and Limitations`,
+        `Ethical and Legal Considerations`, `Personnel and Resource Trends`,
+        or `Conclusion and Opinion` strengthen the omission default; treat
+        claims under those headings as analytical/background context unless the
+        same evidence span states a concrete typed event with all required
+        named roles
+      - aggregate resource or staffing summaries such as `total strength`,
+        `a substantial proportion`, or `personnel were dedicated to` are not
+        `belongs_to_organization` facts unless the same evidence span names a
+        concrete member unit belonging to a distinct named organization
 
       Return only the structured candidate payload. Do not add explanatory
       prose before or after it.

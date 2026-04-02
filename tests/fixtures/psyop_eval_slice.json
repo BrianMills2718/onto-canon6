@@ -1,5 +1,5 @@
 {
-  "fixture_id": "psyop_eval_slice_v6",
+  "fixture_id": "psyop_eval_slice_v7",
   "cases": [
     {
       "case_id": "psyop_001_designation_change",
@@ -966,6 +966,24 @@
           "chunk_id": "psyop_016"
         },
         "content_text": "### Ethical and Legal Considerations\n\nThe expansion of PSYOP into the digital domain raised new ethical and legal questions, particularly regarding the targeting of foreign versus domestic audiences and the potential for unintended consequences. Congressional oversight and public scrutiny increased, leading to periodic reviews and adjustments of doctrine."
+      },
+      "expected_candidates": []
+    },
+    {
+      "case_id": "psyop_017_personnel_dedication_not_membership_strict_omit",
+      "profile": {
+        "profile_id": "psyop_seed",
+        "profile_version": "0.1.0"
+      },
+      "source_artifact": {
+        "source_kind": "benchmark_fixture_text",
+        "source_ref": "onto-canon://benchmark/psyop_eval_slice#case=psyop_017_personnel_dedication_not_membership_strict_omit",
+        "source_label": "psyop_eval:personnel_dedication_not_membership_strict_omit",
+        "source_metadata": {
+          "doc_id": "psyop_eval_slice",
+          "chunk_id": "psyop_017"
+        },
+        "content_text": "By 2013, USSOCOM’s total strength was reported at approximately 70,000, with a substantial proportion dedicated to PSYOP, civil affairs, and related functions."
       },
       "expected_candidates": []
     }

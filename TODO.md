@@ -12,13 +12,13 @@ Source of truth:
 - [ ] Commit verified phase
 
 ### Phase 2 — Add The Smallest Missing Regression Coverage
-- [ ] Add/update the minimum local coverage for the remaining residual
-- [ ] Verify the new coverage
+- [x] Add/update the minimum local coverage for the remaining residual
+- [x] Verify the new coverage
 - [ ] Commit verified phase
 
 ### Phase 3 — Harden The Compact Prompt Family
-- [ ] Revise the compact prompt family for the remaining chunk-003 residual
-- [ ] Update prompt-surface parity tests as needed
+- [x] Revise the compact prompt family for the remaining chunk-003 residual
+- [x] Update prompt-surface parity tests as needed
 - [ ] Commit verified phase
 
 ### Phase 4 — Rerun Chunk 002 And Chunk 003

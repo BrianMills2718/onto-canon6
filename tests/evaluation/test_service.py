@@ -170,8 +170,8 @@ def test_load_benchmark_fixture_reads_local_cases() -> None:
 
     fixture = load_benchmark_fixture(_fixture_path())
 
-    assert fixture.fixture_id == "psyop_eval_slice_v6"
-    assert len(fixture.cases) == 16
+    assert fixture.fixture_id == "psyop_eval_slice_v7"
+    assert len(fixture.cases) == 17
     assert fixture.cases[0].profile.profile_id == "psyop_seed"
     assert fixture.cases[0].source_artifact.content_text is not None
     assert len(fixture.cases[0].expected_candidates) == 4
