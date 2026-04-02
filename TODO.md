@@ -9,16 +9,16 @@ Source of truth:
 - [x] Restate the `0055` decision as the incoming contract
 - [x] Freeze cases `001`, `002`, `007`, and `008` with their current scores
 - [x] Mark regression guards explicitly
-- [ ] Commit verified phase
+- [x] Commit verified phase
 
 ### Phase 2 — Localize The Remaining Semantic Failures
-- [ ] Compare expected vs actual outputs for `001`, `002`, `007`, and `008`
-- [ ] Classify each miss and pre-decide one bounded prompt strategy
-- [ ] Commit verified phase
+- [x] Compare expected vs actual outputs for `001`, `002`, `007`, and `008`
+- [x] Classify each miss and pre-decide one bounded prompt strategy
+- [x] Commit verified phase
 
 ### Phase 3 — Land One Bounded Prompt Revision
-- [ ] Update both compact prompt surfaces in lockstep
-- [ ] Extend prompt tests only as needed
+- [x] Update both compact prompt surfaces in lockstep
+- [x] Extend prompt tests only as needed
 - [ ] Commit verified phase
 
 ### Phase 4 — Rerun The Focus Slice And Corrected Fixture

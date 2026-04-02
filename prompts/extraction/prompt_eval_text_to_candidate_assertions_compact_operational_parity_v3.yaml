@@ -94,6 +94,11 @@ messages:
       - abbreviation expansions, acronym definitions, alternate names, and
         parenthetical name expansions usually identify the same entity with
         multiple names, not a relationship or a `replace_designation` event
+      - if the source explicitly says one term, designation, or acronym was
+        replaced with or renamed to another quoted label, keep the
+        `replace_designation` event and also emit the corresponding
+        `uses_designation_label` facts for the same subject when both labels
+        are named in the same span
       - descriptive appositives and role labels usually describe the same
         named entity, not a separate parent organization; do not turn those
         descriptive phrases into `belongs_to_organization` fillers unless the
@@ -107,6 +112,10 @@ messages:
         established is usually background context, not a reviewable
         `create_organizational_unit` event; omit it unless the source directly
         states a concrete creation fact with the needed named roles
+      - phrases like `the JPOTF model improved unity of effort` or bare
+        statements that JPOTFs were established without a named creator, named
+        parent, or explicit creation event are still background context, not
+        `create_organizational_unit`
       - MOS codes, classifications, labels, and taxonomy terms are usually
         values or aliases, not standalone entities that belong to an
         organization
@@ -114,6 +123,10 @@ messages:
         `express_concern` only when the same evidence span explicitly names
         that institution, review, or report and attributes the concern,
         warning, finding, criticism, or dissatisfaction to it
+      - named academic, review, and analysis institutions acting as the
+        `express_concern` speaker should usually stay broad `oc:community`
+        unless the same evidence span explicitly requires a narrower
+        organization type
       - analytical narration, report voice, and author commentary are not
         named speakers; do not use the organization under discussion as the
         `express_concern` speaker unless the sentence explicitly attributes the
@@ -141,6 +154,10 @@ messages:
       - if the text only implies sentiment, concern, or dissatisfaction without
         a named speaker, return no opinion candidate rather than inventing a
         person or vague source
+      - for `express_concern`, keep the `topic` filler to the concrete concern
+        object, not the surrounding reporting scaffold; drop lead-ins such as
+        `the need for`, `highlighted`, or `including` when the same span makes
+        the underlying concern topic explicit
       - `express_concern` requires the cited span to show the named speaker
         explicitly raising, voicing, expressing, warning about, criticizing,
         questioning, or objecting to the topic; governance reactions such as
@@ -166,6 +183,10 @@ messages:
         `impact`, or `credibility`, and broad retrospective labels such as
         `"hearts and minds" campaigns` or `PSYOP messages`, are not enough by
         themselves on analytical prose
+      - if a same-sentence follow-on noun phrase such as `the discipline`,
+        `the program`, or `the effort` refers back to one uniquely named
+        operation or program in that sentence, reuse the named subject instead
+        of anchoring the candidate on the generic noun phrase
       - if `limit_capability` would use only an abstract evaluative filler
         such as `effectiveness`, `impact`, or `credibility` for the capability
         role, omit the candidate instead of treating that evaluative noun as a
