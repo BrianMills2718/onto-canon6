@@ -356,26 +356,34 @@ Planning companion:
 
 ## What Is Not Proven Yet
 
+Updated 2026-04-02.
+
+Resolved since last update:
+- Extraction quality: compact default promoted (Plan 0062), empty-roles fixed
+  (list[RoleEntry] workaround), 0 noise on real text with gemini-3-flash-preview
+- One-command consumer flow: `make pipeline INPUT=graph.yaml` runs full chain
+- Entity resolution: LLM clustering 100%/100% (Plan 0025), LLM resolution
+  finds real merges on Booz Allen corpus
+- Cross-investigation tensions: 871 detected on combined corpus (Booz Allen +
+  EU sanctions). Policy not yet defined.
+- Benchmark: 25-doc synthetic + 123 real Booz Allen claims + 8 EU sanctions
+- MCP surface: entity, assertion, identity, source-artifact browse/search/get
+  (Plans 0028/0029/0063/0064)
+- DIGIMON weight: non-unity confidence flows through (6 distinct weights)
+
 Still missing:
 
-1. extraction quality improvement — API reliability (55% timeout rate in
-   experiment) and empty-roles issue are the primary bottlenecks, not prompt
-   quality. Operational prompt works; experiment variants need rework;
-2. one-command consumer-side adoption flow; the stitched proof exists, but no
-   consumer currently runs the full path as part of its own normal workflow;
-3. entity resolution across 2+ independent extraction runs with fuzzy or
-   external-reference strategies; exact-name auto-resolution is proven, broader
-   resolution is not;
-4. cross-investigation conflict detection on real data; single-run tension
-   detection is proven, but contradiction policy across multiple investigations
-   is not;
-5. broader benchmark coverage beyond 17 PSYOP military cases;
-6. the broader v1 concept/belief graph and system-belief layer beyond the
+1. cross-investigation conflict *policy* — tensions detected but no resolution
+   policy or automated flagging;
+2. role-free assertion promotion — imported claims without entity_refs can't
+   promote (grounded-research EU sanctions claims);
+3. the broader v1 concept/belief graph and system-belief layer beyond the
    first promoted-assertion/entity slice;
-7. broader producer-side semantic adapters beyond pack-driven canonicalization;
-8. any richer interactive surface beyond the thin MCP slice;
-9. OpenClaw mission-runner consumption of repo-local `.openclaw` contracts;
-10. temporal/inference recovery (deferred by ADR).
+4. broader producer-side semantic adapters beyond pack-driven canonicalization;
+5. OpenClaw mission-runner consumption of repo-local `.openclaw` contracts;
+6. temporal/inference recovery (deferred by ADR);
+7. entity resolution at 500+ document scale (deferred to Plan 0025a).
+
 
 ## Current Donor Dependencies
 
