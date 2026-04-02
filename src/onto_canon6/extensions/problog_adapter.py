@@ -17,6 +17,15 @@ import sqlite3
 from dataclasses import dataclass
 from pathlib import Path
 
+try:
+    from data_contracts import boundary
+except ImportError:
+    def boundary(**kwargs):
+        """No-op boundary decorator until data_contracts package exists."""
+        def decorator(fn):
+            return fn
+        return decorator
+
 logger = logging.getLogger(__name__)
 
 
@@ -45,6 +54,12 @@ def _sanitize_atom(name: str) -> str:
     return s or 'unknown'
 
 
+@boundary(
+    name="onto-canon6.problog_load_facts",
+    version="0.1.0",
+    producer="onto-canon6",
+    consumers=["problog"],
+)
 def load_facts_from_db(
     db_path: Path,
     predicate_mapping: dict[str, str] | None = None,
@@ -109,6 +124,12 @@ def load_facts_from_db(
     return facts
 
 
+@boundary(
+    name="onto-canon6.problog_evaluate_rules",
+    version="0.1.0",
+    producer="onto-canon6",
+    consumers=["problog"],
+)
 def evaluate_rules(
     *,
     db_path: Path,

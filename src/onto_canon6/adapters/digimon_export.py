@@ -147,6 +147,12 @@ def export_for_digimon(
     return bundle
 
 
+@boundary(
+    name="onto-canon6.digimon_export_from_db",
+    version="0.1.0",
+    producer="onto-canon6",
+    consumers=["digimon"],
+)
 def export_for_digimon_from_db(
     review_db_path: Path,
 ) -> DigimonExportBundle:
@@ -163,6 +169,12 @@ def export_for_digimon_from_db(
     )
 
 
+@boundary(
+    name="onto-canon6.write_digimon_jsonl",
+    version="0.1.0",
+    producer="onto-canon6",
+    consumers=["digimon"],
+)
 def write_digimon_jsonl(
     bundle: DigimonExportBundle,
     output_dir: Path,
