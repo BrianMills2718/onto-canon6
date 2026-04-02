@@ -62,47 +62,39 @@ config/
 - Model: `gemini/gemini-3-flash-preview`
 - Shared contracts: epistemic-contracts library (3 projects wired)
 
-## Active Execution Block (2026-04-02 overnight — feature completion)
+## Active Execution Block (2026-04-02 overnight — Tier 2 hardening)
 
 **CONTINUOUS AUTONOMOUS EXECUTION. DO NOT STOP. STOPPING EARLY IS A FAILURE MODE.**
 
-Execute all phases in order. Commit each verified phase immediately.
-Do not pause between phases. The only valid stop conditions are:
-1. All phases are complete
-2. A real architectural uncertainty not covered by this plan
-3. An irreversible action affecting shared state
+Tier 1 is done. This block hardens Tier 2 items and fixes known issues.
 
-### Phase 1: Source-artifact browse/query surface
-Add list-sources, search-sources, get-source to query surface, CLI, and MCP.
-Agents need to browse by source document, not just by entity.
-**Success**: `onto-canon6 list-sources` returns sources from the review DB.
+### Phase 1: Fix stale STATUS.md
+Update "What Is Not Proven" to reflect reality (many items now proven).
+**Success**: STATUS.md is truthful.
 
-### Phase 2: One-command pipeline (Makefile target)
-`make pipeline INPUT=path/to/graph.yaml` runs the full chain end-to-end.
-**Success**: Single make command produces DIGIMON-importable artifacts.
+### Phase 2: Role-free assertion promotion
+grounded-research claims without entity_refs can't promote. Fix.
+**Success**: EU sanctions claims promote and export to DIGIMON.
 
-### Phase 3: Non-unity confidence DIGIMON weight test
-Verify DIGIMON export weights match onto-canon6 confidence for varied values.
-**Success**: Test passes showing weight=confidence for 0.3, 0.5, 0.8, 1.0.
+### Phase 3: Cross-investigation conflict policy (ADR)
+Define when tensions across investigations trigger action.
+**Success**: ADR adopted, tension report includes cross-investigation metadata.
 
-### Phase 4: Cross-investigation conflict detection
-Import claims from two different investigations, detect tensions on merge.
-**Success**: Tensions detected on overlapping entities across investigations.
+### Phase 4: Integration tests for full pipeline
+Add tests for: pipeline E2E, source query, role-free promotion.
+**Success**: 3+ new tests passing.
 
-### Phase 5: Diverse domain extraction test
-Run compact default prompt on non-military text (financial/academic).
-**Success**: Valid candidates extracted from non-military text.
+### Phase 5: Consolidate run records
+Archive superseded runs, keep <30 definitive files.
+**Success**: docs/runs/ cleaned up.
 
-### Phase 6: Final doc update, test, push
-Update ROADMAP/HANDOFF, run full suite, push all repos.
-**Success**: 0 failures, all repos pushed, docs current.
+### Phase 6: Final verification + push
+**Success**: 0 failures, all repos pushed.
 
 **Pre-made decisions:**
-- Model: `gemini/gemini-3-flash-preview`
+- Role-free assertions: promote with predicate + claim_text, empty roles
+- Conflict policy: flag-only (no auto-resolution in v1)
 - Commit each verified phase immediately
-- Source query: thin wrapper over existing promoted-graph SQLite tables
-- Pipeline target: delegate to full_pipeline_e2e.py
-- Do not stop between phases
 
 ## Composability Principle
 
