@@ -21,7 +21,9 @@ from .config import get_config
 from .core import CanonicalGraphService
 from .pipeline import OverlayApplicationService, ReviewService
 from .surfaces import (
+    AssertionBrowseRequest,
     AssertionSearchRequest,
+    EntityBrowseRequest,
     EntitySearchRequest,
     GetEntityRequest,
     GetEvidenceRequest,
@@ -256,6 +258,23 @@ def canon6_export_governed_bundle(
     ).model_dump(mode="json")
 
 
+def canon6_list_entities(
+    entity_type: str | None = None,
+    limit: int = 50,
+    review_db_path: str | None = None,
+) -> list[dict[str, Any]]:
+    """Browse promoted entities over the read-only query surface."""
+
+    service = _query_service(review_db_path=review_db_path)
+    return [
+        result.model_dump(mode="json")
+        for result in service.list_entities(
+            EntityBrowseRequest(entity_type=entity_type, limit=limit)
+        )
+    ]
+
+
+
 def canon6_search_entities(
     query: str,
     entity_type: str | None = None,
@@ -286,14 +305,42 @@ def canon6_get_entity(
     ).model_dump(mode="json")
 
 
+def canon6_list_promoted_assertions(
+    predicate: str | None = None,
+    entity_id: str | None = None,
+    source_ref: str | None = None,
+    source_kind: str | None = None,
+    limit: int = 50,
+    review_db_path: str | None = None,
+) -> list[dict[str, Any]]:
+    """Browse promoted assertions over the read-only query surface."""
+
+    service = _query_service(review_db_path=review_db_path)
+    return [
+        result.model_dump(mode="json")
+        for result in service.list_promoted_assertions(
+            AssertionBrowseRequest(
+                predicate=predicate,
+                entity_id=entity_id,
+                source_ref=source_ref,
+                source_kind=source_kind,
+                limit=limit,
+            )
+        )
+    ]
+
+
+
 def canon6_search_promoted_assertions(
     predicate: str | None = None,
     entity_id: str | None = None,
     text_query: str | None = None,
+    source_ref: str | None = None,
+    source_kind: str | None = None,
     limit: int = 20,
     review_db_path: str | None = None,
 ) -> list[dict[str, Any]]:
-    """Search promoted assertions by predicate, linked entity, or claim text."""
+    """Search promoted assertions by predicate, linked entity, claim text, or source."""
 
     service = _query_service(review_db_path=review_db_path)
     return [
@@ -303,6 +350,8 @@ def canon6_search_promoted_assertions(
                 predicate=predicate,
                 entity_id=entity_id,
                 text_query=text_query,
+                source_ref=source_ref,
+                source_kind=source_kind,
                 limit=limit,
             )
         )
@@ -347,8 +396,10 @@ mcp.tool()(canon6_review_proposal)
 mcp.tool()(canon6_apply_overlay)
 mcp.tool()(canon6_promote_candidate)
 mcp.tool()(canon6_export_governed_bundle)
+mcp.tool()(canon6_list_entities)
 mcp.tool()(canon6_search_entities)
 mcp.tool()(canon6_get_entity)
+mcp.tool()(canon6_list_promoted_assertions)
 mcp.tool()(canon6_search_promoted_assertions)
 mcp.tool()(canon6_get_promoted_assertion)
 mcp.tool()(canon6_get_evidence)

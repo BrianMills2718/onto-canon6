@@ -27,8 +27,11 @@ from ..extensions.epistemic import EpistemicService
 from ..pipeline import CandidateAssertionRecord, ReviewService
 from .epistemic_report import EpistemicReportService
 from .query_models import (
+    AssertionBrowseRequest,
     AssertionSearchRequest,
     AssertionSearchResult,
+    EntityBrowseRequest,
+    EntityBrowseResult,
     EntityDetail,
     EntityMatchReason,
     EntitySearchRequest,
@@ -96,6 +99,31 @@ class QuerySurfaceService:
 
         return self._graph_service.db_path
 
+    def list_entities(self, request: EntityBrowseRequest) -> tuple[EntityBrowseResult, ...]:
+        """Return promoted entities in deterministic browse order."""
+
+        contexts = self._build_entity_contexts()
+        rows: list[EntityBrowseResult] = []
+        for context in contexts.values():
+            if request.entity_type is not None and context.entity.entity_type != request.entity_type:
+                continue
+            linked_assertion_ids = _collect_linked_assertion_ids(context)
+            rows.append(
+                EntityBrowseResult(
+                    identity_id=(
+                        context.identity_bundle.identity.identity_id
+                        if context.identity_bundle is not None
+                        else None
+                    ),
+                    entity_id=context.entity.entity_id,
+                    display_label=_choose_display_label(context),
+                    entity_type=context.entity.entity_type,
+                    linked_assertion_count=len(linked_assertion_ids),
+                )
+            )
+        rows.sort(key=lambda row: (row.display_label.casefold(), row.entity_id))
+        return tuple(rows[: request.limit])
+
     def search_entities(
         self,
         request: EntitySearchRequest,
@@ -107,7 +135,7 @@ class QuerySurfaceService:
             raise ValueError("query must be a non-empty string")
         needle = query.casefold()
         contexts = self._build_entity_contexts()
-        matches: list[tuple[int, str, str, EntitySearchResult]] = []
+        matches: list[tuple[int, int, int, str, str, EntitySearchResult]] = []
         for context in contexts.values():
             if request.entity_type and context.entity.entity_type != request.entity_type:
                 continue
@@ -189,6 +217,16 @@ class QuerySurfaceService:
             ),
         )
 
+    def list_promoted_assertions(
+        self,
+        request: AssertionBrowseRequest,
+    ) -> tuple[AssertionSearchResult, ...]:
+        """Browse promoted assertions in deterministic order with optional filters."""
+
+        return tuple(
+            self._browse_assertion_summaries(request=request)
+        )
+
     def search_promoted_assertions(
         self,
         request: AssertionSearchRequest,
@@ -197,19 +235,26 @@ class QuerySurfaceService:
 
         predicate = request.predicate.strip() if request.predicate is not None else None
         entity_id = request.entity_id.strip() if request.entity_id is not None else None
+        source_ref = request.source_ref.strip() if request.source_ref is not None else None
+        source_kind = request.source_kind.strip() if request.source_kind is not None else None
         text_query = request.text_query.strip().casefold() if request.text_query is not None else None
         results: list[AssertionSearchResult] = []
         for assertion in self._graph_service.list_promoted_assertions():
-            entity_ids = _assertion_entity_ids(assertion)
-            if predicate is not None and assertion.predicate != predicate:
+            summary = self._build_assertion_summary(assertion_id=assertion.assertion_id)
+            if predicate is not None and summary.predicate != predicate:
                 continue
-            if entity_id is not None and entity_id not in entity_ids:
+            if entity_id is not None and entity_id not in summary.entity_ids:
+                continue
+            if source_ref is not None and summary.source_ref != source_ref:
+                continue
+            if source_kind is not None and summary.source_kind != source_kind:
                 continue
             if text_query is not None:
-                claim_text = (assertion.claim_text or "").casefold()
+                claim_text = (summary.claim_text or "").casefold()
                 if text_query not in claim_text:
                     continue
-            results.append(self._build_assertion_summary(assertion_id=assertion.assertion_id))
+            results.append(summary)
+        results.sort(key=lambda row: (row.predicate.casefold(), row.assertion_id))
         return tuple(results[: request.limit])
 
     def get_promoted_assertion(
@@ -248,10 +293,39 @@ class QuerySurfaceService:
         )
         return self._build_evidence_bundle(assertion_id=request.assertion_id, candidate=candidate)
 
+    def _browse_assertion_summaries(
+        self,
+        *,
+        request: AssertionBrowseRequest,
+    ) -> tuple[AssertionSearchResult, ...]:
+        """Return assertion summaries for browse workflows with deterministic ordering."""
+
+        predicate = request.predicate.strip() if request.predicate is not None else None
+        entity_id = request.entity_id.strip() if request.entity_id is not None else None
+        source_ref = request.source_ref.strip() if request.source_ref is not None else None
+        source_kind = request.source_kind.strip() if request.source_kind is not None else None
+        rows: list[AssertionSearchResult] = []
+        for assertion in self._graph_service.list_promoted_assertions():
+            summary = self._build_assertion_summary(assertion_id=assertion.assertion_id)
+            if predicate is not None and summary.predicate != predicate:
+                continue
+            if entity_id is not None and entity_id not in summary.entity_ids:
+                continue
+            if source_ref is not None and summary.source_ref != source_ref:
+                continue
+            if source_kind is not None and summary.source_kind != source_kind:
+                continue
+            rows.append(summary)
+        rows.sort(key=lambda row: (row.predicate.casefold(), row.source_ref.casefold(), row.assertion_id))
+        return tuple(rows[: request.limit])
+
     def _build_assertion_summary(self, *, assertion_id: str) -> AssertionSearchResult:
         """Build one summary result for a promoted assertion identifier."""
 
         assertion = self._graph_service.get_promoted_assertion(assertion_id=assertion_id)
+        candidate = self._review_service.get_candidate_assertion(
+            candidate_id=assertion.source_candidate_id
+        )
         epistemic_report = self._epistemic_report_service.build_promoted_assertion_report(
             assertion_id=assertion_id
         )
@@ -262,9 +336,12 @@ class QuerySurfaceService:
         )
         return AssertionSearchResult(
             assertion_id=assertion.assertion_id,
+            source_candidate_id=assertion.source_candidate_id,
             predicate=assertion.predicate,
             claim_text=assertion.claim_text,
             entity_ids=_assertion_entity_ids(assertion),
+            source_ref=candidate.provenance.source_ref,
+            source_kind=candidate.provenance.source_kind,
             confidence_score=confidence_score,
             epistemic_status=epistemic_report.epistemic_status,
         )
@@ -309,35 +386,37 @@ class QuerySurfaceService:
             for bundle in identity_bundles
             for membership in bundle.memberships
         }
-        all_entities = _list_all_entities(self._graph_service)
-        return {
-            entity.entity_id: _EntityContext(
-                entity=entity,
-                names=tuple(
-                    sorted(
-                        set(entity_name_map.get(entity.entity_id, ())) or {entity.entity_id}
-                    )
-                ),
-                identity_member_names={
+        contexts: dict[str, _EntityContext] = {}
+        for entity in _list_all_entities(self._graph_service):
+            identity_bundle = identity_by_entity_id.get(entity.entity_id)
+            if identity_bundle is None:
+                identity_member_names: dict[str, tuple[str, ...]] = {}
+            else:
+                identity_member_names = {
                     membership.entity_id: tuple(
                         sorted(
                             set(entity_name_map.get(membership.entity_id, ()))
                             or {membership.entity_id}
                         )
                     )
-                    for membership in identity_by_entity_id.get(entity.entity_id, ()).memberships
+                    for membership in identity_bundle.memberships
                 }
-                if identity_by_entity_id.get(entity.entity_id) is not None
-                else {},
-                identity_bundle=identity_by_entity_id.get(entity.entity_id),
+            contexts[entity.entity_id] = _EntityContext(
+                entity=entity,
+                names=tuple(
+                    sorted(
+                        set(entity_name_map.get(entity.entity_id, ())) or {entity.entity_id}
+                    )
+                ),
+                identity_member_names=identity_member_names,
+                identity_bundle=identity_bundle,
                 linked_assertion_ids=entity_assertion_map.get(entity.entity_id, ()),
                 identity_linked_assertion_ids=_collect_identity_linked_assertion_ids(
-                    identity_bundle=identity_by_entity_id.get(entity.entity_id),
+                    identity_bundle=identity_bundle,
                     entity_assertion_map=entity_assertion_map,
                 ),
             )
-            for entity in all_entities
-        }
+        return contexts
 
 
 _MATCH_RANK: dict[EntityMatchReason, int] = {
@@ -450,10 +529,13 @@ def _choose_canonical_entity_id(identity_bundle: IdentityBundleRecord) -> str:
 def _choose_display_label(context: _EntityContext) -> str:
     """Choose the best display label for one entity context."""
 
-    if context.identity_bundle is not None and context.identity_bundle.identity.display_label:
-        return context.identity_bundle.identity.display_label
+    if _is_canonical_context(context):
+        if context.identity_bundle is not None and context.identity_bundle.identity.display_label:
+            return context.identity_bundle.identity.display_label
     if context.names:
         return context.names[0]
+    if context.identity_bundle is not None and context.identity_bundle.identity.display_label:
+        return context.identity_bundle.identity.display_label
     return context.entity.entity_id
 
 

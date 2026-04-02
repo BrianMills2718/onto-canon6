@@ -15,8 +15,11 @@ from .graph_report import (
 )
 from .identity_report import IdentityReport, IdentityReportService, IdentityReportSummary
 from .query_models import (
+    AssertionBrowseRequest,
     AssertionSearchRequest,
     AssertionSearchResult,
+    EntityBrowseRequest,
+    EntityBrowseResult,
     EntityDetail,
     EntitySearchRequest,
     EntitySearchResult,
@@ -62,8 +65,11 @@ __all__ = [
     "IdentityReport",
     "IdentityReportService",
     "IdentityReportSummary",
+    "AssertionBrowseRequest",
     "AssertionSearchRequest",
     "AssertionSearchResult",
+    "EntityBrowseRequest",
+    "EntityBrowseResult",
     "EntityDetail",
     "EntitySearchRequest",
     "EntitySearchResult",

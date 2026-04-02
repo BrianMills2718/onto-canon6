@@ -18,8 +18,10 @@ EXPECTED_TOOLS = {
     "canon6_apply_overlay",
     "canon6_promote_candidate",
     "canon6_export_governed_bundle",
+    "canon6_list_entities",
     "canon6_search_entities",
     "canon6_get_entity",
+    "canon6_list_promoted_assertions",
     "canon6_search_promoted_assertions",
     "canon6_get_promoted_assertion",
     "canon6_get_evidence",
@@ -103,10 +105,19 @@ def test_mcp_whygame_import_review_and_bundle_flow(tmp_path: Path) -> None:
 
 
 def test_mcp_query_surface_tools_cover_first_read_only_slice(tmp_path: Path) -> None:
-    """The MCP surface should expose the first read-only query operations."""
+    """The MCP surface should expose browse, search, and lookup query operations."""
 
     review_db_path = tmp_path / "review.sqlite3"
     _first_assertion_id, second_assertion_id = _seed_query_state(review_db_path)
+
+    listed_entities = mcp_server.canon6_list_entities(
+        entity_type="oc:person",
+        review_db_path=str(review_db_path),
+    )
+    assert [result["entity_id"] for result in listed_entities] == [
+        "ent:person:admiral_eric_olson",
+        "ent:person:eric_olson",
+    ]
 
     entity_results = mcp_server.canon6_search_entities(
         query="Admiral Eric Olson",
@@ -122,8 +133,16 @@ def test_mcp_query_surface_tools_cover_first_read_only_slice(tmp_path: Path) -> 
     assert entity_detail["identity_bundle"]["identity"]["display_label"] == "Eric Olson"
     assert len(entity_detail["linked_assertions"]) == 2
 
+    listed_assertions = mcp_server.canon6_list_promoted_assertions(
+        source_ref="notes/admiral_eric_olson.txt",
+        review_db_path=str(review_db_path),
+    )
+    assert [result["assertion_id"] for result in listed_assertions] == [second_assertion_id]
+    assert listed_assertions[0]["source_kind"] == "text_file"
+
     assertion_results = mcp_server.canon6_search_promoted_assertions(
         entity_id="ent:person:admiral_eric_olson",
+        source_kind="text_file",
         review_db_path=str(review_db_path),
     )
     assert [result["assertion_id"] for result in assertion_results] == [second_assertion_id]

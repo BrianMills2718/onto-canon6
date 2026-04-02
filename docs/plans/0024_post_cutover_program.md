@@ -2,7 +2,7 @@
 
 Status: active
 
-Last updated: 2026-03-31
+Last updated: 2026-04-02
 Workstream: successor completion after runtime ownership cutover
 
 ## Purpose
@@ -196,6 +196,14 @@ consumer-proof question is resolved. Lane 3 is complete; any future richer
 DIGIMON automation is follow-on hardening, not part of this lane's closure
 criteria.
 
+### Lane 4 Current State Update (2026-04-02)
+
+The extraction-transfer rescue chain is complete through Plans `0055`-`0062`.
+Lane 4 still owns the promotion policy reference in
+[0014_extraction_quality_baseline.md](0014_extraction_quality_baseline.md), but
+it no longer owns an active 24h rescue block. The next active 24h block is
+queryability widening through completed Plan `0063`, with the next queryability choice narrowed to identity/external-reference browse or first-class source-artifact query.
+
 #### Tasks
 
 1. choose the contract surfaces that matter:
@@ -313,7 +321,7 @@ order after the active gates is:
 1. finish the entity-resolution value proof under Plan 0025;
 2. treat the first read-only query surface as landed through
    [0028_query_browse_surface.md](0028_query_browse_surface.md) and
-   [0029_24h_query_surface_execution_block.md](0029_24h_query_surface_execution_block.md),
+   [0029_24h_query_surface_execution_block.md](0029_24h_query_surface_execution_block.md) and [0063_24h_query_browse_widening_block.md](0063_24h_query_browse_widening_block.md),
    then widen/harden it only after consumer/value evidence justifies that work;
 3. keep richer DIGIMON interchange consumer-blocked rather than silently
    widening the supported v1 seam.

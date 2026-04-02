@@ -10,7 +10,9 @@ from onto_canon6.artifacts import ArtifactLineageService
 from onto_canon6.core import CanonicalGraphService, IdentityService
 from onto_canon6.pipeline import ReviewService
 from onto_canon6.surfaces import (
+    AssertionBrowseRequest,
     AssertionSearchRequest,
+    EntityBrowseRequest,
     EntitySearchRequest,
     GetEntityRequest,
     GetEvidenceRequest,
@@ -219,7 +221,7 @@ def test_get_evidence_returns_candidate_spans_and_artifact_links(tmp_path: Path)
 
     service, _second_assertion_id = _seed_query_surface(tmp_path)
     first_result = service.search_promoted_assertions(
-        AssertionSearchRequest(text_query="Eric Olson held the commander role")
+        AssertionSearchRequest(source_ref="notes/eric_olson.txt")
     )[0]
     evidence = service.get_evidence(GetEvidenceRequest(assertion_id=first_result.assertion_id))
 
@@ -236,3 +238,55 @@ def test_get_entity_fails_loudly_for_unknown_entity(tmp_path: Path) -> None:
 
     with pytest.raises(QuerySurfaceNotFoundError, match="promoted entity not found"):
         service.get_entity(GetEntityRequest(entity_id="ent:missing"))
+
+
+def test_list_entities_returns_alias_and_counts_in_browse_order(tmp_path: Path) -> None:
+    """Entity browse should expose alias members with linked-assertion counts."""
+
+    service, _second_assertion_id = _seed_query_surface(tmp_path)
+
+    results = service.list_entities(EntityBrowseRequest(entity_type="oc:person"))
+
+    assert [result.entity_id for result in results] == [
+        "ent:person:admiral_eric_olson",
+        "ent:person:eric_olson",
+    ]
+    assert results[0].display_label == "Admiral Eric Olson"
+    assert results[0].linked_assertion_count == 2
+    assert results[1].display_label == "Eric Olson"
+    assert results[1].linked_assertion_count == 2
+
+
+def test_list_promoted_assertions_filters_by_source_fields(tmp_path: Path) -> None:
+    """Assertion browse should support source-ref and source-kind filtering."""
+
+    service, second_assertion_id = _seed_query_surface(tmp_path)
+
+    source_ref_results = service.list_promoted_assertions(
+        AssertionBrowseRequest(source_ref="notes/admiral_eric_olson.txt")
+    )
+    source_kind_results = service.list_promoted_assertions(
+        AssertionBrowseRequest(source_kind="text_file")
+    )
+
+    assert [result.assertion_id for result in source_ref_results] == [second_assertion_id]
+    assert source_ref_results[0].source_candidate_id
+    assert source_ref_results[0].source_ref == "notes/admiral_eric_olson.txt"
+    assert source_ref_results[0].source_kind == "text_file"
+    assert len(source_kind_results) == 2
+
+
+def test_search_promoted_assertions_filters_by_source_fields(tmp_path: Path) -> None:
+    """Promoted-assertion search should support provenance-based filters."""
+
+    service, second_assertion_id = _seed_query_surface(tmp_path)
+
+    source_ref_results = service.search_promoted_assertions(
+        AssertionSearchRequest(source_ref="notes/admiral_eric_olson.txt")
+    )
+    source_kind_results = service.search_promoted_assertions(
+        AssertionSearchRequest(source_kind="text_file")
+    )
+
+    assert [result.assertion_id for result in source_ref_results] == [second_assertion_id]
+    assert len(source_kind_results) == 2

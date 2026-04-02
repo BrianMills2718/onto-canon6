@@ -1,8 +1,8 @@
 # Query And Browse Surface
 
-Status: active
+Status: active (first browse widening slice landed)
 
-Last updated: 2026-03-31
+Last updated: 2026-04-02
 Workstream: next-active deferred parity capability after Lane 5 ordering
 
 ## Purpose
@@ -21,11 +21,9 @@ This plan addresses the deferred parity row
 1. self-contained after donor cutover;
 2. explicit about contract stability;
 3. chosen as a real producer for DIGIMON;
-4. still missing a first-class read/query surface over promoted knowledge.
+4. now has a first-class read/query surface over promoted knowledge, with the next widening choice narrowed explicitly.
 
-Today the repo can list candidates, proposals, promoted assertions, and
-identities, but it cannot yet serve as a practical governed knowledge base for
-an operator or agent who needs to answer:
+The repo can now serve the first practical governed-knowledge browse/search questions, but it still does not cover every read workflow an operator or agent may eventually need. The still-relevant questions are:
 
 1. what entities exist;
 2. what promoted assertions mention them;
@@ -77,8 +75,10 @@ The repo already has narrow read surfaces:
    - Foundation IR export
    - DIGIMON export
 
-The missing gap is a true browse/search surface over promoted knowledge and its
-supporting evidence.
+The missing gap was a true browse/search surface over promoted knowledge and its
+supporting evidence. Plans `0029` and `0063` now land that base surface plus the
+first widening step. The remaining question is not whether queryability exists,
+but which bounded follow-on should widen it next.
 
 ### Phase 0 Inventory Snapshot (2026-03-31)
 
@@ -108,14 +108,11 @@ Current thin CLI access points:
 4. promoted-graph report export
 5. governed-bundle export
 
-What is still missing for queryability:
+What is still missing for queryability after Plans `0029` and `0063`:
 
-1. entity search by canonical name / alias text
-2. direct "get entity" lookup that also returns linked promoted assertions
-3. assertion search by predicate / entity / claim-text match
-4. one direct evidence lookup path for a promoted assertion
-5. one shared read service that owns these query semantics instead of forcing
-   callers to rebuild them from report surfaces
+1. identity/external-reference-aware browse and filters
+2. first-class source-artifact query beyond source-centric assertion filters
+3. any broader read surface beyond promoted-state browse/search/get
 
 ## Target Surface
 
@@ -370,9 +367,10 @@ The capability is complete enough to mark the parity row recovered when:
 3. agents and humans can browse governed knowledge without direct SQLite
    inspection.
 
-**Current state (2026-03-31):** the first read-only slice is landed and proved.
+**Current state (2026-04-02):** the first read-only slice is landed and proved.
 Further work under this plan is now widening/hardening work, not first-slice
-recovery.
+recovery. The active widening execution block is
+[0063_24h_query_browse_widening_block.md](0063_24h_query_browse_widening_block.md).
 
 ## Failure Modes
 
@@ -406,3 +404,23 @@ entity type. External-reference state remains available through `get-entity`.
 payload size and privacy may matter.
 **Resolution:** yes, for the first local/operator-facing slice. `EvidenceBundle`
 returns source text when it is already present in stored provenance.
+
+## Landed Through Plan 0063
+
+The query surface now includes:
+
+1. entity search and deterministic entity browse;
+2. entity detail with linked promoted assertions;
+3. promoted-assertion search and deterministic promoted-assertion browse;
+4. `source_ref` and `source_kind` filters on promoted assertions;
+5. CLI commands: `list-entities`, `search-entities`, `get-entity`,
+   `list-promoted-assertions`, `search-promoted-assertions`,
+   `get-promoted-assertion`, and `get-evidence`; and
+6. matching MCP browse/search/get tools.
+
+## Next Narrowed Follow-Ons
+
+After Plan `0063`, the next truthful queryability choices are:
+
+1. identity/external-reference-aware browse and filters; or
+2. first-class source-artifact query beyond source-centric assertion filters.
