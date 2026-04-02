@@ -64,8 +64,10 @@ Current post-cutover program state:
     the chunk-003 false-positive family but does not eliminate it; and
 22. Plan `0059` is now complete and proved that chunk `003` can be reduced from
     `positive` to `mixed` while preserving the chunk-002 positive control; and
-23. the next extraction-quality blocker is now the remaining abstract
-    `limit_capability` family on chunk `003`, owned by Plan `0060`.
+23. Plan `0060` is now complete and removed the remaining abstract
+    `limit_capability` family from chunk `003`; and
+24. the next extraction-quality blocker is now the staffing-summary
+    membership family on chunk `003`, owned by Plan `0061`.
 
 ## What Is Proven
 

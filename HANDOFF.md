@@ -2,19 +2,21 @@
 
 ## Session Focus
 
-Plan `0059` closeout and Plan `0060` activation in the isolated worktree
+Plan `0060` closeout and Plan `0061` activation in the isolated worktree
 branch `codex/onto-canon6-integration-planning`.
 
 ## What Landed
 
 Committed and documented in the isolated worktree:
 
-1. Plan `0059` is now truthfully closed as a bounded semantic-reduction block;
-2. the live prompt-side hardening removed the staffing-summary membership leak;
-3. the fresh rerun downgraded chunk `003` from `positive` to `mixed`;
-4. the repo now records the smaller remaining blocker: three abstract
-   evaluative `limit_capability` acceptances on chunk `003`; and
-5. Plan `0060` is now the active execution block.
+1. Plan `0060` is now truthfully closed as a bounded live-path enforcement
+   block;
+2. the abstract evaluative `limit_capability` family is no longer accepted on
+   chunk `003`;
+3. the fresh rerun kept chunk `002` positive and kept chunk `003` mixed;
+4. the repo now records the smaller remaining blocker: one staffing-summary
+   `belongs_to_organization` acceptance on chunk `003`; and
+5. Plan `0061` is now the active execution block.
 
 ## Current State
 
@@ -24,16 +26,15 @@ Committed and documented in the isolated worktree:
 3. Chunk `003` is now `mixed`, not `positive`, but the remaining accepted set
    is still too permissive for promotion.
 4. The active frontier is now bounded live-path enforcement for the remaining
-   abstract `limit_capability` family under Plan `0060`.
+   staffing-summary membership family under Plan `0061`.
 
 ## Recommended Next Step
 
 If work continues:
 
 1. stay on `codex/onto-canon6-integration-planning`;
-2. execute Plan `0060` in order:
-   - freeze the three remaining accepted `limit_capability` claims as the
-     owned family
+2. execute Plan `0061` in order:
+   - freeze the remaining staffing-summary membership claim as the owned family
    - land one bounded enforcement seam for that family
    - rerun chunk `002` and chunk `003` under a fresh live DB
    - classify promotion posture against Plan `0014`

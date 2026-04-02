@@ -40,13 +40,14 @@ runtime.
 32. `docs/plans/0057_24h_corrected_fixture_transfer_recertification_block.md` (completed false-positive transfer audit)
 33. `docs/plans/0058_24h_live_review_alignment_block.md` (completed review-alignment block)
 34. `docs/plans/0059_24h_live_chunk003_semantic_residual_block.md` (completed semantic-reduction block)
-35. `docs/plans/0060_24h_limit_capability_enforcement_block.md` (current active execution block)
-36. `docs/plans/0026_schema_stability_gate.md` (completed Lane 3 contract policy)
-37. `docs/plans/0014_extraction_quality_baseline.md` (active Lane 4 promotion gate)
-38. `docs/plans/0027_deferred_parity_reprioritization.md`
-39. `docs/plans/0028_query_browse_surface.md`
-40. `docs/plans/0005_v1_capability_parity_matrix.md`
-41. `docs/plans/0001_successor_roadmap.md`
+35. `docs/plans/0060_24h_limit_capability_enforcement_block.md` (completed abstract limit-capability enforcement block)
+36. `docs/plans/0061_24h_personnel_membership_enforcement_block.md` (current active execution block)
+37. `docs/plans/0026_schema_stability_gate.md` (completed Lane 3 contract policy)
+38. `docs/plans/0014_extraction_quality_baseline.md` (active Lane 4 promotion gate)
+39. `docs/plans/0027_deferred_parity_reprioritization.md`
+40. `docs/plans/0028_query_browse_surface.md`
+41. `docs/plans/0005_v1_capability_parity_matrix.md`
+42. `docs/plans/0001_successor_roadmap.md`
 
 ## Commands
 
@@ -176,8 +177,8 @@ config/
   stop when the active block is either complete or explicitly narrowed to a new
   documented blocker.
 - **Current extraction-quality execution rule:** Plans `0056`, `0057`,
-  `0058`, and `0059` are complete. Plan `0060` is now the active block and
-  must run straight through family freeze, bounded enforcement, chunk-002
+  `0058`, `0059`, and `0060` are complete. Plan `0061` is now the active block
+  and must run straight through family freeze, bounded enforcement, chunk-002
   rerun, chunk-003 rerun, and promotion-posture classification before
   stopping.
 - **Continuous execution rule is hard, not advisory.** When a 24h block is
@@ -339,20 +340,22 @@ active, the required behavior is: plan the next concrete phase, execute it,
 verify it, commit it, log any uncertainty, and continue. Do not wait for
 "what next?" confirmation mid-block.
 
-The current valid stop condition is no longer the `0059` semantic-reduction
-boundary.
+The current valid stop condition is no longer the `0060`
+limit-capability boundary.
 
-1. Plans `0056`, `0057`, `0058`, and `0059` are complete and committed.
-2. The benchmark lead is restored on corrected fixture `v6`, and the review
-   contract is aligned, but chunk `003` still has a smaller live
-   `limit_capability` residual.
-3. Plan `0060` is now the active block and must run through family freeze,
+1. Plans `0056`, `0057`, `0058`, `0059`, and `0060` are complete and
+   committed.
+2. The benchmark lead is restored on corrected fixture `v6`, the review
+   contract is aligned, and the abstract `limit_capability` family is now
+   rejected on the live path.
+3. Chunk `003` still has one smaller staffing-summary membership leak.
+4. Plan `0061` is now the active block and must run through family freeze,
    bounded enforcement, fresh reruns, and promotion-posture decision before
    stopping.
 
-Do not silently widen scope inside Plan `0060`. Work the remaining abstract
-`limit_capability` family, preserve the corrected benchmark contract, and
-close the block truthfully.
+Do not silently widen scope inside Plan `0061`. Work the remaining
+staffing-summary `belongs_to_organization` family, preserve the corrected
+benchmark contract, and close the block truthfully.
 
 Pre-made decisions (do not ask about these):
 - Work stays in the isolated `codex/onto-canon6-integration-planning` worktree

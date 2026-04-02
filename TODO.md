@@ -3,23 +3,23 @@
 ## Current 24h Execution Block
 
 Source of truth:
-- `docs/plans/0060_24h_limit_capability_enforcement_block.md`
+- `docs/plans/0061_24h_personnel_membership_enforcement_block.md`
 
 ### Phase 1 — Freeze The Remaining Family
-- [x] Close Plan `0059` truthfully
-- [x] Freeze the exact remaining chunk-003 accepted claims
-- [x] Record the governing local benchmark cases for this family
+- [x] Close Plan `0060` truthfully
+- [x] Freeze the exact remaining chunk-003 accepted claim
+- [x] Record the governing local benchmark case for this family
 - [x] Commit verified phase
 
 ### Phase 2 — Land One Bounded Enforcement Seam
-- [x] Add one deterministic guard for the remaining abstract `limit_capability` family
-- [x] Keep the rule family-level, not row-specific
-- [x] Commit verified phase
+- [ ] Add one deterministic guard for the staffing-summary membership family
+- [ ] Keep the rule family-level, not row-specific
+- [ ] Commit verified phase
 
 ### Phase 3 — Verify The Enforcement Seam
-- [x] Add/update targeted tests for the enforcement seam
-- [x] Verify the family through the narrow test slice
-- [x] Commit verified phase
+- [ ] Add/update targeted tests for the enforcement seam
+- [ ] Verify the family through the narrow test slice
+- [ ] Commit verified phase
 
 ### Phase 4 — Rerun Chunk 002 And Chunk 003
 - [ ] Rerun chunk `002` under the bounded enforcement seam
@@ -28,7 +28,7 @@ Source of truth:
 - [ ] Commit verified phase
 
 ### Phase 5 — Closeout
-- [ ] Write the limit-capability enforcement decision note
+- [ ] Write the personnel-membership enforcement decision note
 - [ ] Refresh docs/status/handoff/knowledge
 - [ ] Mark the block complete and name the next blocker explicitly
 - [ ] Commit verified phase
@@ -118,7 +118,8 @@ Source of truth:
 - [x] Localize the remaining post-wrapper extraction-path divergence to one dominant surface
 - [x] Localize and repair the remaining prompt-side parity residual through Plans `0046`-`0049`
 - [x] Run one bounded post-parity semantic recovery attempt and classify it honestly
-- [ ] Eliminate the remaining abstract `limit_capability` family under Plan `0060`
+- [x] Eliminate the remaining abstract `limit_capability` family under Plan `0060`
+- [ ] Eliminate the remaining staffing-summary membership family under Plan `0061`
 
 ## Longer-Term Queue
 

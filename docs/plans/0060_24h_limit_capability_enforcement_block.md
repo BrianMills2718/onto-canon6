@@ -1,12 +1,12 @@
 # 24h Limit-Capability Enforcement Block
 
-Status: active
+Status: complete
 Phase status:
 - Phase 1 completed
 - Phase 2 completed
 - Phase 3 completed
-- Phase 4 pending
-- Phase 5 pending
+- Phase 4 completed
+- Phase 5 completed
 
 Last updated: 2026-04-02
 Workstream: deterministic enforcement for the remaining abstract chunk-003 limit-capability family
@@ -133,3 +133,33 @@ This block succeeds only if:
 
 1. the next blocker or promotion posture is explicit and decision-grade;
 2. the worktree is clean.
+
+## Outcome
+
+This block completed its owned job. The bounded live-path guard removed the
+remaining abstract evaluative `oc:limit_capability` acceptance family from
+chunk `003`, but one smaller staffing-summary
+`oc:belongs_to_organization` claim still remains accepted.
+
+What changed:
+
+1. the live path now rejects supported `oc:limit_capability` candidates when
+   the capability filler is only an abstract evaluative value (`effectiveness`,
+   `impact`, `credibility`);
+2. targeted tests now cover that deterministic guard;
+3. a fresh rerun under
+   `var/real_runs/2026-04-02_limit_capability_enforcement/` kept chunk `002`
+   positive; and
+4. chunk `003` no longer accepts the abstract `limit_capability` family.
+
+What remains:
+
+1. chunk `003` still accepts one staffing-summary
+   `oc:belongs_to_organization` claim; and
+2. that family is already represented by the corrected local benchmark guard
+   `psyop_017_personnel_dedication_not_membership_strict_omit`.
+
+Decision:
+
+1. Plan `0060` is complete and truthful; and
+2. Plan `0061` now owns the remaining staffing-summary membership family.

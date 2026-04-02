@@ -128,11 +128,12 @@ Plan `0057` owned the first corrected-fixture transfer recertification block.
 It then proved the next blocker was not the extraction prompt alone: the live
 review contract was misaligned with corrected fixture `v6` semantics. Plan
 `0058` then fixed that contract and reduced the live chunk-003 false-positive
-family. Plan `0059` then removed the staffing-summary leak and downgraded
-chunk `003` from `positive` to `mixed`, but three abstract evaluative
-`limit_capability` claims still remain.
+family. Plan `0059` then reduced the chunk-003 residual to three abstract
+evaluative `limit_capability` claims plus one staffing-summary membership
+leak. Plan `0060` then removed the abstract `limit_capability` family from
+the live accepted set.
 
-Plan `0060` now owns that final named family.
+Plan `0061` now owns the final remaining staffing-summary membership family.
 
 ## Current State
 

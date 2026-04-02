@@ -306,3 +306,17 @@ For `review_mode: llm`, only `supported` should auto-accept. Leaving
 chunk-003 false-positive family without hurting the chunk-002 positive control.
 Treat `partially_supported -> accepted` as a contract bug, not a permissive
 default.
+
+### 2026-04-02 — codex — best-practice
+For this repo's operational CLI flows, the installed `onto-canon6` console
+script is the truthful entrypoint. `python -m onto_canon6.cli` can return
+cleanly without writing the expected extraction/export stdout artifacts even
+when the command looks syntactically correct.
+
+### 2026-04-02 — codex — bug-pattern
+Plan `0060` proved the remaining abstract evaluative `oc:limit_capability`
+family was a live-path enforcement problem, not another prompt-only problem.
+After the bounded guard landed, chunk `003` no longer accepted that family.
+The remaining extraction-quality blocker shrank to one staffing-summary
+`oc:belongs_to_organization` leak already represented by
+`psyop_017_personnel_dedication_not_membership_strict_omit`.
