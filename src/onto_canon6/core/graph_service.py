@@ -201,9 +201,10 @@ def _materialize_role_fillers(
 
     roles_object = candidate.normalized_payload.get("roles")
     if not isinstance(roles_object, dict) or not roles_object:
-        raise CanonicalGraphPromotionConflictError(
-            f"candidate is missing normalized roles: {candidate.candidate_id}"
-        )
+        # Statement-only assertions (e.g. imported claims without entity_refs)
+        # have a predicate + claim_text but no typed role fillers. They are
+        # valid for promotion — skip role materialization silently.
+        return
 
     for role_id, fillers_object in roles_object.items():
         if not isinstance(role_id, str) or not role_id.strip():

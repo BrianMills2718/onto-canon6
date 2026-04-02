@@ -41,11 +41,16 @@ def test_phase14_mcp_tools_are_registered() -> None:
     """The thin MCP server should register the expected small tool set."""
     import asyncio
 
+    get_tools = getattr(mcp_server.mcp, "get_tools", None)
     list_tools = getattr(mcp_server.mcp, "list_tools", None)
-    assert list_tools is not None, "FastMCP surface no longer exposes a tool registry API"
+    assert get_tools is not None or list_tools is not None, "FastMCP surface no longer exposes a tool registry API"
 
-    tools = asyncio.run(list_tools())
-    registered = {tool.name for tool in tools}
+    if get_tools is not None:
+        tools_result = asyncio.run(get_tools())
+        registered = set(tools_result.keys())
+    else:
+        tools_result = asyncio.run(list_tools())
+        registered = {tool.name for tool in tools_result}
     assert EXPECTED_TOOLS.issubset(registered)
     assert len(registered & EXPECTED_TOOLS) == len(EXPECTED_TOOLS)
 
