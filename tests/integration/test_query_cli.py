@@ -13,14 +13,32 @@ from onto_canon6.core import CanonicalGraphService, IdentityService
 from onto_canon6.pipeline import ReviewService
 
 
-def test_cli_query_surface_supports_all_five_operations(
+def test_cli_query_surface_supports_browse_and_lookup_operations(
     tmp_path: Path,
     capsys: pytest.CaptureFixture[str],
 ) -> None:
-    """The CLI should expose the first read-only query operations end to end."""
+    """The CLI should expose browse, search, and lookup operations end to end."""
 
     review_db_path = tmp_path / "review.sqlite3"
     _first_assertion_id, second_assertion_id = _seed_query_cli_state(review_db_path)
+
+    exit_code = cli_module.main(
+        [
+            "list-entities",
+            "--entity-type",
+            "oc:person",
+            "--review-db-path",
+            str(review_db_path),
+            "--output",
+            "json",
+        ]
+    )
+    assert exit_code == 0
+    browse_results = json.loads(_read_stdout(capsys))
+    assert [result["entity_id"] for result in browse_results] == [
+        "ent:person:admiral_eric_olson",
+        "ent:person:eric_olson",
+    ]
 
     exit_code = cli_module.main(
         [
@@ -56,9 +74,27 @@ def test_cli_query_surface_supports_all_five_operations(
 
     exit_code = cli_module.main(
         [
+            "list-promoted-assertions",
+            "--source-ref",
+            "notes/admiral_eric_olson.txt",
+            "--review-db-path",
+            str(review_db_path),
+            "--output",
+            "json",
+        ]
+    )
+    assert exit_code == 0
+    listed_assertions = json.loads(_read_stdout(capsys))
+    assert [result["assertion_id"] for result in listed_assertions] == [second_assertion_id]
+    assert listed_assertions[0]["source_kind"] == "text_file"
+
+    exit_code = cli_module.main(
+        [
             "search-promoted-assertions",
             "--entity-id",
             "ent:person:admiral_eric_olson",
+            "--source-kind",
+            "text_file",
             "--review-db-path",
             str(review_db_path),
             "--output",

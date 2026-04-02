@@ -81,10 +81,13 @@ from .pipeline import (
     TextExtractionService,
 )
 from .surfaces import (
+    AssertionBrowseRequest,
     AssertionSearchRequest,
     AssertionSearchResult,
     ChunkTransferReport,
     ChunkTransferReportService,
+    EntityBrowseRequest,
+    EntityBrowseResult,
     EntityDetail,
     EntitySearchRequest,
     EntitySearchResult,
@@ -686,9 +689,19 @@ def _build_parser() -> argparse.ArgumentParser:
 
     list_promoted_parser = subparsers.add_parser(
         "list-promoted-assertions",
-        help="List promoted graph assertions.",
+        help="Browse promoted assertions through the read-only query surface.",
     )
     _add_store_args(list_promoted_parser, include_overlay_root=False)
+    list_promoted_parser.add_argument("--predicate", help="Optional predicate filter.")
+    list_promoted_parser.add_argument("--entity-id", help="Optional linked entity filter.")
+    list_promoted_parser.add_argument("--source-ref", help="Optional exact source-ref filter.")
+    list_promoted_parser.add_argument("--source-kind", help="Optional exact source-kind filter.")
+    list_promoted_parser.add_argument(
+        "--limit",
+        type=int,
+        default=50,
+        help="Maximum results to return.",
+    )
     _add_output_arg(list_promoted_parser, default_output=config.cli.default_output_format)
     list_promoted_parser.set_defaults(handler=_handle_list_promoted_assertions)
 
@@ -880,6 +893,24 @@ def _build_parser() -> argparse.ArgumentParser:
     _add_output_arg(export_identity_report_parser, default_output=config.cli.default_output_format)
     export_identity_report_parser.set_defaults(handler=_handle_export_identity_report)
 
+    list_entities_parser = subparsers.add_parser(
+        "list-entities",
+        help="Browse promoted entities through the read-only query surface.",
+    )
+    _add_store_args(list_entities_parser, include_overlay_root=False)
+    list_entities_parser.add_argument(
+        "--entity-type",
+        help="Optional promoted entity_type filter.",
+    )
+    list_entities_parser.add_argument(
+        "--limit",
+        type=int,
+        default=50,
+        help="Maximum results to return.",
+    )
+    _add_output_arg(list_entities_parser, default_output=config.cli.default_output_format)
+    list_entities_parser.set_defaults(handler=_handle_list_entities)
+
     search_entities_parser = subparsers.add_parser(
         "search-entities",
         help="Search promoted entities and identity aliases through the read-only query surface.",
@@ -920,6 +951,14 @@ def _build_parser() -> argparse.ArgumentParser:
     search_promoted_assertions_parser.add_argument(
         "--text-query",
         help="Optional claim-text substring filter.",
+    )
+    search_promoted_assertions_parser.add_argument(
+        "--source-ref",
+        help="Optional exact source-ref filter.",
+    )
+    search_promoted_assertions_parser.add_argument(
+        "--source-kind",
+        help="Optional exact source-kind filter.",
     )
     search_promoted_assertions_parser.add_argument(
         "--limit",
@@ -1474,11 +1513,19 @@ def _handle_promote_candidate(args: argparse.Namespace) -> int:
 
 
 def _handle_list_promoted_assertions(args: argparse.Namespace) -> int:
-    """List promoted graph assertions in deterministic order."""
+    """Browse promoted assertions through the shared read-only query surface."""
 
-    graph_service = _build_graph_service(args)
-    assertions = tuple(graph_service.list_promoted_assertions())
-    _emit_output(assertions, output_format=args.output)
+    service = _build_query_surface_service(args)
+    result = service.list_promoted_assertions(
+        AssertionBrowseRequest(
+            predicate=args.predicate,
+            entity_id=args.entity_id,
+            source_ref=args.source_ref,
+            source_kind=args.source_kind,
+            limit=args.limit,
+        )
+    )
+    _emit_output(result, output_format=args.output)
     return 0
 
 
@@ -1628,6 +1675,21 @@ def _handle_export_identity_report(args: argparse.Namespace) -> int:
     return 0
 
 
+def _handle_list_entities(args: argparse.Namespace) -> int:
+    """Browse promoted entities through the shared read-only query surface."""
+
+    service = _build_query_surface_service(args)
+    result = service.list_entities(
+        EntityBrowseRequest(
+            entity_type=args.entity_type,
+            limit=args.limit,
+        )
+    )
+    _emit_output(result, output_format=args.output)
+    return 0
+
+
+
 def _handle_search_entities(args: argparse.Namespace) -> int:
     """Search promoted entities through the shared read-only query surface."""
 
@@ -1666,6 +1728,8 @@ def _handle_search_promoted_assertions(args: argparse.Namespace) -> int:
             predicate=args.predicate,
             entity_id=args.entity_id,
             text_query=args.text_query,
+            source_ref=args.source_ref,
+            source_kind=args.source_kind,
             limit=args.limit,
         )
     )
@@ -1989,6 +2053,7 @@ def _to_jsonable(value: object) -> Any:
             CandidateSubmissionResult,
             ChunkTransferReport,
             CanonicalGraphPromotionResult,
+            EntityBrowseResult,
             EntityDetail,
             EntitySearchResult,
             EvidenceBundle,
