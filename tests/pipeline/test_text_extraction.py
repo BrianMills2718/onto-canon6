@@ -151,6 +151,60 @@ def test_extract_candidate_imports_uses_llm_client_boundary(tmp_path: Path, monk
     assert "Mission planning uses the radar system during the exercise." in messages[-1]["content"]
 
 
+def test_extract_candidate_imports_forwards_temperature_override(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A bounded temperature override should flow into the live extraction call."""
+
+    service = TextExtractionService(
+        review_service=_make_review_service(tmp_path),
+        temperature=0.0,
+    )
+    calls: dict[str, object] = {}
+
+    def fake_get_model(task: str, *, use_performance: bool = True) -> str:
+        del task, use_performance
+        return "fake-structured-model"
+
+    def fake_call_llm_structured(
+        model: str,
+        messages: list[dict[str, str]],
+        response_model: type[BaseModel],
+        **kwargs: object,
+    ) -> tuple[BaseModel, object]:
+        del model, messages
+        calls["kwargs"] = kwargs
+        if response_model is TextExtractionResponse:
+            return response_model(candidates=[]), SimpleNamespace(resolved_model="fake-structured-model")
+        return response_model.model_validate(
+            {"judgments": [{"candidate_index": 0, "label": "supported"}]}
+        ), SimpleNamespace(resolved_model="fake-structured-model")
+
+    monkeypatch.setattr(
+        extraction_module,
+        "_load_llm_client_api",
+        lambda: extraction_module._LLMClientAPI(
+            get_model=fake_get_model,
+            render_prompt=_render_prompt,
+            call_llm_structured=cast(Any, fake_call_llm_structured),
+        ),
+    )
+
+    imports = service.extract_candidate_imports(
+        source_text="Mission planning uses the radar system during the exercise.",
+        profile_id="default",
+        profile_version="1.0.0",
+        submitted_by="analyst:text-extract",
+        source_ref="text://phase4/mission-planning",
+    )
+
+    assert imports == ()
+    call_kwargs = calls["kwargs"]
+    assert isinstance(call_kwargs, dict)
+    assert call_kwargs["temperature"] == 0.0
+
+
 def test_text_extraction_response_drops_unparseable_candidates_before_response_parse() -> None:
     """One malformed candidate should not poison an otherwise valid response."""
 

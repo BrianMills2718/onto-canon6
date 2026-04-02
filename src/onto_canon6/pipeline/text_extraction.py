@@ -490,6 +490,7 @@ class TextExtractionService:
         review_service: ReviewService | None = None,
         selection_task: str | None = None,
         model_override: str | None = None,
+        temperature: float | None = None,
         judge_model_override: str | None = None,
         prompt_template: Path | None = None,
         prompt_ref: str | None = None,
@@ -517,6 +518,11 @@ class TextExtractionService:
             model_override.strip()
             if model_override is not None and model_override.strip()
             else config.extraction.model_override
+        )
+        self._temperature = (
+            temperature
+            if temperature is not None
+            else config.extraction.temperature
         )
         self._judge_model_override = (
             judge_model_override.strip()
@@ -680,16 +686,21 @@ class TextExtractionService:
         )
         trace_id = _trace_id_for_source(source_ref=source_artifact.source_ref, text=normalized_text)
         try:
+            call_kwargs: dict[str, Any] = {
+                "timeout": self._timeout_seconds,
+                "num_retries": self._num_retries,
+                "task": self._selection_task,
+                "trace_id": trace_id,
+                "max_budget": self._max_budget_usd,
+                "prompt_ref": self._prompt_ref,
+            }
+            if self._temperature is not None:
+                call_kwargs["temperature"] = self._temperature
             response, meta = llm_client_api.call_llm_structured(
                 selected_model,
                 messages,
                 response_model=TextExtractionResponse,
-                timeout=self._timeout_seconds,
-                num_retries=self._num_retries,
-                task=self._selection_task,
-                trace_id=trace_id,
-                max_budget=self._max_budget_usd,
-                prompt_ref=self._prompt_ref,
+                **call_kwargs,
             )
         except Exception as exc:
             raise ExtractionError(f"llm_client text extraction failed: {exc}") from exc

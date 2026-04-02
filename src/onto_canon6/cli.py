@@ -169,6 +169,11 @@ def _build_parser() -> argparse.ArgumentParser:
         help="Optional llm_client selection-task override. Defaults to config.",
     )
     extract_parser.add_argument(
+        "--temperature",
+        type=float,
+        help="Optional extraction temperature override. Defaults to config/provider behavior.",
+    )
+    extract_parser.add_argument(
         "--prompt-template",
         type=Path,
         help=(
@@ -1089,6 +1094,7 @@ def _build_text_extraction_service(
     constructor_kwargs = {
         "review_service": review_service,
         "selection_task": args.selection_task,
+        "temperature": args.temperature,
         "prompt_template": args.prompt_template,
         "prompt_ref": args.prompt_ref,
         "max_candidates_per_call": args.max_candidates_per_call,
@@ -1832,7 +1838,7 @@ def _handle_auto_resolve_identities(args: argparse.Namespace) -> int:
     from typing import cast
 
     db_path = Path(args.review_db_path)
-    strategy_str: str = args.strategy
+    strategy_str = cast(str | None, getattr(args, "strategy", None))
     if strategy_str is None:
         try:
             config = get_config()

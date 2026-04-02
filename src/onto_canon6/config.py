@@ -130,6 +130,15 @@ class ExtractionConfig(BaseModel):
         default=None,
         description="Pin a specific model instead of task-based selection. Useful when the default model has structural issues with the extraction schema.",
     )
+    temperature: float | None = Field(
+        default=None,
+        ge=0.0,
+        description=(
+            "Optional deterministic decoding override for live extraction. "
+            "Null keeps the provider default; a float such as 0.0 forces the "
+            "same temperature to every extraction call."
+        ),
+    )
     default_extraction_goal: str = Field(
         min_length=1,
         description="Default extraction goal when not specified per-call. Guides the LLM on what assertions are relevant. Must be set explicitly — undirected extraction produces noise.",
