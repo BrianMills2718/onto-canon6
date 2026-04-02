@@ -2,7 +2,7 @@
 
 Status: active
 
-Last updated: 2026-03-31
+Last updated: 2026-04-02
 Workstream: next-active deferred parity capability after Lane 5 ordering
 
 ## Purpose
@@ -370,9 +370,10 @@ The capability is complete enough to mark the parity row recovered when:
 3. agents and humans can browse governed knowledge without direct SQLite
    inspection.
 
-**Current state (2026-03-31):** the first read-only slice is landed and proved.
+**Current state (2026-04-02):** the first read-only slice is landed and proved.
 Further work under this plan is now widening/hardening work, not first-slice
-recovery.
+recovery. The active widening execution block is
+[0063_24h_query_browse_widening_block.md](0063_24h_query_browse_widening_block.md).
 
 ## Failure Modes
 

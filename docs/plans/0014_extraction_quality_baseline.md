@@ -142,6 +142,9 @@ There is no active transfer-cleanup block remaining. Future extraction-quality
 work should start from the promoted default surface rather than reopening the
 old transfer-hardening chain.
 
+This plan remains active as a policy and benchmark reference. It is not the
+current 24h execution block.
+
 ## Current State
 
 ### Harness and Scoring

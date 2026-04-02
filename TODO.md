@@ -2,110 +2,43 @@
 
 ## Current 24h Execution Block
 
-No active 24h extraction block. The most recent bounded block is now complete:
-
-- `docs/plans/0062_24h_default_extraction_cutover_block.md`
-
-Completed phases:
-
-- [x] Freeze the promotion contract
-- [x] Change the repo defaults
-- [x] Verify the default surface
-- [x] Rerun chunk `002` and chunk `003` on the no-override default path
-- [x] Close out with a decision-grade promotion record
-
-## Most Recent Completed 24h Execution Block
-
 Source of truth:
-- `docs/plans/0045_24h_extraction_path_block.md`
+- `docs/plans/0063_24h_query_browse_widening_block.md`
 
-### Phase 1 — Freeze The Extraction-Path Contract
-- [x] Restate the Plan 0044 decision as the incoming contract
-- [x] Freeze the current aligned-wrapper failure artifacts
-- [x] Record chunk `002` as the regression guard only
-- [x] Record the execution caveats (`PYTHONPATH=src`, run-id mapping)
-- [x] Commit verified phase
+### Phase 1 — Freeze Post-Merge Queryability Contract
+- [ ] Create and activate Plan `0063`
+- [ ] Align `CLAUDE.md`, `docs/plans/CLAUDE.md`, `TODO.md`, and active plan docs
+- [ ] Restate Plan `0014` as a policy reference rather than an active transfer-hardening block
+- [ ] Commit verified phase
 
-### Phase 2 — Compare Extraction-Service Behavior Directly
-- [x] Identify the remaining path differences after wrapper alignment
-- [x] Capture those differences in a reproducible artifact
-- [x] Separate extraction-path behavior from review amplification
-- [x] Commit verified phase
+### Phase 2 — Add Typed Browse Contracts And Service Support
+- [ ] Add typed entity-browse and promoted-assertion-browse contracts
+- [ ] Add `source_ref` / `source_kind` promoted-assertion filters
+- [ ] Implement deterministic browse semantics in `QuerySurfaceService`
+- [ ] Add/update service-level tests
+- [ ] Commit verified phase
 
-### Phase 3 — Land One Narrow Diagnostic Aid
-- [x] Implement the smallest helper or instrumentation needed to replay or summarize the extraction-path divergence
-- [x] Add verification for that aid
-- [x] Keep it bounded to extraction-path behavior
-- [x] Commit verified phase
+### Phase 3 — CLI And MCP Widening
+- [ ] Add `list-entities` to the CLI
+- [ ] Route `list-promoted-assertions` through the query surface and add source filters
+- [ ] Add matching MCP browse tools
+- [ ] Add/update CLI/MCP tests
+- [ ] Commit verified phase
 
-### Phase 4 — Classify The Dominant Blocker
-- [x] Decide whether the remaining blocker is extraction-service behavior or review/judge behavior
-- [x] Record secondary caveats separately
-- [x] Commit the classification with artifacts
-- [x] Commit verified phase
+### Phase 4 — Real-Proof Verification
+- [ ] Run the widened browse surface on a real promoted DB
+- [ ] Record one entity-browse proof and one source-centric assertion proof
+- [ ] Commit verified phase
 
 ### Phase 5 — Closeout
-- [x] Write the decision-grade extraction-path note
-- [x] Refresh docs/status/handoff
-- [x] Mark execution block complete
-- [x] Commit verified phase
-
-## Most Recent Completed 24h Execution Block
-
-Source of truth:
-- `docs/plans/0036_24h_entity_resolution_negative_control_recovery_block.md`
-
-### Phase 1 — Freeze The Fresh-Run Residual Contract
-- [x] Close Plan 0035 truthfully in the docs
-- [x] Activate Plan 0036 and freeze the fresh-run residuals (`q05`, `q06`)
-- [x] Commit verified phase
-
-### Phase 2 — Restore Same-Surname Person Safety
-- [x] Localize the fresh-run `John Smith` / `James Smith` overmerge precisely
-- [x] Tighten titled-person bridge logic without undoing positive title/initial merges
-- [x] Add/update targeted tests
-- [x] Commit verified phase
-
-### Phase 3 — Recover The Remaining Negative-Control Answerability
-- [x] Localize the residual `q06` unmatched/ambiguous path after Phase 2
-- [x] Land one bounded repair only if the residual is explicit
-- [x] Add/update targeted regression tests
-- [x] Commit verified phase
-
-### Phase 4 — Rerun The Value Proof
-- [x] Rerun LLM strategy on a fresh DB
-- [x] Verify 25/25 document survival from the DB
-- [x] Check the gate for `q05` and `q06` while preserving `q02` / `q04` / `q08`
-- [x] Commit verified phase
-
-### Phase 5 — Closeout
-- [x] Refresh docs/status/handoff
-- [x] Mark execution block complete
-- [x] Commit verified phase
-
-## Next Active Work
-
-Source of truth:
-- `docs/plans/0014_extraction_quality_baseline.md`
-
-- [x] Turn the current compact operational-parity lane into one explicit certification decision
-- [x] Keep chunk `002` as the positive control and chunk `003` as the prose-heavy stress case
-- [x] Make the live-vs-parity gap reproducible instead of aggregate-only
-- [x] Decide whether the current candidate is promotable or still transfer-blocked
-- [x] Narrow the remaining full-chunk prompt-eval/live residual into one dominant blocker family
-- [x] Reduce the remaining semantic transfer residual to one bounded prompt-revision target
-- [x] Localize the remaining same-model live-path divergence to one dominant surface
-- [x] Test whether wrapper alignment materially narrows the same-model live-path divergence
-- [x] Localize the remaining post-wrapper extraction-path divergence to one dominant surface
-- [x] Localize and repair the remaining prompt-side parity residual through Plans `0046`-`0049`
-- [x] Run one bounded post-parity semantic recovery attempt and classify it honestly
-- [x] Eliminate the remaining abstract `limit_capability` family under Plan `0060`
-- [x] Eliminate the remaining staffing-summary membership family under Plan `0061`
-- [x] Promote the proved compact operational-parity lane into the repo default under Plan `0062`
+- [ ] Refresh `README.md`, `docs/STATUS.md`, `HANDOFF.md`, and Plan `0028`
+- [ ] Mark Plan `0063` complete truthfully
+- [ ] Record the next narrowed query-surface question
+- [ ] Commit verified phase
 
 ## Longer-Term Queue
 
-- [ ] Re-evaluate whether LLM clustering should replace exact strategy as default after the next answerability hardening pass
-- [ ] Evaluate whether Plan 0028 should widen beyond the first five operations
-- [ ] Revisit consumer-blocked richer DIGIMON interchange only through DIGIMON Plan 23
+- [ ] Decide whether identity browse/list should fold into the query surface after Plan `0063`
+- [ ] Decide whether source-artifact search needs its own future execution plan
+- [ ] Revisit richer DIGIMON interchange only through DIGIMON Plan 23
 - [ ] Revisit trusted bulk ingestion only if a real workflow makes review the bottleneck

@@ -2,7 +2,7 @@
 
 Status: active
 
-Last updated: 2026-03-31
+Last updated: 2026-04-02
 Workstream: successor completion after runtime ownership cutover
 
 ## Purpose
@@ -195,6 +195,14 @@ surfaces, the change-classification policy is written down, and the DIGIMON
 consumer-proof question is resolved. Lane 3 is complete; any future richer
 DIGIMON automation is follow-on hardening, not part of this lane's closure
 criteria.
+
+### Lane 4 Current State Update (2026-04-02)
+
+The extraction-transfer rescue chain is complete through Plans `0055`-`0062`.
+Lane 4 still owns the promotion policy reference in
+[0014_extraction_quality_baseline.md](0014_extraction_quality_baseline.md), but
+it no longer owns an active 24h rescue block. The next active 24h block is
+queryability widening under Plan `0063`.
 
 #### Tasks
 
