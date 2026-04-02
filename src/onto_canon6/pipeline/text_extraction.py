@@ -865,6 +865,25 @@ class TextExtractionService:
                             cid,
                         )
                     continue
+                if _requires_staffing_membership_enforcement(candidate):
+                    try:
+                        self._review_service.review_candidate(
+                            candidate_id=cid,
+                            decision="rejected",
+                            actor_id=f"{submitted_by}:staffing_membership_guard",
+                        )
+                    except Exception as exc:
+                        logger.warning(
+                            "staffing-membership guard failed to reject %s after supported judge label: %s",
+                            cid,
+                            exc,
+                        )
+                    else:
+                        logger.info(
+                            "auto-review rejected candidate after staffing-membership guard: %s",
+                            cid,
+                        )
+                    continue
                 # supported → accept
                 decision: Literal["accepted"] = "accepted"
             else:
@@ -916,6 +935,14 @@ class TextExtractionService:
 
 _JUDGE_LABEL_ORDER = ["unsupported", "partially_supported", "supported"]
 _ABSTRACT_LIMIT_CAPABILITY_VALUES = frozenset({"effectiveness", "impact", "credibility"})
+_STAFFING_SUMMARY_MEMBER_MARKERS = (
+    "personnel assigned to",
+    "personnel dedicated to",
+)
+_STAFFING_SUMMARY_EVIDENCE_MARKERS = (
+    "substantial proportion dedicated to",
+    "total strength was reported",
+)
 
 
 class _JudgeJudgment(BaseModel):
@@ -1076,6 +1103,56 @@ def _requires_limit_capability_enforcement(candidate: CandidateAssertionRecord) 
     if not normalized_values:
         return False
     return all(value in _ABSTRACT_LIMIT_CAPABILITY_VALUES for value in normalized_values)
+
+
+def _requires_staffing_membership_enforcement(candidate: CandidateAssertionRecord) -> bool:
+    """Return whether one supported membership candidate is only a staffing-summary aggregate.
+
+    The corrected chunk-level contract treats staffing/resource summaries as
+    omit cases for `oc:belongs_to_organization`. Those summaries can mention a
+    large command alongside a substantial proportion dedicated to a function,
+    but they do not directly ground a unit-to-organization membership fact.
+    """
+
+    raw_payload = candidate.normalized_payload
+    if raw_payload.get("predicate") != "oc:belongs_to_organization":
+        return False
+    roles_obj = raw_payload.get("roles")
+    if not isinstance(roles_obj, dict):
+        return False
+    member_obj = roles_obj.get("member")
+    if not isinstance(member_obj, list) or len(member_obj) != 1:
+        return False
+    member = member_obj[0]
+    if not isinstance(member, dict) or member.get("kind") != "entity":
+        return False
+
+    member_surface_candidates: list[str] = []
+    for key in ("name", "raw"):
+        value = member.get(key)
+        if isinstance(value, str) and value.strip():
+            member_surface_candidates.append(value.strip().lower())
+    if not member_surface_candidates:
+        return False
+    if not any(
+        marker in surface
+        for surface in member_surface_candidates
+        for marker in _STAFFING_SUMMARY_MEMBER_MARKERS
+    ):
+        return False
+
+    evidence_texts = [
+        span.text.strip().lower()
+        for span in candidate.evidence_spans
+        if isinstance(span.text, str) and span.text.strip()
+    ]
+    if not evidence_texts:
+        return False
+    return any(
+        marker in text
+        for text in evidence_texts
+        for marker in _STAFFING_SUMMARY_EVIDENCE_MARKERS
+    )
 
 
 def candidate_import_from_extracted(

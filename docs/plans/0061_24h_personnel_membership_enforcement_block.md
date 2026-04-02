@@ -3,8 +3,8 @@
 Status: active
 Phase status:
 - Phase 1 completed
-- Phase 2 pending
-- Phase 3 pending
+- Phase 2 completed
+- Phase 3 completed
 - Phase 4 pending
 - Phase 5 pending
 
