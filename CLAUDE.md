@@ -199,11 +199,11 @@ happens.
    resolution *infrastructure*. Export adapters wire the identity subsystem.
    Consumers should not have to reimplement dedup.
 
-## Active Execution Block (2026-04-02 overnight — hardening + full pipeline)
+## Planned Execution Block (NOT YET STARTED — hardening + full pipeline)
 
-**CONTINUOUS AUTONOMOUS EXECUTION. DO NOT STOP. STOPPING EARLY IS A FAILURE MODE.**
+**Status: PLANNED but NOT YET EXECUTED.**
 
-Execute all phases below in order. Commit each verified phase immediately.
+When this block starts, execute all phases below in order. Commit each verified phase immediately.
 Do not pause for confirmation between phases. Do not stop after one commit.
 The only valid stop conditions are:
 1. All phases are complete
