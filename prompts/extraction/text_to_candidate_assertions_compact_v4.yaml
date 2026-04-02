@@ -141,6 +141,11 @@ messages:
       - if the text only implies sentiment, concern, or dissatisfaction without
         a named speaker, return no opinion candidate rather than inventing a
         person or vague source
+      - `express_concern` requires the cited span to show the named speaker
+        explicitly raising, voicing, expressing, warning about, criticizing,
+        questioning, or objecting to the topic; governance reactions such as
+        `oversight increased`, `scrutiny increased`, `periodic review`, or
+        `doctrine adjustments` are not concern events by themselves
       - `limit_capability` requires an explicitly named limited subject from
         the source text; if the sentence only describes friction, challenges,
         impediments, or abstract effectiveness in general analytical prose
@@ -151,6 +156,12 @@ messages:
         `limit_capability` event; omit it unless the same evidence span names
         a concrete limited subject and a directly stated limiting event rather
         than a broad campaign- or effectiveness-level summary
+      - `limit_capability` is for concrete operational capabilities, named
+        activities, or specific operational processes that the text explicitly
+        says were limited; abstract result nouns such as `effectiveness`,
+        `impact`, or `credibility`, and broad retrospective labels such as
+        `"hearts and minds" campaigns` or `PSYOP messages`, are not enough by
+        themselves on analytical prose
       - do not inherit the document's main organization, campaign, or topic as
         the `express_concern` speaker or `limit_capability` subject from
         section context alone; the speaker or limited subject must be explicit

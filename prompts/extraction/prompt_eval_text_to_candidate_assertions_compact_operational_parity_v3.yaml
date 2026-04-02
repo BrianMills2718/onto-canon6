@@ -141,6 +141,11 @@ messages:
       - if the text only implies sentiment, concern, or dissatisfaction without
         a named speaker, return no opinion candidate rather than inventing a
         person or vague source
+      - `express_concern` requires the cited span to show the named speaker
+        explicitly raising, voicing, expressing, warning about, criticizing,
+        questioning, or objecting to the topic; governance reactions such as
+        `oversight increased`, `scrutiny increased`, `periodic review`, or
+        `doctrine adjustments` are not concern events by themselves
       - `hold_command_role` requires one named individual commander in the
         same evidence span plus an explicit role-holding relation; generic
         plural leadership references such as `commanders`, `leadership`, or
@@ -155,6 +160,12 @@ messages:
         `limit_capability` event; omit it unless the same evidence span names
         a concrete limited subject and a directly stated limiting event rather
         than a broad campaign- or effectiveness-level summary
+      - `limit_capability` is for concrete operational capabilities, named
+        activities, or specific operational processes that the text explicitly
+        says were limited; abstract result nouns such as `effectiveness`,
+        `impact`, or `credibility`, and broad retrospective labels such as
+        `"hearts and minds" campaigns` or `PSYOP messages`, are not enough by
+        themselves on analytical prose
       - do not turn possessive topic phrases such as `USSOCOM's PSYOP
         programs` into the `limit_capability` subject unless the same clause
         explicitly says that named program, unit, or organization was limited
