@@ -370,21 +370,17 @@ Resolved since last update:
 - MCP surface: entity, assertion, identity, source-artifact browse/search/get
   (Plans 0028/0029/0063/0064)
 - DIGIMON weight: non-unity confidence flows through (6 distinct weights)
+- Cross-investigation conflict policy: ADR 0024 adopted (flag-only in v1)
+- Role-free assertion promotion: claims without entity_refs now promote
 
 Still missing:
 
-1. cross-investigation conflict *policy* — tensions detected but no resolution
-   policy or automated flagging;
-2. role-free assertion promotion — imported claims without entity_refs can't
-   promote (grounded-research EU sanctions claims);
-3. the broader v1 concept/belief graph and system-belief layer beyond the
+1. the broader v1 concept/belief graph and system-belief layer beyond the
    first promoted-assertion/entity slice;
-4. broader producer-side semantic adapters beyond pack-driven canonicalization;
-5. OpenClaw mission-runner consumption of repo-local `.openclaw` contracts;
-6. temporal/inference recovery (deferred by ADR);
-7. entity resolution at 500+ document scale (deferred to Plan 0025a).
-
-
+2. broader producer-side semantic adapters beyond pack-driven canonicalization;
+3. OpenClaw mission-runner consumption of repo-local `.openclaw` contracts;
+4. temporal/inference recovery (deferred by ADR);
+5. entity resolution at 500+ document scale (deferred to Plan 0025a).
 ## Current Donor Dependencies
 
 `onto-canon6` no longer depends on sibling donor repos for its canonical
