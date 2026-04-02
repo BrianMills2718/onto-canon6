@@ -95,9 +95,11 @@ evidence." Plan `0041` closed the prompt-surface uncertainty, Plan `0042`
 proved that one more narrow semantic prompt revision still did not recover the
 live chunk-003 path, and Plan `0043` proved the same-model divergence begins
 before review and is then amplified by review/judge acceptance. Plan `0044`
-then proved wrapper alignment is not the main rescue lever. The remaining
-blocker is now the sync/async and `Case id` residual left after extraction-path
-localization, tracked under Plan `0046`.
+proved wrapper alignment is not the main rescue lever, and Plans `0046`
+through `0049` then removed the remaining prompt-path blockers (`sync/async`
+speculation, prompt_eval-only `Case id`, and the prompt_eval `Case input`
+wrapper). The remaining blocker is now semantic extraction quality on the
+repaired chunk-003 analytical path, tracked under Plan `0050`.
 
 ## Current State
 
@@ -324,8 +326,9 @@ The configured `compact_operational_parity` variant now uses:
 
 1. an extraction-compatible prompt asset aligned to live `compact_v3`
    semantics;
-2. the prompt-eval `Case input` render path that preserves source metadata and
-   full chunk text; and
+2. the repaired prompt-eval render path that now passes source metadata and
+   full chunk text without benchmark-only `Case id` or `Case input` wrappers;
+   and
 3. the live candidate budget (`max_candidates_per_case = 10`).
 
 On the full chunk-003 strict-omit case, the new lane reproduced the live
@@ -437,15 +440,15 @@ After those fixes, the focused full-chunk parity rerun still returned:
 That means the remaining live/prompt-eval gap is no longer explained by the
 obvious parity bugs the repo had already found.
 
-The remaining differences are now narrow:
+The old prompt-eval wrapper differences were real and have now been repaired:
 
-1. the prompt-eval user message still wraps the live source payload inside a
-   `Case input` block and adds `Case id`; and
-2. the live and prompt-eval calls are still separate provider invocations, so
-   model variance or runtime-path differences may still matter.
+1. extraction prompt_eval input no longer adds `Case id:` by default;
+2. extraction prompt_eval templates no longer prepend `Case input:`; and
+3. the remaining rendered user-surface difference on chunk `003` is only a
+   trailing newline, not a content-line mismatch.
 
 So yes, there was an onto-canon6 prompt-eval parity problem worth fixing. But
-after the fix, the evidence no longer supports the stronger claim that this is
+after the repair, the evidence no longer supports the stronger claim that this is
 just a generic prompt-eval defect. The repo now needs either:
 
 1. a deeper live-vs-parity call comparison; or

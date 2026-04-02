@@ -1,12 +1,12 @@
 # 24h Case-Metadata Parity Block
 
-Status: active
+Status: complete
 Phase status:
-- Phase 1 pending
-- Phase 2 pending
-- Phase 3 pending
-- Phase 4 pending
-- Phase 5 pending
+- Phase 1 completed
+- Phase 2 completed
+- Phase 3 completed
+- Phase 4 completed
+- Phase 5 completed
 
 Last updated: 2026-04-02
 Workstream: remove prompt_eval-only case metadata from the extraction prompt
@@ -151,3 +151,14 @@ This block is complete only when:
 1. all five phases above meet their success criteria;
 2. the worktree is clean;
 3. the repo contains committed metadata-parity artifacts and a decision note.
+
+## Closeout
+
+Plan `0047` is complete.
+
+It landed the bounded repair it was supposed to land:
+
+1. extraction prompt_eval input no longer includes `Case id:` by default;
+2. experiment ids and observability still preserve case identity; and
+3. the next narrower blocker became the prompt_eval-only `Case input:` wrapper
+   heading, tracked by Plan `0048`.

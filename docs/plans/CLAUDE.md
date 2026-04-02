@@ -14,7 +14,11 @@ This subtree owns active gaps, acceptance criteria, and verification notes.
 | 0025a | [Entity Resolution Scale-Out](0025a_entity_resolution_scale_out.md) | Deferred (activates after 0025 Phase 4) |
 | 0027 | [Deferred Parity Reprioritization](0027_deferred_parity_reprioritization.md) | Active (Lane 5 execution surface; next-active order now explicit) |
 | 0028 | [Query And Browse Surface](0028_query_browse_surface.md) | Active (first read-only slice landed and proved; wider hardening still open) |
-| 0046 | [24h Sync/Async And Case-Id Residual Block](0046_24h_sync_async_and_caseid_residual_block.md) | Active (post-0045 residual-localization block) |
+| 0050 | [24h Post-Parity Semantic Recovery Block](0050_24h_post_parity_semantic_recovery_block.md) | Active (prompt-side parity sequence complete; semantic chunk-003 recovery now active) |
+| 0049 | [24h Post-Repair Transfer Block](0049_24h_post_repair_transfer_block.md) | Complete (post-repair chunk-003 rerun restored prompt_eval output and moved blocker back to semantics) |
+| 0048 | [24h Prompt-Wrapper Parity Block](0048_24h_prompt_wrapper_parity_block.md) | Complete (prompt_eval `Case input:` wrapper removed from extraction templates) |
+| 0047 | [24h Case-Metadata Parity Block](0047_24h_case_metadata_parity_block.md) | Complete (`Case id:` removed from extraction prompt_eval input by default) |
+| 0046 | [24h Sync/Async And Case-Id Residual Block](0046_24h_sync_async_and_caseid_residual_block.md) | Complete (prompt metadata, not sync/async API path, was dominant) |
 | 0045 | [24h Extraction-Path Block](0045_24h_extraction_path_block.md) | Complete (temperature/source-ref alignment proved real but insufficient) |
 | 0044 | [24h Wrapper Alignment Block](0044_24h_wrapper_alignment_block.md) | Complete (wrapper alignment ruled out as main rescue lever) |
 | 0043 | [24h Live-Path Divergence Block](0043_24h_live_path_divergence_block.md) | Complete (same-model live divergence localized; review/judge secondary) |

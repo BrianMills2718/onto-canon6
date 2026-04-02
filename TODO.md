@@ -3,33 +3,30 @@
 ## Current 24h Execution Block
 
 Source of truth:
-- `docs/plans/0046_24h_sync_async_and_caseid_residual_block.md`
+- `docs/plans/0050_24h_post_parity_semantic_recovery_block.md`
 
-### Phase 1 — Freeze The Residual Contract
-- [x] Restate the Plan 0045 decision as the incoming contract
-- [x] Freeze the temperature/source-ref aligned artifacts
-- [x] Record chunk `002` as the regression guard only
-- [x] Record the execution caveats (`PYTHONPATH=src`, run-id mapping)
+### Phase 1 — Freeze The Post-Parity Semantic Contract
+- [ ] Freeze the repaired prompt_eval/live chunk-003 family
+- [ ] Name one explicit semantic miss family
 - [ ] Commit verified phase
 
-### Phase 2 — Replay The Remaining Residuals Directly
-- [ ] Compare the same rendered prompt under sync vs async structured-call paths
-- [ ] Compare the remaining `Case id` metadata effect without broadening the live prompt contract
-- [ ] Capture those differences in committed artifacts
+### Phase 2 — Land One Bounded Semantic Change
+- [ ] Revise the repaired operational-parity prompt in one bounded semantic way
+- [ ] Preserve the case-id and wrapper parity repairs
 - [ ] Commit verified phase
 
-- [ ] Implement the smallest helper needed to replay or compare the residuals
-- [ ] Add verification for that aid
-- [ ] Keep it bounded to the residual family
+### Phase 3 — Re-run The Chunk-003 Diagnostic
+- [ ] Run one bounded post-change chunk-003 prompt_eval diagnostic
+- [ ] Capture the new artifact
 - [ ] Commit verified phase
 
-- [ ] Decide whether the remaining blocker belongs to llm_client invocation parity or prompt metadata parity
-- [ ] Record secondary caveats separately
-- [ ] Commit the classification with artifacts
+### Phase 4 — Classify The Result
+- [ ] Decide whether the change improved, failed, or shifted the blocker
+- [ ] Record any narrow uncertainty separately
 - [ ] Commit verified phase
 
 ### Phase 5 — Closeout
-- [ ] Write the decision-grade residual note
+- [ ] Write the decision-grade semantic-recovery note
 - [ ] Refresh docs/status/handoff
 - [ ] Mark execution block complete
 - [ ] Commit verified phase
@@ -117,7 +114,8 @@ Source of truth:
 - [x] Localize the remaining same-model live-path divergence to one dominant surface
 - [x] Test whether wrapper alignment materially narrows the same-model live-path divergence
 - [x] Localize the remaining post-wrapper extraction-path divergence to one dominant surface
-- [ ] Localize the remaining sync/async and `Case id` residual to one dominant surface
+- [x] Localize and repair the remaining prompt-side parity residual through Plans `0046`-`0049`
+- [ ] Recover semantic chunk-003 behavior under the repaired parity surface
 
 ## Longer-Term Queue
 

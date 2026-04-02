@@ -216,3 +216,23 @@ the relative `source_ref` still left zero body overlap with prompt-eval on
 chunk `003` and produced five accepted candidates. The remaining residual is
 now bounded to sync vs async structured-call behavior and the prompt_eval-only
 `Case id` metadata line.
+
+### 2026-04-02 — codex — bug-pattern
+Plan 0046 proved the prompt_eval-only `Case id:` line was materially changing
+chunk-003 extraction behavior. Replaying the captured prompt_eval async call
+without only that line flipped the parsed result from `0` candidates to `5`.
+Benchmark control metadata can meaningfully distort extraction behavior even
+when the rest of the prompt surface is unchanged.
+
+### 2026-04-02 — codex — best-practice
+Plan 0048 proved prompt-surface parity work should not stop at the most obvious
+metadata line. After removing `Case id:`, the prompt_eval-only `Case input:`
+wrapper still changed the chunk-003 replay family. Only after both were
+removed did the rendered user prompt collapse to content-line parity with live.
+
+### 2026-04-02 — codex — integration-issue
+The fully aligned manual replay that also replaced the last opening wording
+line (`source material` -> `source text`) hung for minutes and had to be
+aborted. That instability did not block the decision because the repaired
+prompt surface and the post-repair prompt_eval rerun already proved the active
+blocker had moved back to semantics.

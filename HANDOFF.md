@@ -1,60 +1,74 @@
-# Handoff: onto-canon6 — 2026-04-01
+# Handoff: onto-canon6 — 2026-04-02
 
 ## Session Focus
 
-Plan `0045` closeout and Plan `0046` activation in the isolated worktree
-branch `codex/onto-canon6-integration-planning`.
+Plans `0046` through `0049` closeout and Plan `0050` activation in the isolated
+worktree branch `codex/onto-canon6-integration-planning`.
 
 ## What Landed
 
 Committed and documented in the isolated worktree:
 
-1. extraction-path call-surface helper:
-   - `src/onto_canon6/evaluation/extraction_path_comparison.py`
-   - `scripts/compare_extraction_call_surfaces.py`
-   - `tests/evaluation/test_extraction_path_comparison.py`
-2. one real call-surface artifact proving live omitted `temperature=0.0`:
-   - `docs/runs/2026-04-02_chunk003_extraction_call_surface_diff.json`
-3. bounded live temperature override:
+1. bounded replay helper for captured structured-call surfaces:
+   - `src/onto_canon6/evaluation/extraction_call_replay.py`
+   - `scripts/replay_structured_call_surface.py`
+   - `tests/evaluation/test_extraction_call_replay.py`
+2. direct replay artifacts proving prompt metadata, not sync-vs-async API path,
+   dominated the residual:
+   - `docs/runs/2026-04-02_chunk003_prompt_eval_replayed_via_sync.json`
+   - `docs/runs/2026-04-02_chunk003_live_temp0_replayed_via_async.json`
+   - `docs/runs/2026-04-02_chunk003_prompt_eval_replayed_async_without_case_id.json`
+3. extraction prompt_eval no longer includes `Case id:` by default:
    - `src/onto_canon6/config.py`
-   - `src/onto_canon6/pipeline/text_extraction.py`
-   - `src/onto_canon6/cli.py`
-4. one deterministic temperature/source-ref aligned rerun and its artifacts:
-   - `docs/runs/2026-04-02_chunk003_extraction_call_surface_diff_temp0_relref.json`
-   - `docs/runs/2026-04-02_chunk003_semantic_transfer_diff_compact6_temp0_relref.json`
-5. decision-grade closeout note:
-   - `docs/runs/2026-04-02_extraction_path_decision.md`
-6. Plan `0045` is now complete;
-7. Plan `0046` is now the active bounded execution surface.
+   - `config/config.yaml`
+   - `src/onto_canon6/evaluation/prompt_eval_service.py`
+4. extraction prompt_eval templates no longer prepend `Case input:` before
+   `{input}`;
+5. real rendered chunk-003 parity artifacts now show no content-line diff
+   against the live user prompt:
+   - `docs/runs/2026-04-02_chunk003_prompt_surface_parity_without_case_id.json`
+   - `docs/runs/2026-04-02_chunk003_prompt_surface_parity_without_case_id_or_wrapper.json`
+6. one bounded post-repair prompt_eval rerun artifact now exists:
+   - `docs/runs/2026-04-02_chunk003_post_repair_prompt_eval_report.json`
+7. decision-grade closeout note:
+   - `docs/runs/2026-04-02_prompt_parity_repair_decision.md`
+8. Plans `0046`, `0047`, `0048`, and `0049` are now complete;
+9. Plan `0050` is now the active bounded execution surface.
 
 ## Current State
 
 1. The compact operational-parity lane is still **not promotable**.
-2. The extraction-path localization result is now narrower:
-   - live had been omitting `temperature=0.0`;
-   - aligning `temperature=0.0` and relative `source_ref` still left `0`
-     shared bodies with prompt-eval;
-   - the aligned rerun still produced `5` accepted candidates.
-3. The active frontier is therefore the residual between:
-   - sync vs async structured-call behavior; and
-   - prompt_eval-only `Case id` metadata
-   under Plan `0046`, not more generic prompt tuning and not another
-   entity-resolution block.
+2. The prompt-side parity blocker is no longer active:
+   - sync-vs-async API behavior was not dominant;
+   - `Case id:` no longer appears in extraction prompt_eval input by default;
+   - prompt_eval extraction templates no longer add `Case input:`;
+   - the rendered chunk-003 live/prompt_eval user prompts now differ only by a
+     trailing newline.
+3. The repaired one-case chunk-003 prompt_eval rerun restored a real compact
+   operational-parity output, but semantic quality is still poor:
+   - `mean_score = 0.25`
+   - `exact_f1 = 0.0`
+   - `count_alignment = 0.0`
+   - `structural_usable_rate = 1.0`
+4. The active frontier is therefore semantic extraction recovery on the
+   repaired analytical chunk-003 path under Plan `0050`, not more prompt-path
+   plumbing.
 
 ## Recommended Next Step
 
 If work continues:
 
 1. stay on `codex/onto-canon6-integration-planning`;
-2. execute Plan `0046` in order:
-   - freeze the residual contract from Plan `0045`
-   - replay the remaining sync/async and `Case id` residuals directly
-   - land one bounded replay aid if needed
-   - decide whether the dominant residual belongs in llm_client invocation
-     parity or prompt metadata parity
+2. execute Plan `0050` in order:
+   - freeze the repaired post-parity chunk-003 family
+   - name one semantic miss family
+   - land one bounded semantic prompt revision
+   - rerun the one-case chunk-003 diagnostic
 3. keep all worktree runtime commands on `PYTHONPATH=src`;
-4. do not reopen entity-resolution heuristics unless the extraction lane stops
-   being the active bottleneck.
+4. do not reopen `Case id` or `Case input` parity work unless new evidence
+   directly contradicts the prompt-parity repair decision.
+
+# Handoff: onto-canon6 — 2026-04-01
 
 # Handoff: onto-canon6 — 2026-04-01
 

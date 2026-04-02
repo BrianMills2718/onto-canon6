@@ -26,13 +26,17 @@ runtime.
 18. `docs/plans/0043_24h_live_path_divergence_block.md` (completed live-path divergence block)
 19. `docs/plans/0044_24h_wrapper_alignment_block.md` (completed wrapper-alignment block)
 20. `docs/plans/0045_24h_extraction_path_block.md` (completed extraction-path localization block)
-21. `docs/plans/0046_24h_sync_async_and_caseid_residual_block.md` (current active execution block)
-22. `docs/plans/0026_schema_stability_gate.md` (completed Lane 3 contract policy)
-23. `docs/plans/0014_extraction_quality_baseline.md` (active Lane 4 promotion gate)
-24. `docs/plans/0027_deferred_parity_reprioritization.md`
-25. `docs/plans/0028_query_browse_surface.md`
-26. `docs/plans/0005_v1_capability_parity_matrix.md`
-27. `docs/plans/0001_successor_roadmap.md`
+21. `docs/plans/0046_24h_sync_async_and_caseid_residual_block.md` (completed prompt-side residual localization block)
+22. `docs/plans/0047_24h_case_metadata_parity_block.md` (completed case-id repair block)
+23. `docs/plans/0048_24h_prompt_wrapper_parity_block.md` (completed wrapper repair block)
+24. `docs/plans/0049_24h_post_repair_transfer_block.md` (completed post-repair chunk-003 rerun block)
+25. `docs/plans/0050_24h_post_parity_semantic_recovery_block.md` (current active execution block)
+26. `docs/plans/0026_schema_stability_gate.md` (completed Lane 3 contract policy)
+27. `docs/plans/0014_extraction_quality_baseline.md` (active Lane 4 promotion gate)
+28. `docs/plans/0027_deferred_parity_reprioritization.md`
+29. `docs/plans/0028_query_browse_surface.md`
+30. `docs/plans/0005_v1_capability_parity_matrix.md`
+31. `docs/plans/0001_successor_roadmap.md`
 
 ## Commands
 
@@ -108,13 +112,13 @@ config/
   remained negative and full-chunk prompt-eval/live parity still diverged on
   both named chunks. Plan 0041 is now complete: it proved the prompt-surface
   difference is stable and bounded, but not the dominant blocker family. The
-  current active bounded block is therefore Plan 0046. Plan 0045 is now
-  complete and proved that missing `temperature=0.0` was a real live-path
-  difference but not the dominant rescue lever: after temperature and
-  `source_ref` alignment, chunk `003` still had zero body overlap with
-  prompt-eval. The current question is narrower: whether the residual is now
-  dominated by sync vs async llm_client behavior or by the prompt_eval-only
-  `Case id` metadata line.
+  current active bounded block is therefore Plan 0050. Plans `0046` through
+  `0049` are now complete and proved that sync/async API speculation,
+  prompt_eval-only `Case id` metadata, and the prompt_eval `Case input:`
+  wrapper were all real prompt-path issues but are no longer the active
+  blocker. The repaired chunk-003 prompt_eval rerun now produces a real
+  compact operational-parity output again, but semantic quality remains poor,
+  so the next question is semantic recovery on the repaired analytical path.
   The chunk-level transfer evaluation requirement remains active through
   ADR 0023 and Plans 0024/0014 even though there is no standalone Plan 0019
   file.
@@ -145,14 +149,13 @@ config/
   not a suggestion: keep executing, keep rerunning, keep committing, and only
   stop when the active block is either complete or explicitly narrowed to a new
   documented blocker.
-- **Current execution rule for Plan 0046:** the next 24h sequence is already
-  pre-decided. Freeze the residual contract from Plan 0045, replay the
-  remaining sync/async and `Case id` residuals directly, land one bounded
-  replay aid if needed, classify whether the dominant blocker belongs in
-  llm_client invocation parity or prompt metadata parity, and close the block
-  with a decision note. Do not pause between those phases for a conversational
-  check-in unless the active docs record a real blocker or uncertainty that
-  changes the plan.
+- **Current execution rule for Plan 0050:** the next 24h sequence is already
+  pre-decided. Freeze the repaired post-parity chunk-003 family, name one
+  semantic miss family, land one bounded semantic revision on the repaired
+  operational-parity prompt surface, rerun the one-case chunk-003 diagnostic,
+  and close the block with a decision note. Do not pause between those phases
+  for a conversational check-in unless the active docs record a real blocker
+  or uncertainty that changes the plan.
 - **After the current value-proof work, the next-active deferred capability is
   queryability.** Plan 0027 now fixes the deferred-capability order, and Plan
   0028 now has a landed first read-only browse/search surface over promoted
@@ -286,7 +289,7 @@ happens.
 
 ## Active Execution Block (2026-04-01)
 
-**Plan 0046: 24h Sync/Async And Case-Id Residual Block — active until fully closed.**
+**Plan 0050: 24h Post-Parity Semantic Recovery Block — active until fully closed.**
 
 Within an active 24h execution block, the default operating mode is continuous
 execution: finish the current phase, verify it, commit it, update the active
@@ -308,7 +311,7 @@ verify it, commit it, log any uncertainty, and continue. Do not wait for
 
 The only valid stop conditions are:
 
-1. all 5 phases in `docs/plans/0046_24h_sync_async_and_caseid_residual_block.md`
+1. all 5 phases in `docs/plans/0050_24h_post_parity_semantic_recovery_block.md`
    are complete and committed;
 2. a real blocker that cannot be resolved from repo context or the plan;
 3. a material uncertainty not covered by the pre-made decisions below.
@@ -323,8 +326,8 @@ Pre-made decisions (do not ask about these):
 - Work stays in the isolated `codex/onto-canon6-integration-planning` worktree
 - chunk `002` and chunk `003` remain the canonical transfer chunks
 - the current compact operational-parity lane is the only candidate under test
-- no broad prompt rewrite starts before the sync/async and `Case id` residual
-  is localized
+- no prompt-surface parity work reopens before the repaired chunk-003 semantic
+  family is re-evaluated
 - Commit each verified phase immediately
 
 ## Most Recent Execution Block (2026-04-01)

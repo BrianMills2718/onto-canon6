@@ -1,12 +1,12 @@
 # 24h Sync/Async And Case-Id Residual Block
 
-Status: active
+Status: complete
 Phase status:
-- Phase 1 pending
-- Phase 2 pending
-- Phase 3 pending
-- Phase 4 pending
-- Phase 5 pending
+- Phase 1 completed
+- Phase 2 completed
+- Phase 3 completed
+- Phase 4 completed
+- Phase 5 completed
 
 Last updated: 2026-04-02
 Workstream: narrow the post-0045 blocker from generic extraction-path behavior
@@ -151,3 +151,15 @@ This block is complete only when:
 2. the worktree is clean;
 3. the repo contains committed residual-localization artifacts and a decision
    note.
+
+## Closeout
+
+Plan `0046` is complete.
+
+It answered its bounded question truthfully:
+
+1. sync-vs-async `llm_client` public API behavior was not the dominant blocker;
+2. prompt-side metadata was dominant instead, starting with the prompt_eval-only
+   `Case id:` line; and
+3. the next bounded block became prompt metadata repair, not more extraction-path
+   speculation.

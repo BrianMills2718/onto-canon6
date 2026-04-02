@@ -43,9 +43,12 @@ Current post-cutover program state:
 12. Plan `0045` is now complete and proved live had omitted `temperature=0.0`,
     but temperature/source-ref alignment still did not recover chunk-003
     transfer;
-13. the remaining active program gate is now Lane 4 sync/async and `Case id`
-    residual localization under Plans `0014` and `0046`, not another
-    entity-resolution rerun block.
+13. Plans `0046` through `0049` are now complete: sync/async path speculation,
+    `Case id` metadata, and prompt_eval wrapper drift are no longer the active
+    blockers on chunk `003`;
+14. the remaining active program gate is now post-parity semantic recovery on
+    the repaired chunk-003 analytical path under Plans `0014` and `0050`, not
+    another prompt-path diagnosis block.
 
 ## What Is Proven
 
