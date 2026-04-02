@@ -846,6 +846,25 @@ class TextExtractionService:
                         cid,
                     )
                     continue
+                if _requires_limit_capability_enforcement(candidate):
+                    try:
+                        self._review_service.review_candidate(
+                            candidate_id=cid,
+                            decision="rejected",
+                            actor_id=f"{submitted_by}:limit_capability_guard",
+                        )
+                    except Exception as exc:
+                        logger.warning(
+                            "limit-capability guard failed to reject %s after supported judge label: %s",
+                            cid,
+                            exc,
+                        )
+                    else:
+                        logger.info(
+                            "auto-review rejected candidate after abstract limit-capability guard: %s",
+                            cid,
+                        )
+                    continue
                 # supported → accept
                 decision: Literal["accepted"] = "accepted"
             else:
@@ -896,6 +915,7 @@ class TextExtractionService:
 
 
 _JUDGE_LABEL_ORDER = ["unsupported", "partially_supported", "supported"]
+_ABSTRACT_LIMIT_CAPABILITY_VALUES = frozenset({"effectiveness", "impact", "credibility"})
 
 
 class _JudgeJudgment(BaseModel):
@@ -1019,6 +1039,43 @@ def _call_judge_result(
         max_budget=eval_config.judge_max_budget_usd,
     )
     return parsed_result
+
+
+def _requires_limit_capability_enforcement(candidate: CandidateAssertionRecord) -> bool:
+    """Return whether one supported candidate still violates the abstract limit-capability boundary.
+
+    The corrected chunk-003 contract already treats abstract evaluative
+    `limit_capability` claims as omit cases. The live review path therefore
+    enforces that family deterministically instead of relying only on prompt or
+    judge compliance.
+    """
+
+    raw_payload = candidate.normalized_payload
+    predicate_obj = raw_payload.get("predicate")
+    if predicate_obj != "oc:limit_capability":
+        return False
+    roles_obj = raw_payload.get("roles")
+    if not isinstance(roles_obj, dict):
+        return False
+    capability_obj = roles_obj.get("capability")
+    if not isinstance(capability_obj, list) or not capability_obj:
+        return False
+
+    normalized_values: list[str] = []
+    for filler in capability_obj:
+        if not isinstance(filler, dict):
+            continue
+        if filler.get("kind") != "value":
+            return False
+        normalized = filler.get("normalized")
+        raw = filler.get("raw")
+        chosen = normalized if isinstance(normalized, str) and normalized.strip() else raw
+        if not isinstance(chosen, str) or not chosen.strip():
+            return False
+        normalized_values.append(chosen.strip().lower())
+    if not normalized_values:
+        return False
+    return all(value in _ABSTRACT_LIMIT_CAPABILITY_VALUES for value in normalized_values)
 
 
 def candidate_import_from_extracted(

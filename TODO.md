@@ -9,17 +9,17 @@ Source of truth:
 - [x] Close Plan `0059` truthfully
 - [x] Freeze the exact remaining chunk-003 accepted claims
 - [x] Record the governing local benchmark cases for this family
-- [ ] Commit verified phase
+- [x] Commit verified phase
 
 ### Phase 2 — Land One Bounded Enforcement Seam
-- [ ] Add one deterministic guard for the remaining abstract `limit_capability` family
-- [ ] Keep the rule family-level, not row-specific
-- [ ] Commit verified phase
+- [x] Add one deterministic guard for the remaining abstract `limit_capability` family
+- [x] Keep the rule family-level, not row-specific
+- [x] Commit verified phase
 
 ### Phase 3 — Verify The Enforcement Seam
-- [ ] Add/update targeted tests for the enforcement seam
-- [ ] Verify the family through the narrow test slice
-- [ ] Commit verified phase
+- [x] Add/update targeted tests for the enforcement seam
+- [x] Verify the family through the narrow test slice
+- [x] Commit verified phase
 
 ### Phase 4 — Rerun Chunk 002 And Chunk 003
 - [ ] Rerun chunk `002` under the bounded enforcement seam

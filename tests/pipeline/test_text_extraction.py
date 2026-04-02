@@ -936,6 +936,104 @@ def test_extract_and_submit_applies_llm_review_label_contract(
     assert len(promoted) == expected_promoted_count
 
 
+def test_extract_and_submit_rejects_abstract_limit_capability_even_when_judge_supports(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Supported labels should not auto-accept abstract evaluative limit-capability claims."""
+
+    base_config = get_config()
+    config_override = base_config.model_copy(
+        update={
+            "pipeline": base_config.pipeline.model_copy(update={"review_mode": "llm"}),
+            "extraction": base_config.extraction.model_copy(
+                update={"enable_judge_filter": False}
+            ),
+        }
+    )
+    monkeypatch.setattr(extraction_module, "get_config", lambda: config_override)
+    review_service = _make_review_service(tmp_path)
+    service = TextExtractionService(
+        review_service=review_service,
+        judge_model_override="judge-lite-test",
+    )
+
+    def fake_call_llm_structured(
+        model: str,
+        messages: list[dict[str, str]],
+        response_model: type[BaseModel],
+        **kwargs: object,
+    ) -> tuple[BaseModel, object]:
+        del model, messages, kwargs
+        if response_model is TextExtractionResponse:
+            return (
+                response_model(
+                    candidates=[
+                        ExtractedCandidate(
+                            predicate="oc:limit_capability",
+                            roles={
+                                "subject": [
+                                    ExtractedEntityFiller(
+                                        kind="entity",
+                                        entity_type="oc:psychological_operation",
+                                        name="PSYOP",
+                                    )
+                                ],
+                                "capability": [
+                                    ExtractedValueFiller(
+                                        kind="value",
+                                        value_kind="string",
+                                        raw="effectiveness",
+                                    )
+                                ],
+                                "topic": [
+                                    ExtractedValueFiller(
+                                        kind="value",
+                                        value_kind="string",
+                                        raw="cultural misunderstandings",
+                                    )
+                                ],
+                            },
+                            evidence_spans=[ExtractedEvidenceSpan(text="effectiveness of PSYOP")],
+                            claim_text="The effectiveness of PSYOP was limited by cultural misunderstandings.",
+                        )
+                    ]
+                ),
+                SimpleNamespace(resolved_model="extract-model"),
+            )
+        return (
+            response_model.model_validate(
+                {"judgments": [{"candidate_index": 0, "label": "supported"}]}
+            ),
+            SimpleNamespace(resolved_model="judge-model"),
+        )
+
+    monkeypatch.setattr(
+        extraction_module,
+        "_load_llm_client_api",
+        lambda: extraction_module._LLMClientAPI(
+            get_model=lambda task, **kw: "extract-model",
+            render_prompt=_render_prompt,
+            call_llm_structured=cast(Any, fake_call_llm_structured),
+        ),
+    )
+
+    results = service.extract_and_submit(
+        source_text="However, the effectiveness of PSYOP was often limited by cultural misunderstandings.",
+        profile_id="psyop_seed",
+        profile_version="0.1.0",
+        submitted_by="analyst:text-extract",
+        source_ref="text://phase4/abstract-limit-capability",
+    )
+
+    assert len(results) == 1
+    persisted = review_service.list_candidate_assertions()
+    assert len(persisted) == 1
+    assert persisted[0].review_status == "rejected"
+    promoted = CanonicalGraphService(db_path=review_service.store.db_path).list_promoted_assertions()
+    assert promoted == []
+
+
 def test_extraction_response_accepts_entity_fillers_without_entity_id() -> None:
     """Entity fillers may omit entity_id when they still provide a named mention."""
 
