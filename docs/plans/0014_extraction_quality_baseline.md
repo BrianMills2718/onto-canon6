@@ -134,9 +134,13 @@ leak. Plan `0060` then removed the abstract `limit_capability` family from
 the live accepted set.
 
 Plan `0061` then removed the final remaining staffing-summary membership
-family from the chunk-003 accepted set. The next owned question is no longer
-transfer cleanup. Plan `0062` now owns promotion certification and repo-default
-cutover for the proved compact operational-parity candidate.
+family from the chunk-003 accepted set. Plan `0062` then completed promotion
+certification and repo-default cutover for the proved compact
+operational-parity candidate.
+
+There is no active transfer-cleanup block remaining. Future extraction-quality
+work should start from the promoted default surface rather than reopening the
+old transfer-hardening chain.
 
 ## Current State
 

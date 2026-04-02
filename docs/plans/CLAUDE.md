@@ -14,7 +14,7 @@ This subtree owns active gaps, acceptance criteria, and verification notes.
 | 0025a | [Entity Resolution Scale-Out](0025a_entity_resolution_scale_out.md) | Deferred (activates after 0025 Phase 4) |
 | 0027 | [Deferred Parity Reprioritization](0027_deferred_parity_reprioritization.md) | Active (Lane 5 execution surface; next-active order now explicit) |
 | 0028 | [Query And Browse Surface](0028_query_browse_surface.md) | Active (first read-only slice landed and proved; wider hardening still open) |
-| 0062 | [24h Default Extraction Cutover Block](0062_24h_default_extraction_cutover_block.md) | Active (named chunk-transfer blocker is cleared; next question is repo-default promotion) |
+| 0062 | [24h Default Extraction Cutover Block](0062_24h_default_extraction_cutover_block.md) | Complete (proved compact operational-parity lane is now the repo default) |
 | 0061 | [24h Personnel-Membership Enforcement Block](0061_24h_personnel_membership_enforcement_block.md) | Complete (staffing-summary membership leak closed; chunk 003 now transfers negative without accepted spillover) |
 | 0060 | [24h Limit-Capability Enforcement Block](0060_24h_limit_capability_enforcement_block.md) | Complete (bounded guard removed the abstract limit-capability family; staffing-summary membership leak remains) |
 | 0059 | [24h Live Chunk-003 Semantic Residual Block](0059_24h_live_chunk003_semantic_residual_block.md) | Complete (staffing leak removed, chunk 003 downgraded from positive to mixed, three abstract limit-capability claims remain) |
@@ -47,7 +47,7 @@ This subtree owns active gaps, acceptance criteria, and verification notes.
 | 0037 | [24h Entity Resolution False-Split Cleanup Block](0037_24h_entity_resolution_false_split_cleanup_block.md) | Complete (Rodriguez and Washington residual families closed; fresh rerun exposed a new blocker family) |
 | 0038 | [24h Entity Resolution Surface Stability Block](0038_24h_entity_resolution_surface_stability_block.md) | Complete (best rerun improved the owned family; next rerun exposed a broader stability problem) |
 | 0039 | [24h Entity Resolution Rerun Stability Block](0039_24h_entity_resolution_rerun_stability_block.md) | Complete (two fresh reruns held the question/safety gate) |
-| 0014 | [Extraction Quality Baseline](0014_extraction_quality_baseline.md) | Active (explicit promotion gate defined; Plan 0062 now owns repo-default promotion cutover) |
+| 0014 | [Extraction Quality Baseline](0014_extraction_quality_baseline.md) | Active (explicit promotion gate defined; no active transfer-cleanup block remains) |
 | 0020 | [Vision Gap Closure](0020_vision_gap_closure.md) | Active (tracking) |
 
 ## Completed/Historical

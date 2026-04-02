@@ -320,3 +320,18 @@ After the bounded guard landed, chunk `003` no longer accepted that family.
 The remaining extraction-quality blocker shrank to one staffing-summary
 `oc:belongs_to_organization` leak already represented by
 `psyop_017_personnel_dedication_not_membership_strict_omit`.
+
+### 2026-04-02 — codex — best-practice
+The compact operational-parity candidate is now the repo-default extraction
+surface: `selection_task=budget_extraction` plus
+`text_to_candidate_assertions_compact_v5@3`. Future extraction-quality work
+should start from that default rather than the old
+`text_to_candidate_assertions@1` / `fast_extraction` surface.
+
+### 2026-04-02 — codex — performance
+The no-override default-cutover rerun preserved the transfer verdicts but not
+the exact accepted candidate mix. Chunk `002` stayed positive and chunk `003`
+stayed free of accepted spillover, but the no-override default path produced a
+slightly different candidate set than the override-based proof. Treat
+verdict-level stability as the gating contract here, not exact candidate-body
+replay across live runs.

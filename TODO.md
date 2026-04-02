@@ -2,36 +2,17 @@
 
 ## Current 24h Execution Block
 
-Source of truth:
+No active 24h extraction block. The most recent bounded block is now complete:
+
 - `docs/plans/0062_24h_default_extraction_cutover_block.md`
 
-### Phase 1 — Freeze The Promotion Contract
-- [x] Close Plan `0061` truthfully
-- [x] Freeze the exact candidate to be promoted
-- [x] Record the benchmark and transfer artifacts that justify the cutover
-- [x] Commit verified phase
+Completed phases:
 
-### Phase 2 — Change The Repo Defaults
-- [x] Update repo-default extraction config to the proved candidate
-- [x] Keep the cutover minimal and bounded
-- [x] Commit verified phase
-
-### Phase 3 — Verify The Default Surface
-- [x] Add/update targeted tests for the default surface
-- [x] Verify the default surface through the narrow test slice
-- [x] Commit verified phase
-
-### Phase 4 — Rerun Chunk 002 And Chunk 003
-- [ ] Rerun chunk `002` under the repo-default no-override path
-- [ ] Rerun chunk `003` under the same fresh DB
-- [ ] Export both reviewed chunk-transfer reports
-- [ ] Commit verified phase
-
-### Phase 5 — Closeout
-- [ ] Write the default-cutover decision note
-- [ ] Refresh docs/status/handoff/knowledge
-- [ ] Mark the block complete and name the next blocker explicitly
-- [ ] Commit verified phase
+- [x] Freeze the promotion contract
+- [x] Change the repo defaults
+- [x] Verify the default surface
+- [x] Rerun chunk `002` and chunk `003` on the no-override default path
+- [x] Close out with a decision-grade promotion record
 
 ## Most Recent Completed 24h Execution Block
 
@@ -119,8 +100,8 @@ Source of truth:
 - [x] Localize and repair the remaining prompt-side parity residual through Plans `0046`-`0049`
 - [x] Run one bounded post-parity semantic recovery attempt and classify it honestly
 - [x] Eliminate the remaining abstract `limit_capability` family under Plan `0060`
-- [ ] Eliminate the remaining staffing-summary membership family under Plan `0061`
-- [ ] Promote the proved compact operational-parity lane into the repo default under Plan `0062`
+- [x] Eliminate the remaining staffing-summary membership family under Plan `0061`
+- [x] Promote the proved compact operational-parity lane into the repo default under Plan `0062`
 
 ## Longer-Term Queue
 

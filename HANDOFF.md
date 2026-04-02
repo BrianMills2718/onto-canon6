@@ -2,20 +2,19 @@
 
 ## Session Focus
 
-Plan `0061` closeout and Plan `0062` activation in the isolated worktree
-branch `codex/onto-canon6-integration-planning`.
+Plan `0062` default-cutover completion in the isolated worktree branch
+`codex/onto-canon6-integration-planning`.
 
 ## What Landed
 
 Committed and documented in the isolated worktree:
 
-1. Plan `0061` is now truthfully closed as a bounded live-path enforcement
-   block;
-2. the staffing-summary membership leak is no longer accepted on chunk `003`;
-3. the fresh rerun kept chunk `002` positive and made chunk `003` cleanly
-   negative under the corrected contract;
-4. the named chunk-transfer blocker families are now closed; and
-5. Plan `0062` is now the active execution block.
+1. Plan `0062` is now truthfully closed as the repo-default cutover block;
+2. the proved compact operational-parity lane is now the repo-default
+   extraction surface;
+3. the no-override default path still keeps chunk `002` positive and chunk
+   `003` free of accepted spillover; and
+4. there is no active extraction-transfer cleanup block remaining.
 
 ## Current State
 
@@ -24,19 +23,19 @@ Committed and documented in the isolated worktree:
    aligned.
 3. Chunk `003` is now `mixed`, not `positive`, but the remaining accepted set
    is still too permissive for promotion.
-4. The active frontier is now promotion certification and repo-default
-   cutover for the proved compact operational-parity lane under Plan `0062`.
+4. The active frontier is no longer transfer cleanup. Future extraction-quality
+   work should start from the promoted default surface.
 
 ## Recommended Next Step
 
 If work continues:
 
 1. stay on `codex/onto-canon6-integration-planning`;
-2. execute Plan `0062` in order:
-   - freeze the exact candidate and evidence record
-   - update the repo-default extraction config to that candidate
-   - rerun chunk `002` and chunk `003` with no prompt/selection-task override
-   - classify promotion posture against Plan `0014`
+2. do not reopen Plans `0057`-`0062` unless a new regression appears;
+3. if extraction-quality work continues, treat the promoted compact default as
+   the new baseline surface;
+4. otherwise return to the higher-level active program under Plans `0024`,
+   `0027`, and `0028`.
 3. keep all worktree runtime commands on `PYTHONPATH=src`;
 4. keep chunk `017` removed from the strict-omit gate and treat `005`, `006`,
    and `008` through `016` as the corrected benchmark regression set.

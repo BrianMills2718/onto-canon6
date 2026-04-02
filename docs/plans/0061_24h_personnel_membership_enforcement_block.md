@@ -1,12 +1,12 @@
 # 24h Personnel-Membership Enforcement Block
 
-Status: active
+Status: complete
 Phase status:
 - Phase 1 completed
 - Phase 2 completed
 - Phase 3 completed
-- Phase 4 pending
-- Phase 5 pending
+- Phase 4 completed
+- Phase 5 completed
 
 Last updated: 2026-04-02
 Workstream: deterministic enforcement for the remaining staffing-summary
@@ -134,3 +134,23 @@ This block succeeds only if:
 
 1. the next blocker or promotion posture is explicit and decision-grade; and
 2. the worktree is clean.
+
+## Outcome
+
+This block completed its owned job. The staffing-summary membership leak is no
+longer accepted on chunk `003`.
+
+What changed:
+
+1. the live path now rejects supported `oc:belongs_to_organization` candidates
+   when the member surface is only a personnel aggregate and the cited evidence
+   is only a staffing-summary sentence;
+2. targeted tests now cover that deterministic guard; and
+3. a fresh rerun under
+   `var/real_runs/2026-04-02_personnel_membership_enforcement/` kept chunk
+   `002` positive and removed the remaining accepted chunk-003 spillover.
+
+Decision:
+
+1. Plan `0061` is complete and truthful; and
+2. Plan `0062` now owns promotion certification and repo-default cutover.

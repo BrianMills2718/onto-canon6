@@ -42,7 +42,7 @@ runtime.
 34. `docs/plans/0059_24h_live_chunk003_semantic_residual_block.md` (completed semantic-reduction block)
 35. `docs/plans/0060_24h_limit_capability_enforcement_block.md` (completed abstract limit-capability enforcement block)
 36. `docs/plans/0061_24h_personnel_membership_enforcement_block.md` (completed staffing-membership enforcement block)
-37. `docs/plans/0062_24h_default_extraction_cutover_block.md` (current active execution block)
+37. `docs/plans/0062_24h_default_extraction_cutover_block.md` (completed default extraction cutover block)
 38. `docs/plans/0026_schema_stability_gate.md` (completed Lane 3 contract policy)
 39. `docs/plans/0014_extraction_quality_baseline.md` (active Lane 4 promotion gate)
 40. `docs/plans/0027_deferred_parity_reprioritization.md`
@@ -178,10 +178,9 @@ config/
   stop when the active block is either complete or explicitly narrowed to a new
   documented blocker.
 - **Current extraction-quality execution rule:** Plans `0056`, `0057`,
-  `0058`, `0059`, `0060`, and `0061` are complete. Plan `0062` is now the
-  active block and must run straight through promotion freeze, default-surface
-  cutover, no-override reruns, and promotion-posture classification before
-  stopping.
+  `0058`, `0059`, `0060`, `0061`, and `0062` are complete. There is no active
+  extraction-transfer cleanup block now that the compact operational-parity
+  candidate is the repo-default extraction surface.
 - **Continuous execution rule is hard, not advisory.** When a 24h block is
   active, keep executing until the approved contract is implemented, the
   bounded rerun is recorded, the next blocker is written down, and the block is
@@ -341,21 +340,16 @@ active, the required behavior is: plan the next concrete phase, execute it,
 verify it, commit it, log any uncertainty, and continue. Do not wait for
 "what next?" confirmation mid-block.
 
-The current valid stop condition is no longer the `0061`
-staffing-membership boundary.
+The current valid stop condition is no longer the `0062`
+default-cutover boundary.
 
-1. Plans `0056`, `0057`, `0058`, `0059`, `0060`, and `0061` are complete and
-   committed.
+1. Plans `0056`, `0057`, `0058`, `0059`, `0060`, `0061`, and `0062` are
+   complete and committed.
 2. The benchmark lead is restored on corrected fixture `v6`, the review
-   contract is aligned, and the named chunk-transfer blocker families are now
-   closed.
-3. Plan `0062` is now the active block and must run through promotion
-   freeze, default cutover, fresh no-override reruns, and promotion-posture
-   decision before stopping.
-
-Do not silently widen scope inside Plan `0062`. Promote only the proved
-compact operational-parity candidate, preserve the corrected benchmark
-contract, and close the block truthfully.
+   contract is aligned, the named chunk-transfer blocker families are closed,
+   and the proved compact operational-parity candidate is now the repo default.
+3. Any future extraction-quality work must start from that promoted default
+   rather than reopening the previous transfer-hardening chain.
 
 Pre-made decisions (do not ask about these):
 - Work stays in the isolated `codex/onto-canon6-integration-planning` worktree

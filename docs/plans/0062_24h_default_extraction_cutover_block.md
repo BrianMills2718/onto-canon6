@@ -1,12 +1,12 @@
 # 24h Default Extraction Cutover Block
 
-Status: active
+Status: complete
 Phase status:
 - Phase 1 completed
 - Phase 2 completed
 - Phase 3 completed
-- Phase 4 pending
-- Phase 5 pending
+- Phase 4 completed
+- Phase 5 completed
 
 Last updated: 2026-04-02
 Workstream: promote the proved compact operational-parity lane into the repo
@@ -135,3 +135,24 @@ This block succeeds only if:
 
 1. the repo-default promotion posture is explicit and decision-grade; and
 2. the worktree is clean.
+
+## Outcome
+
+This block completed its owned job. The proved compact operational-parity lane
+is now the repo-default extraction surface.
+
+What changed:
+
+1. repo-default extraction config now points at the compact operational-parity
+   candidate (`budget_extraction` plus `text_to_candidate_assertions_compact_v5@3`);
+2. targeted config/pipeline tests now enforce those defaults; and
+3. a fresh no-override rerun under
+   `var/real_runs/2026-04-02_default_extraction_cutover/` preserved the
+   desired transfer posture: chunk `002` stayed positive and chunk `003`
+   stayed free of accepted spillover.
+
+Decision:
+
+1. Plan `0062` is complete and truthful; and
+2. there is no active extraction-transfer cleanup block remaining under
+   Plan `0014`.

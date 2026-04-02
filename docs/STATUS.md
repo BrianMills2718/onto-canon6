@@ -68,8 +68,9 @@ Current post-cutover program state:
     `limit_capability` family from chunk `003`; and
 24. Plan `0061` is now complete and removed the staffing-summary membership
     spillover family from chunk `003`; and
-25. the next extraction-quality question is repo-default promotion/cutover,
-    owned by Plan `0062`.
+25. Plan `0062` is now complete and the proved compact operational-parity
+    candidate is the repo-default extraction surface; and
+26. no active extraction-transfer cleanup block remains under Plan `0014`.
 
 ## What Is Proven
 
