@@ -124,7 +124,11 @@ The next owned residual family is now:
 Benchmark improvement still does not certify promotion by itself. The named
 real chunk-transfer gate remains active.
 
-Plan `0057` now owns that transfer recertification block.
+Plan `0057` owned the first corrected-fixture transfer recertification block.
+It then proved the next blocker was not the extraction prompt alone: the live
+review contract was misaligned with corrected fixture `v6` semantics.
+
+Plan `0058` now owns that live review-alignment block.
 
 ## Current State
 

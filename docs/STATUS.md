@@ -57,8 +57,11 @@ Current post-cutover program state:
 18. the chunk-017 contract cutover is complete under Plan `0055`;
 19. Plan `0056` restored the compact operational-parity lane to the benchmark
     lead on corrected fixture `v6`;
-20. the next extraction-quality blocker is now transfer recertification on the
-    two named real chunks, owned by Plan `0057`.
+20. Plan `0057` is now complete and proved that chunk `002` remains a valid
+    positive control but chunk `003` produced a false-positive transfer report
+    under misaligned live review semantics; and
+21. the next extraction-quality blocker is now live review alignment plus fresh
+    transfer reruns, owned by Plan `0058`.
 
 ## What Is Proven
 

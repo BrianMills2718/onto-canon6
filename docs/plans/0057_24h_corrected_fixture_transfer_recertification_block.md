@@ -1,12 +1,12 @@
 # 24h Corrected-Fixture Transfer Recertification Block
 
-Status: active
+Status: complete
 Phase status:
-- Phase 1 pending
-- Phase 2 pending
-- Phase 3 pending
-- Phase 4 pending
-- Phase 5 pending
+- Phase 1 complete
+- Phase 2 complete
+- Phase 3 complete
+- Phase 4 complete
+- Phase 5 complete
 
 Last updated: 2026-04-02
 Workstream: live chunk-transfer recertification after corrected-fixture benchmark recovery
@@ -54,6 +54,19 @@ Out of scope:
    directory.
 6. This block may end either with improved transfer evidence or with a truthful
    statement that chunk `003` is still the blocker.
+7. The frozen runtime paths for this block are:
+   - run root:
+     `var/real_runs/2026-04-02_corrected_fixture_transfer_recertification/`
+   - review DB:
+     `var/real_runs/2026-04-02_corrected_fixture_transfer_recertification/review_state.sqlite3`
+   - chunk `002` input:
+     `/home/brian/projects/onto-canon6/var/real_runs/2026-03-21_phase_b_prompt_verification/chunks/01_stage1_query2/01_stage1_query2__chunk_002.md`
+   - chunk `003` input:
+     `/home/brian/projects/onto-canon6/var/real_runs/2026-03-21_phase_b_prompt_verification/chunks/01_stage1_query2/01_stage1_query2__chunk_003.md`
+   - chunk `002` source ref:
+     `text://phase-b/2026-04-02/01_stage1_query2/chunk_002_compact_v5r2`
+   - chunk `003` source ref:
+     `text://phase-b/2026-04-02/01_stage1_query2/chunk_003_compact_v5r2`
 
 ## Gate
 
@@ -133,3 +146,34 @@ This block succeeds only if:
 1. the result is decision-grade;
 2. the worktree is clean;
 3. the next step is explicit.
+
+## Outcome
+
+This block reran both named live chunks, but it did not certify the lane as
+promotable.
+
+1. chunk `002` remained a clean positive control under the corrected compact
+   prompt;
+2. chunk `003` produced a nominally positive transfer report; but
+3. that positive verdict was not trustworthy once compared against corrected
+   benchmark fixture `v6`.
+
+The decisive mismatch is semantic, not bookkeeping:
+
+1. chunk-003 accepted `oc:limit_capability` and `oc:express_concern`
+   candidates that restate the same abstract evaluative prose now covered by
+   strict-omit controls `011`, `012`, `015`, and `016`;
+2. the transfer report classifies success only from accepted/rejected counts;
+3. the live `review_mode: llm` path currently auto-accepts
+   `partially_supported` candidates as if they were fully supported; and
+4. the live judge prompt does not yet encode the corrected omit semantics
+   strongly enough for analytical-prose chunk transfer.
+
+Decision:
+
+1. Plan `0057` is complete as a truthful recertification audit;
+2. the compact operational-parity lane is still **not promotable**; and
+3. the next owned block is review-contract alignment, not another transfer
+   summary.
+
+The successor active plan is Plan `0058`.

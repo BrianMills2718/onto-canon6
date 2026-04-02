@@ -37,13 +37,14 @@ runtime.
 29. `docs/plans/0054_24h_full_chunk_strict_omit_contract_audit.md` (completed audit block)
 30. `docs/plans/0055_24h_chunk017_contract_cutover_and_rebaseline_block.md` (completed cutover block)
 31. `docs/plans/0056_24h_corrected_fixture_semantic_recovery_block.md` (completed corrected-fixture recovery block)
-32. `docs/plans/0057_24h_corrected_fixture_transfer_recertification_block.md` (current active execution block)
-33. `docs/plans/0026_schema_stability_gate.md` (completed Lane 3 contract policy)
-34. `docs/plans/0014_extraction_quality_baseline.md` (active Lane 4 promotion gate)
-35. `docs/plans/0027_deferred_parity_reprioritization.md`
-36. `docs/plans/0028_query_browse_surface.md`
-37. `docs/plans/0005_v1_capability_parity_matrix.md`
-38. `docs/plans/0001_successor_roadmap.md`
+32. `docs/plans/0057_24h_corrected_fixture_transfer_recertification_block.md` (completed false-positive transfer audit)
+33. `docs/plans/0058_24h_live_review_alignment_block.md` (current active execution block)
+34. `docs/plans/0026_schema_stability_gate.md` (completed Lane 3 contract policy)
+35. `docs/plans/0014_extraction_quality_baseline.md` (active Lane 4 promotion gate)
+36. `docs/plans/0027_deferred_parity_reprioritization.md`
+37. `docs/plans/0028_query_browse_surface.md`
+38. `docs/plans/0005_v1_capability_parity_matrix.md`
+39. `docs/plans/0001_successor_roadmap.md`
 
 ## Commands
 
@@ -135,8 +136,10 @@ config/
   target. The user approved the recommended removal/demotion, and Plan `0055`
   completed the fixture cutover plus one corrected-fixture rerun. Plan `0056`
   then restored the compact operational-parity benchmark lead on corrected
-  fixture `v6`. The next blocker is now the named real chunk-transfer gate,
-  owned by Plan `0057`.
+  fixture `v6`. Plan `0057` then reran the named transfer chunks and proved
+  that the first chunk-003 positive transfer result was overstated by live
+  review-contract drift. The next blocker is therefore live review alignment,
+  owned by Plan `0058`.
   The chunk-level transfer evaluation requirement remains active through
   ADR 0023 and Plans 0024/0014 even though there is no standalone Plan 0019
   file.
@@ -167,11 +170,10 @@ config/
   not a suggestion: keep executing, keep rerunning, keep committing, and only
   stop when the active block is either complete or explicitly narrowed to a new
   documented blocker.
-- **Current extraction-quality execution rule:** Plan `0056` is complete and
-  the corrected benchmark lead is restored. Plan `0057` is now the active
-  block and must run straight through chunk-002 rerun, chunk-003 rerun,
-  transfer-report export, and promotion-posture classification before
-  stopping.
+- **Current extraction-quality execution rule:** Plans `0056` and `0057` are
+  complete. Plan `0058` is now the active block and must run straight through
+  live review-contract alignment, chunk-002 rerun, chunk-003 rerun, and
+  promotion-posture classification before stopping.
 - **Continuous execution rule is hard, not advisory.** When a 24h block is
   active, keep executing until the approved contract is implemented, the
   bounded rerun is recorded, the next blocker is written down, and the block is
@@ -331,17 +333,18 @@ active, the required behavior is: plan the next concrete phase, execute it,
 verify it, commit it, log any uncertainty, and continue. Do not wait for
 "what next?" confirmation mid-block.
 
-The current valid stop condition is no longer the `0056` benchmark-recovery
+The current valid stop condition is no longer the `0057` transfer-audit
 boundary.
 
-1. Plan `0056` is complete and committed.
-2. The benchmark lead is restored on corrected fixture `v6`.
-3. Plan `0057` is now the active block and must run through the two named live
-   transfer reruns, reviewed transfer reports, and promotion-posture decision
-   before stopping.
+1. Plans `0056` and `0057` are complete and committed.
+2. The benchmark lead is restored on corrected fixture `v6`, but the first
+   live transfer pass was overstated by review-contract drift.
+3. Plan `0058` is now the active block and must run through review-contract
+   alignment, fresh reruns, and promotion-posture decision before stopping.
 
-Do not silently widen scope inside Plan `0057`. Work the named transfer gate,
-preserve the corrected benchmark contract, and close the block truthfully.
+Do not silently widen scope inside Plan `0058`. Work the live review-alignment
+gate, preserve the corrected benchmark contract, and close the block
+truthfully.
 
 Pre-made decisions (do not ask about these):
 - Work stays in the isolated `codex/onto-canon6-integration-planning` worktree

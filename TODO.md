@@ -3,33 +3,35 @@
 ## Current 24h Execution Block
 
 Source of truth:
-- `docs/plans/0057_24h_corrected_fixture_transfer_recertification_block.md`
+- `docs/plans/0058_24h_live_review_alignment_block.md`
 
-### Phase 1 — Freeze The Transfer Contract
-- [ ] Restate the `0056` result as the incoming contract
-- [ ] Define the fresh run directory, review DB path, source refs, and report paths
-- [ ] Keep the prompt override/ref explicit
-- [x] Commit verified phase
-
-### Phase 2 — Rerun Chunk 002 Positive Control
-- [ ] Run live extraction on chunk `002`
-- [ ] Export the reviewed chunk-transfer report
+### Phase 1 — Freeze The Live Review Contract
+- [x] Close Plan `0057` truthfully with the false-positive transfer finding
+- [x] Activate Plan `0058` in docs and trackers
+- [x] Freeze the supported/partial/unsupported acceptance policy
 - [ ] Commit verified phase
 
-### Phase 3 — Rerun Chunk 003 Stress Case
-- [ ] Run live extraction on chunk `003`
-- [ ] Export the reviewed chunk-transfer report
+### Phase 2 — Align Review Behavior In Code
+- [ ] Accept only `supported` labels in `review_mode: llm`
+- [ ] Leave `partially_supported` labels pending review
+- [ ] Add/update targeted review-mode tests
 - [ ] Commit verified phase
 
-### Phase 4 — Classify Promotion Posture
-- [ ] Compare the new reports against the Plan `0014` promotion gate
-- [ ] Decide promotable vs transfer-blocked vs mixed
+### Phase 3 — Harden The Judge Prompt
+- [ ] Encode corrected analytical-prose omit semantics in the judge prompt
+- [ ] Verify the prompt-side contract with narrow tests or replay evidence
+- [ ] Commit verified phase
+
+### Phase 4 — Rerun The Named Transfer Chunks
+- [ ] Rerun chunk `002` under the aligned review contract
+- [ ] Rerun chunk `003` under the aligned review contract
+- [ ] Export both reviewed chunk-transfer reports
 - [ ] Commit verified phase
 
 ### Phase 5 — Closeout
-- [ ] Write the decision note
+- [ ] Write the rerun/alignment decision note
 - [ ] Refresh docs/status/handoff/knowledge
-- [ ] Mark execution block complete and state the next blocker explicitly
+- [ ] Mark the block complete and name the next blocker explicitly
 - [ ] Commit verified phase
 
 ## Most Recent Completed 24h Execution Block
@@ -117,7 +119,7 @@ Source of truth:
 - [x] Localize the remaining post-wrapper extraction-path divergence to one dominant surface
 - [x] Localize and repair the remaining prompt-side parity residual through Plans `0046`-`0049`
 - [x] Run one bounded post-parity semantic recovery attempt and classify it honestly
-- [ ] Re-certify named real chunk transfer under Plan `0057`
+- [ ] Re-align live LLM review with corrected benchmark semantics under Plan `0058`
 
 ## Longer-Term Queue
 

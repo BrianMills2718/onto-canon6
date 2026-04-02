@@ -2,58 +2,41 @@
 
 ## Session Focus
 
-Plan `0056` closeout and Plan `0057` activation in the isolated worktree
+Plan `0057` closeout and Plan `0058` activation in the isolated worktree
 branch `codex/onto-canon6-integration-planning`.
 
 ## What Landed
 
 Committed and documented in the isolated worktree:
 
-1. the bounded section-level suppression change landed on both prompt surfaces:
-   - `prompts/extraction/text_to_candidate_assertions_compact_v4.yaml`
-   - `prompts/extraction/prompt_eval_text_to_candidate_assertions_compact_operational_parity_v3.yaml`
-2. the new suppression wording is covered explicitly in:
-   - `tests/evaluation/test_prompt_eval_service.py`
-3. the focused prompt-surface verification passed:
-   - `tests/evaluation/test_prompt_eval_service.py`
-   - `tests/evaluation/test_prompt_surface_parity.py`
-4. one post-change chunk-003 artifact now exists:
-   - `docs/runs/2026-04-02_chunk003_analytical_section_suppression_report.json`
-5. the decision-grade closeout note now exists:
-   - `docs/runs/2026-04-02_analytical_section_suppression_decision.md`
-6. Plan `0051` is now complete as a failed bounded suppression attempt;
-7. Plan `0052` is now complete as a narrowing block with a smaller but still
-   invalid family;
-8. Plan `0053` is now complete as a failed hard-negative prompt attempt;
-9. Plan `0054` is now complete.
-10. Plan `0055` is now complete.
-11. Plan `0056` is now complete.
-12. Plan `0057` is now active.
+1. Plan `0057` now truthfully closes as a transfer recertification audit, not a
+   promotion win;
+2. chunk `002` remained a positive live transfer control;
+3. chunk `003` produced a nominally positive transfer report, but that result
+   does not survive comparison to corrected fixture `v6` semantics;
+4. the repo now records the actual blocker: live `review_mode: llm` semantics
+   are too permissive for the chunk-003 analytical-prose omit family; and
+5. Plan `0058` is now the active execution block.
 
 ## Current State
 
 1. The compact operational-parity lane is still **not promotable**.
-2. Plan `0051` did **not** shrink the chunk-003 spillover family.
-3. Plan `0052` did shrink it, but not enough:
-   - before (`90003aea587c`): 4 candidates
-   - after (`b349a4681e04`): 6 candidates
-   - latest (`bb8be70d4504`): 5 candidates
-4. Plan `0053` did not improve that family further. It widened again:
-   - latest (`81cffac9c8df`): 6 candidates
-   - new spillover: `oc:create_organizational_unit` from the `JPOTF model`
-     sentence
-5. The active frontier is now transfer recertification on the two named real
-   chunks under Plan `0057`.
+2. The corrected benchmark lead is real, but the first live recertification
+   pass was overstated by the live review contract.
+3. The chunk-transfer report surface only summarizes accepted/rejected counts.
+4. The current live `review_mode: llm` path still accepts candidates too
+   readily for the chunk-003 analytical-prose family.
+5. The active frontier is now review-contract alignment under Plan `0058`.
 
 ## Recommended Next Step
 
 If work continues:
 
 1. stay on `codex/onto-canon6-integration-planning`;
-2. execute Plan `0057` in order:
-   - rerun chunk `002` with the improved compact prompt
-   - rerun chunk `003` with the improved compact prompt
-   - export both reviewed transfer reports
+2. execute Plan `0058` in order:
+   - align `review_mode: llm` so only `supported` candidates auto-accept
+   - harden the judge prompt against the corrected analytical-prose omit family
+   - rerun chunk `002` and chunk `003` under a fresh aligned review DB
    - classify promotion posture against Plan `0014`
 3. keep all worktree runtime commands on `PYTHONPATH=src`;
 4. keep chunk `017` removed from the strict-omit gate and treat `005`, `006`,
