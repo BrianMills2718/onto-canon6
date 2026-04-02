@@ -40,21 +40,12 @@ def _load_fixture() -> list[dict[str, object]]:
 def test_phase14_mcp_tools_are_registered() -> None:
     """The thin MCP server should register the expected small tool set."""
     import asyncio
-    import inspect
 
-    get_tools = getattr(mcp_server.mcp, "get_tools", None)
-    if get_tools is None:
-        tool_manager = getattr(mcp_server.mcp, "_tool_manager", None)
-        get_tools = getattr(tool_manager, "get_tools", None)
-    assert get_tools is not None, "FastMCP surface no longer exposes a tool registry API"
+    list_tools = getattr(mcp_server.mcp, "list_tools", None)
+    assert list_tools is not None, "FastMCP surface no longer exposes a tool registry API"
 
-    tools = get_tools()
-    if inspect.isawaitable(tools):
-        tools = asyncio.run(tools)
-    if isinstance(tools, dict):
-        registered = {tool.name for tool in tools.values()}
-    else:
-        registered = {tool.name for tool in tools}
+    tools = asyncio.run(list_tools())
+    registered = {tool.name for tool in tools}
     assert EXPECTED_TOOLS.issubset(registered)
     assert len(registered & EXPECTED_TOOLS) == len(EXPECTED_TOOLS)
 
