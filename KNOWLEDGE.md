@@ -218,6 +218,17 @@ now bounded to sync vs async structured-call behavior and the prompt_eval-only
 `Case id` metadata line.
 
 ### 2026-04-02 — codex — bug-pattern
+Plan 0051 proved that adding more section-heading and staffing-summary
+suppression language was not enough to control the chunk-003 residual. The
+compact-operational-parity call widened from 4 candidates to 6: the
+`belongs_to_organization` staffing-summary spillover survived, the governance
+reaction concern family split into two speakers, and a new retrospective
+`limit_capability` candidate appeared. Treat the next extraction-quality block
+as predicate-local gating (`express_concern` concern-act requirement,
+`limit_capability` concrete-capability requirement), not another generic
+section-level omission pass.
+
+### 2026-04-02 — codex — bug-pattern
 Plan 0046 proved the prompt_eval-only `Case id:` line was materially changing
 chunk-003 extraction behavior. Replaying the captured prompt_eval async call
 without only that line flipped the parsed result from `0` candidates to `5`.

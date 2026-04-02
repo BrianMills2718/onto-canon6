@@ -3,30 +3,32 @@
 ## Current 24h Execution Block
 
 Source of truth:
-- `docs/plans/0051_24h_analytical_section_suppression_block.md`
+- `docs/plans/0052_24h_predicate_locality_gate_block.md`
 
-### Phase 1 — Freeze The New Miss Family
-- [ ] Freeze the `0050` old-vs-new chunk-003 family
-- [ ] Name one explicit analytical-section spillover family
+### Phase 1 — Freeze The Predicate-Local Residual
+- [ ] Freeze the `0051` compact-operational-parity before/after family
+- [ ] Name one explicit predicate-local spillover family
 - [ ] Commit verified phase
 
-### Phase 2 — Land One Bounded Suppression Change
-- [ ] Add one section-heading or retrospective-summary suppression rule
+### Phase 2 — Land One Bounded Predicate-Local Revision
+- [ ] Tighten `express_concern` to explicit concern/speech-act evidence
+- [ ] Tighten `limit_capability` to concrete operational capability or named activity evidence
 - [ ] Preserve the case-id and wrapper parity repairs
 - [ ] Commit verified phase
 
 ### Phase 3 — Re-run The Chunk-003 Diagnostic
 - [ ] Run one bounded post-change chunk-003 prompt_eval diagnostic
 - [ ] Capture the new artifact
+- [ ] Recover the compact-operational-parity response from observability
 - [ ] Commit verified phase
 
 ### Phase 4 — Classify The Result
-- [ ] Decide whether the change improved, failed, or shifted the blocker
+- [ ] Decide whether the predicate-local change improved, failed, or shifted the blocker
 - [ ] Record any narrow uncertainty separately
 - [ ] Commit verified phase
 
 ### Phase 5 — Closeout
-- [ ] Write the decision-grade analytical-section suppression note
+- [ ] Write the decision-grade predicate-local gating note
 - [ ] Refresh docs/status/handoff
 - [ ] Mark execution block complete
 - [ ] Commit verified phase

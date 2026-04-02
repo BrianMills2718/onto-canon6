@@ -2,72 +2,58 @@
 
 ## Session Focus
 
-Plans `0046` through `0050` closeout and Plan `0051` activation in the isolated
-worktree branch `codex/onto-canon6-integration-planning`.
+Plans `0051` closeout and Plan `0052` activation in the isolated worktree
+branch `codex/onto-canon6-integration-planning`.
 
 ## What Landed
 
 Committed and documented in the isolated worktree:
 
-1. bounded replay helper for captured structured-call surfaces:
-   - `src/onto_canon6/evaluation/extraction_call_replay.py`
-   - `scripts/replay_structured_call_surface.py`
-   - `tests/evaluation/test_extraction_call_replay.py`
-2. direct replay artifacts proving prompt metadata, not sync-vs-async API path,
-   dominated the residual:
-   - `docs/runs/2026-04-02_chunk003_prompt_eval_replayed_via_sync.json`
-   - `docs/runs/2026-04-02_chunk003_live_temp0_replayed_via_async.json`
-   - `docs/runs/2026-04-02_chunk003_prompt_eval_replayed_async_without_case_id.json`
-3. extraction prompt_eval no longer includes `Case id:` by default:
-   - `src/onto_canon6/config.py`
-   - `config/config.yaml`
-   - `src/onto_canon6/evaluation/prompt_eval_service.py`
-4. extraction prompt_eval templates no longer prepend `Case input:` before
-   `{input}`;
-5. real rendered chunk-003 parity artifacts now show no content-line diff
-   against the live user prompt:
-   - `docs/runs/2026-04-02_chunk003_prompt_surface_parity_without_case_id.json`
-   - `docs/runs/2026-04-02_chunk003_prompt_surface_parity_without_case_id_or_wrapper.json`
-6. one bounded post-repair prompt_eval rerun artifact now exists:
-   - `docs/runs/2026-04-02_chunk003_post_repair_prompt_eval_report.json`
-7. decision-grade closeout note:
-   - `docs/runs/2026-04-02_prompt_parity_repair_decision.md`
-8. Plans `0046`, `0047`, `0048`, and `0049` are now complete;
-9. Plan `0050` is now complete as a failed bounded semantic attempt;
-10. Plan `0051` is now the active bounded execution surface.
+1. the bounded section-level suppression change landed on both prompt surfaces:
+   - `prompts/extraction/text_to_candidate_assertions_compact_v4.yaml`
+   - `prompts/extraction/prompt_eval_text_to_candidate_assertions_compact_operational_parity_v3.yaml`
+2. the new suppression wording is covered explicitly in:
+   - `tests/evaluation/test_prompt_eval_service.py`
+3. the focused prompt-surface verification passed:
+   - `tests/evaluation/test_prompt_eval_service.py`
+   - `tests/evaluation/test_prompt_surface_parity.py`
+4. one post-change chunk-003 artifact now exists:
+   - `docs/runs/2026-04-02_chunk003_analytical_section_suppression_report.json`
+5. the decision-grade closeout note now exists:
+   - `docs/runs/2026-04-02_analytical_section_suppression_decision.md`
+6. Plan `0051` is now complete as a failed bounded suppression attempt;
+7. Plan `0052` is now the active bounded execution surface.
 
 ## Current State
 
 1. The compact operational-parity lane is still **not promotable**.
-2. The prompt-side parity blocker is no longer active:
-   - sync-vs-async API behavior was not dominant;
-   - `Case id:` no longer appears in extraction prompt_eval input by default;
-   - prompt_eval extraction templates no longer add `Case input:`;
-   - the rendered chunk-003 live/prompt_eval user prompts now differ only by a
-     trailing newline.
-3. The repaired one-case chunk-003 prompt_eval rerun restored a real compact
-   operational-parity output, but semantic quality is still poor:
-   - `mean_score = 0.25`
-   - `exact_f1 = 0.0`
-   - `count_alignment = 0.0`
-   - `structural_usable_rate = 1.0`
-4. The active frontier is therefore narrower than generic semantic recovery:
-   analytical-section and late-summary spillover on the repaired chunk-003
-   path under Plan `0051`, not more prompt-path plumbing.
+2. Plan `0051` did **not** shrink the chunk-003 spillover family.
+3. Compact-operational-parity before/after observability comparison now shows:
+   - before (`90003aea587c`): 4 candidates
+   - after (`b349a4681e04`): 6 candidates
+4. The widened family is narrower and more specific than "analytical section":
+   - `express_concern` is still inferred from governance reactions
+   - `limit_capability` is still inferred from abstract result nouns
+   - aggregate staffing still leaks into `belongs_to_organization`
+5. The active frontier is therefore predicate-local gating on the repaired
+   chunk-003 path under Plan `0052`, not more prompt-path plumbing or another
+   section-heading pass.
 
 ## Recommended Next Step
 
 If work continues:
 
 1. stay on `codex/onto-canon6-integration-planning`;
-2. execute Plan `0051` in order:
-   - freeze the `0050` old-vs-new chunk-003 family
-   - name one analytical-section spillover family
-   - land one bounded suppression change
+2. execute Plan `0052` in order:
+   - freeze the `0051` compact-operational-parity before/after family
+   - name one predicate-local spillover family
+   - land one bounded predicate-local revision
    - rerun the one-case chunk-003 diagnostic
+   - recover the compact parity response from observability
 3. keep all worktree runtime commands on `PYTHONPATH=src`;
-4. do not reopen `Case id` or `Case input` parity work unless new evidence
-   directly contradicts the prompt-parity repair decision.
+4. do not reopen `Case id`, `Case input`, or generic section-heading parity
+   work unless new evidence directly contradicts the prompt-parity repair
+   decision.
 
 # Handoff: onto-canon6 — 2026-04-01
 

@@ -1,12 +1,12 @@
 # 24h Analytical Section Suppression Block
 
-Status: active
+Status: complete
 Phase status:
-- Phase 1 pending
-- Phase 2 pending
-- Phase 3 pending
-- Phase 4 pending
-- Phase 5 pending
+- Phase 1 complete
+- Phase 2 complete
+- Phase 3 complete
+- Phase 4 complete
+- Phase 5 complete
 
 Last updated: 2026-04-02
 Workstream: suppress analytical-section and late-summary spillover on repaired
@@ -132,3 +132,23 @@ This block is complete only when:
 2. the worktree is clean;
 3. the repo contains committed analytical-section suppression artifacts and a
    decision note.
+
+## Outcome
+
+Plan `0051` is complete as a failed bounded suppression attempt.
+
+The analytical-section / staffing-summary suppression wording landed and was
+verified, but the compact operational-parity spillover family worsened instead
+of shrinking:
+
+1. the late `belongs_to_organization` staffing-summary spillover survived;
+2. the governance-process concern family split into two speakers instead of
+   shrinking; and
+3. a new retrospective `limit_capability` candidate appeared.
+
+Decision artifact:
+
+- `docs/runs/2026-04-02_analytical_section_suppression_decision.md`
+
+The next active bounded block is therefore predicate-local, not
+section-local: `docs/plans/0052_24h_predicate_locality_gate_block.md`.

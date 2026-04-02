@@ -1,6 +1,6 @@
 # onto-canon6 Status
 
-Updated: 2026-04-01
+Updated: 2026-04-02
 
 ## Current Program
 
@@ -46,9 +46,11 @@ Current post-cutover program state:
 13. Plans `0046` through `0049` are now complete: sync/async path speculation,
     `Case id` metadata, and prompt_eval wrapper drift are no longer the active
     blockers on chunk `003`;
-14. the remaining active program gate is now post-parity semantic recovery on
-    the repaired chunk-003 analytical path under Plans `0014` and `0050`, not
-    another prompt-path diagnosis block.
+14. Plan `0051` is now complete and proved that section-level analytical
+    suppression did not shrink the repaired chunk-003 spillover family;
+15. the remaining active program gate is now predicate-local semantic gating
+    on the repaired chunk-003 path under Plans `0014` and `0052`, not another
+    prompt-path or section-heading diagnosis block.
 
 ## What Is Proven
 

@@ -98,8 +98,10 @@ before review and is then amplified by review/judge acceptance. Plan `0044`
 proved wrapper alignment is not the main rescue lever, and Plans `0046`
 through `0049` then removed the remaining prompt-path blockers (`sync/async`
 speculation, prompt_eval-only `Case id`, and the prompt_eval `Case input`
-wrapper). The remaining blocker is now semantic extraction quality on the
-repaired chunk-003 analytical path, tracked under Plan `0050`.
+wrapper). Plan `0051` then proved that another section-level suppression pass
+was not enough and actually widened the compact-operational-parity spillover
+family. The remaining blocker is now predicate-local semantic gating on the
+repaired chunk-003 path, tracked under Plan `0052`.
 
 ## Current State
 
