@@ -1,13 +1,8 @@
-"""Typed contracts for the first read-only promoted-knowledge query surface.
+"""Typed contracts for the read-only promoted-knowledge query surface.
 
-The first query slice is intentionally narrow. These models describe exactly
-the five supported read operations over promoted state:
-
-1. entity search;
-2. entity detail;
-3. promoted assertion search;
-4. promoted assertion detail; and
-5. evidence/provenance lookup.
+The first query slice is intentionally narrow. These models describe browse,
+search, and detail operations over promoted state without exposing raw storage
+rows as the public contract.
 """
 
 from __future__ import annotations
@@ -22,6 +17,27 @@ from ..extensions.epistemic import PromotedAssertionEpistemicReport, PromotedAss
 from ..pipeline import CandidateAssertionRecord, EvidenceSpan, SourceArtifactRef
 
 EntityMatchReason = Literal["canonical_exact", "alias_exact", "prefix", "substring"]
+
+
+class EntityBrowseRequest(BaseModel):
+    """Browse promoted entities in deterministic order."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    entity_type: str | None = None
+    limit: int = Field(default=50, ge=1, le=200)
+
+
+class EntityBrowseResult(BaseModel):
+    """One summary result from deterministic entity browsing."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    identity_id: str | None = None
+    entity_id: str = Field(min_length=1)
+    display_label: str = Field(min_length=1)
+    entity_type: str | None = None
+    linked_assertion_count: int = Field(ge=0)
 
 
 class EntitySearchRequest(BaseModel):
@@ -63,36 +79,53 @@ class GetEntityRequest(BaseModel):
         return self
 
 
+class AssertionBrowseRequest(BaseModel):
+    """Browse promoted assertions with optional deterministic filters."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    predicate: str | None = None
+    entity_id: str | None = None
+    source_ref: str | None = None
+    source_kind: str | None = None
+    limit: int = Field(default=50, ge=1, le=200)
+
+
 class AssertionSearchRequest(BaseModel):
-    """Search promoted assertions by predicate, entity, or claim text."""
+    """Search promoted assertions by predicate, entity, claim text, or source."""
 
     model_config = ConfigDict(extra="forbid", frozen=True)
 
     predicate: str | None = None
     entity_id: str | None = None
     text_query: str | None = None
+    source_ref: str | None = None
+    source_kind: str | None = None
     limit: int = Field(default=20, ge=1, le=200)
 
     @model_validator(mode="after")
     def _require_at_least_one_filter(self) -> "AssertionSearchRequest":
         """Require at least one search filter."""
 
-        if not any((self.predicate, self.entity_id, self.text_query)):
+        if not any((self.predicate, self.entity_id, self.text_query, self.source_ref, self.source_kind)):
             raise ValueError(
-                "at least one of predicate, entity_id, or text_query must be provided"
+                "at least one of predicate, entity_id, text_query, source_ref, or source_kind must be provided"
             )
         return self
 
 
 class AssertionSearchResult(BaseModel):
-    """One summary result from promoted-assertion search."""
+    """One summary result from promoted-assertion browse or search."""
 
     model_config = ConfigDict(extra="forbid", frozen=True)
 
     assertion_id: str = Field(min_length=1)
+    source_candidate_id: str = Field(min_length=1)
     predicate: str = Field(min_length=1)
     claim_text: str | None = None
     entity_ids: tuple[str, ...] = ()
+    source_ref: str = Field(min_length=1)
+    source_kind: str = Field(min_length=1)
     confidence_score: float | None = None
     epistemic_status: PromotedAssertionEpistemicStatus | None = None
 
@@ -153,8 +186,11 @@ class PromotedAssertionDetail(BaseModel):
 
 
 __all__ = [
+    "AssertionBrowseRequest",
     "AssertionSearchRequest",
     "AssertionSearchResult",
+    "EntityBrowseRequest",
+    "EntityBrowseResult",
     "EntityDetail",
     "EntityMatchReason",
     "EntitySearchRequest",
