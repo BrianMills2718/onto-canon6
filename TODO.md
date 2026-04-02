@@ -3,35 +3,35 @@
 ## Current 24h Execution Block
 
 Source of truth:
-- `docs/plans/0042_24h_semantic_transfer_residual_block.md`
+- `docs/plans/0043_24h_live_path_divergence_block.md`
 
-### Phase 1 — Freeze The Semantic Residual Contract
-- [ ] Restate the Plan 0041 decision as the incoming contract
-- [ ] Enumerate the chunk `002` body-level residuals
-- [ ] Enumerate the chunk `003` live-only overreach families
+### Phase 1 — Freeze The Divergence Contract
+- [x] Restate the Plan 0042 decision as the incoming contract
+- [x] Freeze the same-model evidence on chunk `003`
+- [x] Record chunk `002` as the regression guard only
 - [x] Record the execution caveats (`PYTHONPATH=src`, run-id mapping)
 - [ ] Commit verified phase
 
-### Phase 2 — Land A Body-Level Comparison Aid
-- [ ] Extend or add the narrowest helper for body-level comparison
-- [ ] Add targeted verification for that helper
-- [ ] Save semantic residual artifacts for chunks `002` and `003`
+### Phase 2 — Compare Path Surfaces Directly
+- [ ] Identify the remaining live-vs-prompt-eval path differences under the revised candidate pair
+- [ ] Capture those differences in a reproducible artifact
+- [ ] Separate prompt wrapper differences from extraction/review behavior
 - [ ] Commit verified phase
 
-### Phase 3 — Make One Bounded Prompt Revision
-- [ ] Update the compact extraction prompt candidate only where the residual justifies it
-- [ ] Target analytical narrator overreach and unsupported subject/speaker invention
-- [ ] Keep the diff small and traceable
+### Phase 3 — Land One Narrow Diagnostic Or Repair Aid
+- [ ] Implement the smallest honest aid for replaying the divergence
+- [ ] Add verification for that aid
+- [ ] Keep it bounded to the divergence family
 - [ ] Commit verified phase
 
-### Phase 4 — Verify The Revision
-- [ ] Rerun bounded prompt-eval verification on chunks `002` and `003`
-- [ ] Run at least one live chunk rerun if prompt-eval improves honestly
-- [ ] Decide whether the candidate advanced or stayed promotion-blocking
+### Phase 4 — Classify The Dominant Live-Path Blocker
+- [ ] Decide whether the divergence is dominated by prompt/render contract, extraction path behavior, or review/judge acceptance
+- [ ] Record secondary caveats separately
+- [ ] Commit the classification with artifacts
 - [ ] Commit verified phase
 
 ### Phase 5 — Closeout
-- [ ] Write the decision-grade semantic residual note
+- [ ] Write the decision-grade live-path divergence note
 - [ ] Refresh docs/status/handoff
 - [ ] Mark execution block complete
 - [ ] Commit verified phase
@@ -39,32 +39,35 @@ Source of truth:
 ## Most Recent Completed 24h Execution Block
 
 Source of truth:
-- `docs/plans/0041_24h_full_chunk_transfer_parity_block.md`
+- `docs/plans/0042_24h_semantic_transfer_residual_block.md`
 
-### Phase 1 — Freeze The Residual Contract
-- [x] Restate the Plan 0040 result as the incoming contract
-- [x] Enumerate the exact residual mismatches on chunks `002` and `003`
+### Phase 1 — Freeze The Semantic Residual Contract
+- [x] Restate the Plan 0041 decision as the incoming contract
+- [x] Enumerate the chunk `002` body-level residuals
+- [x] Enumerate the chunk `003` live-only overreach families
 - [x] Record the execution caveats (`PYTHONPATH=src`, run-id mapping)
 - [x] Commit verified phase
 
-### Phase 2 — Reconstruct Prompt Surfaces
-- [x] Reconstruct the live extraction prompt surface for a named chunk
-- [x] Reconstruct the prompt-eval parity prompt surface for the same chunk
-- [x] Save the exact message/context delta
+### Phase 2 — Land A Body-Level Comparison Aid
+- [x] Extend or add the narrowest helper for body-level comparison
+- [x] Add targeted verification for that helper
+- [x] Save semantic residual artifacts for chunks `002` and `003`
 - [x] Commit verified phase
 
-### Phase 3 — Land The Minimum Parity Aid
-- [x] Implement the narrowest reproducible prompt-surface comparison helper
-- [x] Add verification for the helper
+### Phase 3 — Make One Bounded Prompt Revision
+- [x] Update the compact extraction prompt candidate only where the residual justifies it
+- [x] Target analytical narrator overreach and unsupported subject/speaker invention
+- [x] Keep the diff small and traceable
 - [x] Commit verified phase
 
-### Phase 4 — Classify The Dominant Residual
-- [x] Run the parity aid on chunks `002` and `003`
-- [x] Decide whether the dominant blocker is prompt/render contract or semantic extraction
+### Phase 4 — Verify The Revision
+- [x] Rerun bounded prompt-eval verification on chunks `002` and `003`
+- [x] Run at least one live chunk rerun
+- [x] Decide whether the candidate advanced or stayed promotion-blocking
 - [x] Commit verified phase
 
 ### Phase 5 — Closeout
-- [x] Write the decision-grade parity note
+- [x] Write the decision-grade semantic residual note
 - [x] Refresh docs/status/handoff
 - [x] Mark execution block complete
 - [x] Commit verified phase
@@ -112,7 +115,8 @@ Source of truth:
 - [x] Make the live-vs-parity gap reproducible instead of aggregate-only
 - [x] Decide whether the current candidate is promotable or still transfer-blocked
 - [x] Narrow the remaining full-chunk prompt-eval/live residual into one dominant blocker family
-- [ ] Reduce the remaining semantic transfer residual to one bounded prompt-revision target
+- [x] Reduce the remaining semantic transfer residual to one bounded prompt-revision target
+- [ ] Localize the remaining same-model live-path divergence to one dominant surface
 
 ## Longer-Term Queue
 

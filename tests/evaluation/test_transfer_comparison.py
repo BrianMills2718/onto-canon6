@@ -109,6 +109,61 @@ def test_compare_transfer_surfaces_reports_shared_and_prompt_only(tmp_path: Path
     assert comparison.only_prompt_eval[0].predicate == "oc:hold_command_role"
 
 
+def test_compare_transfer_surfaces_exposes_body_level_matches(tmp_path: Path) -> None:
+    """Body-level comparison should ignore claim-text-only wording drift."""
+
+    observability_db = _make_observability_db(
+        tmp_path / "observability.db",
+        run_id="run-3",
+        item_id="item-3",
+        predicted={
+            "candidates": [
+                {
+                    "predicate": "oc:hold_command_role",
+                    "roles": {
+                        "commander": [{"kind": "entity", "name": "Gen. Holland"}],
+                        "organization": [{"kind": "entity", "name": "USSOCOM"}],
+                    },
+                    "evidence_spans": [{"text": "Gen. Holland"}],
+                    "claim_text": "Gen. Holland held the role of commander for USSOCOM.",
+                }
+            ]
+        },
+    )
+    live_candidates_path = _write_live_candidates(
+        tmp_path / "live.json",
+        [
+            {
+                "candidate": {
+                    "claim_text": "Gen. Holland held the role of commander in USSOCOM.",
+                    "evidence_spans": [{"text": "Gen. Holland"}],
+                    "normalized_payload": {
+                        "predicate": "oc:hold_command_role",
+                        "roles": {
+                            "commander": [{"kind": "entity", "name": "Gen. Holland"}],
+                            "organization": [{"kind": "entity", "name": "USSOCOM"}],
+                        },
+                    },
+                }
+            }
+        ],
+    )
+
+    comparison = compare_transfer_surfaces(
+        observability_db_path=observability_db,
+        prompt_eval_run_id="run-3",
+        prompt_eval_item_id="item-3",
+        live_candidates_path=live_candidates_path,
+    )
+
+    assert len(comparison.shared) == 0
+    assert len(comparison.only_live) == 1
+    assert len(comparison.only_prompt_eval) == 1
+    assert len(comparison.body_shared) == 1
+    assert len(comparison.body_only_live) == 0
+    assert len(comparison.body_only_prompt_eval) == 0
+
+
 def _make_observability_db(
     path: Path, *, run_id: str, item_id: str, predicted: dict[str, object]
 ) -> Path:

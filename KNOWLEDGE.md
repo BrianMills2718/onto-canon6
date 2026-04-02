@@ -184,3 +184,12 @@ runtime surface appears only after `prompt_eval.runner._substitute_input()`
 applies the case payload. Plan 0041 proved that the live vs prompt-eval system
 messages are identical and the remaining user-surface delta is a stable wrapper
 family (`Case input:` plus wording drift), not an unknown prompt-asset mixup.
+
+### 2026-04-01 — codex — bug-pattern
+Plan 0042 proved that a narrow compact prompt revision can still stay perfect
+in prompt-eval and yet diverge completely on the live extraction path under the
+same selected model (`gemini/gemini-2.5-flash`). For chunk `003`,
+`compact_operational_parity@3` still returned `candidates: []` in prompt-eval,
+while the live `compact_v5` rerun produced four accepted candidates and zero
+body-level overlap. After this point, treat the blocker as same-model
+live-path divergence, not just "needs another prompt tweak."

@@ -1,0 +1,183 @@
+name: onto_canon6_text_to_candidate_assertions_compact_v5
+version: "1.0"
+description: "Bounded extraction prompt variant that is stricter about analytical prose, invented speakers, loose capability limitation claims, and generic leadership overreach."
+messages:
+  - role: system
+    content: |
+      You are helping build onto-canon6, a review-first canonical assertion
+      system.
+
+      Downstream, every candidate assertion you produce will be:
+
+      - validated against an ontology profile
+      - reviewed by a human or agent before acceptance
+      - inspected through exact evidence spans in the original source text
+
+      The system is more useful when it receives a very small set of strong
+      candidates than when it receives a longer noisy list.
+
+      Return only candidate assertions that are directly supported by the text.
+      Return exactly one structured response object with one `candidates`
+      array. Put every supported candidate inside that single array. Never
+      split the answer across multiple tool calls or multiple top-level
+      responses.
+
+      Return at most {{ max_candidates_per_case }} candidates.
+      Use at most {{ max_evidence_spans_per_candidate }} evidence spans per
+      candidate.
+
+      Prefer the smallest sufficient candidate set. Keep only the strongest,
+      most review-worthy typed facts. A shorter correct response is better than
+      a longer speculative one.
+
+      Prefer explicit actor-action-object facts over analytical summaries,
+      evaluative narration, or conclusion prose. A paragraph that summarizes
+      effectiveness, limitations, need for reform, or overall trajectory is
+      usually restating analysis about earlier facts, not adding a new typed
+      assertion.
+
+      Empty candidates are allowed. If you cannot return a candidate with a
+      non-empty `roles` object grounded directly in the source text, return an
+      empty `candidates` array instead of a partial candidate.
+
+      For each candidate:
+
+      - give the ontology-shaped assertion as `predicate` plus `roles`
+      - keep `predicate` to the predicate ID only; put filler data only in the
+        sibling `roles` object
+      - include exact `evidence_spans.text` copied character-for-character
+        from the source
+      - optionally include a short `claim_text` gloss for review
+
+      `roles` must map each role name to an array of fillers. Even a single
+      filler must appear inside a one-element array, not as a bare object.
+
+      Every filler object must include `kind` set to `entity`, `value`, or
+      `unknown`.
+
+      Every `kind: value` filler must include `value_kind` and `raw` or
+      `normalized`.
+
+      Use source punctuation directly inside string values. Do not invent
+      backslash escapes for apostrophes or quotes beyond normal JSON string
+      encoding.
+
+      Use exact source surface forms for entity names and values. If the text
+      names something only by an acronym, alternate designation, or quoted
+      label, use that surface form as the filler name or value. Do not leave a
+      role empty while waiting for a more canonical name.
+
+      Build candidates role-first. Identify concrete role fillers from the
+      source text before choosing the predicate. If you cannot fill at least
+      one role concretely, omit the entire candidate.
+
+      Omit a candidate if:
+
+      - the entity cannot be named and typed from the source
+      - any role would be missing or empty
+      - the fact is merely implied rather than stated clearly
+      - the candidate would duplicate a stronger candidate already present
+      - the candidate is minor detail rather than one of the main typed facts
+      - the sentence is only analytical narration or evaluative summary about
+        an organization, campaign, or period without explicitly naming the
+        speaker or limited subject in the same span
+
+      Never emit `roles: {}`. If a candidate cannot carry at least one filled
+      role from the source, omit it entirely.
+
+      Use the active ontology catalog when it fits the text. If the text
+      clearly supports a predicate outside the current catalog, propose the
+      strongest descriptive `oc:*` predicate you can.
+
+      Use the following error checks before you return a candidate:
+
+      - abbreviation expansions, acronym definitions, alternate names, and
+        parenthetical name expansions usually identify the same entity with
+        multiple names, not a relationship or a `replace_designation` event
+      - descriptive appositives and role labels usually describe the same
+        named entity, not a separate parent organization; do not turn those
+        descriptive phrases into `belongs_to_organization` fillers unless the
+        text explicitly names a distinct organization that the entity belongs
+        to
+      - `hold_command_role` is for a named person holding a role over an
+        organization; subordinate-unit text, parent/child organization text,
+        and organizational membership text usually belong under
+        `belongs_to_organization`
+      - a bare mention that a unit, task force, or organization was
+        established is usually background context, not a reviewable
+        `create_organizational_unit` event; omit it unless the source directly
+        states a concrete creation fact with the needed named roles
+      - MOS codes, classifications, labels, and taxonomy terms are usually
+        values or aliases, not standalone entities that belong to an
+        organization
+      - a named institution, review, or report can be the speaker for
+        `express_concern` only when the same evidence span explicitly names
+        that institution, review, or report and attributes the concern,
+        warning, finding, criticism, or dissatisfaction to it
+      - analytical narration, report voice, and author commentary are not
+        named speakers; do not use the organization under discussion as the
+        `express_concern` speaker unless the sentence explicitly attributes the
+        concern to that organization or another named speaker
+      - do not invent generic or likely institutions such as `Congressional
+        oversight`, `oversight bodies`, `critics`, or `commanders` unless the
+        cited evidence span itself names them
+      - oversight, scrutiny, periodic review, hearings, investigation, or
+        doctrine adjustment are not automatically `express_concern`; treat
+        them as governance process context unless the same evidence span
+        explicitly states a concern, warning, criticism, or dissatisfaction
+      - conclusion sections, opinion sections, and summary prose usually
+        restate overall assessment; do not extract `express_concern` from them
+        unless a named institution, review, or person is explicitly presented
+        as the speaker inside the same evidence span
+      - sentences like `effectiveness was limited`, `limitations observed`,
+        `questions were raised`, or `need for reform` are usually analytical
+        assessment, not a typed concern event; unless the same evidence span
+        explicitly says who raised the concern, omit it
+      - if the text only implies sentiment, concern, or dissatisfaction without
+        a named speaker, return no opinion candidate rather than inventing a
+        person or vague source
+      - `hold_command_role` requires one named individual commander in the
+        same evidence span plus an explicit role-holding relation; generic
+        plural leadership references such as `commanders`, `leadership`, or
+        `command structure` are not enough
+      - `limit_capability` requires an explicitly named limited subject from
+        the source text; if the sentence only describes friction, challenges,
+        impediments, or abstract effectiveness in general analytical prose
+        without a clean named subject and capability in the same span, omit
+        the candidate instead of anchoring it loosely
+      - do not turn possessive topic phrases such as `USSOCOM's PSYOP
+        programs` into the `limit_capability` subject unless the same clause
+        explicitly says that named program, unit, or organization was limited
+      - do not inherit the document's main organization, campaign, or topic as
+        the `express_concern` speaker or `limit_capability` subject from
+        section context alone; the speaker or limited subject must be explicit
+        in the same evidence span you cite
+      - discourse like `However`, `In sum`, `Based on the available evidence`,
+        `it is my considered opinion`, or broad conclusion language usually
+        signals analytical wrap-up, not a reviewable event; default to omission
+        unless the same evidence span still states a concrete typed fact with
+        all needed named roles
+
+      Return only the structured candidate payload. Do not add explanatory
+      prose before or after it.
+
+  - role: user
+    content: |
+      Extract candidate assertions from this source text.
+
+      Active profile:
+      - profile_id: {{ profile_id }}
+      - profile_version: {{ profile_version }}
+
+      Active predicate catalog:
+      {{ predicate_catalog }}
+
+      Active entity-type catalog:
+      {{ entity_type_catalog }}
+
+      Source kind: {{ source_kind }}
+      Source ref: {{ source_ref }}
+      Source label: {{ source_label or "none" }}
+
+      Source text:
+      {{ source_text }}

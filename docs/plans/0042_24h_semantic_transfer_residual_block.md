@@ -1,12 +1,12 @@
 # 24h Semantic Transfer Residual Block
 
-Status: active
+Status: complete
 Phase status:
-- Phase 1 pending
-- Phase 2 pending
-- Phase 3 pending
-- Phase 4 pending
-- Phase 5 pending
+- Phase 1 completed
+- Phase 2 completed
+- Phase 3 completed
+- Phase 4 completed
+- Phase 5 completed
 
 Last updated: 2026-04-01
 Workstream: narrow the post-0041 extraction blocker from prompt-surface
@@ -92,6 +92,13 @@ This block succeeds only if:
    mismatch;
 2. chunk `002` and chunk `003` each contribute one explicit residual family.
 
+Progress note:
+
+1. chunk `002` is now frozen as "mostly body-aligned, but still drifting on
+   three candidate bodies";
+2. chunk `003` is now frozen as "strict-omit in prompt-eval, live-only
+   analytical overreach on the extraction path."
+
 ### Phase 2: Land A Body-Level Comparison Aid
 
 #### Tasks
@@ -106,6 +113,16 @@ This block succeeds only if:
 1. the repo can prove chunk `002` is mostly body-aligned while chunk `003`
    remains semantically divergent;
 2. future diagnosis no longer depends on ad hoc REPL snippets.
+
+Progress note:
+
+1. `src/onto_canon6/evaluation/transfer_comparison.py` now exposes
+   body-level shared/live-only/prompt-only buckets;
+2. targeted verification landed in
+   `tests/evaluation/test_transfer_comparison.py`;
+3. canonical semantic residual artifacts now exist:
+   - `docs/runs/2026-04-01_chunk002_semantic_transfer_diff.json`
+   - `docs/runs/2026-04-01_chunk003_semantic_transfer_diff.json`
 
 ### Phase 3: Make One Bounded Prompt Revision
 
@@ -122,6 +139,16 @@ This block succeeds only if:
 1. the prompt diff is small and traceable to the named residual families;
 2. the repo can explain why each changed instruction exists.
 
+Progress note:
+
+1. the bounded revision landed as:
+   - `prompts/extraction/text_to_candidate_assertions_compact_v5.yaml`
+   - `prompts/extraction/prompt_eval_text_to_candidate_assertions_compact_operational_parity_v3.yaml`
+2. the diff only tightened:
+   - generic commander-role overreach,
+   - possessive-topic `limit_capability` overreach, and
+   - conclusion/opinion analytical wrap-up extraction.
+
 ### Phase 4: Verify The Revision
 
 #### Tasks
@@ -135,6 +162,17 @@ This block succeeds only if:
 
 1. verification uses explicit named artifacts, not conversational claims;
 2. the result is strong enough to decide whether the candidate advanced or not.
+
+Progress note:
+
+1. prompt-eval held the expected benchmark posture on both canonical chunks:
+   - chunk `002` stayed at `mean_score = 0.9078`
+   - chunk `003` stayed at `mean_score = 1.0` with `candidates: []`
+2. the live chunk-003 rerun did not recover:
+   - `4` accepted candidates
+   - `0` shared bodies against prompt-eval
+   - `4` live-only bodies
+3. the candidate therefore did not advance the transfer gate.
 
 ### Phase 5: Closeout
 
@@ -151,6 +189,13 @@ This block succeeds only if:
 2. the repo no longer describes the active blocker as "prompt parity" after
    this block.
 
+Progress note:
+
+1. the decision-grade closeout note now exists:
+   `docs/runs/2026-04-01_semantic_transfer_residual_decision.md`
+2. the next bounded extraction block is now explicit:
+   `docs/plans/0043_24h_live_path_divergence_block.md`
+
 ## Failure Modes
 
 1. claim-text wording dominates the semantic diagnosis again;
@@ -165,3 +210,15 @@ This block is complete only when:
 1. all five phases above meet their success criteria;
 2. the worktree is clean;
 3. the repo contains committed semantic residual artifacts and a decision note.
+
+## Closeout
+
+Plan `0042` is complete.
+
+It did not clear the promotion gate, but it answered its bounded question
+honestly:
+
+1. one more narrow prompt revision was not enough;
+2. prompt-eval stayed strong while the live chunk-003 path still diverged; and
+3. the next blocker is now the same-model live-path divergence tracked under
+   Plan `0043`.

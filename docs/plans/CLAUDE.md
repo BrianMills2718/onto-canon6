@@ -14,7 +14,8 @@ This subtree owns active gaps, acceptance criteria, and verification notes.
 | 0025a | [Entity Resolution Scale-Out](0025a_entity_resolution_scale_out.md) | Deferred (activates after 0025 Phase 4) |
 | 0027 | [Deferred Parity Reprioritization](0027_deferred_parity_reprioritization.md) | Active (Lane 5 execution surface; next-active order now explicit) |
 | 0028 | [Query And Browse Surface](0028_query_browse_surface.md) | Active (first read-only slice landed and proved; wider hardening still open) |
-| 0042 | [24h Semantic Transfer Residual Block](0042_24h_semantic_transfer_residual_block.md) | Active (post-0041 semantic residual hardening block) |
+| 0043 | [24h Live-Path Divergence Block](0043_24h_live_path_divergence_block.md) | Active (post-0042 same-model path-divergence block) |
+| 0042 | [24h Semantic Transfer Residual Block](0042_24h_semantic_transfer_residual_block.md) | Complete (bounded prompt revision did not recover live chunk transfer) |
 | 0041 | [24h Full-Chunk Transfer Parity Block](0041_24h_full_chunk_transfer_parity_block.md) | Complete (prompt-surface uncertainty closed; semantic residual now dominant) |
 | 0040 | [24h Extraction Transfer Certification Block](0040_24h_extraction_transfer_certification_block.md) | Complete (chunk 002 positive control proved; compact lane still not promotable) |
 | 0030 | [24h Entity Resolution Value-Proof Block](0030_24h_entity_resolution_value_proof_block.md) | Complete (Plan 0025 now has decision-grade evidence) |

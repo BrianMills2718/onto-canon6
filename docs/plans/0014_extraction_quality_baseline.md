@@ -91,9 +91,10 @@ Plan `0040` narrowed the blocker more precisely than before:
    chunks, so prompt-eval cannot certify promotion by itself.
 
 The current blocker is therefore no longer "missing positive-control transfer
-evidence." Plan `0041` closed the prompt-surface uncertainty and showed the
-remaining blocker is semantic transfer residuals, now tracked under Plan
-`0042`.
+evidence." Plan `0041` closed the prompt-surface uncertainty, and Plan `0042`
+proved that one more narrow semantic prompt revision still did not recover the
+live chunk-003 path. The remaining blocker is now same-model live-path
+divergence, tracked under Plan `0043`.
 
 ## Current State
 

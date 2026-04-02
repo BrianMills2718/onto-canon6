@@ -34,6 +34,12 @@ class NormalizedCandidate:
 
         return (self.predicate, self.roles, self.evidence, self.claim_text)
 
+    @property
+    def body_signature(self) -> tuple[str, tuple[str, ...]]:
+        """Return the body-only signature without evidence or claim wording."""
+
+        return (self.predicate, self.roles)
+
 
 @dataclass(frozen=True)
 class TransferComparison:
@@ -73,6 +79,39 @@ class TransferComparison:
             candidate for candidate in self.live_candidates if candidate.signature in prompt_eval
         )
 
+    @property
+    def body_only_prompt_eval(self) -> tuple[NormalizedCandidate, ...]:
+        """Candidates present only in prompt-eval at the body-signature level."""
+
+        live = {candidate.body_signature for candidate in self.live_candidates}
+        return tuple(
+            candidate
+            for candidate in self.prompt_eval_candidates
+            if candidate.body_signature not in live
+        )
+
+    @property
+    def body_only_live(self) -> tuple[NormalizedCandidate, ...]:
+        """Candidates present only in live extraction at the body-signature level."""
+
+        prompt_eval = {candidate.body_signature for candidate in self.prompt_eval_candidates}
+        return tuple(
+            candidate
+            for candidate in self.live_candidates
+            if candidate.body_signature not in prompt_eval
+        )
+
+    @property
+    def body_shared(self) -> tuple[NormalizedCandidate, ...]:
+        """Candidates shared between both paths at the body-signature level."""
+
+        prompt_eval = {candidate.body_signature for candidate in self.prompt_eval_candidates}
+        return tuple(
+            candidate
+            for candidate in self.live_candidates
+            if candidate.body_signature in prompt_eval
+        )
+
     def to_jsonable(self) -> dict[str, Any]:
         """Render the comparison as deterministic JSON-friendly data."""
 
@@ -84,6 +123,11 @@ class TransferComparison:
             "only_prompt_eval": [_candidate_to_jsonable(c) for c in self.only_prompt_eval],
             "only_live": [_candidate_to_jsonable(c) for c in self.only_live],
             "shared": [_candidate_to_jsonable(c) for c in self.shared],
+            "body_only_prompt_eval": [
+                _candidate_to_jsonable(c) for c in self.body_only_prompt_eval
+            ],
+            "body_only_live": [_candidate_to_jsonable(c) for c in self.body_only_live],
+            "body_shared": [_candidate_to_jsonable(c) for c in self.body_shared],
         }
 
 

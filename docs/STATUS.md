@@ -34,9 +34,11 @@ Current post-cutover program state:
    is not yet promotable;
 8. Plan `0041` is now complete and proved the remaining prompt-surface delta is
    stable and bounded, not the dominant blocker family;
-9. the remaining active program gate is now Lane 4 semantic transfer residual
-   hardening under Plans `0014` and `0042`, not another entity-resolution
-   rerun block.
+9. Plan `0042` is now complete and proved that one more narrow semantic prompt
+   revision was not enough to recover live chunk transfer;
+10. the remaining active program gate is now Lane 4 same-model live-path
+    divergence under Plans `0014` and `0043`, not another entity-resolution
+    rerun block.
 
 ## What Is Proven
 

@@ -1,0 +1,64 @@
+{
+  "candidates": [
+    {
+      "candidate_id": "cand_33615d7ca7414817a441b8c8",
+      "claim_text": "The effectiveness of PSYOP was limited by cultural misunderstandings, insufficient coordination with non-military actors, and the rapid evolution of adversary information tactics.",
+      "evidence_span_count": 1,
+      "predicate": "oc:limit_capability",
+      "review_status": "accepted",
+      "validation_status": "valid"
+    },
+    {
+      "candidate_id": "cand_e848f81f8cc84c29bb373384",
+      "claim_text": "The \"hearts and minds\" campaigns in Iraq and Afghanistan were hampered by inconsistent messaging and occasional missteps that undermined credibility with local populations.",
+      "evidence_span_count": 1,
+      "predicate": "oc:limit_capability",
+      "review_status": "accepted",
+      "validation_status": "valid"
+    },
+    {
+      "candidate_id": "cand_afe8e7d92fcb4db08f705419",
+      "claim_text": "The proliferation of digital media meant that adversaries could quickly counter or distort PSYOP messages, reducing their impact.",
+      "evidence_span_count": 1,
+      "predicate": "oc:limit_capability",
+      "review_status": "accepted",
+      "validation_status": "valid"
+    },
+    {
+      "candidate_id": "cand_8a9fe59c71804c98bdceeb56",
+      "claim_text": "Congressional oversight and public scrutiny increased due to new ethical and legal questions regarding PSYOP.",
+      "evidence_span_count": 1,
+      "predicate": "oc:express_concern",
+      "review_status": "accepted",
+      "validation_status": "valid"
+    }
+  ],
+  "profile": {
+    "profile_id": "psyop_seed",
+    "profile_version": "0.1.0"
+  },
+  "prompt_ref": "onto_canon6.extraction.text_to_candidate_assertions_compact_v5@1",
+  "prompt_template": "prompts/extraction/text_to_candidate_assertions_compact_v5.yaml",
+  "review_db_path": "/home/brian/projects/.worktrees/onto-canon6-integration-planning/var/real_runs/2026-04-01_compact5_real_chunk_verification_chunk003/review_state_max10.sqlite3",
+  "selection_task": "budget_extraction",
+  "source_kind": "text_file",
+  "source_label": "01_stage1_query2__chunk_003.md",
+  "source_ref": "/home/brian/projects/onto-canon6/var/real_runs/2026-03-21_phase_b_prompt_verification/chunks/01_stage1_query2/01_stage1_query2__chunk_003.md",
+  "summary": {
+    "acceptance_rate": 1.0,
+    "accepted_candidates": 4,
+    "pending_candidates": 0,
+    "predicate_counts": {
+      "oc:express_concern": 1,
+      "oc:limit_capability": 3
+    },
+    "rejected_candidates": 0,
+    "review_complete": true,
+    "review_status_counts": {
+      "accepted": 4
+    },
+    "reviewed_candidates": 4,
+    "total_candidates": 4,
+    "verdict": "positive"
+  }
+}

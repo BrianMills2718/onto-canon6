@@ -2,49 +2,54 @@
 
 ## Session Focus
 
-Plan `0041` closeout and Plan `0042` activation in the isolated worktree
+Plan `0042` closeout and Plan `0043` activation in the isolated worktree
 branch `codex/onto-canon6-integration-planning`.
 
 ## What Landed
 
 Committed and documented in the isolated worktree:
 
-1. prompt-surface parity helper and CLI:
-   - `src/onto_canon6/evaluation/prompt_surface_parity.py`
-   - `scripts/render_prompt_surface_parity.py`
-   - `tests/evaluation/test_prompt_surface_parity.py`
-2. canonical prompt-surface artifacts:
-   - `docs/runs/2026-04-01_chunk002_prompt_surface_parity.json`
-   - `docs/runs/2026-04-01_chunk003_prompt_surface_parity.json`
-3. decision-grade parity note:
-   - `docs/runs/2026-04-01_full_chunk_transfer_parity_decision.md`
-4. Plan `0041` is now complete;
-5. Plan `0042` is now the active bounded execution surface.
+1. body-level transfer comparison aid:
+   - `src/onto_canon6/evaluation/transfer_comparison.py`
+   - `tests/evaluation/test_transfer_comparison.py`
+2. canonical semantic residual artifacts:
+   - `docs/runs/2026-04-01_chunk002_semantic_transfer_diff.json`
+   - `docs/runs/2026-04-01_chunk003_semantic_transfer_diff.json`
+3. bounded prompt revision candidate pair:
+   - `prompts/extraction/text_to_candidate_assertions_compact_v5.yaml`
+   - `prompts/extraction/prompt_eval_text_to_candidate_assertions_compact_operational_parity_v3.yaml`
+4. revised verification artifacts:
+   - `docs/runs/2026-04-01_chunk002_full_chunk_prompt_eval_report_v3.json`
+   - `docs/runs/2026-04-01_chunk003_full_chunk_prompt_eval_report_v3.json`
+   - `docs/runs/2026-04-01_chunk003_transfer_report_compact5.json`
+   - `docs/runs/2026-04-01_chunk003_semantic_transfer_diff_compact5.json`
+5. decision-grade semantic residual note:
+   - `docs/runs/2026-04-01_semantic_transfer_residual_decision.md`
+6. Plan `0042` is now complete;
+7. Plan `0043` is now the active bounded execution surface.
 
 ## Current State
 
 1. The compact operational-parity lane is still **not promotable**.
-2. The prompt-surface question is now closed:
-   - system messages match;
-   - prompt-eval still adds a stable `Case input:` wrapper;
-   - that wrapper difference exists on both canonical chunks.
-3. The dominant residual blocker is now explicit:
-   - chunk `002` still has semantic body drift, but is mostly aligned;
-   - chunk `003` still has live-only analytical overreach.
-4. The active frontier is therefore semantic transfer residual hardening under
-   Plan `0042`, not more prompt-surface reconstruction and not another
-   entity-resolution block.
+2. The bounded semantic prompt revision did **not** recover live chunk-003
+   transfer.
+3. Prompt-eval remained strong on chunk `002` and chunk `003`, but the live
+   chunk-003 rerun still produced `4` live-only accepted candidates.
+4. The active frontier is therefore same-model live-path divergence under Plan
+   `0043`, not more generic prompt tuning and not another entity-resolution
+   block.
 
 ## Recommended Next Step
 
 If work continues:
 
 1. stay on `codex/onto-canon6-integration-planning`;
-2. execute Plan `0042` in order:
-   - freeze the semantic residual contract from chunks `002` and `003`
-   - land a body-level comparison aid
-   - make one bounded compact-prompt revision
-   - verify it first in prompt-eval and then on a live chunk rerun
+2. execute Plan `0043` in order:
+   - freeze the same-model divergence contract on chunk `003`
+   - compare live and prompt-eval path surfaces directly
+   - land one narrow diagnostic aid
+   - classify whether the dominant blocker is prompt/render, extraction-path,
+     or review/judge behavior
 3. keep all worktree runtime commands on `PYTHONPATH=src`;
 4. do not reopen entity-resolution heuristics unless the extraction lane stops
    being the active bottleneck.
