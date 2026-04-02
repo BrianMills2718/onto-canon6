@@ -138,7 +138,7 @@ messages:
 
   - role: user
     content: |
-      Extract candidate assertions from this source material.
+      Extract candidate assertions from this source text.
 
       Active profile:
       - profile_id: {{ profile_id }}
@@ -150,5 +150,4 @@ messages:
       Active entity-type catalog:
       {{ entity_type_catalog }}
 
-      Case input:
       {input}

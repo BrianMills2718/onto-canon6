@@ -16,6 +16,11 @@ messages:
         ("Washington" could be a person or a place), but context usually disambiguates.
       - Do NOT merge entities that merely have similar names but refer to different
         real-world things. When in doubt, keep them separate.
+      - For people, conflicting full given names with the same surname are a strong
+        reason to keep entities separate. For example, "John Smith" and "James Smith"
+        should not merge just because both can shorten to "J. Smith". Initial-only
+        or title-only mentions may merge with a full name only when the surrounding
+        context makes the match uniquely plausible.
       - Each entity ID must appear in exactly one cluster. Entities that do not
         match anything else should be in a singleton cluster.
       - Choose the most complete and formal name as the canonical_name for each
@@ -23,7 +28,7 @@ messages:
 
   - role: user
     content: |
-      Entity type: {{ entity_type }}
+      Resolution family: {{ entity_type_family }}
 
       {% if fuzzy_proposals is defined and fuzzy_proposals %}
       The following clusters were proposed by fuzzy name matching. Review each one
@@ -34,21 +39,21 @@ messages:
       {% for proposal in fuzzy_proposals %}
       Cluster {{ loop.index }}:
       {% for entity in proposal.entities %}
-        - ID: {{ entity.entity_id }} | Name: "{{ entity.name }}" | Context: "{{ entity.context }}"
+        - ID: {{ entity.entity_id }} | Type: {{ entity.entity_type }} | Name: "{{ entity.name }}" | Context: "{{ entity.context }}"
       {% endfor %}
       {% endfor %}
 
       Unclustered entities:
       {% for entity in unclustered_entities %}
-        - ID: {{ entity.entity_id }} | Name: "{{ entity.name }}" | Context: "{{ entity.context }}"
+        - ID: {{ entity.entity_id }} | Type: {{ entity.entity_type }} | Name: "{{ entity.name }}" | Context: "{{ entity.context }}"
       {% endfor %}
       {% else %}
       Review the following entities and group any that refer to the same real-world
-      {{ entity_type }}. Return clusters for all entities, including singletons.
+      {{ entity_type_family }}. Return clusters for all entities, including singletons.
 
       Entities:
       {% for entity in entities %}
-        - ID: {{ entity.entity_id }} | Name: "{{ entity.name }}" | Context: "{{ entity.context }}"
+        - ID: {{ entity.entity_id }} | Type: {{ entity.entity_type }} | Name: "{{ entity.name }}" | Context: "{{ entity.context }}"
       {% endfor %}
       {% endif %}
 

@@ -1,0 +1,225 @@
+{
+  "body_only_live": [
+    {
+      "claim_text": "The effectiveness of PSYOP was limited by cultural misunderstandings, insufficient coordination with non-military actors, and the rapid evolution of adversary information tactics.",
+      "evidence": [
+        "However, the effectiveness of PSYOP was often limited by cultural misunderstandings, insufficient coordination with non-military actors, and the rapid evolution of adversary information tactics."
+      ],
+      "predicate": "oc:limit_capability",
+      "roles": [
+        "capability:value:effectiveness",
+        "subject:entity:PSYOP",
+        "topic:value:cultural misunderstandings, insufficient coordination with non-military actors, and the rapid evolution of adversary information tactics"
+      ]
+    },
+    {
+      "claim_text": "The \u201chearts and minds\u201d campaigns in Iraq and Afghanistan were hampered by inconsistent messaging and occasional missteps that undermined credibility with local populations.",
+      "evidence": [
+        "The \u201chearts and minds\u201d campaigns in Iraq and Afghanistan were hampered by inconsistent messaging and occasional missteps that undermined credibility with local populations."
+      ],
+      "predicate": "oc:limit_capability",
+      "roles": [
+        "capability:value:hampered",
+        "subject:entity:\u201chearts and minds\u201d campaigns",
+        "topic:value:inconsistent messaging and occasional missteps that undermined credibility with local populations"
+      ]
+    },
+    {
+      "claim_text": "The proliferation of digital media reduced the impact of PSYOP messages.",
+      "evidence": [
+        "Furthermore, the proliferation of digital media meant that adversaries could quickly counter or distort PSYOP messages, reducing their impact."
+      ],
+      "predicate": "oc:limit_capability",
+      "roles": [
+        "capability:value:reducing their impact",
+        "subject:entity:PSYOP messages",
+        "topic:value:the proliferation of digital media meant that adversaries could quickly counter or distort PSYOP messages"
+      ]
+    },
+    {
+      "claim_text": "Bureaucratic friction and differing organizational cultures sometimes impeded rapid decision-making and message approval for modern PSYOP.",
+      "evidence": [
+        "While the establishment of USSOCOM and the JPOTF model improved unity of effort, bureaucratic friction and differing organizational cultures sometimes impeded rapid decision-making and message approval."
+      ],
+      "predicate": "oc:limit_capability",
+      "roles": [
+        "capability:value:impeded rapid decision-making and message approval",
+        "subject:entity:modern PSYOP",
+        "topic:value:bureaucratic friction and differing organizational cultures"
+      ]
+    },
+    {
+      "claim_text": "Congressional oversight and public scrutiny increased regarding the expansion of PSYOP into the digital domain.",
+      "evidence": [
+        "Congressional oversight and public scrutiny increased, leading to periodic reviews and adjustments of doctrine."
+      ],
+      "predicate": "oc:express_concern",
+      "roles": [
+        "speaker:entity:Congressional oversight and public scrutiny",
+        "topic:value:the expansion of PSYOP into the digital domain"
+      ]
+    },
+    {
+      "claim_text": "Innovations such as the JPOTF positioned PSYOP as a central tool of 21st-century warfare.",
+      "evidence": [
+        "innovations such as the JPOTF and the embrace of digital technologies positioned PSYOP as a central tool of 21st-century warfare."
+      ],
+      "predicate": "oc:uses_designation_label",
+      "roles": [
+        "label:value:JPOTF",
+        "subject:entity:PSYOP"
+      ]
+    }
+  ],
+  "body_only_prompt_eval": [],
+  "body_shared": [],
+  "live_candidates": [
+    {
+      "claim_text": "The effectiveness of PSYOP was limited by cultural misunderstandings, insufficient coordination with non-military actors, and the rapid evolution of adversary information tactics.",
+      "evidence": [
+        "However, the effectiveness of PSYOP was often limited by cultural misunderstandings, insufficient coordination with non-military actors, and the rapid evolution of adversary information tactics."
+      ],
+      "predicate": "oc:limit_capability",
+      "roles": [
+        "capability:value:effectiveness",
+        "subject:entity:PSYOP",
+        "topic:value:cultural misunderstandings, insufficient coordination with non-military actors, and the rapid evolution of adversary information tactics"
+      ]
+    },
+    {
+      "claim_text": "The \u201chearts and minds\u201d campaigns in Iraq and Afghanistan were hampered by inconsistent messaging and occasional missteps that undermined credibility with local populations.",
+      "evidence": [
+        "The \u201chearts and minds\u201d campaigns in Iraq and Afghanistan were hampered by inconsistent messaging and occasional missteps that undermined credibility with local populations."
+      ],
+      "predicate": "oc:limit_capability",
+      "roles": [
+        "capability:value:hampered",
+        "subject:entity:\u201chearts and minds\u201d campaigns",
+        "topic:value:inconsistent messaging and occasional missteps that undermined credibility with local populations"
+      ]
+    },
+    {
+      "claim_text": "The proliferation of digital media reduced the impact of PSYOP messages.",
+      "evidence": [
+        "Furthermore, the proliferation of digital media meant that adversaries could quickly counter or distort PSYOP messages, reducing their impact."
+      ],
+      "predicate": "oc:limit_capability",
+      "roles": [
+        "capability:value:reducing their impact",
+        "subject:entity:PSYOP messages",
+        "topic:value:the proliferation of digital media meant that adversaries could quickly counter or distort PSYOP messages"
+      ]
+    },
+    {
+      "claim_text": "Bureaucratic friction and differing organizational cultures sometimes impeded rapid decision-making and message approval for modern PSYOP.",
+      "evidence": [
+        "While the establishment of USSOCOM and the JPOTF model improved unity of effort, bureaucratic friction and differing organizational cultures sometimes impeded rapid decision-making and message approval."
+      ],
+      "predicate": "oc:limit_capability",
+      "roles": [
+        "capability:value:impeded rapid decision-making and message approval",
+        "subject:entity:modern PSYOP",
+        "topic:value:bureaucratic friction and differing organizational cultures"
+      ]
+    },
+    {
+      "claim_text": "Congressional oversight and public scrutiny increased regarding the expansion of PSYOP into the digital domain.",
+      "evidence": [
+        "Congressional oversight and public scrutiny increased, leading to periodic reviews and adjustments of doctrine."
+      ],
+      "predicate": "oc:express_concern",
+      "roles": [
+        "speaker:entity:Congressional oversight and public scrutiny",
+        "topic:value:the expansion of PSYOP into the digital domain"
+      ]
+    },
+    {
+      "claim_text": "Innovations such as the JPOTF positioned PSYOP as a central tool of 21st-century warfare.",
+      "evidence": [
+        "innovations such as the JPOTF and the embrace of digital technologies positioned PSYOP as a central tool of 21st-century warfare."
+      ],
+      "predicate": "oc:uses_designation_label",
+      "roles": [
+        "label:value:JPOTF",
+        "subject:entity:PSYOP"
+      ]
+    }
+  ],
+  "only_live": [
+    {
+      "claim_text": "The effectiveness of PSYOP was limited by cultural misunderstandings, insufficient coordination with non-military actors, and the rapid evolution of adversary information tactics.",
+      "evidence": [
+        "However, the effectiveness of PSYOP was often limited by cultural misunderstandings, insufficient coordination with non-military actors, and the rapid evolution of adversary information tactics."
+      ],
+      "predicate": "oc:limit_capability",
+      "roles": [
+        "capability:value:effectiveness",
+        "subject:entity:PSYOP",
+        "topic:value:cultural misunderstandings, insufficient coordination with non-military actors, and the rapid evolution of adversary information tactics"
+      ]
+    },
+    {
+      "claim_text": "The \u201chearts and minds\u201d campaigns in Iraq and Afghanistan were hampered by inconsistent messaging and occasional missteps that undermined credibility with local populations.",
+      "evidence": [
+        "The \u201chearts and minds\u201d campaigns in Iraq and Afghanistan were hampered by inconsistent messaging and occasional missteps that undermined credibility with local populations."
+      ],
+      "predicate": "oc:limit_capability",
+      "roles": [
+        "capability:value:hampered",
+        "subject:entity:\u201chearts and minds\u201d campaigns",
+        "topic:value:inconsistent messaging and occasional missteps that undermined credibility with local populations"
+      ]
+    },
+    {
+      "claim_text": "The proliferation of digital media reduced the impact of PSYOP messages.",
+      "evidence": [
+        "Furthermore, the proliferation of digital media meant that adversaries could quickly counter or distort PSYOP messages, reducing their impact."
+      ],
+      "predicate": "oc:limit_capability",
+      "roles": [
+        "capability:value:reducing their impact",
+        "subject:entity:PSYOP messages",
+        "topic:value:the proliferation of digital media meant that adversaries could quickly counter or distort PSYOP messages"
+      ]
+    },
+    {
+      "claim_text": "Bureaucratic friction and differing organizational cultures sometimes impeded rapid decision-making and message approval for modern PSYOP.",
+      "evidence": [
+        "While the establishment of USSOCOM and the JPOTF model improved unity of effort, bureaucratic friction and differing organizational cultures sometimes impeded rapid decision-making and message approval."
+      ],
+      "predicate": "oc:limit_capability",
+      "roles": [
+        "capability:value:impeded rapid decision-making and message approval",
+        "subject:entity:modern PSYOP",
+        "topic:value:bureaucratic friction and differing organizational cultures"
+      ]
+    },
+    {
+      "claim_text": "Congressional oversight and public scrutiny increased regarding the expansion of PSYOP into the digital domain.",
+      "evidence": [
+        "Congressional oversight and public scrutiny increased, leading to periodic reviews and adjustments of doctrine."
+      ],
+      "predicate": "oc:express_concern",
+      "roles": [
+        "speaker:entity:Congressional oversight and public scrutiny",
+        "topic:value:the expansion of PSYOP into the digital domain"
+      ]
+    },
+    {
+      "claim_text": "Innovations such as the JPOTF positioned PSYOP as a central tool of 21st-century warfare.",
+      "evidence": [
+        "innovations such as the JPOTF and the embrace of digital technologies positioned PSYOP as a central tool of 21st-century warfare."
+      ],
+      "predicate": "oc:uses_designation_label",
+      "roles": [
+        "label:value:JPOTF",
+        "subject:entity:PSYOP"
+      ]
+    }
+  ],
+  "only_prompt_eval": [],
+  "prompt_eval_candidates": [],
+  "prompt_eval_item_id": "psyop_017_full_chunk003_analytical_context_strict_omit",
+  "prompt_eval_run_id": "8071271687f9",
+  "shared": []
+}

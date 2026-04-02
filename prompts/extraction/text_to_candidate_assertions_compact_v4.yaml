@@ -125,6 +125,11 @@ messages:
         doctrine adjustment are not automatically `express_concern`; treat
         them as governance process context unless the same evidence span
         explicitly states a concern, warning, criticism, or dissatisfaction
+      - coordinated governance-process nouns such as `Congressional oversight
+        and public scrutiny increased` are not separate named speakers and do
+        not become one or more `express_concern` candidates unless the same
+        span explicitly attributes a concrete concern statement to each named
+        speaker
       - conclusion sections, opinion sections, and summary prose usually
         restate overall assessment; do not extract `express_concern` from them
         unless a named institution, review, or person is explicitly presented
@@ -136,15 +141,52 @@ messages:
       - if the text only implies sentiment, concern, or dissatisfaction without
         a named speaker, return no opinion candidate rather than inventing a
         person or vague source
+      - `express_concern` requires the cited span to show the named speaker
+        explicitly raising, voicing, expressing, warning about, criticizing,
+        questioning, or objecting to the topic; governance reactions such as
+        `oversight increased`, `scrutiny increased`, `periodic review`, or
+        `doctrine adjustments` are not concern events by themselves
       - `limit_capability` requires an explicitly named limited subject from
         the source text; if the sentence only describes friction, challenges,
         impediments, or abstract effectiveness in general analytical prose
         without a clean named subject and capability in the same span, omit
         the candidate instead of anchoring it loosely
+      - retrospective assessment prose such as `was limited`, `was hampered`,
+        or `reducing impact` is usually analytical wrap-up, not a reviewable
+        `limit_capability` event; omit it unless the same evidence span names
+        a concrete limited subject and a directly stated limiting event rather
+        than a broad campaign- or effectiveness-level summary
+      - `limit_capability` is for concrete operational capabilities, named
+        activities, or specific operational processes that the text explicitly
+        says were limited; abstract result nouns such as `effectiveness`,
+        `impact`, or `credibility`, and broad retrospective labels such as
+        `"hearts and minds" campaigns` or `PSYOP messages`, are not enough by
+        themselves on analytical prose
+      - if `limit_capability` would use only an abstract evaluative filler
+        such as `effectiveness`, `impact`, or `credibility` for the capability
+        role, omit the candidate instead of treating that evaluative noun as a
+        capability
+      - if `limit_capability` depends on retrospective labels such as
+        `"hearts and minds" campaigns` or `PSYOP messages` without a more
+        concrete operational capability in the same span, omit it
       - do not inherit the document's main organization, campaign, or topic as
         the `express_concern` speaker or `limit_capability` subject from
         section context alone; the speaker or limited subject must be explicit
         in the same evidence span you cite
+      - analytical section headings such as `Effectiveness and Limitations`,
+        `Ethical and Legal Considerations`, `Personnel and Resource Trends`,
+        or `Conclusion and Opinion` strengthen the omission default; treat
+        claims under those headings as analytical/background context unless the
+        same evidence span states a concrete typed event with all required
+        named roles
+      - aggregate resource or staffing summaries such as `total strength`,
+        `a substantial proportion`, or `personnel were dedicated to` are not
+        `belongs_to_organization` facts unless the same evidence span names a
+        concrete member unit belonging to a distinct named organization
+      - `send_report` requires an explicit delivery or submission event with a
+        named sender, named recipient, and named report in the same span;
+        citation titles, bibliography mentions, linked fact-book references,
+        and passive phrases like `was reported` are not `send_report` events
 
       Return only the structured candidate payload. Do not add explanatory
       prose before or after it.

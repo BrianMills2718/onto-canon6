@@ -1,0 +1,90 @@
+{
+  "control_diff": {
+    "timeout": {
+      "live": 60,
+      "prompt_eval": 0
+    }
+  },
+  "kwargs_diff": {
+    "temperature": {
+      "live": null,
+      "prompt_eval": 0.0
+    }
+  },
+  "live": {
+    "control": {
+      "api_base": null,
+      "base_delay": 1.0,
+      "execution_mode": null,
+      "fallback_models": null,
+      "max_delay": 30.0,
+      "num_retries": 2,
+      "reasoning_effort": null,
+      "retry_on": null,
+      "timeout": 60
+    },
+    "kwargs": {},
+    "model": "gemini/gemini-2.5-flash",
+    "project": "onto-canon6-compact6-wrapper-align-chunk-003",
+    "prompt_ref": "onto_canon6.extraction.text_to_candidate_assertions_compact_v6_wrapper_align@1",
+    "public_api": "call_llm_structured",
+    "requested_model": "gemini/gemini-2.5-flash",
+    "response_model_fqn": "onto_canon6.pipeline.text_extraction.TextExtractionResponse",
+    "system_length": 7790,
+    "task": "budget_extraction",
+    "timestamp": "2026-04-02T00:19:36.966540+00:00",
+    "trace_id": "onto_canon6.extract.14231a88b087fb22",
+    "user_length": 6827
+  },
+  "prompt_eval": {
+    "control": {
+      "api_base": null,
+      "base_delay": 1.0,
+      "execution_mode": null,
+      "fallback_models": null,
+      "max_delay": 30.0,
+      "num_retries": 2,
+      "reasoning_effort": null,
+      "retry_on": null,
+      "timeout": 0
+    },
+    "kwargs": {
+      "temperature": 0.0
+    },
+    "model": "gemini/gemini-2.5-flash",
+    "project": "onto-canon6-integration-planning",
+    "prompt_ref": "onto_canon6.extraction.prompt_eval_text_to_candidate_assertions_compact_operational_parity@3",
+    "public_api": "acall_llm_structured",
+    "requested_model": "gemini/gemini-2.5-flash",
+    "response_model_fqn": "onto_canon6.pipeline.text_extraction.TextExtractionResponse",
+    "system_length": 7790,
+    "task": "budget_extraction",
+    "timestamp": "2026-04-01T23:56:04.253228+00:00",
+    "trace_id": "prompt_eval/31d862d74a8e/compact_operational_parity/r0/psyop_017_full_chunk003_analytical_context_strict_omit",
+    "user_length": 6860
+  },
+  "prompt_ref_equal": false,
+  "public_api_equal": false,
+  "requested_model_equal": true,
+  "response_model_equal": true,
+  "system_diff": [],
+  "system_equal": true,
+  "user_diff": [
+    "--- live_user",
+    "+++ prompt_eval_user",
+    "@@ -34,9 +34,11 @@",
+    " - oc:text_document",
+    " ",
+    " Case input:",
+    "+Case id: psyop_017_full_chunk003_analytical_context_strict_omit",
+    " Source kind: text_file",
+    "-Source ref: /home/brian/projects/onto-canon6/var/real_runs/2026-03-21_phase_b_prompt_verification/chunks/01_stage1_query2/01_stage1_query2__chunk_003.md",
+    "+Source ref: var/real_runs/2026-03-21_phase_b_prompt_verification/chunks/01_stage1_query2/01_stage1_query2__chunk_003.md",
+    " Source label: 01_stage1_query2__chunk_003.md",
+    "+",
+    " Source text:",
+    " ### Effectiveness and Limitations",
+    " "
+  ],
+  "user_equal": false
+}

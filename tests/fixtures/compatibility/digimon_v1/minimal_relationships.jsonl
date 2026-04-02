@@ -1,0 +1,2 @@
+{"description": "ACME Corp employs Alice", "keywords": "", "relation_name": "employ", "source_id": "gassert_test_1", "src_id": "ACME Corp", "tgt_id": "Alice", "weight": 0.9}
+{"description": "Alice returned", "keywords": "", "relation_name": "return_come_back", "source_id": "gassert_test_2", "src_id": "", "tgt_id": "Alice", "weight": 0.7}

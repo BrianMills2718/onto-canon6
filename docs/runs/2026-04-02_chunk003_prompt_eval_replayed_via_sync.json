@@ -1,0 +1,30 @@
+{
+  "call_kwargs": {
+    "api_base": null,
+    "base_delay": 1.0,
+    "fallback_models": null,
+    "max_budget": 0.25,
+    "max_delay": 30.0,
+    "num_retries": 2,
+    "prompt_ref": "onto_canon6.extraction.prompt_eval_text_to_candidate_assertions_compact_operational_parity@3",
+    "reasoning_effort": null,
+    "retry_on": null,
+    "task": "budget_extraction",
+    "temperature": 0.0,
+    "timeout": 0,
+    "trace_id": "replay.sync.prompt_eval.chunk003"
+  },
+  "parsed": {
+    "candidates": []
+  },
+  "project": "onto-canon6-replay-sync-prompt-eval-chunk003",
+  "prompt_ref": "onto_canon6.extraction.prompt_eval_text_to_candidate_assertions_compact_operational_parity@3",
+  "replayed_public_api": "call_llm_structured",
+  "requested_model": "gemini/gemini-2.5-flash",
+  "resolved_model": "gemini/gemini-2.5-flash",
+  "response_model_fqn": "onto_canon6.pipeline.text_extraction.TextExtractionResponse",
+  "source_call_id": 292439,
+  "source_public_api": "acall_llm_structured",
+  "task": "budget_extraction",
+  "trace_id": "replay.sync.prompt_eval.chunk003"
+}

@@ -1,0 +1,1012 @@
+{
+  "baseline_variant_name": "baseline",
+  "case_count": 1,
+  "case_diagnostics": [
+    {
+      "case_id": "chunk_002_full_transfer_certification",
+      "dimension_means": {
+        "count_alignment": 0.25,
+        "exact_f1": 0.4,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": [
+          {
+            "claim_level": "instance",
+            "claim_text": "Gen. Charles R. Holland held the role of Commander for USSOCOM.",
+            "evidence_spans": [
+              {
+                "end_char": 163,
+                "start_char": 140,
+                "text": "Gen. Charles R. Holland"
+              }
+            ],
+            "predicate": "oc:hold_command_role",
+            "roles": {
+              "commander": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:person",
+                  "kind": "entity",
+                  "name": "Gen. Charles R. Holland",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "organization": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:military_organization",
+                  "kind": "entity",
+                  "name": "USSOCOM",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "role_title": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "Commander",
+                  "raw": "Commander",
+                  "value_kind": "string"
+                }
+              ]
+            },
+            "valid_from": "2000",
+            "valid_to": "2003"
+          },
+          {
+            "claim_level": "instance",
+            "claim_text": "Gen. Bryan D. Brown held the role of Commander for USSOCOM.",
+            "evidence_spans": [
+              {
+                "end_char": 219,
+                "start_char": 200,
+                "text": "Gen. Bryan D. Brown"
+              }
+            ],
+            "predicate": "oc:hold_command_role",
+            "roles": {
+              "commander": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:person",
+                  "kind": "entity",
+                  "name": "Gen. Bryan D. Brown",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "organization": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:military_organization",
+                  "kind": "entity",
+                  "name": "USSOCOM",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "role_title": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "Commander",
+                  "raw": "Commander",
+                  "value_kind": "string"
+                }
+              ]
+            },
+            "valid_from": "2003",
+            "valid_to": "2007"
+          }
+        ]
+      },
+      "failure_counts": {},
+      "mean_cost": 0.002793,
+      "mean_latency_ms": 7393.0,
+      "mean_score": 0.535,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 3354,
+      "variant_name": "baseline"
+    },
+    {
+      "case_id": "chunk_002_full_transfer_certification",
+      "dimension_means": {
+        "count_alignment": 0.125,
+        "exact_f1": 0.2222,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": [
+          {
+            "claim_level": "instance",
+            "claim_text": "Gen. Charles R. Holland held the role of Commander in USSOCOM.",
+            "evidence_spans": [
+              {
+                "end_char": 183,
+                "start_char": 160,
+                "text": "Gen. Charles R. Holland"
+              }
+            ],
+            "predicate": "oc:hold_command_role",
+            "roles": {
+              "commander": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:person",
+                  "kind": "entity",
+                  "name": "Gen. Charles R. Holland",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "organization": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:military_organization",
+                  "kind": "entity",
+                  "name": "USSOCOM",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "role_title": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "Commander",
+                  "raw": "Commander",
+                  "value_kind": "string"
+                }
+              ]
+            },
+            "valid_from": "2000",
+            "valid_to": "2003"
+          }
+        ]
+      },
+      "failure_counts": {},
+      "mean_cost": 0.001592,
+      "mean_latency_ms": 1771.0,
+      "mean_score": 0.4069,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 3224,
+      "variant_name": "compact"
+    },
+    {
+      "case_id": "chunk_002_full_transfer_certification",
+      "dimension_means": {
+        "count_alignment": 0.8,
+        "exact_f1": 0.8889,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": [
+          {
+            "claim_level": "instance",
+            "claim_text": "Gen. Charles R. Holland held the role of Commander for USSOCOM.",
+            "evidence_spans": [
+              {
+                "end_char": 172,
+                "start_char": 149,
+                "text": "Gen. Charles R. Holland"
+              }
+            ],
+            "predicate": "oc:hold_command_role",
+            "roles": {
+              "commander": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:person",
+                  "kind": "entity",
+                  "name": "Gen. Charles R. Holland",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "organization": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:military_organization",
+                  "kind": "entity",
+                  "name": "USSOCOM",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "role_title": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "Commander",
+                  "raw": "Commander",
+                  "value_kind": "string"
+                }
+              ]
+            },
+            "valid_from": "2000",
+            "valid_to": "2003"
+          },
+          {
+            "claim_level": "instance",
+            "claim_text": "Gen. Bryan D. Brown held the role of Commander for USSOCOM.",
+            "evidence_spans": [
+              {
+                "end_char": 225,
+                "start_char": 206,
+                "text": "Gen. Bryan D. Brown"
+              }
+            ],
+            "predicate": "oc:hold_command_role",
+            "roles": {
+              "commander": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:person",
+                  "kind": "entity",
+                  "name": "Gen. Bryan D. Brown",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "organization": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:military_organization",
+                  "kind": "entity",
+                  "name": "USSOCOM",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "role_title": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "Commander",
+                  "raw": "Commander",
+                  "value_kind": "string"
+                }
+              ]
+            },
+            "valid_from": "2003",
+            "valid_to": "2007"
+          },
+          {
+            "claim_level": "instance",
+            "claim_text": "Adm. Eric T. Olson held the role of Commander for USSOCOM.",
+            "evidence_spans": [
+              {
+                "end_char": 278,
+                "start_char": 260,
+                "text": "Adm. Eric T. Olson"
+              }
+            ],
+            "predicate": "oc:hold_command_role",
+            "roles": {
+              "commander": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:person",
+                  "kind": "entity",
+                  "name": "Adm. Eric T. Olson",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "organization": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:military_organization",
+                  "kind": "entity",
+                  "name": "USSOCOM",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "role_title": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "Commander",
+                  "raw": "Commander",
+                  "value_kind": "string"
+                }
+              ]
+            },
+            "valid_from": "2007",
+            "valid_to": "2011"
+          },
+          {
+            "claim_level": "instance",
+            "claim_text": "Adm. William H. McRaven held the role of Commander for USSOCOM.",
+            "evidence_spans": [
+              {
+                "end_char": 337,
+                "start_char": 314,
+                "text": "Adm. William H. McRaven"
+              }
+            ],
+            "predicate": "oc:hold_command_role",
+            "roles": {
+              "commander": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:person",
+                  "kind": "entity",
+                  "name": "Adm. William H. McRaven",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "organization": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:military_organization",
+                  "kind": "entity",
+                  "name": "USSOCOM",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "role_title": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "Commander",
+                  "raw": "Commander",
+                  "value_kind": "string"
+                }
+              ]
+            },
+            "valid_from": "2011",
+            "valid_to": "2014"
+          },
+          {
+            "claim_level": "instance",
+            "claim_text": "Gen. Joseph L. Votel held the role of Commander for USSOCOM.",
+            "evidence_spans": [
+              {
+                "end_char": 392,
+                "start_char": 372,
+                "text": "Gen. Joseph L. Votel"
+              }
+            ],
+            "predicate": "oc:hold_command_role",
+            "roles": {
+              "commander": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:person",
+                  "kind": "entity",
+                  "name": "Gen. Joseph L. Votel",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "organization": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:military_organization",
+                  "kind": "entity",
+                  "name": "USSOCOM",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "role_title": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "Commander",
+                  "raw": "Commander",
+                  "value_kind": "string"
+                }
+              ]
+            },
+            "valid_from": "2014",
+            "valid_to": "2016"
+          },
+          {
+            "claim_level": "type",
+            "claim_text": "The 4th PSYOP Group is a principal Army PSYOP unit.",
+            "evidence_spans": [
+              {
+                "end_char": 521,
+                "start_char": 469,
+                "text": "The 4th PSYOP Group, as the principal Army PSYOP unit"
+              }
+            ],
+            "predicate": "oc:belongs_to_organization",
+            "roles": {
+              "member": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:military_unit",
+                  "kind": "entity",
+                  "name": "4th PSYOP Group",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "organization": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:military_organization",
+                  "kind": "entity",
+                  "name": "Army",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ]
+            },
+            "valid_from": null,
+            "valid_to": null
+          },
+          {
+            "claim_level": "instance",
+            "claim_text": "Operation Enduring Freedom occurred in Afghanistan.",
+            "evidence_spans": [
+              {
+                "end_char": 699,
+                "start_char": 660,
+                "text": "Operation Enduring Freedom (Afghanistan)"
+              }
+            ],
+            "predicate": "oc:operation_occurs_in_location",
+            "roles": {
+              "location": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "Afghanistan",
+                  "raw": "Afghanistan",
+                  "value_kind": "string"
+                }
+              ],
+              "operation": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:military_operation",
+                  "kind": "entity",
+                  "name": "Operation Enduring Freedom",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ]
+            },
+            "valid_from": null,
+            "valid_to": null
+          },
+          {
+            "claim_level": "instance",
+            "claim_text": "Operation Iraqi Freedom occurred in Iraq.",
+            "evidence_spans": [
+              {
+                "end_char": 878,
+                "start_char": 849,
+                "text": "Operation Iraqi Freedom (Iraq)"
+              }
+            ],
+            "predicate": "oc:operation_occurs_in_location",
+            "roles": {
+              "location": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "Iraq",
+                  "raw": "Iraq",
+                  "value_kind": "string"
+                }
+              ],
+              "operation": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:military_operation",
+                  "kind": "entity",
+                  "name": "Operation Iraqi Freedom",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ]
+            },
+            "valid_from": null,
+            "valid_to": null
+          },
+          {
+            "claim_level": "instance",
+            "claim_text": "Joint PSYOP Task Forces (JPOTF) were established.",
+            "evidence_spans": [
+              {
+                "end_char": 1147,
+                "start_char": 1050,
+                "text": "A significant innovation during this period was the establishment of Joint PSYOP Task Forces (JPOTF)"
+              }
+            ],
+            "predicate": "oc:create_organizational_unit",
+            "roles": {
+              "created_unit": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:military_unit",
+                  "kind": "entity",
+                  "name": "Joint PSYOP Task Forces (JPOTF)",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ]
+            },
+            "valid_from": null,
+            "valid_to": null
+          },
+          {
+            "claim_level": "instance",
+            "claim_text": "A 2005 review by the National Defense University highlighted the need for better integration with other elements of national power and improved measurement of effectiveness in PSYOP.",
+            "evidence_spans": [
+              {
+                "end_char": 1769,
+                "start_char": 1540,
+                "text": "A 2005 review by the National Defense University highlighted both successes and persistent challenges in PSYOP, including the need for better integration with other elements of national power and improved measurement of effectiveness"
+              }
+            ],
+            "predicate": "oc:express_concern",
+            "roles": {
+              "speaker": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:community",
+                  "kind": "entity",
+                  "name": "National Defense University",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "topic": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "the need for better integration with other elements of national power and improved measurement of effectiveness",
+                  "raw": "the need for better integration with other elements of national power and improved measurement of effectiveness",
+                  "value_kind": "string"
+                }
+              ]
+            },
+            "valid_from": "2005",
+            "valid_to": null
+          }
+        ]
+      },
+      "failure_counts": {},
+      "mean_cost": 0.009959,
+      "mean_latency_ms": 14085.0,
+      "mean_score": 0.9078,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 7164,
+      "variant_name": "compact_operational_parity"
+    },
+    {
+      "case_id": "chunk_002_full_transfer_certification",
+      "dimension_means": {
+        "count_alignment": 0.25,
+        "exact_f1": 0.4,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": [
+          {
+            "claim_level": "instance",
+            "claim_text": "Gen. Charles R. Holland held the role of Commander for USSOCOM.",
+            "evidence_spans": [
+              {
+                "end_char": 159,
+                "start_char": 136,
+                "text": "Gen. Charles R. Holland"
+              }
+            ],
+            "predicate": "oc:hold_command_role",
+            "roles": {
+              "commander": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:person",
+                  "kind": "entity",
+                  "name": "Gen. Charles R. Holland",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "organization": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:military_organization",
+                  "kind": "entity",
+                  "name": "USSOCOM",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "role_title": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "Commander",
+                  "raw": "Commander",
+                  "value_kind": "string"
+                }
+              ]
+            },
+            "valid_from": "2000",
+            "valid_to": "2003"
+          },
+          {
+            "claim_level": "instance",
+            "claim_text": "Gen. Bryan D. Brown held the role of Commander for USSOCOM.",
+            "evidence_spans": [
+              {
+                "end_char": 209,
+                "start_char": 190,
+                "text": "Gen. Bryan D. Brown"
+              }
+            ],
+            "predicate": "oc:hold_command_role",
+            "roles": {
+              "commander": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:person",
+                  "kind": "entity",
+                  "name": "Gen. Bryan D. Brown",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "organization": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:military_organization",
+                  "kind": "entity",
+                  "name": "USSOCOM",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "role_title": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "Commander",
+                  "raw": "Commander",
+                  "value_kind": "string"
+                }
+              ]
+            },
+            "valid_from": "2003",
+            "valid_to": "2007"
+          }
+        ]
+      },
+      "failure_counts": {},
+      "mean_cost": 0.002831,
+      "mean_latency_ms": 3592.0,
+      "mean_score": 0.535,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 3481,
+      "variant_name": "hardened"
+    },
+    {
+      "case_id": "chunk_002_full_transfer_certification",
+      "dimension_means": {
+        "count_alignment": 0.25,
+        "exact_f1": 0.4,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": [
+          {
+            "claim_level": "instance",
+            "claim_text": "Operation Enduring Freedom occurred in Afghanistan.",
+            "evidence_spans": [
+              {
+                "end_char": 1048,
+                "start_char": 1009,
+                "text": "Operation Enduring Freedom (Afghanistan)"
+              }
+            ],
+            "predicate": "oc:operation_occurs_in_location",
+            "roles": {
+              "location": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "Afghanistan",
+                  "raw": "Afghanistan",
+                  "value_kind": "string"
+                }
+              ],
+              "operation": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:military_operation",
+                  "kind": "entity",
+                  "name": "Operation Enduring Freedom",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ]
+            },
+            "valid_from": null,
+            "valid_to": null
+          },
+          {
+            "claim_level": "instance",
+            "claim_text": "Operation Iraqi Freedom occurred in Iraq.",
+            "evidence_spans": [
+              {
+                "end_char": 1438,
+                "start_char": 1409,
+                "text": "Operation Iraqi Freedom (Iraq)"
+              }
+            ],
+            "predicate": "oc:operation_occurs_in_location",
+            "roles": {
+              "location": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "Iraq",
+                  "raw": "Iraq",
+                  "value_kind": "string"
+                }
+              ],
+              "operation": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:military_operation",
+                  "kind": "entity",
+                  "name": "Operation Iraqi Freedom",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ]
+            },
+            "valid_from": null,
+            "valid_to": null
+          }
+        ]
+      },
+      "failure_counts": {},
+      "mean_cost": 0.00179,
+      "mean_latency_ms": 4039.0,
+      "mean_score": 0.535,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 3520,
+      "variant_name": "single_response_hardened"
+    }
+  ],
+  "comparisons": [],
+  "execution_id": "638895997b09",
+  "experiment_name": "onto_canon6_extraction_prompt_eval",
+  "fixture_id": "chunk_transfer_certification_2026_04_01",
+  "fixture_path": "var/evaluation_runs/certification_fixtures/2026-04-01_chunk002_full_chunk_fixture.json",
+  "generated_at": "2026-04-01T23:56:22.294574+00:00",
+  "n_runs": 1,
+  "observability_dataset": "onto_canon6_extraction_prompt_eval",
+  "observability_phase": "evaluation",
+  "selected_model": "gemini/gemini-2.5-flash",
+  "selection_task": "budget_extraction",
+  "variant_summaries": [
+    {
+      "dimension_means": {
+        "count_alignment": 0.25,
+        "exact_f1": 0.4,
+        "structural_usable_rate": 1.0
+      },
+      "failure_counts": {},
+      "mean_cost": 0.0027926,
+      "mean_latency_ms": 7393.0,
+      "mean_score": 0.535,
+      "n_errors": 0,
+      "n_trials": 1,
+      "prompt_ref": "onto_canon6.extraction.prompt_eval_text_to_candidate_assertions_baseline@1",
+      "prompt_template": "prompts/extraction/prompt_eval_text_to_candidate_assertions_baseline.yaml",
+      "std_score": null,
+      "successful_trials": 1,
+      "total_tokens": 3354,
+      "variant_name": "baseline"
+    },
+    {
+      "dimension_means": {
+        "count_alignment": 0.125,
+        "exact_f1": 0.2222,
+        "structural_usable_rate": 1.0
+      },
+      "failure_counts": {},
+      "mean_cost": 0.001592,
+      "mean_latency_ms": 1771.0,
+      "mean_score": 0.4069,
+      "n_errors": 0,
+      "n_trials": 1,
+      "prompt_ref": "onto_canon6.extraction.prompt_eval_text_to_candidate_assertions_compact@3",
+      "prompt_template": "prompts/extraction/prompt_eval_text_to_candidate_assertions_compact.yaml",
+      "std_score": null,
+      "successful_trials": 1,
+      "total_tokens": 3224,
+      "variant_name": "compact"
+    },
+    {
+      "dimension_means": {
+        "count_alignment": 0.8,
+        "exact_f1": 0.8889,
+        "structural_usable_rate": 1.0
+      },
+      "failure_counts": {},
+      "mean_cost": 0.009959200000000001,
+      "mean_latency_ms": 14085.0,
+      "mean_score": 0.9078,
+      "n_errors": 0,
+      "n_trials": 1,
+      "prompt_ref": "onto_canon6.extraction.prompt_eval_text_to_candidate_assertions_compact_operational_parity@3",
+      "prompt_template": "prompts/extraction/prompt_eval_text_to_candidate_assertions_compact_operational_parity_v3.yaml",
+      "std_score": null,
+      "successful_trials": 1,
+      "total_tokens": 7164,
+      "variant_name": "compact_operational_parity"
+    },
+    {
+      "dimension_means": {
+        "count_alignment": 0.25,
+        "exact_f1": 0.4,
+        "structural_usable_rate": 1.0
+      },
+      "failure_counts": {},
+      "mean_cost": 0.0028307000000000002,
+      "mean_latency_ms": 3592.0,
+      "mean_score": 0.535,
+      "n_errors": 0,
+      "n_trials": 1,
+      "prompt_ref": "onto_canon6.extraction.prompt_eval_text_to_candidate_assertions_hardened@1",
+      "prompt_template": "prompts/extraction/prompt_eval_text_to_candidate_assertions_hardened.yaml",
+      "std_score": null,
+      "successful_trials": 1,
+      "total_tokens": 3481,
+      "variant_name": "hardened"
+    },
+    {
+      "dimension_means": {
+        "count_alignment": 0.25,
+        "exact_f1": 0.4,
+        "structural_usable_rate": 1.0
+      },
+      "failure_counts": {},
+      "mean_cost": 0.0017896500000000003,
+      "mean_latency_ms": 4038.9999999999995,
+      "mean_score": 0.535,
+      "n_errors": 0,
+      "n_trials": 1,
+      "prompt_ref": "onto_canon6.extraction.prompt_eval_text_to_candidate_assertions_single_response_hardened@1",
+      "prompt_template": "prompts/extraction/prompt_eval_text_to_candidate_assertions_single_response_hardened.yaml",
+      "std_score": null,
+      "successful_trials": 1,
+      "total_tokens": 3520,
+      "variant_name": "single_response_hardened"
+    }
+  ]
+}

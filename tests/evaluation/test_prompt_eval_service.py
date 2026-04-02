@@ -22,7 +22,6 @@ from onto_canon6.pipeline import (  # noqa: E402
     ExtractedCandidate,
     ExtractedEntityFiller,
     ExtractedEvidenceSpan,
-    ExtractedFiller,
     ExtractedValueFiller,
     ProfileRef,
     SourceArtifactRef,
@@ -897,7 +896,8 @@ def test_run_prompt_experiment_builds_report_and_variant_comparison(
     compact_messages = experiment.variants[2].messages
     compact_operational_parity_messages = experiment.variants[3].messages
     single_response_messages = experiment.variants[4].messages
-    assert "Case input:\n{input}" in baseline_messages[-1]["content"]
+    assert "{input}" in baseline_messages[-1]["content"]
+    assert "Case input:" not in baseline_messages[-1]["content"]
     assert "Return at most 2 candidates." in baseline_messages[0]["content"]
     assert "Use at most 1 evidence spans per" in baseline_messages[0]["content"]
     assert "Use exact source surface forms for entity names and values." in baseline_messages[0]["content"]
@@ -921,7 +921,19 @@ def test_run_prompt_experiment_builds_report_and_variant_comparison(
     assert "Return at most 10 candidates." in compact_operational_parity_messages[0]["content"]
     assert "conclusion sections, opinion sections, and summary prose usually" in compact_operational_parity_messages[0]["content"]
     assert "do not inherit the document's main organization, campaign, or topic as" in compact_operational_parity_messages[0]["content"]
-    assert "Case input:\n{input}" in compact_operational_parity_messages[-1]["content"]
+    assert "coordinated governance-process nouns such as `Congressional oversight" in compact_operational_parity_messages[0]["content"]
+    assert "retrospective assessment prose such as `was limited`, `was hampered`" in compact_operational_parity_messages[0]["content"]
+    assert "analytical section headings such as `Effectiveness and Limitations`" in compact_operational_parity_messages[0]["content"]
+    assert "aggregate resource or staffing summaries such as `total strength`" in compact_operational_parity_messages[0]["content"]
+    assert "`express_concern` requires the cited span to show the named speaker" in compact_operational_parity_messages[0]["content"]
+    assert "`uses_designation_label` facts for the same subject" in compact_operational_parity_messages[0]["content"]
+    assert "named academic, review, and analysis institutions acting as the" in compact_operational_parity_messages[0]["content"]
+    assert "same-sentence follow-on noun phrase such as `the discipline`" in compact_operational_parity_messages[0]["content"]
+    assert "`limit_capability` is for concrete operational capabilities, named" in compact_operational_parity_messages[0]["content"]
+    assert "if `limit_capability` would use only an abstract evaluative filler" in compact_operational_parity_messages[0]["content"]
+    assert "`send_report` requires an explicit delivery or submission event" in compact_operational_parity_messages[0]["content"]
+    assert "{input}" in compact_operational_parity_messages[-1]["content"]
+    assert "Case input:" not in compact_operational_parity_messages[-1]["content"]
     assert "Return exactly one structured response object" in single_response_messages[0]["content"]
     assert "Return at most 2 candidates." in single_response_messages[0]["content"]
     assert "Use at most 1 evidence spans per" in single_response_messages[0]["content"]
@@ -938,6 +950,9 @@ def test_run_prompt_experiment_builds_report_and_variant_comparison(
     observability = captured["observability"]
     assert isinstance(observability, _FakePromptEvalObservabilityConfig)
     assert observability.kwargs["dataset"] == "onto_canon6_extraction_prompt_eval"
+    assert experiment.inputs[0].id == "psyop_001_designation_change"
+    assert "Case id:" not in experiment.inputs[0].content
+    assert "Source kind:" in experiment.inputs[0].content
     assert observability.kwargs["project"] == "onto-canon6"
     provenance = observability.kwargs["provenance"]
     assert isinstance(provenance, dict)

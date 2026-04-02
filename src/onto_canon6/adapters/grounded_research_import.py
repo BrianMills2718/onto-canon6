@@ -11,9 +11,10 @@ specific models. Any system that produces ClaimRecords can feed onto-canon6.
 from __future__ import annotations
 
 import logging
-from pathlib import Path
+from typing import cast
 
-from epistemic_contracts import ClaimRecord, ConfidenceScore
+from epistemic_contracts import ClaimRecord  # type: ignore[import-untyped]
+from pydantic import JsonValue
 
 from ..pipeline.models import (
     CandidateAssertionImport,
@@ -44,14 +45,29 @@ def import_shared_claims(
 
     for claim in claims:
         # Build payload from claim data
-        payload: dict = {}
+        payload: dict[str, JsonValue] = {}
         if claim.predicate:
             payload["predicate"] = claim.predicate
         else:
             payload["predicate"] = f"shared:{claim.claim_type}"
 
         if claim.roles:
-            payload["roles"] = claim.roles
+            payload["roles"] = cast(JsonValue, claim.roles)
+        elif claim.entity_refs:
+            # Build minimal roles from entity references so promotion can
+            # extract entities. Uses dict format — the internal pipeline
+            # normalizer expects dict[str, list[Filler]], not list[RoleEntry].
+            roles_dict: dict[str, JsonValue] = {}
+            role_names = ["subject", "object", "indirect_object", "modifier"]
+            for i, eref in enumerate(claim.entity_refs):
+                rname = role_names[i] if i < len(role_names) else f"arg{i}"
+                roles_dict[rname] = [{
+                    "kind": "entity",
+                    "entity_id": eref.entity_id,
+                    "entity_type": eref.entity_type,
+                    "name": eref.name,
+                }]
+            payload["roles"] = roles_dict
 
         # Build confidence metadata
         if claim.confidence:
@@ -101,9 +117,6 @@ def import_shared_claims(
                 ),
             )
 
-        # Set content_text for evidence span verification — the review
-        # pipeline requires source_artifact.content_text to verify spans
-        content_text = claim.statement if evidence_spans else None
 
         candidate_import = CandidateAssertionImport(
             profile=ProfileRef(

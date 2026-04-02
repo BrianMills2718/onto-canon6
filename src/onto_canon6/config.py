@@ -61,7 +61,9 @@ class PipelineConfig(BaseModel):
             "Review mode for extracted candidates. "
             "'human': manual accept/reject (default). "
             "'auto': auto-accept all structurally valid candidates and auto-promote. "
-            "'llm': run LLM-judge, accept supported candidates, quarantine unsupported."
+            "'llm': run LLM-judge, accept supported candidates, leave "
+            "partially_supported candidates pending review, and reject "
+            "unsupported candidates."
         ),
     )
 
@@ -80,31 +82,20 @@ class ResolutionConfig(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
     default_strategy: str = Field(
-        default="exact",
-        description="Candidate generation strategy: exact, fuzzy, or llm.",
-    )
-    require_llm_review: bool = Field(
-        default=True,
-        description="Validate all candidate merge groups with LLM before merging. "
-        "When True, exact/fuzzy strategies generate candidates that LLM validates. "
-        "When False, exact/fuzzy auto-merge without LLM (for testing). "
-        "The llm strategy always does LLM review regardless of this flag.",
+        default="llm",
+        description="Resolution strategy: exact, fuzzy, or llm.",
     )
     model_override: str | None = Field(
         default=None,
-        description="Model for LLM clustering/validation calls.",
+        description="Model for LLM clustering calls.",
     )
     max_budget_usd: float = Field(
         default=0.50,
         description="Max budget per resolution run.",
     )
-    cluster_prompt_template: str = Field(
+    prompt_template: str = Field(
         default="prompts/resolution/cluster_entities.yaml",
-        description="Prompt template for LLM entity clustering (strategy=llm).",
-    )
-    validate_prompt_template: str = Field(
-        default="prompts/resolution/validate_merge.yaml",
-        description="Prompt template for LLM merge validation (require_llm_review=true).",
+        description="Prompt template for LLM entity clustering.",
     )
     fuzzy_pre_filter_threshold: int = Field(
         default=80,
@@ -140,6 +131,15 @@ class ExtractionConfig(BaseModel):
     model_override: str | None = Field(
         default=None,
         description="Pin a specific model instead of task-based selection. Useful when the default model has structural issues with the extraction schema.",
+    )
+    temperature: float | None = Field(
+        default=None,
+        ge=0.0,
+        description=(
+            "Optional deterministic decoding override for live extraction. "
+            "Null keeps the provider default; a float such as 0.0 forces the "
+            "same temperature to every extraction call."
+        ),
     )
     default_extraction_goal: str = Field(
         min_length=1,
@@ -306,6 +306,15 @@ class PromptEvalExperimentConfig(BaseModel):
     comparison_confidence: float = Field(gt=0.0, lt=1.0)
     max_candidates_per_case: int = Field(ge=1)
     max_evidence_spans_per_candidate: int = Field(ge=1)
+    include_case_id_in_input: bool = Field(
+        default=False,
+        description=(
+            "Whether extraction prompt_eval inputs should include a `Case id:` "
+            "line in the model prompt. Default false to keep prompt_eval "
+            "closer to the live extraction surface while preserving case ids "
+            "in experiment metadata and observability."
+        ),
+    )
     variants: tuple[PromptEvalVariantConfig, ...] = Field(min_length=2)
 
 

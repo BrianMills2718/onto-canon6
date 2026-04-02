@@ -51,9 +51,8 @@ messages:
       - `value`: `kind`, `value_kind`, `normalized`, optionally `raw`
       - `unknown`: `kind`, `raw`
 
-      `roles` is an array of role entries. Each entry has a `role_name` (string)
-      and a `fillers` array of filler objects. Even a single filler must appear
-      inside a one-element `fillers` array.
+      `roles` must map each role name to an array of fillers. Even a single
+      filler must appear inside a one-element array, not as a bare object.
 
       Use source punctuation directly inside string values. Do not invent
       backslash escapes for apostrophes or quotes beyond normal JSON string
@@ -90,23 +89,6 @@ messages:
       clearly supports a predicate outside the current catalog, propose the
       strongest descriptive predicate ID you can in `oc:*` form so the review
       workflow can decide whether to extend the ontology.
-
-      Entity discrimination — only extract REAL entities:
-
-      - An entity must be a specific, named real-world thing: a person, an
-        organization, a place, a program, a document, a unit, an event with a
-        proper name. NOT a generic action ("met"), NOT a description ("several
-        initiatives to modernize its force structure"), NOT a pronoun or
-        anaphoric reference ("the meeting", "the reforms", "a ceremony").
-      - If you cannot give the entity a proper name that a reviewer would
-        recognize as referring to a specific real-world thing, it is not an
-        entity — omit it.
-      - Generic collective nouns ("special operations forces", "intelligence
-        community", "senior military officials") are not entities unless the
-        text names a specific instance.
-      - Events are entities only if they have proper names ("Operation Enduring
-        Freedom", "the 2025 NATO Summit"). Generic event descriptions ("a
-        joint conference", "a training exercise") are context, not entities.
 
       Keep candidates atomic and reviewable:
 

@@ -53,7 +53,6 @@ class _FakeTextExtractionService:
         source_kind: str = "text_file",
         source_label: str | None = None,
         source_metadata: dict[str, object] | None = None,
-        extraction_goal: str | None = None,
     ) -> tuple[object, ...]:
         """Submit one deterministic mixed-mode candidate through the real review flow."""
 

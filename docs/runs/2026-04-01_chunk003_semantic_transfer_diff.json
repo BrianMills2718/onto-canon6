@@ -1,0 +1,123 @@
+{
+  "body_only_live": [
+    {
+      "claim_text": null,
+      "evidence": [
+        "the effectiveness of PSYOP was often limited by cultural misunderstandings, insufficient coordination with non-military actors, and the rapid evolution of adversary information tactics"
+      ],
+      "predicate": "oc:limit_capability",
+      "roles": [
+        "capability:value:effectiveness",
+        "subject:entity:USSOCOM\u2019s PSYOP programs",
+        "topic:value:cultural misunderstandings, insufficient coordination with non-military actors, and the rapid evolution of adversary information tactics"
+      ]
+    },
+    {
+      "claim_text": null,
+      "evidence": [
+        "Congressional oversight and public scrutiny increased, leading to periodic reviews and adjustments of doctrine"
+      ],
+      "predicate": "oc:express_concern",
+      "roles": [
+        "speaker:entity:Congressional oversight",
+        "subject:entity:PSYOP",
+        "topic:value:the expansion of PSYOP into the digital domain raised new ethical and legal questions"
+      ]
+    },
+    {
+      "claim_text": null,
+      "evidence": [
+        "The command structure, led by a succession of capable USSOCOM commanders"
+      ],
+      "predicate": "oc:hold_command_role",
+      "roles": [
+        "commander:entity:USSOCOM commanders",
+        "organization:entity:USSOCOM",
+        "role_title:value:command structure"
+      ]
+    }
+  ],
+  "body_only_prompt_eval": [],
+  "body_shared": [],
+  "live_candidates": [
+    {
+      "claim_text": null,
+      "evidence": [
+        "the effectiveness of PSYOP was often limited by cultural misunderstandings, insufficient coordination with non-military actors, and the rapid evolution of adversary information tactics"
+      ],
+      "predicate": "oc:limit_capability",
+      "roles": [
+        "capability:value:effectiveness",
+        "subject:entity:USSOCOM\u2019s PSYOP programs",
+        "topic:value:cultural misunderstandings, insufficient coordination with non-military actors, and the rapid evolution of adversary information tactics"
+      ]
+    },
+    {
+      "claim_text": null,
+      "evidence": [
+        "Congressional oversight and public scrutiny increased, leading to periodic reviews and adjustments of doctrine"
+      ],
+      "predicate": "oc:express_concern",
+      "roles": [
+        "speaker:entity:Congressional oversight",
+        "subject:entity:PSYOP",
+        "topic:value:the expansion of PSYOP into the digital domain raised new ethical and legal questions"
+      ]
+    },
+    {
+      "claim_text": null,
+      "evidence": [
+        "The command structure, led by a succession of capable USSOCOM commanders"
+      ],
+      "predicate": "oc:hold_command_role",
+      "roles": [
+        "commander:entity:USSOCOM commanders",
+        "organization:entity:USSOCOM",
+        "role_title:value:command structure"
+      ]
+    }
+  ],
+  "only_live": [
+    {
+      "claim_text": null,
+      "evidence": [
+        "the effectiveness of PSYOP was often limited by cultural misunderstandings, insufficient coordination with non-military actors, and the rapid evolution of adversary information tactics"
+      ],
+      "predicate": "oc:limit_capability",
+      "roles": [
+        "capability:value:effectiveness",
+        "subject:entity:USSOCOM\u2019s PSYOP programs",
+        "topic:value:cultural misunderstandings, insufficient coordination with non-military actors, and the rapid evolution of adversary information tactics"
+      ]
+    },
+    {
+      "claim_text": null,
+      "evidence": [
+        "Congressional oversight and public scrutiny increased, leading to periodic reviews and adjustments of doctrine"
+      ],
+      "predicate": "oc:express_concern",
+      "roles": [
+        "speaker:entity:Congressional oversight",
+        "subject:entity:PSYOP",
+        "topic:value:the expansion of PSYOP into the digital domain raised new ethical and legal questions"
+      ]
+    },
+    {
+      "claim_text": null,
+      "evidence": [
+        "The command structure, led by a succession of capable USSOCOM commanders"
+      ],
+      "predicate": "oc:hold_command_role",
+      "roles": [
+        "commander:entity:USSOCOM commanders",
+        "organization:entity:USSOCOM",
+        "role_title:value:command structure"
+      ]
+    }
+  ],
+  "only_prompt_eval": [],
+  "prompt_eval_candidates": [],
+  "prompt_eval_item_id": "psyop_017_full_chunk003_analytical_context_strict_omit",
+  "prompt_eval_run_id": "0f664c022900",
+  "shared": []
+}

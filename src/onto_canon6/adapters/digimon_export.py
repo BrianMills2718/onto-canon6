@@ -17,22 +17,12 @@ The mapping:
 
 from __future__ import annotations
 
+import dataclasses
 import json
 import logging
 from pathlib import Path
 import sqlite3
 from typing import Sequence
-
-from pydantic import BaseModel, ConfigDict, Field
-
-try:
-    from data_contracts import boundary
-except ImportError:
-    def boundary(**kwargs):
-        """No-op boundary decorator until data_contracts package exists."""
-        def decorator(fn):
-            return fn
-        return decorator
 
 from ..core.graph_models import (
     PromotedGraphAssertionRecord,
@@ -46,7 +36,8 @@ from ..pipeline.service import ReviewService
 logger = logging.getLogger(__name__)
 
 
-class DigimonEntityRecord(BaseModel):
+@dataclasses.dataclass(frozen=True)
+class DigimonEntityRecord:
     """Entity in Digimon's expected format.
 
     Maps onto-canon6 ``PromotedGraphEntityRecord`` to the flat structure that
@@ -54,16 +45,15 @@ class DigimonEntityRecord(BaseModel):
     loaded from JSONL.
     """
 
-    model_config = ConfigDict(extra="forbid", frozen=True)
-
-    entity_name: str = Field(description="Human-readable entity name resolved from assertion role fillers.")
-    source_id: str = Field(description="onto-canon6 entity_id (e.g. 'ent:progressive:shield_ai').")
-    entity_type: str = Field(default="", description="Ontology type of the entity (e.g. 'Person', 'Corporation').")
-    description: str = Field(default="", description="Optional textual description of the entity.")
-    rank: int = Field(default=0, description="Entity importance rank (0 = unranked).")
+    entity_name: str
+    source_id: str
+    entity_type: str = ""
+    description: str = ""
+    rank: int = 0
 
 
-class DigimonRelationshipRecord(BaseModel):
+@dataclasses.dataclass(frozen=True)
+class DigimonRelationshipRecord:
     """Relationship in Digimon's expected format.
 
     Maps onto-canon6 promoted assertions (with entity role fillers) to the
@@ -71,18 +61,17 @@ class DigimonRelationshipRecord(BaseModel):
     from JSONL.
     """
 
-    model_config = ConfigDict(extra="forbid", frozen=True)
-
-    src_id: str = Field(description="Source entity name (ARG0 filler). Empty string if single-argument predicate.")
-    tgt_id: str = Field(description="Target entity name (ARG1 filler). Empty string if single-argument predicate.")
-    relation_name: str = Field(default="", description="Predicate name from the onto-canon6 assertion.")
-    description: str = Field(default="", description="Claim text from the source assertion.")
-    weight: float = Field(default=1.0, description="Confidence weight: epistemic confidence > payload confidence > 1.0.")
-    keywords: str = Field(default="", description="Reserved for downstream keyword tagging.")
-    source_id: str = Field(default="", description="onto-canon6 assertion_id for provenance tracing.")
+    src_id: str
+    tgt_id: str
+    relation_name: str = ""
+    description: str = ""
+    weight: float = 1.0
+    keywords: str = ""
+    source_id: str = ""
 
 
-class DigimonExportBundle(BaseModel):
+@dataclasses.dataclass(frozen=True)
+class DigimonExportBundle:
     """Complete export for Digimon ingestion.
 
     Contains all promoted entities and relationships in Digimon-compatible
@@ -90,19 +79,11 @@ class DigimonExportBundle(BaseModel):
     that produced the data.
     """
 
-    model_config = ConfigDict(extra="forbid", frozen=True)
-
-    entities: list[DigimonEntityRecord] = Field(description="All promoted entities in Digimon-compatible format.")
-    relationships: list[DigimonRelationshipRecord] = Field(description="All promoted relationships in Digimon-compatible format.")
-    source_onto_canon_db: str = Field(description="Filesystem path to the onto-canon6 database that produced this export.")
+    entities: list[DigimonEntityRecord]
+    relationships: list[DigimonRelationshipRecord]
+    source_onto_canon_db: str
 
 
-@boundary(
-    name="onto-canon6.digimon_export",
-    version="0.1.0",
-    producer="onto-canon6",
-    consumers=["digimon"],
-)
 def export_for_digimon(
     *,
     graph_service: CanonicalGraphService,
@@ -147,12 +128,6 @@ def export_for_digimon(
     return bundle
 
 
-@boundary(
-    name="onto-canon6.digimon_export_from_db",
-    version="0.1.0",
-    producer="onto-canon6",
-    consumers=["digimon"],
-)
 def export_for_digimon_from_db(
     review_db_path: Path,
 ) -> DigimonExportBundle:
@@ -169,12 +144,6 @@ def export_for_digimon_from_db(
     )
 
 
-@boundary(
-    name="onto-canon6.write_digimon_jsonl",
-    version="0.1.0",
-    producer="onto-canon6",
-    consumers=["digimon"],
-)
 def write_digimon_jsonl(
     bundle: DigimonExportBundle,
     output_dir: Path,
@@ -193,12 +162,12 @@ def write_digimon_jsonl(
 
     with entities_path.open("w", encoding="utf-8") as f:
         for entity in bundle.entities:
-            f.write(json.dumps(entity.model_dump(), ensure_ascii=False, sort_keys=True))
+            f.write(json.dumps(dataclasses.asdict(entity), ensure_ascii=False, sort_keys=True))
             f.write("\n")
 
     with relationships_path.open("w", encoding="utf-8") as f:
         for rel in bundle.relationships:
-            f.write(json.dumps(rel.model_dump(), ensure_ascii=False, sort_keys=True))
+            f.write(json.dumps(dataclasses.asdict(rel), ensure_ascii=False, sort_keys=True))
             f.write("\n")
 
     logger.info(

@@ -1,0 +1,5150 @@
+{
+  "baseline_variant_name": "baseline",
+  "case_count": 16,
+  "case_diagnostics": [
+    {
+      "case_id": "psyop_001_designation_change",
+      "dimension_means": {
+        "count_alignment": 0.5,
+        "exact_f1": 0.3333,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": [
+          {
+            "claim_level": "instance",
+            "claim_text": "In 2011, Admiral Eric Olson replaced the term PSYOP with 'Military Information Support Operations'.",
+            "evidence_spans": [
+              {
+                "end_char": 196,
+                "start_char": 0,
+                "text": "In 2011, under the direction of Admiral Eric Olson, commander of the United States Special Operations Command, the term PSYOP was officially replaced with 'Military Information Support Operations' (MISO)."
+              }
+            ],
+            "predicate": "oc:replace_designation",
+            "roles": {
+              "actor": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:person",
+                  "kind": "entity",
+                  "name": "Admiral Eric Olson",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "new_designation": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "Military Information Support Operations",
+                  "raw": "'Military Information Support Operations'",
+                  "value_kind": "string"
+                }
+              ],
+              "old_designation": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "PSYOP",
+                  "raw": "PSYOP",
+                  "value_kind": "string"
+                }
+              ],
+              "subject": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:psychological_operation",
+                  "kind": "entity",
+                  "name": "PSYOP",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "time": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "2011",
+                  "raw": "2011",
+                  "value_kind": "time"
+                }
+              ]
+            },
+            "valid_from": "2011",
+            "valid_to": null
+          },
+          {
+            "claim_level": "instance",
+            "claim_text": "Admiral Eric Olson held the role of commander of the United States Special Operations Command.",
+            "evidence_spans": [
+              {
+                "end_char": 95,
+                "start_char": 20,
+                "text": "Admiral Eric Olson, commander of the United States Special Operations Command"
+              }
+            ],
+            "predicate": "oc:hold_command_role",
+            "roles": {
+              "commander": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:person",
+                  "kind": "entity",
+                  "name": "Admiral Eric Olson",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "organization": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:military_organization",
+                  "kind": "entity",
+                  "name": "United States Special Operations Command",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "role_title": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "commander",
+                  "raw": "commander",
+                  "value_kind": "string"
+                }
+              ]
+            },
+            "valid_from": null,
+            "valid_to": null
+          }
+        ]
+      },
+      "failure_counts": {},
+      "mean_cost": 0.003057,
+      "mean_latency_ms": 4464.0,
+      "mean_score": 0.5166,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 2709,
+      "variant_name": "baseline"
+    },
+    {
+      "case_id": "psyop_001_designation_change",
+      "dimension_means": {
+        "count_alignment": 0.25,
+        "exact_f1": 0.0,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": [
+          {
+            "claim_level": "instance",
+            "claim_text": "In 2011, Admiral Eric Olson replaced the term PSYOP with 'Military Information Support Operations'.",
+            "evidence_spans": [
+              {
+                "end_char": 195,
+                "start_char": 0,
+                "text": "In 2011, under the direction of Admiral Eric Olson, commander of the United States Special Operations Command, the term PSYOP was officially replaced with 'Military Information Support Operations' (MISO)."
+              }
+            ],
+            "predicate": "oc:replace_designation",
+            "roles": {
+              "actor": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:person",
+                  "kind": "entity",
+                  "name": "Admiral Eric Olson",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "new_designation": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "Military Information Support Operations",
+                  "raw": "'Military Information Support Operations'",
+                  "value_kind": "string"
+                }
+              ],
+              "old_designation": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "PSYOP",
+                  "raw": "PSYOP",
+                  "value_kind": "string"
+                }
+              ],
+              "subject": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:psychological_operation",
+                  "kind": "entity",
+                  "name": "PSYOP",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "time": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "2011",
+                  "raw": "2011",
+                  "value_kind": "time"
+                }
+              ]
+            },
+            "valid_from": "2011",
+            "valid_to": null
+          }
+        ]
+      },
+      "failure_counts": {},
+      "mean_cost": 0.002191,
+      "mean_latency_ms": 3141.0,
+      "mean_score": 0.275,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 2713,
+      "variant_name": "compact"
+    },
+    {
+      "case_id": "psyop_001_designation_change",
+      "dimension_means": {
+        "count_alignment": 0.8,
+        "exact_f1": 0.2222,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": [
+          {
+            "claim_level": "instance",
+            "claim_text": "Admiral Eric Olson held the role of commander of the United States Special Operations Command.",
+            "evidence_spans": [
+              {
+                "end_char": 106,
+                "start_char": 30,
+                "text": "Admiral Eric Olson, commander of the United States Special Operations Command"
+              }
+            ],
+            "predicate": "oc:hold_command_role",
+            "roles": {
+              "commander": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:person",
+                  "kind": "entity",
+                  "name": "Admiral Eric Olson",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "organization": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:military_organization",
+                  "kind": "entity",
+                  "name": "United States Special Operations Command",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "role_title": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "commander",
+                  "raw": "commander",
+                  "value_kind": "string"
+                }
+              ]
+            },
+            "valid_from": "2011",
+            "valid_to": null
+          },
+          {
+            "claim_level": "instance",
+            "claim_text": "In 2011, Admiral Eric Olson replaced the term PSYOP with 'Military Information Support Operations' (MISO).",
+            "evidence_spans": [
+              {
+                "end_char": 197,
+                "start_char": 0,
+                "text": "In 2011, under the direction of Admiral Eric Olson, commander of the United States Special Operations Command, the term PSYOP was officially replaced with 'Military Information Support Operations' (MISO)."
+              }
+            ],
+            "predicate": "oc:replace_designation",
+            "roles": {
+              "actor": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:person",
+                  "kind": "entity",
+                  "name": "Admiral Eric Olson",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "new_designation": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "Military Information Support Operations",
+                  "raw": "'Military Information Support Operations'",
+                  "value_kind": "string"
+                }
+              ],
+              "old_designation": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "PSYOP",
+                  "raw": "PSYOP",
+                  "value_kind": "string"
+                }
+              ],
+              "subject": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:psychological_operation",
+                  "kind": "entity",
+                  "name": "PSYOP",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "time": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "2011",
+                  "raw": "2011",
+                  "value_kind": "time"
+                }
+              ]
+            },
+            "valid_from": "2011",
+            "valid_to": null
+          },
+          {
+            "claim_level": "instance",
+            "claim_text": "The designation 'Military Information Support Operations' (MISO) is used.",
+            "evidence_spans": [
+              {
+                "end_char": 197,
+                "start_char": 149,
+                "text": "'Military Information Support Operations' (MISO)"
+              }
+            ],
+            "predicate": "oc:uses_designation_label",
+            "roles": {
+              "label": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "Military Information Support Operations",
+                  "raw": "'Military Information Support Operations'",
+                  "value_kind": "string"
+                }
+              ],
+              "subject": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:psychological_operation",
+                  "kind": "entity",
+                  "name": "Military Information Support Operations",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ]
+            },
+            "valid_from": "2011",
+            "valid_to": null
+          },
+          {
+            "claim_level": "instance",
+            "claim_text": "The designation MISO is used.",
+            "evidence_spans": [
+              {
+                "end_char": 197,
+                "start_char": 191,
+                "text": "(MISO)"
+              }
+            ],
+            "predicate": "oc:uses_designation_label",
+            "roles": {
+              "label": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "MISO",
+                  "raw": "MISO",
+                  "value_kind": "string"
+                }
+              ],
+              "subject": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:psychological_operation",
+                  "kind": "entity",
+                  "name": "MISO",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ]
+            },
+            "valid_from": "2011",
+            "valid_to": null
+          },
+          {
+            "claim_level": "instance",
+            "claim_text": "The designation PSYOP is used.",
+            "evidence_spans": [
+              {
+                "end_char": 134,
+                "start_char": 129,
+                "text": "PSYOP"
+              }
+            ],
+            "predicate": "oc:uses_designation_label",
+            "roles": {
+              "label": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "PSYOP",
+                  "raw": "PSYOP",
+                  "value_kind": "string"
+                }
+              ],
+              "subject": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:psychological_operation",
+                  "kind": "entity",
+                  "name": "PSYOP",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ]
+            },
+            "valid_from": null,
+            "valid_to": "2011"
+          }
+        ]
+      },
+      "failure_counts": {},
+      "mean_cost": 0.005935,
+      "mean_latency_ms": 8004.0,
+      "mean_score": 0.4744,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 5572,
+      "variant_name": "compact_operational_parity"
+    },
+    {
+      "case_id": "psyop_001_designation_change",
+      "dimension_means": {
+        "count_alignment": 0.5,
+        "exact_f1": 0.3333,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": [
+          {
+            "claim_level": "instance",
+            "claim_text": "In 2011, Admiral Eric Olson replaced the term 'PSYOP' with 'Military Information Support Operations'.",
+            "evidence_spans": [
+              {
+                "end_char": 196,
+                "start_char": 0,
+                "text": "In 2011, under the direction of Admiral Eric Olson, commander of the United States Special Operations Command, the term PSYOP was officially replaced with 'Military Information Support Operations' (MISO)."
+              }
+            ],
+            "predicate": "oc:replace_designation",
+            "roles": {
+              "actor": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:person",
+                  "kind": "entity",
+                  "name": "Admiral Eric Olson",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "new_designation": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "Military Information Support Operations",
+                  "raw": "'Military Information Support Operations'",
+                  "value_kind": "string"
+                }
+              ],
+              "old_designation": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "PSYOP",
+                  "raw": "PSYOP",
+                  "value_kind": "string"
+                }
+              ],
+              "subject": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:psychological_operation",
+                  "kind": "entity",
+                  "name": "PSYOP",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "time": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "2011",
+                  "raw": "2011",
+                  "value_kind": "time"
+                }
+              ]
+            },
+            "valid_from": "2011",
+            "valid_to": null
+          },
+          {
+            "claim_level": "instance",
+            "claim_text": "Admiral Eric Olson holds the role of commander of the United States Special Operations Command.",
+            "evidence_spans": [
+              {
+                "end_char": 101,
+                "start_char": 26,
+                "text": "Admiral Eric Olson, commander of the United States Special Operations Command"
+              }
+            ],
+            "predicate": "oc:hold_command_role",
+            "roles": {
+              "commander": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:person",
+                  "kind": "entity",
+                  "name": "Admiral Eric Olson",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "organization": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:military_organization",
+                  "kind": "entity",
+                  "name": "United States Special Operations Command",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "role_title": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "commander",
+                  "raw": "commander",
+                  "value_kind": "string"
+                }
+              ]
+            },
+            "valid_from": null,
+            "valid_to": null
+          }
+        ]
+      },
+      "failure_counts": {},
+      "mean_cost": 0.003102,
+      "mean_latency_ms": 4576.0,
+      "mean_score": 0.5166,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 2839,
+      "variant_name": "hardened"
+    },
+    {
+      "case_id": "psyop_001_designation_change",
+      "dimension_means": {
+        "count_alignment": 0.5,
+        "exact_f1": 0.3333,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": [
+          {
+            "claim_level": "instance",
+            "claim_text": "In 2011, Admiral Eric Olson replaced the term 'PSYOP' with 'Military Information Support Operations'.",
+            "evidence_spans": [
+              {
+                "end_char": 196,
+                "start_char": 0,
+                "text": "In 2011, under the direction of Admiral Eric Olson, commander of the United States Special Operations Command, the term PSYOP was officially replaced with 'Military Information Support Operations' (MISO)."
+              }
+            ],
+            "predicate": "oc:replace_designation",
+            "roles": {
+              "actor": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:person",
+                  "kind": "entity",
+                  "name": "Admiral Eric Olson",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "new_designation": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "Military Information Support Operations",
+                  "raw": "'Military Information Support Operations'",
+                  "value_kind": "string"
+                }
+              ],
+              "old_designation": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "PSYOP",
+                  "raw": "PSYOP",
+                  "value_kind": "string"
+                }
+              ],
+              "subject": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:psychological_operation",
+                  "kind": "entity",
+                  "name": "PSYOP",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "time": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "2011",
+                  "raw": "2011",
+                  "value_kind": "time"
+                }
+              ]
+            },
+            "valid_from": "2011",
+            "valid_to": null
+          },
+          {
+            "claim_level": "instance",
+            "claim_text": "Admiral Eric Olson holds the role of commander of the United States Special Operations Command.",
+            "evidence_spans": [
+              {
+                "end_char": 100,
+                "start_char": 25,
+                "text": "Admiral Eric Olson, commander of the United States Special Operations Command"
+              }
+            ],
+            "predicate": "oc:hold_command_role",
+            "roles": {
+              "commander": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:person",
+                  "kind": "entity",
+                  "name": "Admiral Eric Olson",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "organization": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:military_organization",
+                  "kind": "entity",
+                  "name": "United States Special Operations Command",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "role_title": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "commander",
+                  "raw": "commander",
+                  "value_kind": "string"
+                }
+              ]
+            },
+            "valid_from": null,
+            "valid_to": null
+          }
+        ]
+      },
+      "failure_counts": {},
+      "mean_cost": 0.003175,
+      "mean_latency_ms": 4228.0,
+      "mean_score": 0.5166,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 3081,
+      "variant_name": "single_response_hardened"
+    },
+    {
+      "case_id": "psyop_002_concerns_about_truth_based_shift",
+      "dimension_means": {
+        "count_alignment": 1.0,
+        "exact_f1": 0.0,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": [
+          {
+            "claim_level": "instance",
+            "claim_text": "Critics within the PSYOP/MISO community expressed concerns that the shift to a 'truth-based' approach neutered the discipline.",
+            "evidence_spans": [
+              {
+                "end_char": 124,
+                "start_char": 0,
+                "text": "Critics within the PSYOP/MISO community expressed concerns that the shift to a 'truth-based' approach neutered the discipline"
+              }
+            ],
+            "predicate": "oc:express_concern",
+            "roles": {
+              "speaker": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:community",
+                  "kind": "entity",
+                  "name": "Critics within the PSYOP/MISO community",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "topic": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "the shift to a 'truth-based' approach neutered the discipline",
+                  "raw": "the shift to a 'truth-based' approach neutered the discipline",
+                  "value_kind": "string"
+                }
+              ]
+            },
+            "valid_from": null,
+            "valid_to": null
+          },
+          {
+            "claim_level": "instance",
+            "claim_text": "The shift to a 'truth-based' approach limited the discipline's ability to employ deception.",
+            "evidence_spans": [
+              {
+                "end_char": 166,
+                "start_char": 126,
+                "text": "limiting its ability to employ deception"
+              }
+            ],
+            "predicate": "oc:limit_capability",
+            "roles": {
+              "capability": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "ability to employ deception",
+                  "raw": "ability to employ deception",
+                  "value_kind": "string"
+                }
+              ],
+              "subject": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:psychological_operation",
+                  "kind": "entity",
+                  "name": "the discipline",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "topic": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "the shift to a 'truth-based' approach",
+                  "raw": "the shift to a 'truth-based' approach",
+                  "value_kind": "string"
+                }
+              ]
+            },
+            "valid_from": null,
+            "valid_to": null
+          }
+        ]
+      },
+      "failure_counts": {},
+      "mean_cost": 0.002027,
+      "mean_latency_ms": 3456.0,
+      "mean_score": 0.35,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 2461,
+      "variant_name": "baseline"
+    },
+    {
+      "case_id": "psyop_002_concerns_about_truth_based_shift",
+      "dimension_means": {
+        "count_alignment": 0.5,
+        "exact_f1": 0.0,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": [
+          {
+            "claim_level": "instance",
+            "claim_text": "Critics within the PSYOP/MISO community expressed concerns that the shift to a 'truth-based' approach neutered the discipline, limiting its ability to employ deception.",
+            "evidence_spans": [
+              {
+                "end_char": 165,
+                "start_char": 0,
+                "text": "Critics within the PSYOP/MISO community expressed concerns that the shift to a 'truth-based' approach neutered the discipline, limiting its ability to employ deception"
+              }
+            ],
+            "predicate": "oc:express_concern",
+            "roles": {
+              "speaker": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:community",
+                  "kind": "entity",
+                  "name": "Critics within the PSYOP/MISO community",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "topic": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "the shift to a 'truth-based' approach neutered the discipline, limiting its ability to employ deception",
+                  "raw": "the shift to a 'truth-based' approach neutered the discipline, limiting its ability to employ deception",
+                  "value_kind": "string"
+                }
+              ]
+            },
+            "valid_from": null,
+            "valid_to": null
+          }
+        ]
+      },
+      "failure_counts": {},
+      "mean_cost": 0.001126,
+      "mean_latency_ms": 2067.0,
+      "mean_score": 0.3,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 2477,
+      "variant_name": "compact"
+    },
+    {
+      "case_id": "psyop_002_concerns_about_truth_based_shift",
+      "dimension_means": {
+        "count_alignment": 1.0,
+        "exact_f1": 0.0,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": [
+          {
+            "claim_level": "instance",
+            "claim_text": "Critics within the PSYOP/MISO community expressed concerns that the shift to a 'truth-based' approach neutered the discipline, limiting its ability to employ deception.",
+            "evidence_spans": [
+              {
+                "end_char": 165,
+                "start_char": 0,
+                "text": "Critics within the PSYOP/MISO community expressed concerns that the shift to a 'truth-based' approach neutered the discipline, limiting its ability to employ deception"
+              }
+            ],
+            "predicate": "oc:express_concern",
+            "roles": {
+              "speaker": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:community",
+                  "kind": "entity",
+                  "name": "Critics within the PSYOP/MISO community",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "topic": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "the shift to a 'truth-based' approach neutered the discipline, limiting its ability to employ deception",
+                  "raw": "the shift to a 'truth-based' approach neutered the discipline, limiting its ability to employ deception",
+                  "value_kind": "string"
+                }
+              ]
+            },
+            "valid_from": null,
+            "valid_to": null
+          },
+          {
+            "claim_level": "instance",
+            "claim_text": "The shift to a 'truth-based' approach limited the discipline's ability to employ deception.",
+            "evidence_spans": [
+              {
+                "end_char": 165,
+                "start_char": 70,
+                "text": "the shift to a 'truth-based' approach neutered the discipline, limiting its ability to employ deception"
+              }
+            ],
+            "predicate": "oc:limit_capability",
+            "roles": {
+              "capability": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "ability to employ deception",
+                  "raw": "ability to employ deception",
+                  "value_kind": "string"
+                }
+              ],
+              "subject": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:psychological_operation",
+                  "kind": "entity",
+                  "name": "the discipline",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "topic": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "the shift to a 'truth-based' approach",
+                  "raw": "the shift to a 'truth-based' approach",
+                  "value_kind": "string"
+                }
+              ]
+            },
+            "valid_from": null,
+            "valid_to": null
+          }
+        ]
+      },
+      "failure_counts": {},
+      "mean_cost": 0.002191,
+      "mean_latency_ms": 3985.0,
+      "mean_score": 0.35,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 4448,
+      "variant_name": "compact_operational_parity"
+    },
+    {
+      "case_id": "psyop_002_concerns_about_truth_based_shift",
+      "dimension_means": {
+        "count_alignment": 1.0,
+        "exact_f1": 0.0,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": [
+          {
+            "claim_level": "instance",
+            "claim_text": "Critics within the PSYOP/MISO community expressed concerns that the shift to a 'truth-based' approach neutered the discipline.",
+            "evidence_spans": [
+              {
+                "end_char": 124,
+                "start_char": 0,
+                "text": "Critics within the PSYOP/MISO community expressed concerns that the shift to a 'truth-based' approach neutered the discipline"
+              }
+            ],
+            "predicate": "oc:express_concern",
+            "roles": {
+              "speaker": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:community",
+                  "kind": "entity",
+                  "name": "Critics within the PSYOP/MISO community",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "topic": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "the shift to a 'truth-based' approach neutered the discipline",
+                  "raw": "the shift to a 'truth-based' approach neutered the discipline",
+                  "value_kind": "string"
+                }
+              ]
+            },
+            "valid_from": null,
+            "valid_to": null
+          },
+          {
+            "claim_level": "instance",
+            "claim_text": "The shift to a 'truth-based' approach limited the discipline's ability to employ deception.",
+            "evidence_spans": [
+              {
+                "end_char": 166,
+                "start_char": 126,
+                "text": "limiting its ability to employ deception"
+              }
+            ],
+            "predicate": "oc:limit_capability",
+            "roles": {
+              "capability": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "ability to employ deception",
+                  "raw": "ability to employ deception",
+                  "value_kind": "string"
+                }
+              ],
+              "subject": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:psychological_operation",
+                  "kind": "entity",
+                  "name": "the discipline",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "topic": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "the shift to a 'truth-based' approach",
+                  "raw": "the shift to a 'truth-based' approach",
+                  "value_kind": "string"
+                }
+              ]
+            },
+            "valid_from": null,
+            "valid_to": null
+          }
+        ]
+      },
+      "failure_counts": {},
+      "mean_cost": 0.002043,
+      "mean_latency_ms": 3563.0,
+      "mean_score": 0.35,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 2588,
+      "variant_name": "hardened"
+    },
+    {
+      "case_id": "psyop_002_concerns_about_truth_based_shift",
+      "dimension_means": {
+        "count_alignment": 1.0,
+        "exact_f1": 0.0,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": [
+          {
+            "claim_level": "instance",
+            "claim_text": "Critics within the PSYOP/MISO community expressed concerns that the shift to a 'truth-based' approach neutered the discipline.",
+            "evidence_spans": [
+              {
+                "end_char": 122,
+                "start_char": 0,
+                "text": "Critics within the PSYOP/MISO community expressed concerns that the shift to a 'truth-based' approach neutered the discipline"
+              }
+            ],
+            "predicate": "oc:express_concern",
+            "roles": {
+              "speaker": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:community",
+                  "kind": "entity",
+                  "name": "Critics within the PSYOP/MISO community",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "topic": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "the shift to a 'truth-based' approach neutered the discipline",
+                  "raw": "the shift to a 'truth-based' approach neutered the discipline",
+                  "value_kind": "string"
+                }
+              ]
+            },
+            "valid_from": null,
+            "valid_to": null
+          },
+          {
+            "claim_level": "instance",
+            "claim_text": "The shift to a 'truth-based' approach limited the discipline's ability to employ deception.",
+            "evidence_spans": [
+              {
+                "end_char": 163,
+                "start_char": 124,
+                "text": "limiting its ability to employ deception"
+              }
+            ],
+            "predicate": "oc:limit_capability",
+            "roles": {
+              "capability": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "ability to employ deception",
+                  "raw": "ability to employ deception",
+                  "value_kind": "string"
+                }
+              ],
+              "subject": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:psychological_operation",
+                  "kind": "entity",
+                  "name": "the discipline",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "topic": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "the shift to a 'truth-based' approach",
+                  "raw": "the shift to a 'truth-based' approach",
+                  "value_kind": "string"
+                }
+              ]
+            },
+            "valid_from": null,
+            "valid_to": null
+          }
+        ]
+      },
+      "failure_counts": {},
+      "mean_cost": 0.002077,
+      "mean_latency_ms": 3445.0,
+      "mean_score": 0.35,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 2830,
+      "variant_name": "single_response_hardened"
+    },
+    {
+      "case_id": "psyop_003_alias_expansion_parenthetical_only",
+      "dimension_means": {
+        "count_alignment": 0.0,
+        "exact_f1": 0.0,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": [
+          {
+            "claim_level": "instance",
+            "claim_text": "U.S. Africa Command uses the designation label \"USAFRICOM\".",
+            "evidence_spans": [
+              {
+                "end_char": 31,
+                "start_char": 0,
+                "text": "USAFRICOM (U.S. Africa Command)"
+              }
+            ],
+            "predicate": "oc:uses_designation_label",
+            "roles": {
+              "label": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "USAFRICOM",
+                  "raw": "USAFRICOM",
+                  "value_kind": "string"
+                }
+              ],
+              "subject": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:military_organization",
+                  "kind": "entity",
+                  "name": "U.S. Africa Command",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ]
+            },
+            "valid_from": null,
+            "valid_to": null
+          },
+          {
+            "claim_level": "instance",
+            "claim_text": "USAFRICOM uses the designation label \"U.S. Africa Command\".",
+            "evidence_spans": [
+              {
+                "end_char": 31,
+                "start_char": 0,
+                "text": "USAFRICOM (U.S. Africa Command)"
+              }
+            ],
+            "predicate": "oc:uses_designation_label",
+            "roles": {
+              "label": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "U.S. Africa Command",
+                  "raw": "U.S. Africa Command",
+                  "value_kind": "string"
+                }
+              ],
+              "subject": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:military_organization",
+                  "kind": "entity",
+                  "name": "USAFRICOM",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ]
+            },
+            "valid_from": null,
+            "valid_to": null
+          }
+        ]
+      },
+      "failure_counts": {},
+      "mean_cost": 0.001685,
+      "mean_latency_ms": 2992.0,
+      "mean_score": 0.25,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 2332,
+      "variant_name": "baseline"
+    },
+    {
+      "case_id": "psyop_003_alias_expansion_parenthetical_only",
+      "dimension_means": {
+        "count_alignment": 1.0,
+        "exact_f1": 1.0,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": []
+      },
+      "failure_counts": {},
+      "mean_cost": 0.000152,
+      "mean_latency_ms": 718.0,
+      "mean_score": 1.0,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 2095,
+      "variant_name": "compact"
+    },
+    {
+      "case_id": "psyop_003_alias_expansion_parenthetical_only",
+      "dimension_means": {
+        "count_alignment": 1.0,
+        "exact_f1": 1.0,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": []
+      },
+      "failure_counts": {},
+      "mean_cost": 0.000157,
+      "mean_latency_ms": 1079.0,
+      "mean_score": 1.0,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 3642,
+      "variant_name": "compact_operational_parity"
+    },
+    {
+      "case_id": "psyop_003_alias_expansion_parenthetical_only",
+      "dimension_means": {
+        "count_alignment": 0.0,
+        "exact_f1": 0.0,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": [
+          {
+            "claim_level": "instance",
+            "claim_text": "U.S. Africa Command uses the designation label USAFRICOM.",
+            "evidence_spans": [
+              {
+                "end_char": 31,
+                "start_char": 0,
+                "text": "USAFRICOM (U.S. Africa Command)"
+              }
+            ],
+            "predicate": "oc:uses_designation_label",
+            "roles": {
+              "label": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "USAFRICOM",
+                  "raw": "USAFRICOM",
+                  "value_kind": "string"
+                }
+              ],
+              "subject": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:military_organization",
+                  "kind": "entity",
+                  "name": "U.S. Africa Command",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ]
+            },
+            "valid_from": null,
+            "valid_to": null
+          },
+          {
+            "claim_level": "instance",
+            "claim_text": "USAFRICOM uses the designation label U.S. Africa Command.",
+            "evidence_spans": [
+              {
+                "end_char": 31,
+                "start_char": 0,
+                "text": "USAFRICOM (U.S. Africa Command)"
+              }
+            ],
+            "predicate": "oc:uses_designation_label",
+            "roles": {
+              "label": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "U.S. Africa Command",
+                  "raw": "U.S. Africa Command",
+                  "value_kind": "string"
+                }
+              ],
+              "subject": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:military_organization",
+                  "kind": "entity",
+                  "name": "USAFRICOM",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ]
+            },
+            "valid_from": null,
+            "valid_to": null
+          }
+        ]
+      },
+      "failure_counts": {},
+      "mean_cost": 0.001692,
+      "mean_latency_ms": 2918.0,
+      "mean_score": 0.25,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 2455,
+      "variant_name": "hardened"
+    },
+    {
+      "case_id": "psyop_003_alias_expansion_parenthetical_only",
+      "dimension_means": {
+        "count_alignment": 1.0,
+        "exact_f1": 1.0,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": []
+      },
+      "failure_counts": {},
+      "mean_cost": 0.000148,
+      "mean_latency_ms": 718.0,
+      "mean_score": 1.0,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 2066,
+      "variant_name": "single_response_hardened"
+    },
+    {
+      "case_id": "psyop_004_subordinate_unit_belongs_to_organization",
+      "dimension_means": {
+        "count_alignment": 1.0,
+        "exact_f1": 1.0,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": [
+          {
+            "claim_level": "instance",
+            "claim_text": "The 4th POG(A) is a subordinate unit of the 1st Special Forces Command.",
+            "evidence_spans": [
+              {
+                "end_char": 72,
+                "start_char": 0,
+                "text": "The 4th POG(A) is a subordinate unit of the 1st Special Forces Command."
+              }
+            ],
+            "predicate": "oc:belongs_to_organization",
+            "roles": {
+              "member": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:military_unit",
+                  "kind": "entity",
+                  "name": "4th POG(A)",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "organization": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:military_organization",
+                  "kind": "entity",
+                  "name": "1st Special Forces Command",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ]
+            },
+            "valid_from": null,
+            "valid_to": null
+          }
+        ]
+      },
+      "failure_counts": {},
+      "mean_cost": 0.000928,
+      "mean_latency_ms": 1913.0,
+      "mean_score": 1.0,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 2028,
+      "variant_name": "baseline"
+    },
+    {
+      "case_id": "psyop_004_subordinate_unit_belongs_to_organization",
+      "dimension_means": {
+        "count_alignment": 1.0,
+        "exact_f1": 1.0,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": [
+          {
+            "claim_level": "instance",
+            "claim_text": "The 4th POG(A) belongs to the 1st Special Forces Command.",
+            "evidence_spans": [
+              {
+                "end_char": 70,
+                "start_char": 0,
+                "text": "The 4th POG(A) is a subordinate unit of the 1st Special Forces Command."
+              }
+            ],
+            "predicate": "oc:belongs_to_organization",
+            "roles": {
+              "member": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:military_unit",
+                  "kind": "entity",
+                  "name": "4th POG(A)",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "organization": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:military_organization",
+                  "kind": "entity",
+                  "name": "1st Special Forces Command",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ]
+            },
+            "valid_from": null,
+            "valid_to": null
+          }
+        ]
+      },
+      "failure_counts": {},
+      "mean_cost": 0.000975,
+      "mean_latency_ms": 1890.0,
+      "mean_score": 1.0,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 2423,
+      "variant_name": "compact"
+    },
+    {
+      "case_id": "psyop_004_subordinate_unit_belongs_to_organization",
+      "dimension_means": {
+        "count_alignment": 1.0,
+        "exact_f1": 1.0,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": [
+          {
+            "claim_level": "instance",
+            "claim_text": "The 4th POG(A) is a subordinate unit of the 1st Special Forces Command.",
+            "evidence_spans": [
+              {
+                "end_char": 72,
+                "start_char": 0,
+                "text": "The 4th POG(A) is a subordinate unit of the 1st Special Forces Command."
+              }
+            ],
+            "predicate": "oc:belongs_to_organization",
+            "roles": {
+              "member": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:military_unit",
+                  "kind": "entity",
+                  "name": "4th POG(A)",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "organization": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:military_organization",
+                  "kind": "entity",
+                  "name": "1st Special Forces Command",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ]
+            },
+            "valid_from": null,
+            "valid_to": null
+          }
+        ]
+      },
+      "failure_counts": {},
+      "mean_cost": 0.000987,
+      "mean_latency_ms": 2037.0,
+      "mean_score": 1.0,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 3973,
+      "variant_name": "compact_operational_parity"
+    },
+    {
+      "case_id": "psyop_004_subordinate_unit_belongs_to_organization",
+      "dimension_means": {
+        "count_alignment": 1.0,
+        "exact_f1": 1.0,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": [
+          {
+            "claim_level": "instance",
+            "claim_text": "The 4th POG(A) is a subordinate unit of the 1st Special Forces Command.",
+            "evidence_spans": [
+              {
+                "end_char": 70,
+                "start_char": 0,
+                "text": "The 4th POG(A) is a subordinate unit of the 1st Special Forces Command."
+              }
+            ],
+            "predicate": "oc:belongs_to_organization",
+            "roles": {
+              "member": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:military_unit",
+                  "kind": "entity",
+                  "name": "4th POG(A)",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "organization": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:military_organization",
+                  "kind": "entity",
+                  "name": "1st Special Forces Command",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ]
+            },
+            "valid_from": null,
+            "valid_to": null
+          }
+        ]
+      },
+      "failure_counts": {},
+      "mean_cost": 0.000944,
+      "mean_latency_ms": 2074.0,
+      "mean_score": 1.0,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 2155,
+      "variant_name": "hardened"
+    },
+    {
+      "case_id": "psyop_004_subordinate_unit_belongs_to_organization",
+      "dimension_means": {
+        "count_alignment": 1.0,
+        "exact_f1": 1.0,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": [
+          {
+            "claim_level": "instance",
+            "claim_text": "The 4th POG(A) is a subordinate unit of the 1st Special Forces Command.",
+            "evidence_spans": [
+              {
+                "end_char": 70,
+                "start_char": 0,
+                "text": "The 4th POG(A) is a subordinate unit of the 1st Special Forces Command."
+              }
+            ],
+            "predicate": "oc:belongs_to_organization",
+            "roles": {
+              "member": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:military_unit",
+                  "kind": "entity",
+                  "name": "4th POG(A)",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "organization": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:military_organization",
+                  "kind": "entity",
+                  "name": "1st Special Forces Command",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ]
+            },
+            "valid_from": null,
+            "valid_to": null
+          }
+        ]
+      },
+      "failure_counts": {},
+      "mean_cost": 0.000978,
+      "mean_latency_ms": 1917.0,
+      "mean_score": 1.0,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 2397,
+      "variant_name": "single_response_hardened"
+    },
+    {
+      "case_id": "psyop_005_unattributed_opinion_strict_omit",
+      "dimension_means": {
+        "count_alignment": 0.0,
+        "exact_f1": 0.0,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": [
+          {
+            "claim_level": "instance",
+            "claim_text": "Concerns have been raised about the effectiveness of MISO in online influence campaigns.",
+            "evidence_spans": [
+              {
+                "end_char": 89,
+                "start_char": 0,
+                "text": "Concerns have been raised about the effectiveness of MISO in online influence campaigns."
+              }
+            ],
+            "predicate": "oc:express_concern",
+            "roles": {
+              "speaker": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:community",
+                  "kind": "entity",
+                  "name": "Concerns",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "topic": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "the effectiveness of MISO in online influence campaigns",
+                  "raw": "the effectiveness of MISO in online influence campaigns",
+                  "value_kind": "string"
+                }
+              ]
+            },
+            "valid_from": null,
+            "valid_to": null
+          }
+        ]
+      },
+      "failure_counts": {},
+      "mean_cost": 0.000902,
+      "mean_latency_ms": 2242.0,
+      "mean_score": 0.25,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 2008,
+      "variant_name": "baseline"
+    },
+    {
+      "case_id": "psyop_005_unattributed_opinion_strict_omit",
+      "dimension_means": {
+        "count_alignment": 1.0,
+        "exact_f1": 1.0,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": []
+      },
+      "failure_counts": {},
+      "mean_cost": 0.000151,
+      "mean_latency_ms": 698.0,
+      "mean_score": 1.0,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 2084,
+      "variant_name": "compact"
+    },
+    {
+      "case_id": "psyop_005_unattributed_opinion_strict_omit",
+      "dimension_means": {
+        "count_alignment": 1.0,
+        "exact_f1": 1.0,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": []
+      },
+      "failure_counts": {},
+      "mean_cost": 0.000155,
+      "mean_latency_ms": 864.0,
+      "mean_score": 1.0,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 3631,
+      "variant_name": "compact_operational_parity"
+    },
+    {
+      "case_id": "psyop_005_unattributed_opinion_strict_omit",
+      "dimension_means": {
+        "count_alignment": 1.0,
+        "exact_f1": 1.0,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": []
+      },
+      "failure_counts": {},
+      "mean_cost": 0.000113,
+      "mean_latency_ms": 761.0,
+      "mean_score": 1.0,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 1813,
+      "variant_name": "hardened"
+    },
+    {
+      "case_id": "psyop_005_unattributed_opinion_strict_omit",
+      "dimension_means": {
+        "count_alignment": 1.0,
+        "exact_f1": 1.0,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": []
+      },
+      "failure_counts": {},
+      "mean_cost": 0.000146,
+      "mean_latency_ms": 684.0,
+      "mean_score": 1.0,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 2055,
+      "variant_name": "single_response_hardened"
+    },
+    {
+      "case_id": "psyop_006_context_only_membership_strict_omit",
+      "dimension_means": {
+        "count_alignment": 0.0,
+        "exact_f1": 0.0,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": [
+          {
+            "claim_level": "instance",
+            "claim_text": "The 4th PSYOP Group is a principal Army PSYOP unit.",
+            "evidence_spans": [
+              {
+                "end_char": 53,
+                "start_char": 0,
+                "text": "The 4th PSYOP Group, as the principal Army PSYOP unit"
+              }
+            ],
+            "predicate": "oc:belongs_to_organization",
+            "roles": {
+              "member": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:military_unit",
+                  "kind": "entity",
+                  "name": "4th PSYOP Group",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "organization": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:military_organization",
+                  "kind": "entity",
+                  "name": "Army PSYOP unit",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ]
+            },
+            "valid_from": null,
+            "valid_to": null
+          }
+        ]
+      },
+      "failure_counts": {},
+      "mean_cost": 0.000891,
+      "mean_latency_ms": 1812.0,
+      "mean_score": 0.25,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 2021,
+      "variant_name": "baseline"
+    },
+    {
+      "case_id": "psyop_006_context_only_membership_strict_omit",
+      "dimension_means": {
+        "count_alignment": 1.0,
+        "exact_f1": 1.0,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": []
+      },
+      "failure_counts": {},
+      "mean_cost": 0.000153,
+      "mean_latency_ms": 679.0,
+      "mean_score": 1.0,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 2102,
+      "variant_name": "compact"
+    },
+    {
+      "case_id": "psyop_006_context_only_membership_strict_omit",
+      "dimension_means": {
+        "count_alignment": 1.0,
+        "exact_f1": 1.0,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": []
+      },
+      "failure_counts": {},
+      "mean_cost": 0.000158,
+      "mean_latency_ms": 1148.0,
+      "mean_score": 1.0,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 3649,
+      "variant_name": "compact_operational_parity"
+    },
+    {
+      "case_id": "psyop_006_context_only_membership_strict_omit",
+      "dimension_means": {
+        "count_alignment": 0.0,
+        "exact_f1": 0.0,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": [
+          {
+            "claim_level": "instance",
+            "claim_text": "The 4th PSYOP Group is a member of the Army PSYOP unit.",
+            "evidence_spans": [
+              {
+                "end_char": 52,
+                "start_char": 0,
+                "text": "The 4th PSYOP Group, as the principal Army PSYOP unit"
+              }
+            ],
+            "predicate": "oc:belongs_to_organization",
+            "roles": {
+              "member": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:military_unit",
+                  "kind": "entity",
+                  "name": "4th PSYOP Group",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "organization": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:military_organization",
+                  "kind": "entity",
+                  "name": "Army PSYOP unit",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ]
+            },
+            "valid_from": null,
+            "valid_to": null
+          }
+        ]
+      },
+      "failure_counts": {},
+      "mean_cost": 0.000913,
+      "mean_latency_ms": 1770.0,
+      "mean_score": 0.25,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 2150,
+      "variant_name": "hardened"
+    },
+    {
+      "case_id": "psyop_006_context_only_membership_strict_omit",
+      "dimension_means": {
+        "count_alignment": 0.0,
+        "exact_f1": 0.0,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": [
+          {
+            "claim_level": "instance",
+            "claim_text": "The 4th PSYOP Group is a principal Army PSYOP unit.",
+            "evidence_spans": [
+              {
+                "end_char": 53,
+                "start_char": 0,
+                "text": "The 4th PSYOP Group, as the principal Army PSYOP unit"
+              }
+            ],
+            "predicate": "oc:belongs_to_organization",
+            "roles": {
+              "member": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:military_unit",
+                  "kind": "entity",
+                  "name": "4th PSYOP Group",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "organization": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:military_organization",
+                  "kind": "entity",
+                  "name": "Army PSYOP unit",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ]
+            },
+            "valid_from": null,
+            "valid_to": null
+          }
+        ]
+      },
+      "failure_counts": {},
+      "mean_cost": 0.000941,
+      "mean_latency_ms": 1835.0,
+      "mean_score": 0.25,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 2390,
+      "variant_name": "single_response_hardened"
+    },
+    {
+      "case_id": "psyop_007_named_institutional_concern",
+      "dimension_means": {
+        "count_alignment": 1.0,
+        "exact_f1": 0.0,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": [
+          {
+            "claim_level": "instance",
+            "claim_text": "The National Defense University expressed concern about the need for better integration with other elements of national power and improved measurement of effectiveness in PSYOP.",
+            "evidence_spans": [
+              {
+                "end_char": 207,
+                "start_char": 0,
+                "text": "A 2005 review by the National Defense University highlighted both successes and persistent challenges in PSYOP, including the need for better integration with other elements of national power and improved measurement of effectiveness."
+              }
+            ],
+            "predicate": "oc:express_concern",
+            "roles": {
+              "speaker": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:community",
+                  "kind": "entity",
+                  "name": "National Defense University",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "topic": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": null,
+                  "raw": "the need for better integration with other elements of national power",
+                  "value_kind": "string"
+                },
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": null,
+                  "raw": "improved measurement of effectiveness",
+                  "value_kind": "string"
+                }
+              ]
+            },
+            "valid_from": "2005",
+            "valid_to": null
+          }
+        ]
+      },
+      "failure_counts": {},
+      "mean_cost": 0.001176,
+      "mean_latency_ms": 3326.0,
+      "mean_score": 0.35,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 2135,
+      "variant_name": "baseline"
+    },
+    {
+      "case_id": "psyop_007_named_institutional_concern",
+      "dimension_means": {
+        "count_alignment": 0.0,
+        "exact_f1": 0.0,
+        "structural_usable_rate": 0.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": []
+      },
+      "failure_counts": {},
+      "mean_cost": 0.001101,
+      "mean_latency_ms": 2108.0,
+      "mean_score": 0.0,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 2481,
+      "variant_name": "compact"
+    },
+    {
+      "case_id": "psyop_007_named_institutional_concern",
+      "dimension_means": {
+        "count_alignment": 1.0,
+        "exact_f1": 0.0,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": [
+          {
+            "claim_level": "instance",
+            "claim_text": "A 2005 review by the National Defense University highlighted the need for better integration with other elements of national power and improved measurement of effectiveness in PSYOP.",
+            "evidence_spans": [
+              {
+                "end_char": 207,
+                "start_char": 0,
+                "text": "A 2005 review by the National Defense University highlighted both successes and persistent challenges in PSYOP, including the need for better integration with other elements of national power and improved measurement of effectiveness."
+              }
+            ],
+            "predicate": "oc:express_concern",
+            "roles": {
+              "speaker": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:community",
+                  "kind": "entity",
+                  "name": "National Defense University",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "topic": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "need for better integration with other elements of national power",
+                  "raw": "need for better integration with other elements of national power",
+                  "value_kind": "string"
+                },
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "improved measurement of effectiveness",
+                  "raw": "improved measurement of effectiveness",
+                  "value_kind": "string"
+                }
+              ]
+            },
+            "valid_from": "2005",
+            "valid_to": null
+          }
+        ]
+      },
+      "failure_counts": {},
+      "mean_cost": 0.001283,
+      "mean_latency_ms": 3147.0,
+      "mean_score": 0.35,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 4099,
+      "variant_name": "compact_operational_parity"
+    },
+    {
+      "case_id": "psyop_007_named_institutional_concern",
+      "dimension_means": {
+        "count_alignment": 1.0,
+        "exact_f1": 0.0,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": [
+          {
+            "claim_level": "instance",
+            "claim_text": "National Defense University expressed concern about the need for better integration with other elements of national power and improved measurement of effectiveness in PSYOP.",
+            "evidence_spans": [
+              {
+                "end_char": 207,
+                "start_char": 0,
+                "text": "A 2005 review by the National Defense University highlighted both successes and persistent challenges in PSYOP, including the need for better integration with other elements of national power and improved measurement of effectiveness."
+              }
+            ],
+            "predicate": "oc:express_concern",
+            "roles": {
+              "speaker": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:community",
+                  "kind": "entity",
+                  "name": "National Defense University",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "topic": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "need for better integration with other elements of national power",
+                  "raw": "need for better integration with other elements of national power",
+                  "value_kind": "string"
+                },
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "improved measurement of effectiveness",
+                  "raw": "improved measurement of effectiveness",
+                  "value_kind": "string"
+                }
+              ]
+            },
+            "valid_from": "2005",
+            "valid_to": null
+          }
+        ]
+      },
+      "failure_counts": {},
+      "mean_cost": 0.001223,
+      "mean_latency_ms": 2222.0,
+      "mean_score": 0.35,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 2274,
+      "variant_name": "hardened"
+    },
+    {
+      "case_id": "psyop_007_named_institutional_concern",
+      "dimension_means": {
+        "count_alignment": 1.0,
+        "exact_f1": 0.0,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": [
+          {
+            "claim_level": "instance",
+            "claim_text": "The National Defense University expressed concern about the need for better integration with other elements of national power and improved measurement of effectiveness in PSYOP.",
+            "evidence_spans": [
+              {
+                "end_char": 207,
+                "start_char": 0,
+                "text": "A 2005 review by the National Defense University highlighted both successes and persistent challenges in PSYOP, including the need for better integration with other elements of national power and improved measurement of effectiveness."
+              }
+            ],
+            "predicate": "oc:express_concern",
+            "roles": {
+              "speaker": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:community",
+                  "kind": "entity",
+                  "name": "National Defense University",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "topic": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "the need for better integration with other elements of national power",
+                  "raw": "the need for better integration with other elements of national power",
+                  "value_kind": "string"
+                },
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "improved measurement of effectiveness",
+                  "raw": "improved measurement of effectiveness",
+                  "value_kind": "string"
+                }
+              ]
+            },
+            "valid_from": "2005",
+            "valid_to": null
+          }
+        ]
+      },
+      "failure_counts": {},
+      "mean_cost": 0.001264,
+      "mean_latency_ms": 2374.0,
+      "mean_score": 0.35,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 2519,
+      "variant_name": "single_response_hardened"
+    },
+    {
+      "case_id": "psyop_008_jpotf_establishment_not_org_form",
+      "dimension_means": {
+        "count_alignment": 0.0,
+        "exact_f1": 0.0,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": [
+          {
+            "claim_level": "instance",
+            "claim_text": "Joint PSYOP Task Forces (JPOTF) were established.",
+            "evidence_spans": [
+              {
+                "end_char": 91,
+                "start_char": 44,
+                "text": "establishment of Joint PSYOP Task Forces (JPOTF)"
+              }
+            ],
+            "predicate": "oc:create_organizational_unit",
+            "roles": {
+              "created_unit": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:military_unit",
+                  "kind": "entity",
+                  "name": "Joint PSYOP Task Forces (JPOTF)",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ]
+            },
+            "valid_from": null,
+            "valid_to": null
+          },
+          {
+            "claim_level": "instance",
+            "claim_text": "The establishment of Joint PSYOP Task Forces (JPOTF) allowed for the integration of PSYOP into all phases of campaign planning and execution.",
+            "evidence_spans": [
+              {
+                "end_char": 188,
+                "start_char": 100,
+                "text": "allowed for the integration of PSYOP into all phases of campaign planning and execution"
+              }
+            ],
+            "predicate": "oc:limit_capability",
+            "roles": {
+              "capability": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": null,
+                  "raw": "integration",
+                  "value_kind": "string"
+                }
+              ],
+              "subject": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:psychological_operation",
+                  "kind": "entity",
+                  "name": "PSYOP",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "topic": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": null,
+                  "raw": "all phases of campaign planning and execution",
+                  "value_kind": "string"
+                }
+              ]
+            },
+            "valid_from": null,
+            "valid_to": null
+          }
+        ]
+      },
+      "failure_counts": {},
+      "mean_cost": 0.0017,
+      "mean_latency_ms": 3221.0,
+      "mean_score": 0.25,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 2353,
+      "variant_name": "baseline"
+    },
+    {
+      "case_id": "psyop_008_jpotf_establishment_not_org_form",
+      "dimension_means": {
+        "count_alignment": 1.0,
+        "exact_f1": 1.0,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": []
+      },
+      "failure_counts": {},
+      "mean_cost": 0.000155,
+      "mean_latency_ms": 779.0,
+      "mean_score": 1.0,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 2111,
+      "variant_name": "compact"
+    },
+    {
+      "case_id": "psyop_008_jpotf_establishment_not_org_form",
+      "dimension_means": {
+        "count_alignment": 1.0,
+        "exact_f1": 1.0,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": []
+      },
+      "failure_counts": {},
+      "mean_cost": 0.00016,
+      "mean_latency_ms": 1018.0,
+      "mean_score": 1.0,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 3658,
+      "variant_name": "compact_operational_parity"
+    },
+    {
+      "case_id": "psyop_008_jpotf_establishment_not_org_form",
+      "dimension_means": {
+        "count_alignment": 0.0,
+        "exact_f1": 0.0,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": [
+          {
+            "claim_level": "instance",
+            "claim_text": "Joint PSYOP Task Forces was established.",
+            "evidence_spans": [
+              {
+                "end_char": 85,
+                "start_char": 46,
+                "text": "establishment of Joint PSYOP Task Forces"
+              }
+            ],
+            "predicate": "oc:create_organizational_unit",
+            "roles": {
+              "created_unit": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:military_unit",
+                  "kind": "entity",
+                  "name": "Joint PSYOP Task Forces",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ]
+            },
+            "valid_from": null,
+            "valid_to": null
+          },
+          {
+            "claim_level": "type",
+            "claim_text": "PSYOP uses the designation label \"PSYOP\".",
+            "evidence_spans": [
+              {
+                "end_char": 114,
+                "start_char": 109,
+                "text": "PSYOP"
+              }
+            ],
+            "predicate": "oc:uses_designation_label",
+            "roles": {
+              "label": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "PSYOP",
+                  "raw": "PSYOP",
+                  "value_kind": "string"
+                }
+              ],
+              "subject": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:psychological_operation",
+                  "kind": "entity",
+                  "name": "PSYOP",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ]
+            },
+            "valid_from": null,
+            "valid_to": null
+          }
+        ]
+      },
+      "failure_counts": {},
+      "mean_cost": 0.001404,
+      "mean_latency_ms": 2577.0,
+      "mean_score": 0.25,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 2355,
+      "variant_name": "hardened"
+    },
+    {
+      "case_id": "psyop_008_jpotf_establishment_not_org_form",
+      "dimension_means": {
+        "count_alignment": 0.0,
+        "exact_f1": 0.0,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": [
+          {
+            "claim_level": "instance",
+            "claim_text": "Joint PSYOP Task Forces (JPOTF) were established.",
+            "evidence_spans": [
+              {
+                "end_char": 97,
+                "start_char": 50,
+                "text": "establishment of Joint PSYOP Task Forces (JPOTF)"
+              }
+            ],
+            "predicate": "oc:create_organizational_unit",
+            "roles": {
+              "created_unit": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:military_unit",
+                  "kind": "entity",
+                  "name": "Joint PSYOP Task Forces",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ]
+            },
+            "valid_from": null,
+            "valid_to": null
+          }
+        ]
+      },
+      "failure_counts": {},
+      "mean_cost": 0.00072,
+      "mean_latency_ms": 1540.0,
+      "mean_score": 0.25,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 2310,
+      "variant_name": "single_response_hardened"
+    },
+    {
+      "case_id": "psyop_009_report_narration_without_named_speaker_strict_omit",
+      "dimension_means": {
+        "count_alignment": 0.0,
+        "exact_f1": 0.0,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": [
+          {
+            "claim_level": "instance",
+            "claim_text": "Cultural misunderstandings limited the effectiveness of PSYOP.",
+            "evidence_spans": [
+              {
+                "end_char": 81,
+                "start_char": 9,
+                "text": "the effectiveness of PSYOP was often limited by cultural misunderstandings"
+              }
+            ],
+            "predicate": "oc:limit_capability",
+            "roles": {
+              "capability": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": null,
+                  "raw": "effectiveness",
+                  "value_kind": "string"
+                }
+              ],
+              "subject": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:psychological_operation",
+                  "kind": "entity",
+                  "name": "PSYOP",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "topic": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": null,
+                  "raw": "cultural misunderstandings",
+                  "value_kind": "string"
+                }
+              ]
+            },
+            "valid_from": null,
+            "valid_to": null
+          },
+          {
+            "claim_level": "instance",
+            "claim_text": "Insufficient coordination with non-military actors limited the effectiveness of PSYOP.",
+            "evidence_spans": [
+              {
+                "end_char": 146,
+                "start_char": 9,
+                "text": "the effectiveness of PSYOP was often limited by cultural misunderstandings, insufficient coordination with non-military actors"
+              }
+            ],
+            "predicate": "oc:limit_capability",
+            "roles": {
+              "capability": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": null,
+                  "raw": "effectiveness",
+                  "value_kind": "string"
+                }
+              ],
+              "subject": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:psychological_operation",
+                  "kind": "entity",
+                  "name": "PSYOP",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "topic": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": null,
+                  "raw": "insufficient coordination with non-military actors",
+                  "value_kind": "string"
+                }
+              ]
+            },
+            "valid_from": null,
+            "valid_to": null
+          }
+        ]
+      },
+      "failure_counts": {},
+      "mean_cost": 0.002048,
+      "mean_latency_ms": 3788.0,
+      "mean_score": 0.25,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 2493,
+      "variant_name": "baseline"
+    },
+    {
+      "case_id": "psyop_009_report_narration_without_named_speaker_strict_omit",
+      "dimension_means": {
+        "count_alignment": 1.0,
+        "exact_f1": 1.0,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": []
+      },
+      "failure_counts": {},
+      "mean_cost": 0.000155,
+      "mean_latency_ms": 757.0,
+      "mean_score": 1.0,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 2112,
+      "variant_name": "compact"
+    },
+    {
+      "case_id": "psyop_009_report_narration_without_named_speaker_strict_omit",
+      "dimension_means": {
+        "count_alignment": 1.0,
+        "exact_f1": 1.0,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": []
+      },
+      "failure_counts": {},
+      "mean_cost": 0.00016,
+      "mean_latency_ms": 818.0,
+      "mean_score": 1.0,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 3659,
+      "variant_name": "compact_operational_parity"
+    },
+    {
+      "case_id": "psyop_009_report_narration_without_named_speaker_strict_omit",
+      "dimension_means": {
+        "count_alignment": 1.0,
+        "exact_f1": 1.0,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": []
+      },
+      "failure_counts": {},
+      "mean_cost": 0.000117,
+      "mean_latency_ms": 773.0,
+      "mean_score": 1.0,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 1841,
+      "variant_name": "hardened"
+    },
+    {
+      "case_id": "psyop_009_report_narration_without_named_speaker_strict_omit",
+      "dimension_means": {
+        "count_alignment": 1.0,
+        "exact_f1": 1.0,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": []
+      },
+      "failure_counts": {},
+      "mean_cost": 0.00015,
+      "mean_latency_ms": 793.0,
+      "mean_score": 1.0,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 2083,
+      "variant_name": "single_response_hardened"
+    },
+    {
+      "case_id": "psyop_010_limit_capability_without_named_subject_strict_omit",
+      "dimension_means": {
+        "count_alignment": 0.0,
+        "exact_f1": 0.0,
+        "structural_usable_rate": 0.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": [
+          {
+            "claim_level": "instance",
+            "claim_text": "Bureaucratic friction and differing organizational cultures impeded rapid decision-making.",
+            "evidence_spans": [
+              {
+                "end_char": 176,
+                "start_char": 79,
+                "text": "bureaucratic friction and differing organizational cultures sometimes impeded rapid decision-making"
+              }
+            ],
+            "predicate": "oc:limit_capability",
+            "roles": {
+              "capability": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "rapid decision-making",
+                  "raw": "rapid decision-making",
+                  "value_kind": "string"
+                }
+              ],
+              "topic": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "bureaucratic friction and differing organizational cultures",
+                  "raw": "bureaucratic friction and differing organizational cultures",
+                  "value_kind": "string"
+                }
+              ]
+            },
+            "valid_from": null,
+            "valid_to": null
+          },
+          {
+            "claim_level": "instance",
+            "claim_text": "Bureaucratic friction and differing organizational cultures impeded message approval.",
+            "evidence_spans": [
+              {
+                "end_char": 200,
+                "start_char": 79,
+                "text": "bureaucratic friction and differing organizational cultures sometimes impeded rapid decision-making and message approval"
+              }
+            ],
+            "predicate": "oc:limit_capability",
+            "roles": {
+              "capability": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "message approval",
+                  "raw": "message approval",
+                  "value_kind": "string"
+                }
+              ],
+              "topic": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "bureaucratic friction and differing organizational cultures",
+                  "raw": "bureaucratic friction and differing organizational cultures",
+                  "value_kind": "string"
+                }
+              ]
+            },
+            "valid_from": null,
+            "valid_to": null
+          }
+        ]
+      },
+      "failure_counts": {},
+      "mean_cost": 0.00172,
+      "mean_latency_ms": 3211.0,
+      "mean_score": 0.0,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 2362,
+      "variant_name": "baseline"
+    },
+    {
+      "case_id": "psyop_010_limit_capability_without_named_subject_strict_omit",
+      "dimension_means": {
+        "count_alignment": 1.0,
+        "exact_f1": 1.0,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": []
+      },
+      "failure_counts": {},
+      "mean_cost": 0.000155,
+      "mean_latency_ms": 824.0,
+      "mean_score": 1.0,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 2112,
+      "variant_name": "compact"
+    },
+    {
+      "case_id": "psyop_010_limit_capability_without_named_subject_strict_omit",
+      "dimension_means": {
+        "count_alignment": 1.0,
+        "exact_f1": 1.0,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": []
+      },
+      "failure_counts": {},
+      "mean_cost": 0.00016,
+      "mean_latency_ms": 921.0,
+      "mean_score": 1.0,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 3659,
+      "variant_name": "compact_operational_parity"
+    },
+    {
+      "case_id": "psyop_010_limit_capability_without_named_subject_strict_omit",
+      "dimension_means": {
+        "count_alignment": 1.0,
+        "exact_f1": 1.0,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": []
+      },
+      "failure_counts": {},
+      "mean_cost": 0.000117,
+      "mean_latency_ms": 783.0,
+      "mean_score": 1.0,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 1841,
+      "variant_name": "hardened"
+    },
+    {
+      "case_id": "psyop_010_limit_capability_without_named_subject_strict_omit",
+      "dimension_means": {
+        "count_alignment": 1.0,
+        "exact_f1": 1.0,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": []
+      },
+      "failure_counts": {},
+      "mean_cost": 0.00015,
+      "mean_latency_ms": 749.0,
+      "mean_score": 1.0,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 2083,
+      "variant_name": "single_response_hardened"
+    },
+    {
+      "case_id": "psyop_011_hearts_and_minds_narration_strict_omit",
+      "dimension_means": {
+        "count_alignment": 0.0,
+        "exact_f1": 0.0,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": [
+          {
+            "claim_level": "instance",
+            "claim_text": "The \"hearts and minds\" campaigns occurred in Iraq.",
+            "evidence_spans": [
+              {
+                "end_char": 43,
+                "start_char": 4,
+                "text": "The \u201chearts and minds\u201d campaigns in Iraq"
+              }
+            ],
+            "predicate": "oc:operation_occurs_in_location",
+            "roles": {
+              "location": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "Iraq",
+                  "raw": "Iraq",
+                  "value_kind": "string"
+                }
+              ],
+              "operation": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:military_operation",
+                  "kind": "entity",
+                  "name": "\u201chearts and minds\u201d campaigns",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ]
+            },
+            "valid_from": null,
+            "valid_to": null
+          },
+          {
+            "claim_level": "instance",
+            "claim_text": "The \"hearts and minds\" campaigns occurred in Afghanistan.",
+            "evidence_spans": [
+              {
+                "end_char": 60,
+                "start_char": 8,
+                "text": "\u201chearts and minds\u201d campaigns in Iraq and Afghanistan"
+              }
+            ],
+            "predicate": "oc:operation_occurs_in_location",
+            "roles": {
+              "location": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "Afghanistan",
+                  "raw": "Afghanistan",
+                  "value_kind": "string"
+                }
+              ],
+              "operation": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:military_operation",
+                  "kind": "entity",
+                  "name": "\u201chearts and minds\u201d campaigns",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ]
+            },
+            "valid_from": null,
+            "valid_to": null
+          }
+        ]
+      },
+      "failure_counts": {},
+      "mean_cost": 0.001624,
+      "mean_latency_ms": 2824.0,
+      "mean_score": 0.25,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 2317,
+      "variant_name": "baseline"
+    },
+    {
+      "case_id": "psyop_011_hearts_and_minds_narration_strict_omit",
+      "dimension_means": {
+        "count_alignment": 1.0,
+        "exact_f1": 1.0,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": []
+      },
+      "failure_counts": {},
+      "mean_cost": 0.000154,
+      "mean_latency_ms": 760.0,
+      "mean_score": 1.0,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 2105,
+      "variant_name": "compact"
+    },
+    {
+      "case_id": "psyop_011_hearts_and_minds_narration_strict_omit",
+      "dimension_means": {
+        "count_alignment": 1.0,
+        "exact_f1": 1.0,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": []
+      },
+      "failure_counts": {},
+      "mean_cost": 0.000159,
+      "mean_latency_ms": 988.0,
+      "mean_score": 1.0,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 3652,
+      "variant_name": "compact_operational_parity"
+    },
+    {
+      "case_id": "psyop_011_hearts_and_minds_narration_strict_omit",
+      "dimension_means": {
+        "count_alignment": 0.0,
+        "exact_f1": 0.0,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": [
+          {
+            "claim_level": "instance",
+            "claim_text": "The \"hearts and minds\" campaigns occurred in Iraq.",
+            "evidence_spans": [
+              {
+                "end_char": 39,
+                "start_char": 0,
+                "text": "The \u201chearts and minds\u201d campaigns in Iraq"
+              }
+            ],
+            "predicate": "oc:operation_occurs_in_location",
+            "roles": {
+              "location": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "Iraq",
+                  "raw": "Iraq",
+                  "value_kind": "string"
+                }
+              ],
+              "operation": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:military_operation",
+                  "kind": "entity",
+                  "name": "\u201chearts and minds\u201d campaigns",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ]
+            },
+            "valid_from": null,
+            "valid_to": null
+          },
+          {
+            "claim_level": "instance",
+            "claim_text": "The \"hearts and minds\" campaigns occurred in Afghanistan.",
+            "evidence_spans": [
+              {
+                "end_char": 55,
+                "start_char": 4,
+                "text": "\u201chearts and minds\u201d campaigns in Iraq and Afghanistan"
+              }
+            ],
+            "predicate": "oc:operation_occurs_in_location",
+            "roles": {
+              "location": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "Afghanistan",
+                  "raw": "Afghanistan",
+                  "value_kind": "string"
+                }
+              ],
+              "operation": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:military_operation",
+                  "kind": "entity",
+                  "name": "\u201chearts and minds\u201d campaigns",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ]
+            },
+            "valid_from": null,
+            "valid_to": null
+          }
+        ]
+      },
+      "failure_counts": {},
+      "mean_cost": 0.001641,
+      "mean_latency_ms": 2839.0,
+      "mean_score": 0.25,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 2444,
+      "variant_name": "hardened"
+    },
+    {
+      "case_id": "psyop_011_hearts_and_minds_narration_strict_omit",
+      "dimension_means": {
+        "count_alignment": 0.0,
+        "exact_f1": 0.0,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": [
+          {
+            "claim_level": "instance",
+            "claim_text": "The \"hearts and minds\" campaigns were hampered by inconsistent messaging and occasional missteps, which undermined credibility with local populations.",
+            "evidence_spans": [
+              {
+                "end_char": 169,
+                "start_char": 0,
+                "text": "The \u201chearts and minds\u201d campaigns in Iraq and Afghanistan were hampered by inconsistent messaging and occasional missteps that undermined credibility with local populations."
+              }
+            ],
+            "predicate": "oc:limit_capability",
+            "roles": {
+              "capability": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "credibility with local populations",
+                  "raw": "credibility with local populations",
+                  "value_kind": "string"
+                }
+              ],
+              "subject": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:psychological_operation",
+                  "kind": "entity",
+                  "name": "\u201chearts and minds\u201d campaigns",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "topic": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "inconsistent messaging and occasional missteps",
+                  "raw": "inconsistent messaging and occasional missteps",
+                  "value_kind": "string"
+                }
+              ]
+            },
+            "valid_from": null,
+            "valid_to": null
+          },
+          {
+            "claim_level": "instance",
+            "claim_text": "The \"hearts and minds\" campaigns occurred in Iraq and Afghanistan.",
+            "evidence_spans": [
+              {
+                "end_char": 56,
+                "start_char": 0,
+                "text": "The \u201chearts and minds\u201d campaigns in Iraq and Afghanistan"
+              }
+            ],
+            "predicate": "oc:operation_occurs_in_location",
+            "roles": {
+              "location": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "Iraq",
+                  "raw": "Iraq",
+                  "value_kind": "string"
+                },
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "Afghanistan",
+                  "raw": "Afghanistan",
+                  "value_kind": "string"
+                }
+              ],
+              "operation": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:military_operation",
+                  "kind": "entity",
+                  "name": "\u201chearts and minds\u201d campaigns",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ]
+            },
+            "valid_from": null,
+            "valid_to": null
+          }
+        ]
+      },
+      "failure_counts": {},
+      "mean_cost": 0.002187,
+      "mean_latency_ms": 3870.0,
+      "mean_score": 0.25,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 2891,
+      "variant_name": "single_response_hardened"
+    },
+    {
+      "case_id": "psyop_012_ethical_legal_questions_without_local_speaker_strict_omit",
+      "dimension_means": {
+        "count_alignment": 0.0,
+        "exact_f1": 0.0,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": [
+          {
+            "claim_level": "instance",
+            "claim_text": "The expansion of PSYOP into the digital domain raised new ethical and legal questions.",
+            "evidence_spans": [
+              {
+                "end_char": 83,
+                "start_char": 0,
+                "text": "The expansion of PSYOP into the digital domain raised new ethical and legal questions"
+              }
+            ],
+            "predicate": "oc:express_concern",
+            "roles": {
+              "speaker": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:community",
+                  "kind": "entity",
+                  "name": "The expansion of PSYOP into the digital domain",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "topic": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": null,
+                  "raw": "new ethical and legal questions",
+                  "value_kind": "string"
+                }
+              ]
+            },
+            "valid_from": null,
+            "valid_to": null
+          }
+        ]
+      },
+      "failure_counts": {},
+      "mean_cost": 0.00089,
+      "mean_latency_ms": 1866.0,
+      "mean_score": 0.25,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 2032,
+      "variant_name": "baseline"
+    },
+    {
+      "case_id": "psyop_012_ethical_legal_questions_without_local_speaker_strict_omit",
+      "dimension_means": {
+        "count_alignment": 1.0,
+        "exact_f1": 1.0,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": []
+      },
+      "failure_counts": {},
+      "mean_cost": 0.000155,
+      "mean_latency_ms": 881.0,
+      "mean_score": 1.0,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 2114,
+      "variant_name": "compact"
+    },
+    {
+      "case_id": "psyop_012_ethical_legal_questions_without_local_speaker_strict_omit",
+      "dimension_means": {
+        "count_alignment": 1.0,
+        "exact_f1": 1.0,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": []
+      },
+      "failure_counts": {},
+      "mean_cost": 0.00016,
+      "mean_latency_ms": 997.0,
+      "mean_score": 1.0,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 3661,
+      "variant_name": "compact_operational_parity"
+    },
+    {
+      "case_id": "psyop_012_ethical_legal_questions_without_local_speaker_strict_omit",
+      "dimension_means": {
+        "count_alignment": 1.0,
+        "exact_f1": 1.0,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": []
+      },
+      "failure_counts": {},
+      "mean_cost": 0.000117,
+      "mean_latency_ms": 769.0,
+      "mean_score": 1.0,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 1843,
+      "variant_name": "hardened"
+    },
+    {
+      "case_id": "psyop_012_ethical_legal_questions_without_local_speaker_strict_omit",
+      "dimension_means": {
+        "count_alignment": 1.0,
+        "exact_f1": 1.0,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": []
+      },
+      "failure_counts": {},
+      "mean_cost": 0.000151,
+      "mean_latency_ms": 657.0,
+      "mean_score": 1.0,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 2085,
+      "variant_name": "single_response_hardened"
+    },
+    {
+      "case_id": "psyop_013_local_context_report_narration_without_named_speaker_strict_omit",
+      "dimension_means": {
+        "count_alignment": 0.0,
+        "exact_f1": 0.0,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": [
+          {
+            "claim_level": "instance",
+            "claim_text": "The effectiveness of PSYOP was limited by cultural misunderstandings.",
+            "evidence_spans": [
+              {
+                "end_char": 171,
+                "start_char": 100,
+                "text": "the effectiveness of PSYOP was often limited by cultural misunderstandings"
+              }
+            ],
+            "predicate": "oc:limit_capability",
+            "roles": {
+              "capability": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "effectiveness",
+                  "raw": "effectiveness",
+                  "value_kind": "string"
+                }
+              ],
+              "subject": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:psychological_operation",
+                  "kind": "entity",
+                  "name": "PSYOP",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "topic": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "cultural misunderstandings",
+                  "raw": "cultural misunderstandings",
+                  "value_kind": "string"
+                }
+              ]
+            },
+            "valid_from": "2001",
+            "valid_to": "2015"
+          },
+          {
+            "claim_level": "instance",
+            "claim_text": "The effectiveness of PSYOP was limited by insufficient coordination with non-military actors.",
+            "evidence_spans": [
+              {
+                "end_char": 223,
+                "start_char": 173,
+                "text": "insufficient coordination with non-military actors"
+              }
+            ],
+            "predicate": "oc:limit_capability",
+            "roles": {
+              "capability": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "effectiveness",
+                  "raw": "effectiveness",
+                  "value_kind": "string"
+                }
+              ],
+              "subject": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:psychological_operation",
+                  "kind": "entity",
+                  "name": "PSYOP",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "topic": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "insufficient coordination with non-military actors",
+                  "raw": "insufficient coordination with non-military actors",
+                  "value_kind": "string"
+                }
+              ]
+            },
+            "valid_from": "2001",
+            "valid_to": "2015"
+          }
+        ]
+      },
+      "failure_counts": {},
+      "mean_cost": 0.002122,
+      "mean_latency_ms": 4623.0,
+      "mean_score": 0.25,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 2557,
+      "variant_name": "baseline"
+    },
+    {
+      "case_id": "psyop_013_local_context_report_narration_without_named_speaker_strict_omit",
+      "dimension_means": {
+        "count_alignment": 1.0,
+        "exact_f1": 1.0,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": []
+      },
+      "failure_counts": {},
+      "mean_cost": 0.00016,
+      "mean_latency_ms": 779.0,
+      "mean_score": 1.0,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 2148,
+      "variant_name": "compact"
+    },
+    {
+      "case_id": "psyop_013_local_context_report_narration_without_named_speaker_strict_omit",
+      "dimension_means": {
+        "count_alignment": 1.0,
+        "exact_f1": 1.0,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": []
+      },
+      "failure_counts": {},
+      "mean_cost": 0.000166,
+      "mean_latency_ms": 868.0,
+      "mean_score": 1.0,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 3695,
+      "variant_name": "compact_operational_parity"
+    },
+    {
+      "case_id": "psyop_013_local_context_report_narration_without_named_speaker_strict_omit",
+      "dimension_means": {
+        "count_alignment": 0.0,
+        "exact_f1": 0.0,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": [
+          {
+            "claim_level": "instance",
+            "claim_text": "The effectiveness of PSYOP was limited by cultural misunderstandings.",
+            "evidence_spans": [
+              {
+                "end_char": 161,
+                "start_char": 90,
+                "text": "the effectiveness of PSYOP was often limited by cultural misunderstandings"
+              }
+            ],
+            "predicate": "oc:limit_capability",
+            "roles": {
+              "capability": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": null,
+                  "raw": "effectiveness",
+                  "value_kind": "string"
+                }
+              ],
+              "subject": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:psychological_operation",
+                  "kind": "entity",
+                  "name": "PSYOP",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "topic": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": null,
+                  "raw": "cultural misunderstandings",
+                  "value_kind": "string"
+                }
+              ]
+            },
+            "valid_from": "2001",
+            "valid_to": "2015"
+          },
+          {
+            "claim_level": "instance",
+            "claim_text": "The effectiveness of PSYOP was limited by insufficient coordination with non-military actors.",
+            "evidence_spans": [
+              {
+                "end_char": 227,
+                "start_char": 90,
+                "text": "the effectiveness of PSYOP was often limited by cultural misunderstandings, insufficient coordination with non-military actors"
+              }
+            ],
+            "predicate": "oc:limit_capability",
+            "roles": {
+              "capability": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": null,
+                  "raw": "effectiveness",
+                  "value_kind": "string"
+                }
+              ],
+              "subject": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:psychological_operation",
+                  "kind": "entity",
+                  "name": "PSYOP",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "topic": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": null,
+                  "raw": "insufficient coordination with non-military actors",
+                  "value_kind": "string"
+                }
+              ]
+            },
+            "valid_from": "2001",
+            "valid_to": "2015"
+          }
+        ]
+      },
+      "failure_counts": {},
+      "mean_cost": 0.002131,
+      "mean_latency_ms": 3563.0,
+      "mean_score": 0.25,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 2681,
+      "variant_name": "hardened"
+    },
+    {
+      "case_id": "psyop_013_local_context_report_narration_without_named_speaker_strict_omit",
+      "dimension_means": {
+        "count_alignment": 0.0,
+        "exact_f1": 0.0,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": [
+          {
+            "claim_level": "instance",
+            "claim_text": "The effectiveness of PSYOP was limited by cultural misunderstandings, insufficient coordination with non-military actors, and the rapid evolution of adversary information tactics.",
+            "evidence_spans": [
+              {
+                "end_char": 279,
+                "start_char": 99,
+                "text": "the effectiveness of PSYOP was often limited by cultural misunderstandings, insufficient coordination with non-military actors, and the rapid evolution of adversary information tactics"
+              }
+            ],
+            "predicate": "oc:limit_capability",
+            "roles": {
+              "capability": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": null,
+                  "raw": "effectiveness",
+                  "value_kind": "string"
+                }
+              ],
+              "subject": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:psychological_operation",
+                  "kind": "entity",
+                  "name": "PSYOP",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "topic": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": null,
+                  "raw": "cultural misunderstandings, insufficient coordination with non-military actors, and the rapid evolution of adversary information tactics",
+                  "value_kind": "string"
+                }
+              ]
+            },
+            "valid_from": null,
+            "valid_to": null
+          }
+        ]
+      },
+      "failure_counts": {},
+      "mean_cost": 0.001248,
+      "mean_latency_ms": 2158.0,
+      "mean_score": 0.25,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 2556,
+      "variant_name": "single_response_hardened"
+    },
+    {
+      "case_id": "psyop_014_local_context_hearts_and_minds_narration_strict_omit",
+      "dimension_means": {
+        "count_alignment": 0.0,
+        "exact_f1": 0.0,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": [
+          {
+            "claim_level": "instance",
+            "claim_text": "The \"hearts and minds\" campaigns occurred in Iraq.",
+            "evidence_spans": [
+              {
+                "end_char": 40,
+                "start_char": 4,
+                "text": "The \u201chearts and minds\u201d campaigns in Iraq"
+              }
+            ],
+            "predicate": "oc:operation_occurs_in_location",
+            "roles": {
+              "location": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "Iraq",
+                  "raw": "Iraq",
+                  "value_kind": "string"
+                }
+              ],
+              "operation": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:military_operation",
+                  "kind": "entity",
+                  "name": "\u201chearts and minds\u201d campaigns",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ]
+            },
+            "valid_from": null,
+            "valid_to": null
+          },
+          {
+            "claim_level": "instance",
+            "claim_text": "The \"hearts and minds\" campaigns occurred in Afghanistan.",
+            "evidence_spans": [
+              {
+                "end_char": 55,
+                "start_char": 4,
+                "text": "\u201chearts and minds\u201d campaigns in Iraq and Afghanistan"
+              }
+            ],
+            "predicate": "oc:operation_occurs_in_location",
+            "roles": {
+              "location": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "Afghanistan",
+                  "raw": "Afghanistan",
+                  "value_kind": "string"
+                }
+              ],
+              "operation": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:military_operation",
+                  "kind": "entity",
+                  "name": "\u201chearts and minds\u201d campaigns",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ]
+            },
+            "valid_from": null,
+            "valid_to": null
+          }
+        ]
+      },
+      "failure_counts": {},
+      "mean_cost": 0.001628,
+      "mean_latency_ms": 3118.0,
+      "mean_score": 0.25,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 2348,
+      "variant_name": "baseline"
+    },
+    {
+      "case_id": "psyop_014_local_context_hearts_and_minds_narration_strict_omit",
+      "dimension_means": {
+        "count_alignment": 1.0,
+        "exact_f1": 1.0,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": []
+      },
+      "failure_counts": {},
+      "mean_cost": 0.000158,
+      "mean_latency_ms": 793.0,
+      "mean_score": 1.0,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 2136,
+      "variant_name": "compact"
+    },
+    {
+      "case_id": "psyop_014_local_context_hearts_and_minds_narration_strict_omit",
+      "dimension_means": {
+        "count_alignment": 1.0,
+        "exact_f1": 1.0,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": []
+      },
+      "failure_counts": {},
+      "mean_cost": 0.000164,
+      "mean_latency_ms": 879.0,
+      "mean_score": 1.0,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 3683,
+      "variant_name": "compact_operational_parity"
+    },
+    {
+      "case_id": "psyop_014_local_context_hearts_and_minds_narration_strict_omit",
+      "dimension_means": {
+        "count_alignment": 0.0,
+        "exact_f1": 0.0,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": [
+          {
+            "claim_level": "instance",
+            "claim_text": "The \u201chearts and minds\u201d campaigns occurred in Iraq and Afghanistan.",
+            "evidence_spans": [
+              {
+                "end_char": 58,
+                "start_char": 4,
+                "text": "The \u201chearts and minds\u201d campaigns in Iraq and Afghanistan"
+              }
+            ],
+            "predicate": "oc:operation_occurs_in_location",
+            "roles": {
+              "location": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "Iraq",
+                  "raw": "Iraq",
+                  "value_kind": "string"
+                },
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "Afghanistan",
+                  "raw": "Afghanistan",
+                  "value_kind": "string"
+                }
+              ],
+              "operation": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:military_operation",
+                  "kind": "entity",
+                  "name": "\u201chearts and minds\u201d campaigns",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ]
+            },
+            "valid_from": null,
+            "valid_to": null
+          },
+          {
+            "claim_level": "instance",
+            "claim_text": "The proliferation of digital media reduced the impact of PSYOP messages.",
+            "evidence_spans": [
+              {
+                "end_char": 257,
+                "start_char": 139,
+                "text": "the proliferation of digital media meant that adversaries could quickly counter or distort PSYOP messages, reducing their impact"
+              }
+            ],
+            "predicate": "oc:limit_capability",
+            "roles": {
+              "capability": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "impact",
+                  "raw": "impact",
+                  "value_kind": "string"
+                }
+              ],
+              "subject": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:psychological_operation",
+                  "kind": "entity",
+                  "name": "PSYOP messages",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "topic": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "proliferation of digital media",
+                  "raw": "proliferation of digital media",
+                  "value_kind": "string"
+                }
+              ]
+            },
+            "valid_from": null,
+            "valid_to": null
+          }
+        ]
+      },
+      "failure_counts": {},
+      "mean_cost": 0.002077,
+      "mean_latency_ms": 3729.0,
+      "mean_score": 0.25,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 2648,
+      "variant_name": "hardened"
+    },
+    {
+      "case_id": "psyop_014_local_context_hearts_and_minds_narration_strict_omit",
+      "dimension_means": {
+        "count_alignment": 0.0,
+        "exact_f1": 0.0,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": [
+          {
+            "claim_level": "instance",
+            "claim_text": "The proliferation of digital media reduced the impact of PSYOP messages.",
+            "evidence_spans": [
+              {
+                "end_char": 269,
+                "start_char": 150,
+                "text": "the proliferation of digital media meant that adversaries could quickly counter or distort PSYOP messages, reducing their impact"
+              }
+            ],
+            "predicate": "oc:limit_capability",
+            "roles": {
+              "capability": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "impact",
+                  "raw": "impact",
+                  "value_kind": "string"
+                }
+              ],
+              "subject": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:psychological_operation",
+                  "kind": "entity",
+                  "name": "PSYOP messages",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "topic": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "proliferation of digital media",
+                  "raw": "proliferation of digital media",
+                  "value_kind": "string"
+                }
+              ]
+            },
+            "valid_from": null,
+            "valid_to": null
+          },
+          {
+            "claim_level": "instance",
+            "claim_text": "Local populations expressed concern about inconsistent messaging and occasional missteps that undermined credibility in \"hearts and minds\" campaigns.",
+            "evidence_spans": [
+              {
+                "end_char": 148,
+                "start_char": 0,
+                "text": "The \u201chearts and minds\u201d campaigns in Iraq and Afghanistan were hampered by inconsistent messaging and occasional missteps that undermined credibility with local populations."
+              }
+            ],
+            "predicate": "oc:express_concern",
+            "roles": {
+              "speaker": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:community",
+                  "kind": "entity",
+                  "name": "local populations",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "topic": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "inconsistent messaging and occasional missteps that undermined credibility",
+                  "raw": "inconsistent messaging and occasional missteps that undermined credibility",
+                  "value_kind": "string"
+                }
+              ]
+            },
+            "valid_from": null,
+            "valid_to": null
+          }
+        ]
+      },
+      "failure_counts": {},
+      "mean_cost": 0.002009,
+      "mean_latency_ms": 3232.0,
+      "mean_score": 0.25,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 2849,
+      "variant_name": "single_response_hardened"
+    },
+    {
+      "case_id": "psyop_015_local_context_limit_capability_without_named_subject_strict_omit",
+      "dimension_means": {
+        "count_alignment": 0.0,
+        "exact_f1": 0.0,
+        "structural_usable_rate": 0.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": [
+          {
+            "claim_level": "instance",
+            "claim_text": "Bureaucratic friction and differing organizational cultures sometimes impeded rapid decision-making.",
+            "evidence_spans": [
+              {
+                "end_char": 345,
+                "start_char": 249,
+                "text": "bureaucratic friction and differing organizational cultures sometimes impeded rapid decision-making"
+              }
+            ],
+            "predicate": "oc:limit_capability",
+            "roles": {
+              "capability": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "rapid decision-making",
+                  "raw": "rapid decision-making",
+                  "value_kind": "string"
+                }
+              ],
+              "topic": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "bureaucratic friction and differing organizational cultures",
+                  "raw": "bureaucratic friction and differing organizational cultures",
+                  "value_kind": "string"
+                }
+              ]
+            },
+            "valid_from": null,
+            "valid_to": null
+          },
+          {
+            "claim_level": "instance",
+            "claim_text": "Bureaucratic friction and differing organizational cultures sometimes impeded message approval.",
+            "evidence_spans": [
+              {
+                "end_char": 370,
+                "start_char": 249,
+                "text": "bureaucratic friction and differing organizational cultures sometimes impeded rapid decision-making and message approval"
+              }
+            ],
+            "predicate": "oc:limit_capability",
+            "roles": {
+              "capability": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "message approval",
+                  "raw": "message approval",
+                  "value_kind": "string"
+                }
+              ],
+              "topic": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "bureaucratic friction and differing organizational cultures",
+                  "raw": "bureaucratic friction and differing organizational cultures",
+                  "value_kind": "string"
+                }
+              ]
+            },
+            "valid_from": null,
+            "valid_to": null
+          }
+        ]
+      },
+      "failure_counts": {},
+      "mean_cost": 0.001734,
+      "mean_latency_ms": 2977.0,
+      "mean_score": 0.0,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 2398,
+      "variant_name": "baseline"
+    },
+    {
+      "case_id": "psyop_015_local_context_limit_capability_without_named_subject_strict_omit",
+      "dimension_means": {
+        "count_alignment": 1.0,
+        "exact_f1": 1.0,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": []
+      },
+      "failure_counts": {},
+      "mean_cost": 0.000159,
+      "mean_latency_ms": 736.0,
+      "mean_score": 1.0,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 2144,
+      "variant_name": "compact"
+    },
+    {
+      "case_id": "psyop_015_local_context_limit_capability_without_named_subject_strict_omit",
+      "dimension_means": {
+        "count_alignment": 1.0,
+        "exact_f1": 1.0,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": []
+      },
+      "failure_counts": {},
+      "mean_cost": 0.000165,
+      "mean_latency_ms": 987.0,
+      "mean_score": 1.0,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 3691,
+      "variant_name": "compact_operational_parity"
+    },
+    {
+      "case_id": "psyop_015_local_context_limit_capability_without_named_subject_strict_omit",
+      "dimension_means": {
+        "count_alignment": 1.0,
+        "exact_f1": 1.0,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": []
+      },
+      "failure_counts": {},
+      "mean_cost": 0.000121,
+      "mean_latency_ms": 689.0,
+      "mean_score": 1.0,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 1873,
+      "variant_name": "hardened"
+    },
+    {
+      "case_id": "psyop_015_local_context_limit_capability_without_named_subject_strict_omit",
+      "dimension_means": {
+        "count_alignment": 1.0,
+        "exact_f1": 1.0,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": []
+      },
+      "failure_counts": {},
+      "mean_cost": 0.000155,
+      "mean_latency_ms": 783.0,
+      "mean_score": 1.0,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 2115,
+      "variant_name": "single_response_hardened"
+    },
+    {
+      "case_id": "psyop_016_local_context_ethical_questions_with_following_scrutiny_strict_omit",
+      "dimension_means": {
+        "count_alignment": 0.0,
+        "exact_f1": 0.0,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": [
+          {
+            "claim_level": "instance",
+            "claim_text": "The public expressed concern about new ethical and legal questions.",
+            "evidence_spans": [
+              {
+                "end_char": 289,
+                "start_char": 200,
+                "text": "public scrutiny increased, leading to periodic reviews and adjustments of doctrine."
+              }
+            ],
+            "predicate": "oc:express_concern",
+            "roles": {
+              "speaker": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:community",
+                  "kind": "entity",
+                  "name": "public",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "topic": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": null,
+                  "raw": "new ethical and legal questions",
+                  "value_kind": "string"
+                }
+              ]
+            },
+            "valid_from": null,
+            "valid_to": null
+          },
+          {
+            "claim_level": "instance",
+            "claim_text": "Congressional oversight expressed concern about new ethical and legal questions.",
+            "evidence_spans": [
+              {
+                "end_char": 289,
+                "start_char": 180,
+                "text": "Congressional oversight and public scrutiny increased, leading to periodic reviews and adjustments of doctrine."
+              }
+            ],
+            "predicate": "oc:express_concern",
+            "roles": {
+              "speaker": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:government_organization",
+                  "kind": "entity",
+                  "name": "Congressional",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "topic": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": null,
+                  "raw": "new ethical and legal questions",
+                  "value_kind": "string"
+                }
+              ]
+            },
+            "valid_from": null,
+            "valid_to": null
+          }
+        ]
+      },
+      "failure_counts": {},
+      "mean_cost": 0.001624,
+      "mean_latency_ms": 2865.0,
+      "mean_score": 0.25,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 2354,
+      "variant_name": "baseline"
+    },
+    {
+      "case_id": "psyop_016_local_context_ethical_questions_with_following_scrutiny_strict_omit",
+      "dimension_means": {
+        "count_alignment": 1.0,
+        "exact_f1": 1.0,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": []
+      },
+      "failure_counts": {},
+      "mean_cost": 0.000159,
+      "mean_latency_ms": 949.0,
+      "mean_score": 1.0,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 2144,
+      "variant_name": "compact"
+    },
+    {
+      "case_id": "psyop_016_local_context_ethical_questions_with_following_scrutiny_strict_omit",
+      "dimension_means": {
+        "count_alignment": 1.0,
+        "exact_f1": 1.0,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": []
+      },
+      "failure_counts": {},
+      "mean_cost": 0.000165,
+      "mean_latency_ms": 936.0,
+      "mean_score": 1.0,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 3691,
+      "variant_name": "compact_operational_parity"
+    },
+    {
+      "case_id": "psyop_016_local_context_ethical_questions_with_following_scrutiny_strict_omit",
+      "dimension_means": {
+        "count_alignment": 0.0,
+        "exact_f1": 0.0,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": [
+          {
+            "claim_level": "instance",
+            "claim_text": "The public expressed concern about new ethical and legal questions, particularly regarding the targeting of foreign versus domestic audiences and the potential for unintended consequences.",
+            "evidence_spans": [
+              {
+                "end_char": 286,
+                "start_char": 200,
+                "text": "public scrutiny increased, leading to periodic reviews and adjustments of doctrine"
+              }
+            ],
+            "predicate": "oc:express_concern",
+            "roles": {
+              "speaker": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:community",
+                  "kind": "entity",
+                  "name": "public",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "topic": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "new ethical and legal questions, particularly regarding the targeting of foreign versus domestic audiences and the potential for unintended consequences",
+                  "raw": "new ethical and legal questions, particularly regarding the targeting of foreign versus domestic audiences and the potential for unintended consequences",
+                  "value_kind": "string"
+                }
+              ]
+            },
+            "valid_from": null,
+            "valid_to": null
+          },
+          {
+            "claim_level": "instance",
+            "claim_text": "Congressional oversight expressed concern about new ethical and legal questions, particularly regarding the targeting of foreign versus domestic audiences and the potential for unintended consequences.",
+            "evidence_spans": [
+              {
+                "end_char": 286,
+                "start_char": 176,
+                "text": "Congressional oversight and public scrutiny increased, leading to periodic reviews and adjustments of doctrine"
+              }
+            ],
+            "predicate": "oc:express_concern",
+            "roles": {
+              "speaker": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:community",
+                  "kind": "entity",
+                  "name": "Congressional oversight",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "topic": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "new ethical and legal questions, particularly regarding the targeting of foreign versus domestic audiences and the potential for unintended consequences",
+                  "raw": "new ethical and legal questions, particularly regarding the targeting of foreign versus domestic audiences and the potential for unintended consequences",
+                  "value_kind": "string"
+                }
+              ]
+            },
+            "valid_from": null,
+            "valid_to": null
+          }
+        ]
+      },
+      "failure_counts": {},
+      "mean_cost": 0.001903,
+      "mean_latency_ms": 3350.0,
+      "mean_score": 0.25,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 2586,
+      "variant_name": "hardened"
+    },
+    {
+      "case_id": "psyop_016_local_context_ethical_questions_with_following_scrutiny_strict_omit",
+      "dimension_means": {
+        "count_alignment": 0.0,
+        "exact_f1": 0.0,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": [
+          {
+            "claim_level": "instance",
+            "claim_text": "Congressional oversight and public scrutiny expressed concern about new ethical and legal questions regarding the expansion of PSYOP into the digital domain, particularly concerning the targeting of foreign versus domestic audiences and the potential for unintended consequences.",
+            "evidence_spans": [
+              {
+                "end_char": 260,
+                "start_char": 0,
+                "text": "The expansion of PSYOP into the digital domain raised new ethical and legal questions, particularly regarding the targeting of foreign versus domestic audiences and the potential for unintended consequences. Congressional oversight and public scrutiny increased, leading to periodic reviews and adjustments of doctrine."
+              }
+            ],
+            "predicate": "oc:express_concern",
+            "roles": {
+              "speaker": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:community",
+                  "kind": "entity",
+                  "name": "Congressional oversight and public scrutiny",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "topic": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": null,
+                  "raw": "new ethical and legal questions, particularly regarding the targeting of foreign versus domestic audiences and the potential for unintended consequences",
+                  "value_kind": "string"
+                }
+              ]
+            },
+            "valid_from": null,
+            "valid_to": null
+          }
+        ]
+      },
+      "failure_counts": {},
+      "mean_cost": 0.001118,
+      "mean_latency_ms": 2270.0,
+      "mean_score": 0.25,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 2500,
+      "variant_name": "single_response_hardened"
+    }
+  ],
+  "comparisons": [],
+  "execution_id": "060c9068b8cd",
+  "experiment_name": "onto_canon6_extraction_prompt_eval",
+  "fixture_id": "psyop_eval_slice_v6",
+  "fixture_path": "/home/brian/projects/.worktrees/onto-canon6-integration-planning/tests/fixtures/psyop_eval_slice.json",
+  "generated_at": "2026-04-02T10:48:26.312716+00:00",
+  "n_runs": 1,
+  "observability_dataset": "onto_canon6_extraction_prompt_eval",
+  "observability_phase": "evaluation",
+  "selected_model": "gemini/gemini-2.5-flash",
+  "selection_task": "budget_extraction",
+  "variant_summaries": [
+    {
+      "dimension_means": {
+        "count_alignment": 0.21875,
+        "exact_f1": 0.08333125,
+        "structural_usable_rate": 0.875
+      },
+      "failure_counts": {},
+      "mean_cost": 0.0016097762500000001,
+      "mean_latency_ms": 3043.625,
+      "mean_score": 0.2947875,
+      "n_errors": 0,
+      "n_trials": 16,
+      "prompt_ref": "onto_canon6.extraction.prompt_eval_text_to_candidate_assertions_baseline@1",
+      "prompt_template": "prompts/extraction/prompt_eval_text_to_candidate_assertions_baseline.yaml",
+      "std_score": 0.2230815751393796,
+      "successful_trials": 16,
+      "total_tokens": 36908,
+      "variant_name": "baseline"
+    },
+    {
+      "dimension_means": {
+        "count_alignment": 0.859375,
+        "exact_f1": 0.8125,
+        "structural_usable_rate": 0.9375
+      },
+      "failure_counts": {},
+      "mean_cost": 0.00045368375,
+      "mean_latency_ms": 1159.9375,
+      "mean_score": 0.8484375,
+      "n_errors": 0,
+      "n_trials": 16,
+      "prompt_ref": "onto_canon6.extraction.prompt_eval_text_to_candidate_assertions_compact@3",
+      "prompt_template": "prompts/extraction/prompt_eval_text_to_candidate_assertions_compact.yaml",
+      "std_score": 0.3314700526945584,
+      "successful_trials": 16,
+      "total_tokens": 35501,
+      "variant_name": "compact"
+    },
+    {
+      "dimension_means": {
+        "count_alignment": 0.9875,
+        "exact_f1": 0.8263875,
+        "structural_usable_rate": 1.0
+      },
+      "failure_counts": {},
+      "mean_cost": 0.00077021625,
+      "mean_latency_ms": 1792.25,
+      "mean_score": 0.8859,
+      "n_errors": 0,
+      "n_trials": 16,
+      "prompt_ref": "onto_canon6.extraction.prompt_eval_text_to_candidate_assertions_compact_operational_parity@3",
+      "prompt_template": "prompts/extraction/prompt_eval_text_to_candidate_assertions_compact_operational_parity_v3.yaml",
+      "std_score": 0.2467055464854138,
+      "successful_trials": 16,
+      "total_tokens": 62063,
+      "variant_name": "compact_operational_parity"
+    },
+    {
+      "dimension_means": {
+        "count_alignment": 0.53125,
+        "exact_f1": 0.39583125,
+        "structural_usable_rate": 1.0
+      },
+      "failure_counts": {},
+      "mean_cost": 0.00122853,
+      "mean_latency_ms": 2309.75,
+      "mean_score": 0.5604125,
+      "n_errors": 0,
+      "n_trials": 16,
+      "prompt_ref": "onto_canon6.extraction.prompt_eval_text_to_candidate_assertions_hardened@1",
+      "prompt_template": "prompts/extraction/prompt_eval_text_to_candidate_assertions_hardened.yaml",
+      "std_score": 0.35817880427704446,
+      "successful_trials": 16,
+      "total_tokens": 36386,
+      "variant_name": "hardened"
+    },
+    {
+      "dimension_means": {
+        "count_alignment": 0.59375,
+        "exact_f1": 0.45833125,
+        "structural_usable_rate": 1.0
+      },
+      "failure_counts": {},
+      "mean_cost": 0.00103859875,
+      "mean_latency_ms": 1953.3125,
+      "mean_score": 0.6072875,
+      "n_errors": 0,
+      "n_trials": 16,
+      "prompt_ref": "onto_canon6.extraction.prompt_eval_text_to_candidate_assertions_single_response_hardened@1",
+      "prompt_template": "prompts/extraction/prompt_eval_text_to_candidate_assertions_single_response_hardened.yaml",
+      "std_score": 0.36387780343589704,
+      "successful_trials": 16,
+      "total_tokens": 38810,
+      "variant_name": "single_response_hardened"
+    }
+  ]
+}

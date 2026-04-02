@@ -1,0 +1,29 @@
+{
+  "assertion_id": "asn_001",
+  "predicate": "oc:belongs_to_organization",
+  "provenance_refs": [
+    "cand_abc123"
+  ],
+  "qualifiers": {},
+  "roles": {
+    "parent": [
+      {
+        "entity_id": "ent:auto:test:org:bravo_command",
+        "entity_type": "sumo:Organization",
+        "kind": "entity",
+        "name": "Bravo command"
+      }
+    ],
+    "subordinate": [
+      {
+        "alias_ids": [
+          "ent:auto:other:org:alpha_unit_v2"
+        ],
+        "entity_id": "ent:auto:test:org:alpha_unit",
+        "entity_type": "sumo:Organization",
+        "kind": "entity",
+        "name": "Alpha unit"
+      }
+    ]
+  }
+}

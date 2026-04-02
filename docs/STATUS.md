@@ -16,6 +16,62 @@ The current long-term execution authority is split deliberately:
 This status page is intentionally narrower: it records what is already proved
 and where the repo still has real operational risk.
 
+Current post-cutover program state:
+
+1. Lane 2 consumer adoption is satisfied for the current thin DIGIMON v1 seam;
+2. Lane 3 schema stability is closed through
+   `docs/plans/0026_schema_stability_gate.md`;
+3. Lane 4 now has an explicit promotion policy in
+   `docs/plans/0014_extraction_quality_baseline.md`;
+4. the first read-only query surface is now landed and proved through
+   `docs/plans/0028_query_browse_surface.md` and
+   `docs/plans/0029_24h_query_surface_execution_block.md`;
+5. Plan 0025 is now complete at the Phase 4 value-proof level;
+6. Plan 0039 proved rerun stability at the question/safety gate with two fresh
+   reruns (`145141`, `152927`) that both held `10/10` question accuracy,
+   precision `1.00`, and false merges `0`;
+7. Plan `0040` is now complete and decided the compact operational-parity lane
+   is not yet promotable;
+8. Plan `0041` is now complete and proved the remaining prompt-surface delta is
+   stable and bounded, not the dominant blocker family;
+9. Plan `0042` is now complete and proved that one more narrow semantic prompt
+   revision was not enough to recover live chunk transfer;
+10. Plan `0043` is now complete and proved the remaining same-model divergence
+    begins before review and is then amplified by review/judge acceptance;
+11. Plan `0044` is now complete and proved wrapper alignment did not narrow
+    the chunk-003 divergence;
+12. Plan `0045` is now complete and proved live had omitted `temperature=0.0`,
+    but temperature/source-ref alignment still did not recover chunk-003
+    transfer;
+13. Plans `0046` through `0049` are now complete: sync/async path speculation,
+    `Case id` metadata, and prompt_eval wrapper drift are no longer the active
+    blockers on chunk `003`;
+14. Plan `0051` is now complete and proved that section-level analytical
+    suppression did not shrink the repaired chunk-003 spillover family;
+15. Plan `0052` is now complete and proved predicate-local gating can shrink
+    the spillover family, but not close it;
+16. Plan `0053` is now complete and proved that even stronger hard-negative
+    prompt rules did not close the full chunk-003 residual;
+17. Plan `0054` is now complete and proved the remaining blocker is a
+    benchmark-contract question, not another prompt-wording diagnosis block;
+18. the chunk-017 contract cutover is complete under Plan `0055`;
+19. Plan `0056` restored the compact operational-parity lane to the benchmark
+    lead on corrected fixture `v6`;
+20. Plan `0057` is now complete and proved that chunk `002` remains a valid
+    positive control but chunk `003` produced a false-positive transfer report
+    under misaligned live review semantics; and
+21. Plan `0058` is now complete and proved that live review alignment reduces
+    the chunk-003 false-positive family but does not eliminate it; and
+22. Plan `0059` is now complete and proved that chunk `003` can be reduced from
+    `positive` to `mixed` while preserving the chunk-002 positive control; and
+23. Plan `0060` is now complete and removed the remaining abstract
+    `limit_capability` family from chunk `003`; and
+24. Plan `0061` is now complete and removed the staffing-summary membership
+    spillover family from chunk `003`; and
+25. Plan `0062` is now complete and the proved compact operational-parity
+    candidate is the repo-default extraction surface; and
+26. no active extraction-transfer cleanup block remains under Plan `0014`.
+
 ## What Is Proven
 
 `onto-canon6` currently proves a narrow review-and-governance slice built on a
@@ -259,11 +315,11 @@ Planning companion:
     fields in extraction, payload storage, and Foundation IR export
     (`sys:valid_from`, `sys:valid_to`). Proven: SEC complaint 2023-06-05,
     Zhao tenure end 2023-11 (Plan 0020 Gap 4);
-83. DIGIMON real-data export and query-path proof: 20 entities + 16
-    relationships from the e2e test DB exported as JSONL, imported into
-    DIGIMON GraphML (19 merged nodes, USSOCOM deduplicated), and queried
-    through DIGIMON's `relationship.onehop` operator to recover the expected
-    USSOCOM command neighborhood (Plan 0020 Gap 5);
+83. DIGIMON supported v1 consumer proof: 110 entities + 99 relationships from
+    the real Shield AI promoted graph exported as JSONL and imported into
+    DIGIMON GraphML as 110 nodes + 78 edges. 16 single-endpoint relationships
+    were skipped by the importer; the remaining relationship delta came from
+    DIGIMON duplicate-endpoint merge semantics (Plan 0020 Gap 5);
 84. research_v3 import adapter: FtM entity types mapped to onto-canon6 types
     (15 schemas), corroboration status to confidence scores. 48 claims from
     real Booz Allen lobbying investigation imported into review pipeline
@@ -293,33 +349,26 @@ Planning companion:
 
 ## What Is Not Proven Yet
 
-Still missing (updated 2026-04-02):
+Still missing:
 
-1. **cross-project integration test** — epistemic-contracts adapters
-   (grounded-research → onto-canon6) are smoke-tested with manually constructed
-   objects, NOT tested against actual pipeline output;
-2. one-command consumer-side adoption flow; the DIGIMON v1 seam is documented
-   and verified, but no consumer runs the full path as part of its own normal
-   workflow automatically;
-3. cross-investigation conflict detection on real data; single-run tension
+1. extraction quality improvement — API reliability (55% timeout rate in
+   experiment) and empty-roles issue are the primary bottlenecks, not prompt
+   quality. Operational prompt works; experiment variants need rework;
+2. one-command consumer-side adoption flow; the stitched proof exists, but no
+   consumer currently runs the full path as part of its own normal workflow;
+3. entity resolution across 2+ independent extraction runs with fuzzy or
+   external-reference strategies; exact-name auto-resolution is proven, broader
+   resolution is not;
+4. cross-investigation conflict detection on real data; single-run tension
    detection is proven, but contradiction policy across multiple investigations
    is not;
-4. broader benchmark coverage beyond 25-doc synthetic PSYOP corpus;
-5. the broader v1 concept/belief graph and system-belief layer beyond the
+5. broader benchmark coverage beyond 17 PSYOP military cases;
+6. the broader v1 concept/belief graph and system-belief layer beyond the
    first promoted-assertion/entity slice;
-6. broader producer-side semantic adapters beyond pack-driven canonicalization;
-7. any richer interactive surface beyond the thin MCP slice + browsing CLI;
-8. OpenClaw mission-runner consumption of repo-local `.openclaw` contracts;
-9. temporal/inference recovery (deferred by ADR);
-10. entity resolution at 500+ document scale (deferred to Plan 0025a).
-
-Resolved since last update:
-- extraction quality: gemini-3-flash-preview + entity discrimination prompt
-  produces 0 noise, 100% precision/recall. Empty-roles regression fixed
-  (list[RoleEntry] workaround). Transfer evaluation passed.
-- entity resolution: LLM clustering achieves 100% precision/recall on 25-doc
-  synthetic corpus (Plan 0025 complete).
-- schema stability: 9 compatibility tests across 4 surfaces (Plan 0026 complete).
+7. broader producer-side semantic adapters beyond pack-driven canonicalization;
+8. any richer interactive surface beyond the thin MCP slice;
+9. OpenClaw mission-runner consumption of repo-local `.openclaw` contracts;
+10. temporal/inference recovery (deferred by ADR).
 
 ## Current Donor Dependencies
 
@@ -410,23 +459,45 @@ The authoritative parity ledger for the broader successor now lives in
    semantic adapters and richer pack metadata are still not implemented.
 11. Phase 15 recovered promoted-assertion corroboration/tension and broader
    disposition state, but temporal/inference are still explicitly deferred.
-12. First-pass extraction quality was 37.5% acceptance on Stage 1 (early run);
-   now at 100% precision/0 noise with gemini-3-flash-preview + entity
-   discrimination. Plan 0014 transfer evaluation passed 2026-04-01.
+12. First-pass extraction quality is below baseline: 37.5% acceptance rate
+   on Stage 1 corpus, with distinct failure modes (alias self-references,
+   wrong predicate choices, unattributed opinion claims). Active plan:
+   `docs/plans/0014_extraction_quality_baseline.md`.
 
-## Immediate Next Step (2026-04-02)
+## Immediate Next Step
 
-The post-cutover program (Plan 0024, all 5 lanes) is complete. The immediate
-priorities are now cross-project integration and documentation consolidation:
+The current roadmap is now proved through Phase 15.
 
-1. **E2E integration test**: grounded-research → epistemic-contracts →
-   onto-canon6 pipeline with real data (adapters are smoke-tested only);
-2. **Plan 56 Phase 5**: Wire research_v3 → epistemic-contracts boundary;
-3. **Evidence quality scoring**: Extract to epistemic-contracts as shared utils;
-4. **Long-term roadmap**: Consolidate into one clear document.
+The first real non-fixture workflow run has now been completed over local PSYOP
+research outputs. See:
 
-See `HANDOFF.md` for full prioritized list and `CLAUDE.md` Active Execution
-Block for the current session plan.
+1. `docs/plans/0011_first_real_run_psyop_stage1.md`
+2. `docs/runs/2026-03-18_psyop_stage1_run_summary.md`
+3. `docs/runs/2026-03-18_psyop_stage1_friction_log.md`
+
+A second real cross-project consumer run has also been completed over local
+`research-agent` Shield AI relationship output. See:
+
+1. `docs/plans/0012_research_agent_shield_ai_whygame_run.md`
+2. `docs/runs/2026-03-18_research_agent_shield_ai_whygame_run_summary.md`
+3. `docs/runs/2026-03-18_research_agent_shield_ai_whygame_friction_log.md`
+
+The immediate next step is the **extraction quality baseline** work described
+in `docs/plans/0014_extraction_quality_baseline.md`. This is driven by
+Stage 1 friction log entries 5 and 7:
+
+1. prompt hardening for observed error patterns (alias self-references,
+   predicate disambiguation, entity type boundaries);
+2. typed-but-unidentified entity fillers at the extraction boundary so the
+   model can express “I know this is a person but I can't name them”;
+3. profile-level policy for whether unidentified entity fillers pass
+   validation — strict profiles reject them, permissive profiles let them
+   through to review;
+4. prompt rendering of the active unidentified-filler policy.
+
+The target is >50% acceptance rate on the Stage 1 corpus, not perfection.
+The review workflow exists precisely because first-pass extraction will
+never be perfect.
 
 Broader roadmap rules remain:
 

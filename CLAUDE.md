@@ -9,10 +9,46 @@ runtime.
 1. `README.md`
 2. `docs/SUCCESSOR_CHARTER.md`
 3. `docs/STATUS.md`
-4. `docs/plans/0024_post_cutover_program.md` (post-cutover authority — all lanes complete)
-5. `docs/plans/0005_v1_capability_parity_matrix.md` (capability vision ledger)
-6. `HANDOFF.md` (session handoff — current priorities)
-7. `docs/plans/0001_successor_roadmap.md` (historical bootstrap)
+4. `docs/plans/0024_post_cutover_program.md`
+5. `docs/plans/0025_cross_document_entity_resolution.md` (completed Phase 4 value proof)
+6. `docs/plans/0031_24h_entity_resolution_hardening_block.md` (completed hardening block)
+7. `docs/plans/0032_24h_entity_resolution_recall_recovery_block.md` (completed recall-recovery block)
+8. `docs/plans/0033_24h_entity_resolution_answerability_block.md` (completed answerability block)
+9. `docs/plans/0034_24h_entity_resolution_clean_measurement_block.md` (completed clean-measurement block)
+10. `docs/plans/0035_24h_entity_resolution_alias_family_completion_block.md` (completed alias-family closure block)
+11. `docs/plans/0036_24h_entity_resolution_negative_control_recovery_block.md` (completed negative-control recovery block)
+12. `docs/plans/0037_24h_entity_resolution_false_split_cleanup_block.md` (completed Rodriguez/Washington cleanup block)
+13. `docs/plans/0038_24h_entity_resolution_surface_stability_block.md` (completed surface-stability block)
+14. `docs/plans/0039_24h_entity_resolution_rerun_stability_block.md` (completed rerun-stability block)
+15. `docs/plans/0040_24h_extraction_transfer_certification_block.md` (completed certification decision block)
+16. `docs/plans/0041_24h_full_chunk_transfer_parity_block.md` (completed parity-localization block)
+17. `docs/plans/0042_24h_semantic_transfer_residual_block.md` (completed semantic-residual block)
+18. `docs/plans/0043_24h_live_path_divergence_block.md` (completed live-path divergence block)
+19. `docs/plans/0044_24h_wrapper_alignment_block.md` (completed wrapper-alignment block)
+20. `docs/plans/0045_24h_extraction_path_block.md` (completed extraction-path localization block)
+21. `docs/plans/0046_24h_sync_async_and_caseid_residual_block.md` (completed prompt-side residual localization block)
+22. `docs/plans/0047_24h_case_metadata_parity_block.md` (completed case-id repair block)
+23. `docs/plans/0048_24h_prompt_wrapper_parity_block.md` (completed wrapper repair block)
+24. `docs/plans/0049_24h_post_repair_transfer_block.md` (completed post-repair chunk-003 rerun block)
+25. `docs/plans/0050_24h_post_parity_semantic_recovery_block.md` (completed failed bounded semantic attempt)
+26. `docs/plans/0051_24h_analytical_section_suppression_block.md` (completed failed section-level suppression attempt)
+27. `docs/plans/0052_24h_predicate_locality_gate_block.md` (completed narrowing block)
+28. `docs/plans/0053_24h_abstract_result_and_citation_block.md` (completed failed hard-negative attempt)
+29. `docs/plans/0054_24h_full_chunk_strict_omit_contract_audit.md` (completed audit block)
+30. `docs/plans/0055_24h_chunk017_contract_cutover_and_rebaseline_block.md` (completed cutover block)
+31. `docs/plans/0056_24h_corrected_fixture_semantic_recovery_block.md` (completed corrected-fixture recovery block)
+32. `docs/plans/0057_24h_corrected_fixture_transfer_recertification_block.md` (completed false-positive transfer audit)
+33. `docs/plans/0058_24h_live_review_alignment_block.md` (completed review-alignment block)
+34. `docs/plans/0059_24h_live_chunk003_semantic_residual_block.md` (completed semantic-reduction block)
+35. `docs/plans/0060_24h_limit_capability_enforcement_block.md` (completed abstract limit-capability enforcement block)
+36. `docs/plans/0061_24h_personnel_membership_enforcement_block.md` (completed staffing-membership enforcement block)
+37. `docs/plans/0062_24h_default_extraction_cutover_block.md` (completed default extraction cutover block)
+38. `docs/plans/0026_schema_stability_gate.md` (completed Lane 3 contract policy)
+39. `docs/plans/0014_extraction_quality_baseline.md` (active Lane 4 promotion gate)
+40. `docs/plans/0027_deferred_parity_reprioritization.md`
+41. `docs/plans/0028_query_browse_surface.md`
+42. `docs/plans/0005_v1_capability_parity_matrix.md`
+43. `docs/plans/0001_successor_roadmap.md`
 
 ## Commands
 
@@ -52,18 +88,81 @@ config/
   classification, chunk-level transfer evaluation).
 - Predicate Canon bridge, ancestor-aware evaluator, and Digimon export
   adapter operational.
-- **Post-cutover program complete (2026-04-01)**: All 5 lanes of Plan 0024
-  are done. Plans 0025 (entity resolution, 100%/100%), 0026 (schema stability,
-  9 tests), and 0027 (governed baseline alignment) are complete. Transfer
-  evaluation passed and prompt promoted. See HANDOFF.md for current priorities.
+- **Active work**: extraction quality hardening under an explicit promotion
+  gate (Plan 0014),
+  vision-gap closure tracking (Plan 0020), the post-cutover execution program
+  (Plan 0024), and deferred parity ordering / queryability planning
+  (Plans 0027-0028). Lane 3 schema stability is no longer just planned:
+  Plan 0026 is now the completed contract-policy surface, and the first
+  read-only query surface is now implemented end to end through Plan 0029.
+  Plan 0030 is now complete and gives the first decision-grade comparison
+  between exact, bare-baseline, and LLM entity-resolution strategies. Plan
+  0031 is also now complete: it fixed the stale auto-review judge seam,
+  removed the known same-surname false-merge family, and reran the value
+  proof. Plan 0032 is now also complete: it removed the document-loss failure,
+  materially improved recall and answerability, and cleared its declared gate
+  with precision `1.00`, recall `0.615`, false merges `0`, answer rate `0.50`,
+  and accuracy `0.40`. Plan 0033 is now complete: it recovered alias-surface
+  coverage, localized the remaining miss, and showed that the next blocker was
+  a clean measurement run rather than broad new clustering churn. Plan 0034 is
+  now also complete: it restored a valid `25/25` clean rerun, improved recall
+  to `0.746`, and narrowed the remaining work to three residual alias families.
+  Plan 0035 is now also complete: it closed `q02`, `q04`, and `q08`, and the
+  fresh clean rerun proved that those alias families are no longer the blocker.
+  Plan 0036 is now also complete: it restored same-surname person safety and
+  recovered `q05` / `q06` on a fresh rerun. Plan 0037 is now also complete:
+  it closed the Rodriguez and Washington residual families truthfully. Plan
+  0038 is now also complete under its explicit exit clause: it materially
+  improved the acronym/descriptor/evaluator blocker family and produced the
+  near-gate `131124` fresh rerun, but the follow-on `132119` rerun proved that
+  the next blocker was rerun stability under extraction-shape drift. Plan
+  0039 is now also complete: fresh reruns `145141` and `152927` both restored
+  `10/10` question accuracy while keeping precision `1.00` and false merges
+  `0`, which is enough to close the rerun-stability gate. Plan 0025 is now
+  complete at its Phase 4 value-proof level. Plans `0040` through `0045`
+  completed the chunk-transfer certification and localization sequence:
+  chunk `002` stayed a real positive control, chunk `003` remained the only
+  meaningful residual, and prompt-surface / wrapper / live-path differences
+  were narrowed to a bounded family instead of left speculative. There was no
+  further truthful autonomous prompt-only rescue block after Plan `0054`.
+  Plans `0046` through
+  `0049` are now complete and proved that sync/async API speculation,
+  prompt_eval-only `Case id` metadata, and the prompt_eval `Case input:`
+  wrapper were all real prompt-path issues but are no longer the active
+  blocker. Plan `0050` then proved that one bounded semantic revision changed
+  the chunk-003 family without improving the score gate, and Plan `0051`
+  proved that another section-level suppression pass made the compact
+  operational-parity spillover family worse rather than better. Plan `0052`
+  then narrowed the family from `6` candidates to `5`, but left the core
+  abstract-result and citation/report spillovers intact. Plan `0053` then
+  proved that even stronger hard-negative prompt wording still widened the
+  family again. Plan `0054` then answered the next question: chunk `017` is a
+  mixed-content benchmark-contract problem, not a clean prompt hardening
+  target. The user approved the recommended removal/demotion, and Plan `0055`
+  completed the fixture cutover plus one corrected-fixture rerun. Plan `0056`
+  then restored the compact operational-parity benchmark lead on corrected
+  fixture `v6`. Plan `0057` then reran the named transfer chunks and proved
+  that the first chunk-003 positive transfer result was overstated by live
+  review-contract drift. Plan `0058` then fixed that contract and reduced the
+  chunk-003 false-positive family. Plan `0059` then removed the staffing leak
+  and downgraded chunk `003` from `positive` to `mixed`. Plan `0060` then
+  removed the remaining abstract `limit_capability` spillover family, Plan
+  `0061` removed the staffing-summary membership spillover family, and Plan
+  `0062` completed the repo-default extraction cutover onto the proved compact
+  operational-parity lane. There is no active extraction-transfer cleanup
+  block now; any future extraction-quality work must start from the promoted
+  default surface instead of reopening Plans `0057` through `0062`.
+  The chunk-level transfer evaluation requirement remains active through
+  ADR 0023 and Plans 0024/0014 even though there is no standalone Plan 0019
+  file.
 
-## Strategic Direction (2026-04-02)
+## Strategic Direction (2026-03-31)
 
-- **Architecture is sound. Value proposition is proven.** Plan 0025 demonstrated
-  100% precision/100% recall entity resolution, +70% cross-doc QA vs bare
-  extraction. Plans 0024-0027 all complete. Current priority: cross-project
-  integration (epistemic-contracts, grounded-research pipeline) and documentation
-  consolidation.
+- **Architecture is sound. Current priority: cross-document entity resolution
+  and scale test.** Plan 0025 implements KGGen-style LLM clustering over
+  promoted entities, then tests on a 20-50 document corpus to prove onto-canon6's
+  value proposition (cross-doc entity resolution, contradiction detection, typed
+  reasoning). This is the prerequisite for consumer adoption (Plan 0024 Lane 2).
 - **Default operating mode is `review_mode: llm` with `enable_judge_filter: true`.**
   Human review is for debugging, not production. Auto-accept is for bulk
   throughput when you trust the schema. LLM-judge is the standard mode.
@@ -74,6 +173,38 @@ config/
   cross-document resolution, every document produces isolated entity islands.
   The value proposition (accumulation, contradiction detection, cross-doc
   reasoning) cannot be demonstrated.
+- **24h execution rule: do not stop between bounded phases.** When a 24h
+  execution block is active, continue through its declared phase order
+  autonomously until the block is truthfully complete or a blocker/uncertainty
+  is explicit in the docs. Log uncertainties in the active plan, `TODO.md`,
+  and `KNOWLEDGE.md`, then keep moving on the next bounded task instead of
+  pausing for conversational check-ins. Treat this as a hard operating rule,
+  not a suggestion: keep executing, keep rerunning, keep committing, and only
+  stop when the active block is either complete or explicitly narrowed to a new
+  documented blocker.
+- **Current extraction-quality execution rule:** Plans `0056`, `0057`,
+  `0058`, `0059`, `0060`, `0061`, and `0062` are complete. There is no active
+  extraction-transfer cleanup block now that the compact operational-parity
+  candidate is the repo-default extraction surface.
+- **Continuous execution rule is hard, not advisory.** When a 24h block is
+  active, keep executing until the approved contract is implemented, the
+  bounded rerun is recorded, the next blocker is written down, and the block is
+  truthfully closed. If a new uncertainty appears, log it in the active plan,
+  `TODO.md`, and `KNOWLEDGE.md`, then continue on the next bounded task unless
+  the uncertainty changes the contract itself.
+- **Default execution mode for substantial autonomous work is an isolated
+  worktree plus explicit merge-back.** When an agent is going to run a
+  multi-phase implementation block, use a dedicated worktree/branch by default
+  so the main checkout stays readable and rollback stays cheap. Keep commits
+  small and verified, then merge the worktree branch back into `main` only
+  after the block is truthfully complete. Only stay in the main checkout by
+  default for tiny edits or when a worktree would create a bigger risk than it
+  removes.
+- **After the current value-proof work, the next-active deferred capability is
+  queryability.** Plan 0027 now fixes the deferred-capability order, and Plan
+  0028 now has a landed first read-only browse/search surface over promoted
+  knowledge. Do not widen the DIGIMON seam or start broad new capability tracks
+  before Plan 0025 and the first query surface are settled.
 - **Flat filler model with strong descriptions** — discriminated unions (oneOf)
   are architecturally correct but no current model can navigate them (all produce
   empty roles). Reverted to flat model with `Field(description=...)` enforcing
@@ -81,11 +212,10 @@ config/
   roles (providers don't enforce it; post-parse validator catches empty roles).
 - **E2E pipeline proven (2026-03-25).** Text → extraction → validation → review
   → promotion → durable graph. 5 USSOCOM commanders extracted with correct
-  ontology types, 100% acceptance. Model: `gemini/gemini-3-flash-preview`
-  (best tested — 100% precision/recall on scale test). The earlier empty-roles
-  regression was caused by `additionalProperties` in the JSON schema, not the
-  model. Fixed by replacing `dict[str, list[Filler]]` with `list[RoleEntry]`
-  (standard Gemini workaround). See KNOWLEDGE.md for details.
+  ontology types, 100% acceptance. Model: `gemini/gemini-2.5-flash` (stable).
+  Root cause of prior empty-roles failures: `gemini-3-flash-preview` regressed
+  on structured output between 2026-03-21 and 2026-03-25. OpenRouter routing
+  models (gpt-5.4-mini) also failed. Stable Gemini model works.
 - **Observability gap closed**: llm_client now stores the raw model response on
   validation failure (not just the error message). Query with:
   `SELECT response, error FROM llm_calls WHERE error IS NOT NULL AND task='fast_extraction'`
@@ -114,9 +244,11 @@ config/
 - **Benchmark against a simple baseline** — compare progressive extraction vs
   bare "extract SPO triples" prompt on same corpus to prove governance value.
 - **Integration adapters are built and proven** — research_v3 import (48 claims),
-  Digimon export/import/query (19 merged nodes, operator query proven), and
-  Foundation IR (16 assertions). Next step is consumer-side adoption and
-  long-tail hardening, not more net-new adapter surfaces.
+  DIGIMON thin v1 export/import proof (110 exported entities, 99 exported
+  relationships, 110 imported nodes, 78 imported edges on the 2026-03-31
+  Shield AI proof), and Foundation IR (16 assertions). Next step is
+  consumer-side depth and long-tail hardening, not more net-new adapter
+  surfaces.
 - **DIGIMON is now the first chosen Lane 2 consumer.** The currently supported
   downstream workflow is the thin v1 seam: `onto-canon6` exports flat
   `entities.jsonl` / `relationships.jsonl` via the `onto-canon6` console
@@ -199,141 +331,110 @@ happens.
    resolution *infrastructure*. Export adapters wire the identity subsystem.
    Consumers should not have to reimplement dedup.
 
-## Planned Execution Block (NOT YET STARTED — hardening + full pipeline)
+## Active Execution Block (2026-04-01)
 
-**Status: PLANNED but NOT YET EXECUTED.**
+**Plan 0054: 24h Full-Chunk Strict-Omit Contract Audit — complete.**
 
-When this block starts, execute all phases below in order. Commit each verified phase immediately.
-Do not pause for confirmation between phases. Do not stop after one commit.
-The only valid stop conditions are:
-1. All phases are complete
-2. A real architectural uncertainty not covered by this plan
-3. An irreversible action affecting shared state
+Within an active 24h execution block, the default operating mode is continuous
+execution: finish the current phase, verify it, commit it, update the active
+plan / TODO surface, then continue immediately into the next declared phase.
+Do not stop because a smaller slice is complete. If a real uncertainty remains,
+log it in the active plan, decision note, TODO, or KNOWLEDGE file and continue
+unless it creates a genuine blocker.
 
-**Previous blocks:** Phases A-T (2026-04-01, ~55 commits), Phases 1-7
-(2026-04-02 early, ~8 commits across 4 repos). Cross-project integration
-proven, docs cleaned up, roadmap written.
+Execute continuously and do not pause between phases. Finish the current
+phase, update the plan/TODO surfaces, commit the verified increment, and move
+immediately to the next phase. Never stop at "one extraction fix landed" or
+"one alias family improved." The block is not done until all required phases,
+rerun artifacts, and closeout docs are finished.
 
-### Phase A: Fix all 21 pre-existing test failures
+Treat premature stopping as a repo-level failure mode. While a bounded block is
+active, the required behavior is: plan the next concrete phase, execute it,
+verify it, commit it, log any uncertainty, and continue. Do not wait for
+"what next?" confirmation mid-block.
 
-21 tests fail across 5 categories. Fix each category:
+The current valid stop condition is no longer the `0062`
+default-cutover boundary.
 
-**A1. Missing rapidfuzz (5 tests)**
-- `pip install rapidfuzz` in the .venv
-- Tests: `test_auto_resolution.py::TestFuzzyResolution` (4) + `TestFuzzyPreFilter` (1)
-- Success: all 5 pass
+1. Plans `0056`, `0057`, `0058`, `0059`, `0060`, `0061`, and `0062` are
+   complete and committed.
+2. The benchmark lead is restored on corrected fixture `v6`, the review
+   contract is aligned, the named chunk-transfer blocker families are closed,
+   and the proved compact operational-parity candidate is now the repo default.
+3. Any future extraction-quality work must start from that promoted default
+   rather than reopening the previous transfer-hardening chain.
 
-**A2. ProbLog adapter broken (2 tests)**
-- `test_problog_adapter.py::test_simple_rule_evaluation`
-- `test_cli_evaluate_rules.py::test_evaluate_simple_rules`
-- Diagnose: `assert 0 >= 1` means ProbLog returns 0 results. Check if
-  ProbLog is installed, if the fact-store adapter loads, if the rule syntax
-  is correct.
-- Success: both pass
-
-**A3. CLI flow extraction_goal kwarg (3 tests)**
-- `test_cli_flow.py` — `_FakeTextExtractionService.extract_and_submit()`
-  doesn't accept `extraction_goal`. Update the fake to match the real API.
-- Success: all 3 pass
-
-**A4. FastMCP API change (1 test)**
-- `test_mcp_server.py::test_phase14_mcp_tools_are_registered`
-- `list_tools` → check what the correct method name is on the current
-  FastMCP version
-- Success: test passes
-
-**A5. Text extraction response parsing (8 tests)**
-- `test_text_extraction.py` — `TypeError: list indices must be integers`
-  means the response parsing code expects a dict but gets a list (or vice
-  versa) after the `list[RoleEntry]` schema change.
-- Root cause: the test fixtures still use the old `dict[str, list[Filler]]`
-  format for roles. Update fixtures to `list[RoleEntry]` format.
-- Success: all 8 pass
-
-**A6. Notebook process (2 tests)**
-- `test_notebook_registry_validates` — references `docs/plans/0002_phase8_artifact_lineage_shape.md`
-  which was removed/renamed. Update notebook_registry.yaml.
-- `test_master_journey_notebook_executes` — notebook execution error.
-  Run notebook to diagnose, fix the cell.
-- Success: both pass
-
-**Acceptance**: `pytest -q` shows 0 failures, 500+ passed.
-
-### Phase B: Shared-claim validation profile
-
-Imported claims get `validation_status=invalid` because `general_purpose_open`
-doesn't recognize `shared:fact_claim` as a predicate.
-
-**Tasks:**
-1. Create `shared_import` ontology pack with predicates covering shared
-   contract claim types (`shared:fact_claim`, `shared:relationship_claim`,
-   `shared:financial_claim`, `shared:temporal_claim`, `shared:finding`)
-2. Create `shared_import_permissive` profile (open policy for imported claims)
-3. Update `grounded_research_import.py` to default to this profile
-4. Test: E2E integration script should produce `validation_status=valid`
-
-**Success**: Imported claims validate correctly.
-
-### Phase C: Full pipeline E2E — research_v3 → onto-canon6 → DIGIMON
-
-Write a single script that runs the complete chain on real data:
-1. Load research_v3 graph.yaml (Booz Allen lobbying, 123 claims)
-2. Convert via shared_export → shared ClaimRecords
-3. Import into onto-canon6 via grounded_research_import
-4. Accept all candidates (auto-accept for bulk import)
-5. Promote accepted candidates to graph
-6. Run entity resolution
-7. Export to DIGIMON format
-8. Verify: entity count, relationship count, identity clusters
-
-**Success**: Script runs end-to-end, produces DIGIMON-importable artifacts.
-
-### Phase D: Concept/entity browsing MCP surface
-
-CLI is done (list-entities, search-entities, get-entity). Add MCP tools.
-
-**Tasks:**
-1. Add MCP tools to `mcp_server.py`: `canon6_list_entities`,
-   `canon6_search_entities`, `canon6_get_entity`
-2. Wire to the same promoted-graph queries as CLI
-3. Test with the MCP test harness
-
-**Success**: MCP tools registered and functional.
-
-### Phase E: Scale test — full 123 Booz Allen claims
-
-Run the Phase C pipeline script with the full Booz Allen corpus.
-Document results in `docs/runs/`.
-
-**Success**: Results documented with entity count, dedup ratio, identity
-clusters, and any failures.
-
-### Phase F: Ecosystem docs update
-
-Update project-meta ecosystem docs to reflect current state:
-1. `ECOSYSTEM_STATUS.md` — update onto-canon6 section
-2. `CAPABILITY_BOUNDARIES.md` — update integration status
-3. Plan 56 — mark Phase 5 complete
-
-**Success**: All ecosystem docs consistent with actual code state.
-
-### Phase G: Final verification + push
-
-1. Run full test suite (target: 0 failures)
-2. Verify all doc cross-references
-3. Commit and push all repos
-
-**Pre-made decisions:**
-- Model: `gemini/gemini-3-flash-preview` for any LLM calls
-- Config: `review_mode: llm`, `enable_judge_filter: true`
+Pre-made decisions (do not ask about these):
+- Work stays in the isolated `codex/onto-canon6-integration-planning` worktree
+- chunk `002` and chunk `003` remain the canonical transfer chunks
+- the current compact operational-parity lane is the only candidate under test
+- no prompt-surface parity work reopens before the repaired chunk-003 semantic
+  family is re-evaluated
+- the next lever after 0054 is a user benchmark-contract decision, not another
+  prompt-wording pass
 - Commit each verified phase immediately
-- rapidfuzz, problog: install in .venv, do not add to pyproject.toml
-  unless already listed
-- Shared-import profile: open policy (no strict validation for imports)
-- MCP tools: thin wrappers over existing CLI queries
-- Do not stop between phases
 
-## Principles
+## Most Recent Execution Block (2026-04-01)
+
+**Plan 0045: 24h Extraction-Path Block — complete.**
+
+The extraction-path block now has:
+
+1. one bounded extraction-call comparator over `llm_calls.call_snapshot`;
+2. explicit proof that live extraction had been omitting `temperature=0.0`;
+3. one live temperature/source-ref aligned chunk-003 rerun;
+4. semantic comparison evidence showing the aligned rerun still had `0`
+   shared bodies with prompt-eval; and
+5. a decision note proving the next blocker is narrower than generic
+   extraction-path behavior: sync/async call-path residual plus prompt_eval-only
+   `Case id` metadata.
+
+Decision from the block:
+
+1. exact remains the default precision floor;
+2. hardened LLM now has zero false merges on the synthetic value-proof corpus;
+3. hardened LLM is still not promotable as default because recall and
+   fixed-question answerability remain too weak, and one extraction/schema
+   failure dropped `doc_06` from the rerun.
+
+Active work therefore returns to Plan 0014's next narrow frontier:
+certification-grade extraction transfer evidence on the current compact
+operational-parity lane.
+
+## Completed Execution Block (2026-04-01)
+
+**Plan 0030: 24h Entity Resolution Value-Proof Block — complete.**
+
+The value-proof block now has:
+
+1. a frozen corpus and question set;
+2. exact, bare-baseline, and LLM strategy run artifacts;
+3. a written decision note in
+   `docs/runs/2026-04-01_entity_resolution_value_proof.md`.
+
+Decision from the block:
+
+1. exact matching remains the high-precision floor;
+2. the bare baseline is not competitive;
+3. LLM clustering improves recall materially but is not ready for default
+   promotion because false merges and question regressions remain.
+
+## Completed 24h Execution Block (2026-03-31)
+
+**Plan 0029: First Query Surface — complete.**
+
+The bounded execution block landed:
+
+1. shared read-only query service;
+2. thin CLI commands for the first five browse/search operations;
+3. thin MCP tools over the same service contracts;
+4. real-proof verification against the canonical proof DB;
+5. doc/status/closeout updates.
+
+`TODO.md` remains the live execution tracker pattern for future bounded blocks,
+but Plan 0029 itself is no longer active.
+
+## Working Rules
 
 - **Autonomy is the default operating mode.** When there is an active plan or
   clearly bounded workstream, continue executing it end to end without waiting
@@ -376,21 +477,6 @@ Update project-meta ecosystem docs to reflect current state:
   CLI/MCP surfaces that prove those slices.
 - If the next change cannot be justified against the adopted ADR set, it should
   not land as casual repo drift.
-
-## Workflow
-
-- All significant work follows plans in `docs/plans/`
-- Commit verified increments with `[Plan #N]` prefix
-- Use `[Trivial]` for <20 line changes
-
-## References
-
-| Doc | Purpose |
-|-----|---------|
-| `docs/ROADMAP.md` | Forward-looking priorities, "what done looks like" |
-| `docs/plans/CLAUDE.md` | Plan index |
-| `config/config.yaml` | Extraction and prompt configuration |
-| `evaluation/` | Evaluation harness and prompt experiment service |
 
 ## LLM Integration
 

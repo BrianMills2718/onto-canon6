@@ -1,0 +1,81 @@
+{
+  "candidates": [
+    {
+      "candidate_id": "cand_2bafb29bc76c419eb30810d2",
+      "claim_text": "The effectiveness of PSYOP was limited by cultural misunderstandings, insufficient coordination with non-military actors, and the rapid evolution of adversary information tactics.",
+      "evidence_span_count": 1,
+      "predicate": "oc:limit_capability",
+      "review_status": "accepted",
+      "validation_status": "valid"
+    },
+    {
+      "candidate_id": "cand_e2d7fb39c29b461abb4db862",
+      "claim_text": "The \u201chearts and minds\u201d campaigns in Iraq and Afghanistan were hampered by inconsistent messaging and occasional missteps that undermined credibility with local populations.",
+      "evidence_span_count": 1,
+      "predicate": "oc:limit_capability",
+      "review_status": "accepted",
+      "validation_status": "valid"
+    },
+    {
+      "candidate_id": "cand_5ed189309eab436b85fbbf40",
+      "claim_text": "The proliferation of digital media reduced the impact of PSYOP messages.",
+      "evidence_span_count": 1,
+      "predicate": "oc:limit_capability",
+      "review_status": "accepted",
+      "validation_status": "valid"
+    },
+    {
+      "candidate_id": "cand_5bd25079e8c846c7bab99269",
+      "claim_text": "Bureaucratic friction and differing organizational cultures sometimes impeded rapid decision-making and message approval for modern PSYOP.",
+      "evidence_span_count": 1,
+      "predicate": "oc:limit_capability",
+      "review_status": "accepted",
+      "validation_status": "valid"
+    },
+    {
+      "candidate_id": "cand_db71610207e44ec4b06630b3",
+      "claim_text": "Congressional oversight and public scrutiny increased regarding the expansion of PSYOP into the digital domain.",
+      "evidence_span_count": 1,
+      "predicate": "oc:express_concern",
+      "review_status": "accepted",
+      "validation_status": "valid"
+    },
+    {
+      "candidate_id": "cand_480caa122b3b47d1a96cc4ec",
+      "claim_text": "Innovations such as the JPOTF positioned PSYOP as a central tool of 21st-century warfare.",
+      "evidence_span_count": 1,
+      "predicate": "oc:uses_designation_label",
+      "review_status": "accepted",
+      "validation_status": "valid"
+    }
+  ],
+  "profile": {
+    "profile_id": "psyop_seed",
+    "profile_version": "0.1.0"
+  },
+  "prompt_ref": "onto_canon6.extraction.text_to_candidate_assertions_compact_v6_wrapper_align@1",
+  "prompt_template": "prompts/extraction/text_to_candidate_assertions_compact_v6_wrapper_align.yaml",
+  "review_db_path": "/home/brian/projects/.worktrees/onto-canon6-integration-planning/var/real_runs/2026-04-01_compact6_wrapper_align_chunk003/review_state_max10.sqlite3",
+  "selection_task": "budget_extraction",
+  "source_kind": "text_file",
+  "source_label": "01_stage1_query2__chunk_003.md",
+  "source_ref": "/home/brian/projects/onto-canon6/var/real_runs/2026-03-21_phase_b_prompt_verification/chunks/01_stage1_query2/01_stage1_query2__chunk_003.md",
+  "summary": {
+    "acceptance_rate": 1.0,
+    "accepted_candidates": 6,
+    "pending_candidates": 0,
+    "predicate_counts": {
+      "oc:express_concern": 1,
+      "oc:limit_capability": 4,
+      "oc:uses_designation_label": 1
+    },
+    "rejected_candidates": 0,
+    "review_complete": true,
+    "review_status_counts": {
+      "accepted": 6
+    },
+    "reviewed_candidates": 6,
+    "total_candidates": 6,
+    "verdict": "positive"
+  }
+}

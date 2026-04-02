@@ -225,7 +225,7 @@ class TestApplyEntityMerge:
         merge_map = {"the militia": "Kurdish militia"}
         result = _apply_entity_merge(candidates, merge_map)
         assert len(result) == 1
-        filler = result[0].roles_dict["ARG0"][0]
+        filler = result[0].roles["ARG0"][0]
         assert filler.name == "Kurdish militia"
 
     def test_no_merges_returns_same(self) -> None:
@@ -247,7 +247,7 @@ class TestApplyEntityMerge:
         ]
         merge_map = {"the militia": "Kurdish militia"}
         result = _apply_entity_merge(candidates, merge_map)
-        assert result[0].roles_dict["ARG0"][0].name == "Turkey"
+        assert result[0].roles["ARG0"][0].name == "Turkey"
 
 
 # ---------------------------------------------------------------------------
@@ -400,12 +400,12 @@ class TestResolveEntityCoreferences:
 
         assert len(result) == 3
         # "the militia" -> "Kurdish militia"
-        assert result[1].roles_dict["ARG0"][0].name == "Kurdish militia"
+        assert result[1].roles["ARG0"][0].name == "Kurdish militia"
         # "Kurdish fighters" -> "Kurdish militia"
-        assert result[2].roles_dict["ARG0"][0].name == "Kurdish militia"
+        assert result[2].roles["ARG0"][0].name == "Kurdish militia"
         # Unchanged entities stay the same
-        assert result[0].roles_dict["ARG0"][0].name == "Kurdish militia"
-        assert result[0].roles_dict["ARG1"][0].name == "ISIS positions"
+        assert result[0].roles["ARG0"][0].name == "Kurdish militia"
+        assert result[0].roles["ARG1"][0].name == "ISIS positions"
 
     @pytest.mark.asyncio
     async def test_skips_when_too_few_entities(self) -> None:
@@ -496,7 +496,7 @@ class TestResolveEntityCoreferences:
             _llm_api=api,
         )
         # No merges, but structure is preserved
-        assert result[0].roles_dict["ARG0"][0].name == "USA"
+        assert result[0].roles["ARG0"][0].name == "USA"
 
 
 # ---------------------------------------------------------------------------
@@ -542,7 +542,7 @@ class TestResolvePropositionalCoreferences:
         )
 
         assert len(result) == 1
-        resolved_filler = result[0].roles_dict["ARG1"][0]
+        resolved_filler = result[0].roles["ARG1"][0]
         assert "Kurdish militia captured" in resolved_filler.raw
 
     @pytest.mark.asyncio
@@ -672,6 +672,6 @@ class TestResolveCoreferences:
 
         assert call_count == 2
         # Entity merge applied
-        assert result[1].roles_dict["ARG0"][0].name == "Kurdish militia"
+        assert result[1].roles["ARG0"][0].name == "Kurdish militia"
         # Propositional resolution applied
-        assert "Kurdish militia captured" in result[2].roles_dict["ARG1"][0].raw
+        assert "Kurdish militia captured" in result[2].roles["ARG1"][0].raw

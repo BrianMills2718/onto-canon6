@@ -1,6 +1,6 @@
 # Cross-Document Entity Resolution
 
-Status: complete (Phases 1-4 done; scale-out deferred to Plan 0025a)
+Status: complete
 
 Last updated: 2026-04-01
 Workstream: entity resolution for scale test (20-500 documents)
@@ -16,10 +16,11 @@ Without this, every document produces isolated entity islands. The scale value
 (cross-document entity resolution, contradiction detection, typed reasoning)
 cannot be demonstrated.
 
-## Progress Update (2026-03-31)
+## Progress Update (2026-04-01)
 
-This plan is no longer just planned. The first implementation slice has
-started and the scale-test harness now exists.
+This plan is no longer just planned. The value-proof harness is complete, the
+repo has decision-grade comparison artifacts, and the bounded rerun-stability
+cleanup pass is now also complete.
 
 ### Landed so far
 
@@ -29,9 +30,10 @@ started and the scale-test harness now exists.
    - additive `llm` resolution strategy with fuzzy pre-filtering
 3. **Phase 3** landed:
    - CLI / Makefile / pipeline integration for resolution
-4. **Phase 4 harness** landed:
-   - synthetic corpus + scale-test runner
-   - first exact-strategy and llm-strategy runs written under `docs/runs/`
+4. **Phase 4 value-proof** landed:
+   - official synthetic corpus + question fixture + evaluator
+   - exact, bare-baseline, and LLM strategy runs written under `docs/runs/`
+   - decision note written in `docs/runs/2026-04-01_entity_resolution_value_proof.md`
 
 Targeted regression coverage for the active slice is green on the current repo
 surface:
@@ -41,86 +43,94 @@ surface:
 3. `tests/pipeline/test_text_extraction.py`
 4. `tests/integration/test_identity_cli.py`
 
-### Phase 4c results (2026-03-31): Precision/recall scored against ground truth
+### What is still unresolved
 
-Scored via `scripts/score_scale_test.py` against `ground_truth.json`:
+The plan's harness and metrics gap is now closed, and the rerun-stability
+question that remained after Plan `0038` is now resolved at the declared
+question/safety gate.
 
-|                      | Exact  | LLM    | Target |
-|----------------------|--------|--------|--------|
-| **Recall**           | 80%    | **100%** | >70% ✓ |
-| **Precision**        | 78.9%  | 77.8%  | >90% ✗ |
-| False merges         | 0      | 0      | —      |
-| Non-merge violations | 0      | 0      | —      |
-| Noise clusters       | 4      | 4      | —      |
+The current question is no longer "can the repo score resolution quality?" It
+can. The current state is now:
 
-**Key findings:**
+1. the declared Phase 4 value-proof acceptance criteria are met;
+2. the repo has two consecutive fresh reruns with `10/10` fixed-question
+   accuracy and `0` false merges;
+3. remaining pairwise false splits are narrower follow-on quality questions,
+   not a blocker to call the Phase 4 proof complete.
 
-1. **Entity resolution works.** 100% recall (LLM), 0 false merges, 0 non-merge
-   violations, Smith disambiguation passed.
-2. **LLM outperforms exact on recall** (100% vs 80%). Exact misses acronyms
-   (4th PSYOP Group, NSA) that normalization can't resolve.
-3. **Precision gap is entirely extraction noise, not resolution errors.**
-   4 noise clusters ("met", "a ceremony", "several initiatives...",
-   "special operations forces") are entities that shouldn't have been extracted.
-   Excluding noise: precision is 100% for both strategies.
-4. **The bottleneck is extraction quality (Plan 0014), not resolution quality.**
-   The judge filter (now fixed) should catch noise entities. The extraction
-   prompt also needs a discriminating instruction to avoid noun-phrase entities.
-5. **Type hierarchy fix (Q7) is not urgent.** LLM clustering achieved 100%
-   recall despite type inconsistencies on this corpus.
+The completed value-proof block and the follow-on hardening blocks showed:
 
-### Phase 4d results (2026-04-01): Bare extraction comparison
+1. exact strategy remains the high-precision floor;
+2. bare extraction is not competitive;
+3. LLM clustering can now be made safe against the prior same-surname false
+   merges, and the latest fresh reruns preserve zero false merges, but it is
+   not yet promotable as the default because pairwise false splits still drift
+   across descriptor/place families even when the fixed question set stays
+   green.
 
-Bare extraction (simple prompt, no ontology, exact-name dedup with 2.0-flash):
-- 76 raw entities → 58 after dedup (exact-name only)
-- 100% entity detection but CANNOT merge: CIA ↔ Central Intelligence Agency,
-  Gen. Smith ↔ General John Smith, USSOCOM ↔ U.S. Special Operations Command
+Latest decision artifacts:
 
-onto-canon6 (same model, same corpus):
-- 66 entities → 43 identities (23 aliases, 14 multi-member clusters)
-- Successfully merges acronyms, title variations, name variants
-- 0 false merges
+1. `docs/runs/2026-04-01_entity_resolution_hardening_rerun.md`
+2. `docs/runs/2026-04-01_entity_resolution_clean_measurement.md`
+3. `docs/plans/0032_24h_entity_resolution_recall_recovery_block.md` is now
+   completed with a successful bounded rerun:
+   - precision `1.00`
+   - recall `0.615`
+   - false merges `0`
+   - answer rate `0.50`
+   - accuracy over all questions `0.40`
+4. the next bounded pass is now
+   `docs/plans/0033_24h_entity_resolution_answerability_block.md`, which
+   localized the remaining miss through a failed-measurement rerun;
+5. the next bounded pass is now
+   `docs/plans/0034_24h_entity_resolution_clean_measurement_block.md`, which
+   restored a valid `25/25` rerun and localized the remaining residual misses;
+6. Plan 0035 is now complete:
+   - it closed the original residual alias families (`q02`, `q04`, `q08`);
+   - its closeout note is
+     `docs/runs/2026-04-01_entity_resolution_alias_family_completion.md`;
+7. Plan 0036 is now complete:
+   - it restored same-surname person safety on a fresh rerun;
+   - it recovered `q05` and `q06` to answered-and-correct;
+   - its closeout note is
+     `docs/runs/2026-04-01_entity_resolution_negative_control_recovery.md`;
+8. Plan 0037 is now complete:
+   - it closed the Rodriguez title-family split;
+   - it closed the Washington place-family split;
+   - its canonical rerun artifact is
+     `docs/runs/scale_test_llm_2026-04-01_124135.json`;
+9. Plan `0038` is now complete under its explicit exit clause:
+   - it materially improved the original acronym/descriptor/evaluator family;
+   - its best fresh rerun is `docs/runs/scale_test_llm_2026-04-01_131124.json`;
+   - its instability counterexample is
+     `docs/runs/scale_test_llm_2026-04-01_132119.json`;
+10. the current bounded pass is now
+    `docs/plans/0039_24h_entity_resolution_rerun_stability_block.md`,
+    which is now complete:
+    - `docs/runs/scale_test_llm_2026-04-01_145141.json`
+    - `docs/runs/scale_test_llm_2026-04-01_152927.json`
+    - `docs/runs/2026-04-01_entity_resolution_rerun_stability.md`
 
-**Value proven**: onto-canon6 merges what bare extraction cannot.
+## Completion Decision (2026-04-01)
 
-### Phase 4e results (2026-04-01): Cross-document QA
+Plan `0025` is complete at the Phase 4 value-proof level.
 
-10 questions requiring cross-document entity resolution:
+Why:
 
-| System | Accuracy | Correct |
-|---|---|---|
-| onto-canon6 + LLM resolution | **90%** | 9/10 |
-| Bare extraction + name dedup | **20%** | 2/10 |
-| **Delta** | **+70%** | |
+1. pairwise precision is above the declared `>90%` threshold on the successful
+   fresh reruns;
+2. pairwise recall is above the declared `>70%` threshold on the successful
+   fresh reruns;
+3. the fixed cross-document question set is answered measurably better than the
+   bare baseline;
+4. the result is now repeatable enough on fresh DBs to treat the proof as
+   complete rather than a one-off best case.
 
-One miss: Fort Bragg = Fort Liberty (place rename, model-dependent — the
-gemini-2.5-flash run merged them; gemini-2.0-flash did not).
+What completion does **not** mean:
 
-### Phase 4 acceptance criteria check (FINAL — 2026-04-01)
-
-| Criterion | Target | gemini-3-flash | gemini-2.5-flash-lite | Status |
-|---|---|---|---|---|
-| Entity resolution precision | >90% | **100%** | 93.8% | ✓ |
-| Entity resolution recall | >70% | **100%** | 90% | ✓ |
-| Cross-doc QA improvement | Measurably better | +70% vs bare extraction | +70% | ✓ |
-| False merge rate | <10% | **0%** | 0% | ✓ |
-| Noise clusters | 0 ideal | **0** | 1 | ✓ |
-| Resolution quality logged | Yes | docs/runs/*.scores.json | Yes | ✓ |
-
-**Plan 0025 Phase 4 is COMPLETE.** All acceptance criteria met. The winning
-model is gemini-3-flash-preview after the `list[RoleEntry]` schema fix that
-eliminated the `additionalProperties` limitation.
-
-Key fix: Gemini 3's structured output decoder could not fill `additionalProperties`
-with nested `$ref` arrays. Replacing `dict[str, list[Filler]]` with
-`list[RoleEntry]` (the standard Gemini workaround) fixed it completely.
-
-### What remains (post-value-proof)
-
-1. **`require_llm_review` validation** — not tested in scale test (used plain
-   `strategy=exact`). Needs integration test with real data.
-2. **Full 25-doc run with gemini-3-flash** — partial run (20/25 docs) was
-   sufficient for scoring but a complete run would be stronger evidence.
+1. LLM clustering is not automatically promoted as the repo default;
+2. pairwise false splits are not fully closed;
+3. higher-scale work from `0025a` is not activated yet.
 
 ## What Exists Today
 
@@ -133,8 +143,8 @@ with nested `$ref` arrays. Replacing `dict[str, list[Filler]]` with
 | Identity infrastructure | Working | Canonical + alias memberships, external refs |
 | Name normalization | **Implemented (Phase 1)** | Title/honorific stripping, abbreviation expansion |
 | LLM-based entity clustering | **Implemented (Phase 2)** | KGGen-style per-type clustering with fuzzy pre-filter |
-| Cross-document resolution | **Implemented (Phase 2+3)** | Wired into CLI + Makefile; first scale test results in docs/runs/ |
-| **All-merge LLM review** | **Design decision, not yet implemented** | Even exact matches should go through LLM validation (session 2026-03-31) |
+| Cross-document resolution | **Implemented (Phase 2+3)** | Wired into CLI + Makefile; value-proof runs now exist in docs/runs/ |
+| **All-merge LLM review** | **Design decision, not yet implemented** | The 2026-04-01 value proof strengthens this need for same-surname disambiguation |
 | **Subset/containment relationships** | **Design needed** | "USSOCOM" vs "USSOCOM headquarters" — merge vs related-but-distinct |
 
 ## Approach
@@ -362,25 +372,26 @@ Not started until Phase 4 proves the approach works at 20-500 scale.
 ## Open Questions / Uncertainty Tracking
 
 ### Q1: Are the current exact-vs-llm scale-test artifacts decision-grade?
-**Status:** Resolved (2026-03-31)
-**Answer:** Yes. Precision/recall scored against ground truth. LLM achieves
-100% recall vs 80% exact, 0 false merges for both. LLM is the correct
-default strategy. The precision gap (77.8%) is extraction noise, not
-resolution error.
+**Status:** Open
+**Why it matters:** The checked-in run artifacts show structural merge counts,
+but not the precision/recall gate defined in Phase 4.
+**Current evidence:** both runs exist under `docs/runs/`, but they are not yet
+enough to choose the winning strategy.
 
 ### Q2: Is the synthetic corpus exposing resolution quality, or mostly extraction noise?
-**Status:** Resolved (2026-03-31)
-**Answer:** Both. Resolution quality is excellent (100% recall, 0 false merges).
-Extraction noise creates 4 junk clusters that lower precision. The corpus
-successfully isolates the two problems — resolution is solved, extraction
-quality is the remaining bottleneck.
+**Status:** Open
+**Why it matters:** The run artifacts still show noisy extracted entities such
+as pronoun-like person nodes and type drift. If extraction noise dominates, the
+resolution comparison is not yet isolating the right problem.
+**Current handling:** keep judge-filtered extraction in the pipeline and score
+false merges / false splits explicitly before drawing a strategy conclusion.
 
 ### Q3: Does LLM clustering materially outperform the cheaper exact/fuzzy path on the current corpus?
-**Status:** Resolved (2026-03-31)
-**Answer:** Yes on recall (100% vs 80%). Equal on precision and false merges.
-LLM catches acronyms (NSA, 4th PSYOP Group) that exact/fuzzy cannot.
-Recommended default: `strategy=exact` + `require_llm_review=true` (cheap
-candidate generation + LLM validation).
+**Status:** Open
+**Why it matters:** If not, the repo should not default to a more expensive
+strategy just because it exists.
+**Current handling:** the current artifacts are treated as a first baseline,
+not a promotion decision.
 
 ### Q4: What is the official Phase 4 value-proof corpus?
 **Status:** Open
@@ -390,86 +401,18 @@ claiming a value proof.
 **Current handling:** no user decision is required yet, but this must be fixed
 before Phase 4 is declared complete.
 
-### Q5: Create standalone ADRs for D1 and D6?
-**Status:** Deferred until scale test validates decisions
-**Why it matters:** D1 (require_llm_review for all merges) and D6 (DIGIMON as
-first consumer) are architectural decisions currently documented only in this
-plan's Design Decisions section. They should become ADRs 0024-0025 once the
-scale test (Phase 4) produces measured results that validate them.
-**Trigger:** Create ADRs when Phase 4 acceptance criteria are met.
-
-### Q6: DIGIMON export adapter Data Contracts compliance
-**Status:** Deferred until next adapter touch
-**Why it matters:** Root CLAUDE.md Data Contracts rule says producer models
-should use `extra="forbid"`. `DigimonEntityRecord` and `DigimonRelationshipRecord`
-in `adapters/digimon_export.py` don't have this. Low risk (no unknown fields
-expected) but technically non-compliant.
-**Trigger:** Fix when next modifying the DIGIMON export adapter.
-
-### Q7: Entity type guard should use type hierarchy, not exact match
-**Status:** Deferred
-**Why it matters:** The type guard in entity resolution uses exact entity_type
-match. But `oc:military_organization` is a subtype of `oc:organization`. The
-same entity extracted as different subtypes across documents won't merge.
-Should use the ontology's is-a hierarchy for type comparison.
-**Trigger:** Fix when entity type inconsistency shows up as false splits in
-the scale test precision/recall measurements.
-
 ## Design Decisions (2026-03-31 session)
 
-### D1: All merges go through LLM review (configurable)
+### D1: All merges go through LLM review
 
 Even exact-name matches should be validated by LLM with context before merging.
 Rationale: "CIA" could be "Culinary Institute of America" in a different context.
 Two different "John Smiths" exist. The LLM sees the assertion context and can
-distinguish.
+distinguish. Exact and fuzzy matching become candidate-generation strategies;
+LLM always validates.
 
-**Design (Option A — separate boolean flag):**
-
-```yaml
-resolution:
-  default_strategy: exact        # candidate generation: exact, fuzzy, or llm
-  require_llm_review: true       # validate all candidate groups with LLM
-```
-
-Behavior matrix:
-
-| strategy | require_llm_review | What happens |
-|---|---|---|
-| `exact` | `false` | Normalize → group by name → auto-merge. Cheap, fast, for testing. |
-| `exact` | `true` | Normalize → group by name → LLM validates each group with context. Production default. |
-| `fuzzy` | `false` | Fuzzy groups → auto-merge. For testing only. |
-| `fuzzy` | `true` | Fuzzy groups → LLM validates. |
-| `llm` | (ignored) | LLM clusters from scratch, always validates. Most expensive. |
-
-The `llm` strategy always does LLM review regardless of the flag.
-
-**Implementation plan:**
-
-1. Add `require_llm_review: bool = True` to `ResolutionConfig`
-2. Add `require_llm_review` param to `auto_resolve_identities()`
-3. When `require_llm_review=True` and strategy is `exact` or `fuzzy`:
-   - Run the strategy to generate candidate groups (groups of 2+ entities)
-   - For each candidate group, call LLM with entity names + context + type
-   - LLM returns: confirm merge, split into subgroups, or reject
-   - Only confirmed groups proceed to identity creation
-4. Add a validation prompt template `prompts/resolution/validate_merge.yaml`:
-   - Input: proposed group of entities with names, types, contexts
-   - Output: confirm (yes/no) + reasoning
-   - Simpler than full clustering prompt — binary decision per group
-5. Update config.yaml default: `require_llm_review: true`
-6. Update CLI to accept `--no-llm-review` flag for testing
-7. Tests: mock LLM validation for unit tests
-
-**Acceptance:**
-- `auto_resolve_identities(strategy="exact", require_llm_review=True)` sends
-  each exact-match group to LLM for validation before merging
-- `auto_resolve_identities(strategy="exact", require_llm_review=False)` behaves
-  as before (auto-merge, for testing/debugging)
-- Validation prompt is simpler than clustering prompt (confirm/reject, not cluster)
-- All LLM calls through llm_client with task/trace_id/max_budget
-
-**Status**: Plan documented, implementation next.
+**Status**: Decision made, not yet implemented. Current code auto-merges exact
+matches without LLM review. Needs design update to auto_resolution.py.
 
 ### D2: Subset/containment relationships need a design decision
 

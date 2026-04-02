@@ -20,7 +20,7 @@ import json
 import logging
 from pathlib import Path
 import re
-from typing import TYPE_CHECKING, Any, Literal, Mapping, Protocol, Sequence, cast
+from typing import TYPE_CHECKING, Any, Literal, Mapping, Protocol, Sequence, TypeVar, cast
 
 from pydantic import BaseModel, ConfigDict, Field, JsonValue, model_validator
 
@@ -186,27 +186,6 @@ class ExtractedEvidenceSpan(BaseModel):
         return self
 
 
-class ExtractedRoleEntry(BaseModel):
-    """One role with its fillers, as a key-value pair.
-
-    Uses explicit ``role_name`` + ``fillers`` list instead of a dict with
-    ``additionalProperties`` to avoid Gemini structured output limitations.
-    Gemini 3 models cannot fill ``additionalProperties`` with nested ``$ref``
-    arrays. This flat list-of-entries pattern is the standard workaround.
-    """
-
-    model_config = ConfigDict(extra="ignore", frozen=True)
-
-    role_name: str = Field(
-        min_length=1,
-        description="Role name from the predicate's role catalog (e.g. ARG0, agent, patient).",
-    )
-    fillers: list[ExtractedFiller] = Field(
-        min_length=1,
-        description="One or more fillers for this role.",
-    )
-
-
 class ExtractedCandidate(BaseModel):
     """One candidate assertion emitted by the structured extraction model."""
 
@@ -216,44 +195,12 @@ class ExtractedCandidate(BaseModel):
         min_length=1,
         description="Predicate identifier only, without serialized role payloads or extra prose.",
     )
-    roles: list[ExtractedRoleEntry] = Field(
+    roles: dict[str, list[ExtractedFiller]] = Field(
         description=(
-            "Role entries. MUST include at least one role with at least one filler. "
-            "Each entry has a role_name and an array of filler objects."
+            "Role mapping. MUST include at least one role with at least one filler. "
+            "Each role name maps to an array of filler objects."
         ),
     )
-
-    @model_validator(mode="before")
-    @classmethod
-    def _convert_dict_roles(cls, data: object) -> object:
-        """Convert dict-style roles to list-of-entries for backward compatibility.
-
-        Accepts both formats:
-        - New: [{"role_name": "ARG0", "fillers": [...]}]
-        - Old: {"ARG0": [...]}  (auto-converted)
-        """
-        if not isinstance(data, Mapping):
-            return data
-        roles = data.get("roles")
-        if isinstance(roles, dict):
-            # Convert dict to list of entries
-            converted = [
-                {"role_name": k, "fillers": v if isinstance(v, list) else [v]}
-                for k, v in roles.items()
-            ]
-            data = dict(data)  # Make mutable copy
-            data["roles"] = converted
-        return data
-
-    @property
-    def roles_dict(self) -> dict[str, list[ExtractedFiller]]:
-        """Convert role entries list to dict for backward compatibility.
-
-        Internal pipeline code uses dict[str, list[ExtractedFiller]] format.
-        This property provides the conversion from the Gemini-compatible
-        list-of-entries format.
-        """
-        return {entry.role_name: list(entry.fillers) for entry in self.roles}
     evidence_spans: list[ExtractedEvidenceSpan] = Field(
         min_length=1,
         description="One or more exact evidence spans that directly support the candidate assertion.",
@@ -354,11 +301,11 @@ class ExtractedCandidate(BaseModel):
         if not self.roles:
             issues.append("empty roles")
         else:
-            for entry in self.roles:
-                if not entry.role_name.strip():
+            for role_name, fillers in self.roles.items():
+                if not role_name.strip():
                     issues.append("blank role name")
-                if not entry.fillers:
-                    issues.append(f"role {entry.role_name!r} has no fillers")
+                if not fillers:
+                    issues.append(f"role {role_name!r} has no fillers")
         if issues:
             logger.warning(
                 "candidate predicate=%s has structural issues: %s — will be filtered",
@@ -374,8 +321,8 @@ class ExtractedCandidate(BaseModel):
         if not self.roles:
             return False
         return all(
-            entry.role_name.strip() and entry.fillers
-            for entry in self.roles
+            role_name.strip() and fillers
+            for role_name, fillers in self.roles.items()
         )
 
 
@@ -393,6 +340,52 @@ class TextExtractionResponse(BaseModel):
     candidates: list[ExtractedCandidate] = Field(
         description="Single required candidate array for the extractor response. Use an empty array when no candidates are supported.",
     )
+
+    @model_validator(mode="before")
+    @classmethod
+    def _drop_unparseable_candidates(cls, data: object) -> object:
+        """Drop candidate payloads that fail candidate-level parsing entirely.
+
+        Provider responses sometimes contain one malformed candidate among
+        otherwise usable candidates. If one candidate has an unsupported filler
+        kind or malformed unknown/value shape, the whole response should not be
+        lost. Validate candidates individually, keep the parseable ones, and
+        log what was dropped loudly.
+        """
+
+        if not isinstance(data, Mapping):
+            return data
+        candidates_obj = data.get("candidates")
+        if not isinstance(candidates_obj, list):
+            return data
+
+        valid_candidates: list[dict[str, object]] = []
+        dropped = 0
+        for index, raw_candidate in enumerate(candidates_obj):
+            try:
+                parsed = ExtractedCandidate.model_validate(raw_candidate)
+            except Exception as exc:
+                dropped += 1
+                logger.warning(
+                    "dropped unparseable candidate at index=%d before response parse: %s",
+                    index,
+                    exc,
+                )
+                continue
+            valid_candidates.append(
+                parsed.model_dump(mode="python", exclude_none=False)
+            )
+
+        if dropped:
+            logger.info(
+                "filtered %d/%d unparseable candidates before response parse",
+                dropped,
+                len(candidates_obj),
+            )
+            normalized = dict(data)
+            normalized["candidates"] = valid_candidates
+            return normalized
+        return data
 
     @model_validator(mode="after")
     def _filter_invalid_candidates(self) -> "TextExtractionResponse":
@@ -461,13 +454,15 @@ class _RenderPrompt(Protocol):
 class _CallStructured(Protocol):
     """Call llm_client structured output with a Pydantic response model."""
 
+    _TModel = TypeVar("_TModel", bound=BaseModel)
+
     def __call__(
         self,
         model: str,
         messages: list[dict[str, str]],
-        response_model: type[TextExtractionResponse],
+        response_model: type[_TModel],
         **kwargs: Any,
-    ) -> tuple[TextExtractionResponse, object]: ...
+    ) -> tuple[_TModel, object]: ...
 
 
 @dataclass(frozen=True)
@@ -494,6 +489,9 @@ class TextExtractionService:
         *,
         review_service: ReviewService | None = None,
         selection_task: str | None = None,
+        model_override: str | None = None,
+        temperature: float | None = None,
+        judge_model_override: str | None = None,
         prompt_template: Path | None = None,
         prompt_ref: str | None = None,
         max_candidates_per_call: int | None = None,
@@ -516,7 +514,21 @@ class TextExtractionService:
             else config.extraction.selection_task
         )
         self._selection_use_performance = config.extraction.selection_use_performance
-        self._model_override = config.extraction.model_override
+        self._model_override = (
+            model_override.strip()
+            if model_override is not None and model_override.strip()
+            else config.extraction.model_override
+        )
+        self._temperature = (
+            temperature
+            if temperature is not None
+            else config.extraction.temperature
+        )
+        self._judge_model_override = (
+            judge_model_override.strip()
+            if judge_model_override is not None and judge_model_override.strip()
+            else self._model_override
+        )
         if (prompt_template is None) != (prompt_ref is None):
             raise ConfigError(
                 "prompt_template and prompt_ref overrides must be provided together"
@@ -674,16 +686,21 @@ class TextExtractionService:
         )
         trace_id = _trace_id_for_source(source_ref=source_artifact.source_ref, text=normalized_text)
         try:
+            call_kwargs: dict[str, Any] = {
+                "timeout": self._timeout_seconds,
+                "num_retries": self._num_retries,
+                "task": self._selection_task,
+                "trace_id": trace_id,
+                "max_budget": self._max_budget_usd,
+                "prompt_ref": self._prompt_ref,
+            }
+            if self._temperature is not None:
+                call_kwargs["temperature"] = self._temperature
             response, meta = llm_client_api.call_llm_structured(
                 selected_model,
                 messages,
                 response_model=TextExtractionResponse,
-                timeout=self._timeout_seconds,
-                num_retries=self._num_retries,
-                task=self._selection_task,
-                trace_id=trace_id,
-                max_budget=self._max_budget_usd,
-                prompt_ref=self._prompt_ref,
+                **call_kwargs,
             )
         except Exception as exc:
             raise ExtractionError(f"llm_client text extraction failed: {exc}") from exc
@@ -692,6 +709,7 @@ class TextExtractionService:
             candidate_import_from_extracted(
                 candidate=candidate,
                 profile=normalized_profile,
+                loaded_profile=profile,
                 submitted_by=submitted_by,
                 source_artifact=source_artifact,
             )
@@ -753,6 +771,7 @@ class TextExtractionService:
                 source_text=source_text,
                 min_label=config.extraction.judge_filter_min_label,
                 config=config,
+                model_override=self._judge_model_override,
             )
 
         submissions = tuple(
@@ -786,7 +805,9 @@ class TextExtractionService:
         """Auto-accept and/or auto-promote based on review_mode config.
 
         - ``auto``: accept all valid candidates, promote all accepted.
-        - ``llm``: run LLM-judge, accept supported, reject unsupported, promote accepted.
+        - ``llm``: run LLM-judge, accept only supported, leave
+          partially-supported candidates pending, reject unsupported, and
+          promote accepted.
         """
         from ..core import CanonicalGraphService
 
@@ -798,16 +819,72 @@ class TextExtractionService:
 
             if review_mode == "llm":
                 # LLM-judge decides accept/reject
-                label = self._judge_candidate(candidate, source_text, config)
+                try:
+                    label = self._judge_candidate(candidate, source_text, config)
+                except Exception as exc:
+                    logger.warning(
+                        "auto-review judge failed for %s; leaving candidate pending: %s",
+                        cid,
+                        exc,
+                    )
+                    continue
                 if label == "unsupported":
                     try:
                         self._review_service.review_candidate(
                             candidate_id=cid, decision="rejected", actor_id=f"{submitted_by}:llm_judge",
                         )
-                    except Exception:
-                        pass
+                    except Exception as exc:
+                        logger.warning(
+                            "auto-review rejection failed for %s after unsupported judge label: %s",
+                            cid,
+                            exc,
+                        )
                     continue
-                # supported or partially_supported → accept
+                if label == "partially_supported":
+                    logger.info(
+                        "auto-review left candidate pending after partially_supported judge label: %s",
+                        cid,
+                    )
+                    continue
+                if _requires_limit_capability_enforcement(candidate):
+                    try:
+                        self._review_service.review_candidate(
+                            candidate_id=cid,
+                            decision="rejected",
+                            actor_id=f"{submitted_by}:limit_capability_guard",
+                        )
+                    except Exception as exc:
+                        logger.warning(
+                            "limit-capability guard failed to reject %s after supported judge label: %s",
+                            cid,
+                            exc,
+                        )
+                    else:
+                        logger.info(
+                            "auto-review rejected candidate after abstract limit-capability guard: %s",
+                            cid,
+                        )
+                    continue
+                if _requires_staffing_membership_enforcement(candidate):
+                    try:
+                        self._review_service.review_candidate(
+                            candidate_id=cid,
+                            decision="rejected",
+                            actor_id=f"{submitted_by}:staffing_membership_guard",
+                        )
+                    except Exception as exc:
+                        logger.warning(
+                            "staffing-membership guard failed to reject %s after supported judge label: %s",
+                            cid,
+                            exc,
+                        )
+                    else:
+                        logger.info(
+                            "auto-review rejected candidate after staffing-membership guard: %s",
+                            cid,
+                        )
+                    continue
+                # supported → accept
                 decision: Literal["accepted"] = "accepted"
             else:
                 # auto mode → accept everything valid
@@ -830,61 +907,42 @@ class TextExtractionService:
         config: AppConfig,
     ) -> str:
         """Run LLM-judge on a single candidate, return label."""
-        try:
-            import litellm
-            from llm_client import render_prompt
+        claim = candidate.claim_text or ""
+        raw_predicate = candidate.normalized_payload.get("predicate", "")
+        predicate = raw_predicate if isinstance(raw_predicate, str) else ""
+        roles = candidate.normalized_payload.get("roles", {})
 
-            claim = getattr(candidate, "claim_text", "") or ""
-            pred = ""
-            if hasattr(candidate, "normalized_payload"):
-                raw_predicate = candidate.normalized_payload.get("predicate", "")
-                if isinstance(raw_predicate, str):
-                    pred = raw_predicate
-
-            rendered = render_prompt(
-                config.evaluation.judge_prompt_template,
-                case_id="auto_review",
-                source_ref="auto",
-                source_text=source_text[:3000],
-                candidate_assertions_json=json.dumps([{"predicate": pred, "claim_text": claim}]),
-            )
-            response = litellm.completion(
-                model=config.extraction.model_override or "gemini/gemini-2.5-flash",
-                messages=rendered,
-                response_format={
-                    "type": "json_schema",
-                    "json_schema": {
-                        "name": "judge",
-                        "schema": {
-                            "type": "object",
-                            "properties": {
-                                "candidate_judgments": {
-                                    "type": "array",
-                                    "items": {
-                                        "type": "object",
-                                        "properties": {
-                                            "label": {"type": "string", "enum": ["supported", "partially_supported", "unsupported"]},
-                                        },
-                                        "required": ["label"],
-                                    },
-                                },
-                            },
-                            "required": ["candidate_judgments"],
-                        },
-                    },
-                },
-                max_tokens=500,
-            )
-            result = json.loads(response.choices[0].message.content)
-            judgments = result.get("candidate_judgments", [])
-            return judgments[0]["label"] if judgments else "supported"
-        except Exception as exc:
-            logger.warning("judge failed, defaulting to supported: %s", exc)
-            return "supported"
+        result = _call_judge_result(
+            candidate_summaries=[
+                {
+                    "predicate": predicate,
+                    "claim_text": claim,
+                    "roles": roles,
+                }
+            ],
+            source_text=source_text,
+            config=config,
+            model_override=self._judge_model_override,
+            case_id="auto_review",
+            source_ref="auto",
+            trace_prefix="judge_single",
+        )
+        if not result.judgments:
+            raise ExtractionError("judge returned no candidate judgments for auto-review")
+        return result.judgments[0].label
 
 
 
 _JUDGE_LABEL_ORDER = ["unsupported", "partially_supported", "supported"]
+_ABSTRACT_LIMIT_CAPABILITY_VALUES = frozenset({"effectiveness", "impact", "credibility"})
+_STAFFING_SUMMARY_MEMBER_MARKERS = (
+    "personnel assigned to",
+    "personnel dedicated to",
+)
+_STAFFING_SUMMARY_EVIDENCE_MARKERS = (
+    "substantial proportion dedicated to",
+    "total strength was reported",
+)
 
 
 class _JudgeJudgment(BaseModel):
@@ -910,21 +968,13 @@ def _apply_judge_filter(
     source_text: str,
     min_label: str,
     config: AppConfig,
+    model_override: str | None,
 ) -> list[CandidateAssertionImport]:
     """Filter candidates using LLM judge for reasonableness.
 
     Calls the judge prompt on all candidates and drops those below
     the minimum label threshold. Returns the filtered list.
     """
-    try:
-        from llm_client import call_llm_structured, get_model
-        import uuid
-    except ImportError as exc:
-        raise RuntimeError(
-            "llm_client is required for judge filter; "
-            "run `pip install -e ~/projects/llm_client`"
-        ) from exc
-
     min_idx = _JUDGE_LABEL_ORDER.index(min_label) if min_label in _JUDGE_LABEL_ORDER else 0
 
     # Build judge input
@@ -938,29 +988,14 @@ def _apply_judge_filter(
         candidate_summaries.append(summary)
 
     try:
-        eval_config = config.evaluation
-        prompt_template = eval_config.judge_prompt_template
-        trace_id = f"judge_filter_{uuid.uuid4().hex[:12]}"
-
-        from llm_client import render_prompt
-        rendered = render_prompt(
-            prompt_template,
+        parsed_result = _call_judge_result(
+            candidate_summaries=candidate_summaries,
+            source_text=source_text,
+            config=config,
+            model_override=model_override,
             case_id="extraction_filter",
             source_ref="live_extraction",
-            source_text=source_text[:4000],  # Limit source text length
-            candidate_assertions_json=json.dumps(candidate_summaries, indent=2),
-        )
-
-        # Resolve model for judge calls
-        judge_model = config.extraction.model_override or "gemini/gemini-2.5-flash"
-
-        parsed_result, _meta = call_llm_structured(
-            judge_model,
-            rendered,
-            _JudgeResult,
-            task=eval_config.judge_selection_task,
-            trace_id=trace_id,
-            max_budget=eval_config.judge_max_budget_usd,
+            trace_prefix="judge_filter",
         )
 
         label_map = {j.candidate_index: j.label for j in parsed_result.judgments}
@@ -990,10 +1025,141 @@ def _apply_judge_filter(
         raise
 
 
+def _call_judge_result(
+    *,
+    candidate_summaries: list[dict[str, JsonValue]],
+    source_text: str,
+    config: AppConfig,
+    model_override: str | None,
+    case_id: str,
+    source_ref: str,
+    trace_prefix: str,
+) -> _JudgeResult:
+    """Run the shared structured judge contract for one or more candidates."""
+
+    try:
+        import uuid
+    except ImportError as exc:
+        raise RuntimeError("uuid import failed unexpectedly") from exc
+
+    llm_client_api = _load_llm_client_api()
+    eval_config = config.evaluation
+    trace_id = f"{trace_prefix}_{uuid.uuid4().hex[:12]}"
+    rendered = llm_client_api.render_prompt(
+        eval_config.judge_prompt_template,
+        case_id=case_id,
+        source_ref=source_ref,
+        source_text=source_text[:4000],
+        candidate_assertions_json=json.dumps(candidate_summaries, indent=2),
+    )
+    judge_model = (
+        model_override
+        or config.extraction.model_override
+        or "gemini/gemini-2.5-flash"
+    )
+    parsed_result, _meta = llm_client_api.call_llm_structured(
+        judge_model,
+        rendered,
+        _JudgeResult,
+        task=eval_config.judge_selection_task,
+        trace_id=trace_id,
+        max_budget=eval_config.judge_max_budget_usd,
+    )
+    return parsed_result
+
+
+def _requires_limit_capability_enforcement(candidate: CandidateAssertionRecord) -> bool:
+    """Return whether one supported candidate still violates the abstract limit-capability boundary.
+
+    The corrected chunk-003 contract already treats abstract evaluative
+    `limit_capability` claims as omit cases. The live review path therefore
+    enforces that family deterministically instead of relying only on prompt or
+    judge compliance.
+    """
+
+    raw_payload = candidate.normalized_payload
+    predicate_obj = raw_payload.get("predicate")
+    if predicate_obj != "oc:limit_capability":
+        return False
+    roles_obj = raw_payload.get("roles")
+    if not isinstance(roles_obj, dict):
+        return False
+    capability_obj = roles_obj.get("capability")
+    if not isinstance(capability_obj, list) or not capability_obj:
+        return False
+
+    normalized_values: list[str] = []
+    for filler in capability_obj:
+        if not isinstance(filler, dict):
+            continue
+        if filler.get("kind") != "value":
+            return False
+        normalized = filler.get("normalized")
+        raw = filler.get("raw")
+        chosen = normalized if isinstance(normalized, str) and normalized.strip() else raw
+        if not isinstance(chosen, str) or not chosen.strip():
+            return False
+        normalized_values.append(chosen.strip().lower())
+    if not normalized_values:
+        return False
+    return all(value in _ABSTRACT_LIMIT_CAPABILITY_VALUES for value in normalized_values)
+
+
+def _requires_staffing_membership_enforcement(candidate: CandidateAssertionRecord) -> bool:
+    """Return whether one supported membership candidate is only a staffing-summary aggregate.
+
+    The corrected chunk-level contract treats staffing/resource summaries as
+    omit cases for `oc:belongs_to_organization`. Those summaries can mention a
+    large command alongside a substantial proportion dedicated to a function,
+    but they do not directly ground a unit-to-organization membership fact.
+    """
+
+    raw_payload = candidate.normalized_payload
+    if raw_payload.get("predicate") != "oc:belongs_to_organization":
+        return False
+    roles_obj = raw_payload.get("roles")
+    if not isinstance(roles_obj, dict):
+        return False
+    member_obj = roles_obj.get("member")
+    if not isinstance(member_obj, list) or len(member_obj) != 1:
+        return False
+    member = member_obj[0]
+    if not isinstance(member, dict) or member.get("kind") != "entity":
+        return False
+
+    member_surface_candidates: list[str] = []
+    for key in ("name", "raw"):
+        value = member.get(key)
+        if isinstance(value, str) and value.strip():
+            member_surface_candidates.append(value.strip().lower())
+    if not member_surface_candidates:
+        return False
+    if not any(
+        marker in surface
+        for surface in member_surface_candidates
+        for marker in _STAFFING_SUMMARY_MEMBER_MARKERS
+    ):
+        return False
+
+    evidence_texts = [
+        span.text.strip().lower()
+        for span in candidate.evidence_spans
+        if isinstance(span.text, str) and span.text.strip()
+    ]
+    if not evidence_texts:
+        return False
+    return any(
+        marker in text
+        for text in evidence_texts
+        for marker in _STAFFING_SUMMARY_EVIDENCE_MARKERS
+    )
+
+
 def candidate_import_from_extracted(
     *,
     candidate: ExtractedCandidate,
     profile: ProfileRef,
+    loaded_profile: LoadedProfile | None = None,
     submitted_by: str,
     source_artifact: SourceArtifactRef,
 ) -> CandidateAssertionImport:
@@ -1009,9 +1175,15 @@ def candidate_import_from_extracted(
                 )
                 for filler in fillers
             ]
-            for role_name, fillers in candidate.roles_dict.items()
+            for role_name, fillers in candidate.roles.items()
         },
     }
+    if loaded_profile is not None:
+        payload["roles"] = _sanitize_optional_unknown_fillers(
+            predicate=candidate.predicate,
+            roles=cast(dict[str, JsonValue], payload["roles"]),
+            profile=loaded_profile,
+        )
     if candidate.valid_from is not None:
         payload["valid_from"] = candidate.valid_from
     if candidate.valid_to is not None:
@@ -1087,6 +1259,63 @@ def _pipeline_filler_from_extracted(
         entity_type=filler.entity_type or None,
     )
     return filler_payload
+
+
+def _sanitize_optional_unknown_fillers(
+    *,
+    predicate: str,
+    roles: dict[str, JsonValue],
+    profile: LoadedProfile,
+) -> dict[str, JsonValue]:
+    """Drop malformed unknown fillers only from roles that are truly optional.
+
+    This keeps extraction fail-loud for required malformed fillers while
+    preserving otherwise valid candidates when the only bad output is an
+    optional role filler like `role_title: {kind: "unknown", raw: "briefed"}`.
+    """
+
+    rule = profile.predicate_rules.get(predicate)
+    if rule is None:
+        return roles
+
+    sanitized: dict[str, JsonValue] = {}
+    for role_name, role_value in roles.items():
+        if not isinstance(role_value, list):
+            sanitized[role_name] = role_value
+            continue
+        if not _role_is_optional(rule, role_name):
+            sanitized[role_name] = role_value
+            continue
+
+        cleaned_fillers: list[JsonValue] = []
+        dropped_unknown = 0
+        for filler in role_value:
+            if isinstance(filler, dict) and filler.get("kind") == "unknown":
+                dropped_unknown += 1
+                continue
+            cleaned_fillers.append(filler)
+
+        if dropped_unknown:
+            logger.warning(
+                "dropping optional unknown fillers predicate=%s role=%s dropped=%d",
+                predicate,
+                role_name,
+                dropped_unknown,
+            )
+        if cleaned_fillers:
+            sanitized[role_name] = cleaned_fillers
+    return sanitized
+
+
+def _role_is_optional(rule: PackPredicateRule, role_name: str) -> bool:
+    """Return whether one role is optional under the loaded predicate rule."""
+
+    if role_name in rule.required_roles:
+        return False
+    cardinality = rule.role_cardinality.get(role_name)
+    if cardinality is None:
+        return True
+    return cardinality.min_count == 0
 
 
 def _derive_local_entity_id(

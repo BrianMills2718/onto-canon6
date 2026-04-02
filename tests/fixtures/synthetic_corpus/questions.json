@@ -1,0 +1,81 @@
+{
+  "description": "Fixed cross-document entity-resolution questions for the official synthetic value-proof corpus.",
+  "questions": [
+    {
+      "question_id": "q01",
+      "kind": "same_entity",
+      "prompt": "Do 'Gen. Smith' and 'General John Smith' refer to the same real-world entity?",
+      "mention": "Gen. Smith",
+      "other_mention": "General John Smith",
+      "expected_answer": true
+    },
+    {
+      "question_id": "q02",
+      "kind": "same_entity",
+      "prompt": "Do 'USSOCOM' and 'U.S. Special Operations Command' refer to the same organization?",
+      "mention": "USSOCOM",
+      "other_mention": "U.S. Special Operations Command",
+      "expected_answer": true
+    },
+    {
+      "question_id": "q03",
+      "kind": "same_entity",
+      "prompt": "Do 'Adm. Olson' and 'Eric Olson' refer to the same person?",
+      "mention": "Adm. Olson",
+      "other_mention": "Eric Olson",
+      "expected_answer": true
+    },
+    {
+      "question_id": "q04",
+      "kind": "same_entity",
+      "prompt": "Do 'Ft. Bragg' and 'Fort Liberty' refer to the same installation?",
+      "mention": "Ft. Bragg",
+      "other_mention": "Fort Liberty",
+      "expected_answer": true
+    },
+    {
+      "question_id": "q05",
+      "kind": "same_entity",
+      "prompt": "Do 'General John Smith' and 'James Smith' refer to the same person?",
+      "mention": "General John Smith",
+      "other_mention": "James Smith",
+      "expected_answer": false
+    },
+    {
+      "question_id": "q06",
+      "kind": "same_entity",
+      "prompt": "Do 'Washington' and 'George Washington University' refer to the same entity?",
+      "mention": "Washington",
+      "other_mention": "George Washington University",
+      "expected_answer": false
+    },
+    {
+      "question_id": "q07",
+      "kind": "canonical_entity",
+      "prompt": "Which canonical entity does 'Gen. J. Smith' resolve to?",
+      "mention": "Gen. J. Smith",
+      "expected_ground_truth_entity_id": "E001"
+    },
+    {
+      "question_id": "q08",
+      "kind": "canonical_entity",
+      "prompt": "Which canonical entity does 'the Agency' resolve to?",
+      "mention": "the Agency",
+      "expected_ground_truth_entity_id": "E006"
+    },
+    {
+      "question_id": "q09",
+      "kind": "canonical_entity",
+      "prompt": "Which canonical entity does 'GWU' resolve to?",
+      "mention": "GWU",
+      "expected_ground_truth_entity_id": "E013"
+    },
+    {
+      "question_id": "q10",
+      "kind": "canonical_entity",
+      "prompt": "Which canonical entity does 'Lt. Gen. Michael Torres' resolve to?",
+      "mention": "Lt. Gen. Michael Torres",
+      "expected_ground_truth_entity_id": "E010"
+    }
+  ]
+}

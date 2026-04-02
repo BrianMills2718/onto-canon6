@@ -1,0 +1,3852 @@
+{
+  "generated_at": "2026-04-01T05:15:35.125193+00:00",
+  "state_ref": "bare-baseline:/home/brian/projects/.worktrees/onto-canon6-integration-planning/tests/fixtures/synthetic_corpus",
+  "strategy": "bare_baseline",
+  "corpus_description": "Synthetic corpus for entity resolution scale test. 25 documents about overlapping military/intelligence entities. Ground truth for measuring precision and recall of entity resolution.",
+  "scoring_rules": [
+    "Ground-truth matching uses auto-resolution name normalization plus source-doc overlap as a tiebreaker.",
+    "Pairwise precision/recall are computed only over observations that match the ground-truth registry uniquely.",
+    "Observations with no unique ground-truth match remain explicit as unmatched or ambiguous and are not silently discarded.",
+    "Questions are scored against the matched observation set; unanswered questions lower answer rate and overall accuracy."
+  ],
+  "ground_truth_summary": {
+    "entity_count": 13,
+    "expected_merge_count": 10,
+    "expected_non_merge_count": 3
+  },
+  "observations": [
+    {
+      "entity_id": "bare_doc_01_000",
+      "entity_type": null,
+      "first_candidate_id": "bare_candidate_doc_01_000",
+      "predicted_cluster_id": "bare_doc_01_000",
+      "observed_names": [
+        "Gen. Smith"
+      ],
+      "source_refs": [
+        "doc_01"
+      ],
+      "matched_ground_truth_entity_id": "E001",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E001"
+      ]
+    },
+    {
+      "entity_id": "bare_doc_01_001",
+      "entity_type": null,
+      "first_candidate_id": "bare_candidate_doc_01_001",
+      "predicted_cluster_id": "bare_doc_01_001",
+      "observed_names": [
+        "USSOCOM"
+      ],
+      "source_refs": [
+        "doc_01"
+      ],
+      "matched_ground_truth_entity_id": "E002",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E002"
+      ]
+    },
+    {
+      "entity_id": "bare_doc_01_002",
+      "entity_type": null,
+      "first_candidate_id": "bare_candidate_doc_01_002",
+      "predicted_cluster_id": "bare_doc_01_002",
+      "observed_names": [
+        "General Smith"
+      ],
+      "source_refs": [
+        "doc_01"
+      ],
+      "matched_ground_truth_entity_id": "E001",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E001"
+      ]
+    },
+    {
+      "entity_id": "bare_doc_02_000",
+      "entity_type": null,
+      "first_candidate_id": "bare_candidate_doc_02_000",
+      "predicted_cluster_id": "bare_doc_02_000",
+      "observed_names": [
+        "Adm. Olson"
+      ],
+      "source_refs": [
+        "doc_02"
+      ],
+      "matched_ground_truth_entity_id": "E003",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E003"
+      ]
+    },
+    {
+      "entity_id": "bare_doc_02_001",
+      "entity_type": null,
+      "first_candidate_id": "bare_candidate_doc_02_001",
+      "predicted_cluster_id": "bare_doc_02_001",
+      "observed_names": [
+        "U.S. Special Operations Command"
+      ],
+      "source_refs": [
+        "doc_02"
+      ],
+      "matched_ground_truth_entity_id": "E002",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E002"
+      ]
+    },
+    {
+      "entity_id": "bare_doc_02_002",
+      "entity_type": null,
+      "first_candidate_id": "bare_candidate_doc_02_002",
+      "predicted_cluster_id": "bare_doc_02_002",
+      "observed_names": [
+        "General John Smith"
+      ],
+      "source_refs": [
+        "doc_02"
+      ],
+      "matched_ground_truth_entity_id": "E001",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E001"
+      ]
+    },
+    {
+      "entity_id": "bare_doc_03_000",
+      "entity_type": null,
+      "first_candidate_id": "bare_candidate_doc_03_000",
+      "predicted_cluster_id": "bare_doc_03_000",
+      "observed_names": [
+        "4th PSYOP Group"
+      ],
+      "source_refs": [
+        "doc_03"
+      ],
+      "matched_ground_truth_entity_id": "E004",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E004"
+      ]
+    },
+    {
+      "entity_id": "bare_doc_03_001",
+      "entity_type": null,
+      "first_candidate_id": "bare_candidate_doc_03_001",
+      "predicted_cluster_id": "bare_doc_03_001",
+      "observed_names": [
+        "Fort Bragg"
+      ],
+      "source_refs": [
+        "doc_03"
+      ],
+      "matched_ground_truth_entity_id": "E005",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E005"
+      ]
+    },
+    {
+      "entity_id": "bare_doc_03_002",
+      "entity_type": null,
+      "first_candidate_id": "bare_candidate_doc_03_002",
+      "predicted_cluster_id": "bare_doc_03_002",
+      "observed_names": [
+        "US Special Operations Command"
+      ],
+      "source_refs": [
+        "doc_03"
+      ],
+      "matched_ground_truth_entity_id": "E002",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E002"
+      ]
+    },
+    {
+      "entity_id": "bare_doc_04_000",
+      "entity_type": null,
+      "first_candidate_id": "bare_candidate_doc_04_000",
+      "predicted_cluster_id": "bare_doc_04_000",
+      "observed_names": [
+        "Eric Olson"
+      ],
+      "source_refs": [
+        "doc_04"
+      ],
+      "matched_ground_truth_entity_id": "E003",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E003"
+      ]
+    },
+    {
+      "entity_id": "bare_doc_04_001",
+      "entity_type": null,
+      "first_candidate_id": "bare_candidate_doc_04_001",
+      "predicted_cluster_id": "bare_doc_04_001",
+      "observed_names": [
+        "CIA"
+      ],
+      "source_refs": [
+        "doc_04"
+      ],
+      "matched_ground_truth_entity_id": "E006",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E006"
+      ]
+    },
+    {
+      "entity_id": "bare_doc_04_002",
+      "entity_type": null,
+      "first_candidate_id": "bare_candidate_doc_04_002",
+      "predicted_cluster_id": "bare_doc_04_002",
+      "observed_names": [
+        "Washington"
+      ],
+      "source_refs": [
+        "doc_04"
+      ],
+      "matched_ground_truth_entity_id": "E012",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E012"
+      ]
+    },
+    {
+      "entity_id": "bare_doc_05_000",
+      "entity_type": null,
+      "first_candidate_id": "bare_candidate_doc_05_000",
+      "predicted_cluster_id": "bare_doc_05_000",
+      "observed_names": [
+        "John Smith"
+      ],
+      "source_refs": [
+        "doc_05"
+      ],
+      "matched_ground_truth_entity_id": "E001",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E001"
+      ]
+    },
+    {
+      "entity_id": "bare_doc_05_001",
+      "entity_type": null,
+      "first_candidate_id": "bare_candidate_doc_05_001",
+      "predicted_cluster_id": "bare_doc_05_001",
+      "observed_names": [
+        "Special Operations Command"
+      ],
+      "source_refs": [
+        "doc_05"
+      ],
+      "matched_ground_truth_entity_id": "E002",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E002"
+      ]
+    },
+    {
+      "entity_id": "bare_doc_06_000",
+      "entity_type": null,
+      "first_candidate_id": "bare_candidate_doc_06_000",
+      "predicted_cluster_id": "bare_doc_06_000",
+      "observed_names": [
+        "Rodriguez"
+      ],
+      "source_refs": [
+        "doc_06"
+      ],
+      "matched_ground_truth_entity_id": "E007",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E007"
+      ]
+    },
+    {
+      "entity_id": "bare_doc_06_001",
+      "entity_type": null,
+      "first_candidate_id": "bare_candidate_doc_06_001",
+      "predicted_cluster_id": "bare_doc_06_001",
+      "observed_names": [
+        "4th POG"
+      ],
+      "source_refs": [
+        "doc_06"
+      ],
+      "matched_ground_truth_entity_id": "E004",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E004"
+      ]
+    },
+    {
+      "entity_id": "bare_doc_06_002",
+      "entity_type": null,
+      "first_candidate_id": "bare_candidate_doc_06_002",
+      "predicted_cluster_id": "bare_doc_06_002",
+      "observed_names": [
+        "Ft. Bragg"
+      ],
+      "source_refs": [
+        "doc_06"
+      ],
+      "matched_ground_truth_entity_id": "E005",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E005"
+      ]
+    },
+    {
+      "entity_id": "bare_doc_07_000",
+      "entity_type": null,
+      "first_candidate_id": "bare_candidate_doc_07_000",
+      "predicted_cluster_id": "bare_doc_07_000",
+      "observed_names": [
+        "Chen"
+      ],
+      "source_refs": [
+        "doc_07"
+      ],
+      "matched_ground_truth_entity_id": "E008",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E008"
+      ]
+    },
+    {
+      "entity_id": "bare_doc_07_001",
+      "entity_type": null,
+      "first_candidate_id": "bare_candidate_doc_07_001",
+      "predicted_cluster_id": "bare_doc_07_001",
+      "observed_names": [
+        "Central Intelligence Agency"
+      ],
+      "source_refs": [
+        "doc_07"
+      ],
+      "matched_ground_truth_entity_id": "E006",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E006"
+      ]
+    },
+    {
+      "entity_id": "bare_doc_07_002",
+      "entity_type": null,
+      "first_candidate_id": "bare_candidate_doc_07_002",
+      "predicted_cluster_id": "bare_doc_07_002",
+      "observed_names": [
+        "USSOCOM"
+      ],
+      "source_refs": [
+        "doc_07"
+      ],
+      "matched_ground_truth_entity_id": "E002",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E002"
+      ]
+    },
+    {
+      "entity_id": "bare_doc_08_000",
+      "entity_type": null,
+      "first_candidate_id": "bare_candidate_doc_08_000",
+      "predicted_cluster_id": "bare_doc_08_000",
+      "observed_names": [
+        "Gen. J. Smith"
+      ],
+      "source_refs": [
+        "doc_08"
+      ],
+      "matched_ground_truth_entity_id": "E001",
+      "match_status": "matched",
+      "match_reason": "resolved by source-doc overlap after multi-entity name collision",
+      "candidate_ground_truth_entity_ids": [
+        "E001",
+        "E011"
+      ]
+    },
+    {
+      "entity_id": "bare_doc_08_001",
+      "entity_type": null,
+      "first_candidate_id": "bare_candidate_doc_08_001",
+      "predicted_cluster_id": "bare_doc_08_001",
+      "observed_names": [
+        "NSA"
+      ],
+      "source_refs": [
+        "doc_08"
+      ],
+      "matched_ground_truth_entity_id": "E009",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E009"
+      ]
+    },
+    {
+      "entity_id": "bare_doc_08_002",
+      "entity_type": null,
+      "first_candidate_id": "bare_candidate_doc_08_002",
+      "predicted_cluster_id": "bare_doc_08_002",
+      "observed_names": [
+        "Washington D.C."
+      ],
+      "source_refs": [
+        "doc_08"
+      ],
+      "matched_ground_truth_entity_id": "E012",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E012"
+      ]
+    },
+    {
+      "entity_id": "bare_doc_09_000",
+      "entity_type": null,
+      "first_candidate_id": "bare_candidate_doc_09_000",
+      "predicted_cluster_id": "bare_doc_09_000",
+      "observed_names": [
+        "Torres"
+      ],
+      "source_refs": [
+        "doc_09"
+      ],
+      "matched_ground_truth_entity_id": "E010",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E010"
+      ]
+    },
+    {
+      "entity_id": "bare_doc_09_001",
+      "entity_type": null,
+      "first_candidate_id": "bare_candidate_doc_09_001",
+      "predicted_cluster_id": "bare_doc_09_001",
+      "observed_names": [
+        "USSOCOM"
+      ],
+      "source_refs": [
+        "doc_09"
+      ],
+      "matched_ground_truth_entity_id": "E002",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E002"
+      ]
+    },
+    {
+      "entity_id": "bare_doc_09_002",
+      "entity_type": null,
+      "first_candidate_id": "bare_candidate_doc_09_002",
+      "predicted_cluster_id": "bare_doc_09_002",
+      "observed_names": [
+        "Eric Olson"
+      ],
+      "source_refs": [
+        "doc_09"
+      ],
+      "matched_ground_truth_entity_id": "E003",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E003"
+      ]
+    },
+    {
+      "entity_id": "bare_doc_10_000",
+      "entity_type": null,
+      "first_candidate_id": "bare_candidate_doc_10_000",
+      "predicted_cluster_id": "bare_doc_10_000",
+      "observed_names": [
+        "Fort Liberty"
+      ],
+      "source_refs": [
+        "doc_10"
+      ],
+      "matched_ground_truth_entity_id": "E005",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E005"
+      ]
+    },
+    {
+      "entity_id": "bare_doc_10_001",
+      "entity_type": null,
+      "first_candidate_id": "bare_candidate_doc_10_001",
+      "predicted_cluster_id": "bare_doc_10_001",
+      "observed_names": [
+        "Colonel Rodriguez"
+      ],
+      "source_refs": [
+        "doc_10"
+      ],
+      "matched_ground_truth_entity_id": "E007",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E007"
+      ]
+    },
+    {
+      "entity_id": "bare_doc_10_002",
+      "entity_type": null,
+      "first_candidate_id": "bare_candidate_doc_10_002",
+      "predicted_cluster_id": "bare_doc_10_002",
+      "observed_names": [
+        "4th Psychological Operations Group"
+      ],
+      "source_refs": [
+        "doc_10"
+      ],
+      "matched_ground_truth_entity_id": "E004",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E004"
+      ]
+    },
+    {
+      "entity_id": "bare_doc_11_000",
+      "entity_type": null,
+      "first_candidate_id": "bare_candidate_doc_11_000",
+      "predicted_cluster_id": "bare_doc_11_000",
+      "observed_names": [
+        "Sarah Chen"
+      ],
+      "source_refs": [
+        "doc_11"
+      ],
+      "matched_ground_truth_entity_id": "E008",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E008"
+      ]
+    },
+    {
+      "entity_id": "bare_doc_11_001",
+      "entity_type": null,
+      "first_candidate_id": "bare_candidate_doc_11_001",
+      "predicted_cluster_id": "bare_doc_11_001",
+      "observed_names": [
+        "Agency"
+      ],
+      "source_refs": [
+        "doc_11"
+      ],
+      "matched_ground_truth_entity_id": null,
+      "match_status": "ambiguous",
+      "match_reason": "multiple ground-truth candidates remain after type and doc-overlap checks",
+      "candidate_ground_truth_entity_ids": [
+        "E002",
+        "E006",
+        "E008",
+        "E013"
+      ]
+    },
+    {
+      "entity_id": "bare_doc_11_002",
+      "entity_type": null,
+      "first_candidate_id": "bare_candidate_doc_11_002",
+      "predicted_cluster_id": "bare_doc_11_002",
+      "observed_names": [
+        "George Washington University"
+      ],
+      "source_refs": [
+        "doc_11"
+      ],
+      "matched_ground_truth_entity_id": "E013",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E013"
+      ]
+    },
+    {
+      "entity_id": "bare_doc_12_000",
+      "entity_type": null,
+      "first_candidate_id": "bare_candidate_doc_12_000",
+      "predicted_cluster_id": "bare_doc_12_000",
+      "observed_names": [
+        "Gen. Smith"
+      ],
+      "source_refs": [
+        "doc_12"
+      ],
+      "matched_ground_truth_entity_id": "E001",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E001"
+      ]
+    },
+    {
+      "entity_id": "bare_doc_12_001",
+      "entity_type": null,
+      "first_candidate_id": "bare_candidate_doc_12_001",
+      "predicted_cluster_id": "bare_doc_12_001",
+      "observed_names": [
+        "National Security Agency"
+      ],
+      "source_refs": [
+        "doc_12"
+      ],
+      "matched_ground_truth_entity_id": "E009",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E009"
+      ]
+    },
+    {
+      "entity_id": "bare_doc_13_000",
+      "entity_type": null,
+      "first_candidate_id": "bare_candidate_doc_13_000",
+      "predicted_cluster_id": "bare_doc_13_000",
+      "observed_names": [
+        "James Rodriguez"
+      ],
+      "source_refs": [
+        "doc_13"
+      ],
+      "matched_ground_truth_entity_id": "E007",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E007"
+      ]
+    },
+    {
+      "entity_id": "bare_doc_13_001",
+      "entity_type": null,
+      "first_candidate_id": "bare_candidate_doc_13_001",
+      "predicted_cluster_id": "bare_doc_13_001",
+      "observed_names": [
+        "4th POG(A)"
+      ],
+      "source_refs": [
+        "doc_13"
+      ],
+      "matched_ground_truth_entity_id": "E004",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E004"
+      ]
+    },
+    {
+      "entity_id": "bare_doc_13_002",
+      "entity_type": null,
+      "first_candidate_id": "bare_candidate_doc_13_002",
+      "predicted_cluster_id": "bare_doc_13_002",
+      "observed_names": [
+        "Fort Bragg"
+      ],
+      "source_refs": [
+        "doc_13"
+      ],
+      "matched_ground_truth_entity_id": "E005",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E005"
+      ]
+    },
+    {
+      "entity_id": "bare_doc_14_000",
+      "entity_type": null,
+      "first_candidate_id": "bare_candidate_doc_14_000",
+      "predicted_cluster_id": "bare_doc_14_000",
+      "observed_names": [
+        "Torres"
+      ],
+      "source_refs": [
+        "doc_14"
+      ],
+      "matched_ground_truth_entity_id": "E010",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E010"
+      ]
+    },
+    {
+      "entity_id": "bare_doc_14_001",
+      "entity_type": null,
+      "first_candidate_id": "bare_candidate_doc_14_001",
+      "predicted_cluster_id": "bare_doc_14_001",
+      "observed_names": [
+        "Congress"
+      ],
+      "source_refs": [
+        "doc_14"
+      ],
+      "matched_ground_truth_entity_id": null,
+      "match_status": "ambiguous",
+      "match_reason": "multiple ground-truth candidates remain after type and doc-overlap checks",
+      "candidate_ground_truth_entity_ids": [
+        "E002",
+        "E010"
+      ]
+    },
+    {
+      "entity_id": "bare_doc_14_002",
+      "entity_type": null,
+      "first_candidate_id": "bare_candidate_doc_14_002",
+      "predicted_cluster_id": "bare_doc_14_002",
+      "observed_names": [
+        "USSOCOM"
+      ],
+      "source_refs": [
+        "doc_14"
+      ],
+      "matched_ground_truth_entity_id": "E002",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E002"
+      ]
+    },
+    {
+      "entity_id": "bare_doc_15_000",
+      "entity_type": null,
+      "first_candidate_id": "bare_candidate_doc_15_000",
+      "predicted_cluster_id": "bare_doc_15_000",
+      "observed_names": [
+        "General Smith"
+      ],
+      "source_refs": [
+        "doc_15"
+      ],
+      "matched_ground_truth_entity_id": "E001",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E001"
+      ]
+    },
+    {
+      "entity_id": "bare_doc_15_001",
+      "entity_type": null,
+      "first_candidate_id": "bare_candidate_doc_15_001",
+      "predicted_cluster_id": "bare_doc_15_001",
+      "observed_names": [
+        "James Smith"
+      ],
+      "source_refs": [
+        "doc_15"
+      ],
+      "matched_ground_truth_entity_id": "E011",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E011"
+      ]
+    },
+    {
+      "entity_id": "bare_doc_15_002",
+      "entity_type": null,
+      "first_candidate_id": "bare_candidate_doc_15_002",
+      "predicted_cluster_id": "bare_doc_15_002",
+      "observed_names": [
+        "CIA"
+      ],
+      "source_refs": [
+        "doc_15"
+      ],
+      "matched_ground_truth_entity_id": "E006",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E006"
+      ]
+    },
+    {
+      "entity_id": "bare_doc_16_000",
+      "entity_type": null,
+      "first_candidate_id": "bare_candidate_doc_16_000",
+      "predicted_cluster_id": "bare_doc_16_000",
+      "observed_names": [
+        "Olson"
+      ],
+      "source_refs": [
+        "doc_16"
+      ],
+      "matched_ground_truth_entity_id": "E003",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E003"
+      ]
+    },
+    {
+      "entity_id": "bare_doc_16_001",
+      "entity_type": null,
+      "first_candidate_id": "bare_candidate_doc_16_001",
+      "predicted_cluster_id": "bare_doc_16_001",
+      "observed_names": [
+        "D.C."
+      ],
+      "source_refs": [
+        "doc_16"
+      ],
+      "matched_ground_truth_entity_id": "E012",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E012"
+      ]
+    },
+    {
+      "entity_id": "bare_doc_17_000",
+      "entity_type": null,
+      "first_candidate_id": "bare_candidate_doc_17_000",
+      "predicted_cluster_id": "bare_doc_17_000",
+      "observed_names": [
+        "4th PSYOP Group"
+      ],
+      "source_refs": [
+        "doc_17"
+      ],
+      "matched_ground_truth_entity_id": "E004",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E004"
+      ]
+    },
+    {
+      "entity_id": "bare_doc_17_001",
+      "entity_type": null,
+      "first_candidate_id": "bare_candidate_doc_17_001",
+      "predicted_cluster_id": "bare_doc_17_001",
+      "observed_names": [
+        "James Rodriguez"
+      ],
+      "source_refs": [
+        "doc_17"
+      ],
+      "matched_ground_truth_entity_id": "E007",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E007"
+      ]
+    },
+    {
+      "entity_id": "bare_doc_18_000",
+      "entity_type": null,
+      "first_candidate_id": "bare_candidate_doc_18_000",
+      "predicted_cluster_id": "bare_doc_18_000",
+      "observed_names": [
+        "Michael Torres"
+      ],
+      "source_refs": [
+        "doc_18"
+      ],
+      "matched_ground_truth_entity_id": "E010",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E010"
+      ]
+    },
+    {
+      "entity_id": "bare_doc_18_001",
+      "entity_type": null,
+      "first_candidate_id": "bare_candidate_doc_18_001",
+      "predicted_cluster_id": "bare_doc_18_001",
+      "observed_names": [
+        "U.S. Special Operations Command"
+      ],
+      "source_refs": [
+        "doc_18"
+      ],
+      "matched_ground_truth_entity_id": "E002",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E002"
+      ]
+    },
+    {
+      "entity_id": "bare_doc_19_000",
+      "entity_type": null,
+      "first_candidate_id": "bare_candidate_doc_19_000",
+      "predicted_cluster_id": "bare_doc_19_000",
+      "observed_names": [
+        "Dr. Sarah Chen"
+      ],
+      "source_refs": [
+        "doc_19"
+      ],
+      "matched_ground_truth_entity_id": "E008",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E008"
+      ]
+    },
+    {
+      "entity_id": "bare_doc_19_001",
+      "entity_type": null,
+      "first_candidate_id": "bare_candidate_doc_19_001",
+      "predicted_cluster_id": "bare_doc_19_001",
+      "observed_names": [
+        "GWU"
+      ],
+      "source_refs": [
+        "doc_19"
+      ],
+      "matched_ground_truth_entity_id": "E013",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E013"
+      ]
+    },
+    {
+      "entity_id": "bare_doc_19_002",
+      "entity_type": null,
+      "first_candidate_id": "bare_candidate_doc_19_002",
+      "predicted_cluster_id": "bare_doc_19_002",
+      "observed_names": [
+        "NSA"
+      ],
+      "source_refs": [
+        "doc_19"
+      ],
+      "matched_ground_truth_entity_id": "E009",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E009"
+      ]
+    },
+    {
+      "entity_id": "bare_doc_19_003",
+      "entity_type": null,
+      "first_candidate_id": "bare_candidate_doc_19_003",
+      "predicted_cluster_id": "bare_doc_19_003",
+      "observed_names": [
+        "Central Intelligence Agency"
+      ],
+      "source_refs": [
+        "doc_19"
+      ],
+      "matched_ground_truth_entity_id": "E006",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E006"
+      ]
+    },
+    {
+      "entity_id": "bare_doc_20_000",
+      "entity_type": null,
+      "first_candidate_id": "bare_candidate_doc_20_000",
+      "predicted_cluster_id": "bare_doc_20_000",
+      "observed_names": [
+        "J. Smith"
+      ],
+      "source_refs": [
+        "doc_20"
+      ],
+      "matched_ground_truth_entity_id": null,
+      "match_status": "ambiguous",
+      "match_reason": "multiple ground-truth candidates remain after type and doc-overlap checks",
+      "candidate_ground_truth_entity_ids": [
+        "E001",
+        "E011"
+      ]
+    },
+    {
+      "entity_id": "bare_doc_20_001",
+      "entity_type": null,
+      "first_candidate_id": "bare_candidate_doc_20_001",
+      "predicted_cluster_id": "bare_doc_20_001",
+      "observed_names": [
+        "General John Smith"
+      ],
+      "source_refs": [
+        "doc_20"
+      ],
+      "matched_ground_truth_entity_id": "E001",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E001"
+      ]
+    },
+    {
+      "entity_id": "bare_doc_21_000",
+      "entity_type": null,
+      "first_candidate_id": "bare_candidate_doc_21_000",
+      "predicted_cluster_id": "bare_doc_21_000",
+      "observed_names": [
+        "Fort Bragg"
+      ],
+      "source_refs": [
+        "doc_21"
+      ],
+      "matched_ground_truth_entity_id": "E005",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E005"
+      ]
+    },
+    {
+      "entity_id": "bare_doc_22_000",
+      "entity_type": null,
+      "first_candidate_id": "bare_candidate_doc_22_000",
+      "predicted_cluster_id": "bare_doc_22_000",
+      "observed_names": [
+        "Michael Torres"
+      ],
+      "source_refs": [
+        "doc_22"
+      ],
+      "matched_ground_truth_entity_id": "E010",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E010"
+      ]
+    },
+    {
+      "entity_id": "bare_doc_22_001",
+      "entity_type": null,
+      "first_candidate_id": "bare_candidate_doc_22_001",
+      "predicted_cluster_id": "bare_doc_22_001",
+      "observed_names": [
+        "USSOCOM"
+      ],
+      "source_refs": [
+        "doc_22"
+      ],
+      "matched_ground_truth_entity_id": "E002",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E002"
+      ]
+    },
+    {
+      "entity_id": "bare_doc_23_000",
+      "entity_type": null,
+      "first_candidate_id": "bare_candidate_doc_23_000",
+      "predicted_cluster_id": "bare_doc_23_000",
+      "observed_names": [
+        "CIA"
+      ],
+      "source_refs": [
+        "doc_23"
+      ],
+      "matched_ground_truth_entity_id": "E006",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E006"
+      ]
+    },
+    {
+      "entity_id": "bare_doc_23_001",
+      "entity_type": null,
+      "first_candidate_id": "bare_candidate_doc_23_001",
+      "predicted_cluster_id": "bare_doc_23_001",
+      "observed_names": [
+        "Pentagon"
+      ],
+      "source_refs": [
+        "doc_23"
+      ],
+      "matched_ground_truth_entity_id": null,
+      "match_status": "ambiguous",
+      "match_reason": "multiple ground-truth candidates remain after type and doc-overlap checks",
+      "candidate_ground_truth_entity_ids": [
+        "E006",
+        "E012"
+      ]
+    },
+    {
+      "entity_id": "bare_doc_23_002",
+      "entity_type": null,
+      "first_candidate_id": "bare_candidate_doc_23_002",
+      "predicted_cluster_id": "bare_doc_23_002",
+      "observed_names": [
+        "Washington"
+      ],
+      "source_refs": [
+        "doc_23"
+      ],
+      "matched_ground_truth_entity_id": "E012",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E012"
+      ]
+    },
+    {
+      "entity_id": "bare_doc_24_000",
+      "entity_type": null,
+      "first_candidate_id": "bare_candidate_doc_24_000",
+      "predicted_cluster_id": "bare_doc_24_000",
+      "observed_names": [
+        "National Security Agency"
+      ],
+      "source_refs": [
+        "doc_24"
+      ],
+      "matched_ground_truth_entity_id": "E009",
+      "match_status": "matched",
+      "match_reason": "unique normalized name + type match",
+      "candidate_ground_truth_entity_ids": [
+        "E009"
+      ]
+    },
+    {
+      "entity_id": "bare_doc_25_000",
+      "entity_type": null,
+      "first_candidate_id": "bare_candidate_doc_25_000",
+      "predicted_cluster_id": "bare_doc_25_000",
+      "observed_names": [
+        "combatant commands"
+      ],
+      "source_refs": [
+        "doc_25"
+      ],
+      "matched_ground_truth_entity_id": null,
+      "match_status": "unmatched",
+      "match_reason": "no ground-truth variant match",
+      "candidate_ground_truth_entity_ids": []
+    }
+  ],
+  "pairwise_metrics": {
+    "matched_observation_count": 58,
+    "unmatched_observation_count": 1,
+    "ambiguous_observation_count": 4,
+    "predicted_positive_pairs": 0,
+    "gold_positive_pairs": 128,
+    "true_positive_pairs": 0,
+    "false_positive_pairs": 0,
+    "false_negative_pairs": 128,
+    "precision": 1.0,
+    "recall": 0.0,
+    "false_merge_pairs": [],
+    "false_split_pairs": [
+      {
+        "left_entity_id": "bare_doc_01_000",
+        "right_entity_id": "bare_doc_01_002",
+        "left_ground_truth_entity_id": "E001",
+        "right_ground_truth_entity_id": "E001",
+        "left_names": [
+          "Gen. Smith"
+        ],
+        "right_names": [
+          "General Smith"
+        ],
+        "left_source_refs": [
+          "doc_01"
+        ],
+        "right_source_refs": [
+          "doc_01"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_01_000",
+        "right_entity_id": "bare_doc_02_002",
+        "left_ground_truth_entity_id": "E001",
+        "right_ground_truth_entity_id": "E001",
+        "left_names": [
+          "Gen. Smith"
+        ],
+        "right_names": [
+          "General John Smith"
+        ],
+        "left_source_refs": [
+          "doc_01"
+        ],
+        "right_source_refs": [
+          "doc_02"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_01_000",
+        "right_entity_id": "bare_doc_05_000",
+        "left_ground_truth_entity_id": "E001",
+        "right_ground_truth_entity_id": "E001",
+        "left_names": [
+          "Gen. Smith"
+        ],
+        "right_names": [
+          "John Smith"
+        ],
+        "left_source_refs": [
+          "doc_01"
+        ],
+        "right_source_refs": [
+          "doc_05"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_01_000",
+        "right_entity_id": "bare_doc_08_000",
+        "left_ground_truth_entity_id": "E001",
+        "right_ground_truth_entity_id": "E001",
+        "left_names": [
+          "Gen. Smith"
+        ],
+        "right_names": [
+          "Gen. J. Smith"
+        ],
+        "left_source_refs": [
+          "doc_01"
+        ],
+        "right_source_refs": [
+          "doc_08"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_01_000",
+        "right_entity_id": "bare_doc_12_000",
+        "left_ground_truth_entity_id": "E001",
+        "right_ground_truth_entity_id": "E001",
+        "left_names": [
+          "Gen. Smith"
+        ],
+        "right_names": [
+          "Gen. Smith"
+        ],
+        "left_source_refs": [
+          "doc_01"
+        ],
+        "right_source_refs": [
+          "doc_12"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_01_000",
+        "right_entity_id": "bare_doc_15_000",
+        "left_ground_truth_entity_id": "E001",
+        "right_ground_truth_entity_id": "E001",
+        "left_names": [
+          "Gen. Smith"
+        ],
+        "right_names": [
+          "General Smith"
+        ],
+        "left_source_refs": [
+          "doc_01"
+        ],
+        "right_source_refs": [
+          "doc_15"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_01_000",
+        "right_entity_id": "bare_doc_20_001",
+        "left_ground_truth_entity_id": "E001",
+        "right_ground_truth_entity_id": "E001",
+        "left_names": [
+          "Gen. Smith"
+        ],
+        "right_names": [
+          "General John Smith"
+        ],
+        "left_source_refs": [
+          "doc_01"
+        ],
+        "right_source_refs": [
+          "doc_20"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_01_001",
+        "right_entity_id": "bare_doc_02_001",
+        "left_ground_truth_entity_id": "E002",
+        "right_ground_truth_entity_id": "E002",
+        "left_names": [
+          "USSOCOM"
+        ],
+        "right_names": [
+          "U.S. Special Operations Command"
+        ],
+        "left_source_refs": [
+          "doc_01"
+        ],
+        "right_source_refs": [
+          "doc_02"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_01_001",
+        "right_entity_id": "bare_doc_03_002",
+        "left_ground_truth_entity_id": "E002",
+        "right_ground_truth_entity_id": "E002",
+        "left_names": [
+          "USSOCOM"
+        ],
+        "right_names": [
+          "US Special Operations Command"
+        ],
+        "left_source_refs": [
+          "doc_01"
+        ],
+        "right_source_refs": [
+          "doc_03"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_01_001",
+        "right_entity_id": "bare_doc_05_001",
+        "left_ground_truth_entity_id": "E002",
+        "right_ground_truth_entity_id": "E002",
+        "left_names": [
+          "USSOCOM"
+        ],
+        "right_names": [
+          "Special Operations Command"
+        ],
+        "left_source_refs": [
+          "doc_01"
+        ],
+        "right_source_refs": [
+          "doc_05"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_01_001",
+        "right_entity_id": "bare_doc_07_002",
+        "left_ground_truth_entity_id": "E002",
+        "right_ground_truth_entity_id": "E002",
+        "left_names": [
+          "USSOCOM"
+        ],
+        "right_names": [
+          "USSOCOM"
+        ],
+        "left_source_refs": [
+          "doc_01"
+        ],
+        "right_source_refs": [
+          "doc_07"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_01_001",
+        "right_entity_id": "bare_doc_09_001",
+        "left_ground_truth_entity_id": "E002",
+        "right_ground_truth_entity_id": "E002",
+        "left_names": [
+          "USSOCOM"
+        ],
+        "right_names": [
+          "USSOCOM"
+        ],
+        "left_source_refs": [
+          "doc_01"
+        ],
+        "right_source_refs": [
+          "doc_09"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_01_001",
+        "right_entity_id": "bare_doc_14_002",
+        "left_ground_truth_entity_id": "E002",
+        "right_ground_truth_entity_id": "E002",
+        "left_names": [
+          "USSOCOM"
+        ],
+        "right_names": [
+          "USSOCOM"
+        ],
+        "left_source_refs": [
+          "doc_01"
+        ],
+        "right_source_refs": [
+          "doc_14"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_01_001",
+        "right_entity_id": "bare_doc_18_001",
+        "left_ground_truth_entity_id": "E002",
+        "right_ground_truth_entity_id": "E002",
+        "left_names": [
+          "USSOCOM"
+        ],
+        "right_names": [
+          "U.S. Special Operations Command"
+        ],
+        "left_source_refs": [
+          "doc_01"
+        ],
+        "right_source_refs": [
+          "doc_18"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_01_001",
+        "right_entity_id": "bare_doc_22_001",
+        "left_ground_truth_entity_id": "E002",
+        "right_ground_truth_entity_id": "E002",
+        "left_names": [
+          "USSOCOM"
+        ],
+        "right_names": [
+          "USSOCOM"
+        ],
+        "left_source_refs": [
+          "doc_01"
+        ],
+        "right_source_refs": [
+          "doc_22"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_01_002",
+        "right_entity_id": "bare_doc_02_002",
+        "left_ground_truth_entity_id": "E001",
+        "right_ground_truth_entity_id": "E001",
+        "left_names": [
+          "General Smith"
+        ],
+        "right_names": [
+          "General John Smith"
+        ],
+        "left_source_refs": [
+          "doc_01"
+        ],
+        "right_source_refs": [
+          "doc_02"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_01_002",
+        "right_entity_id": "bare_doc_05_000",
+        "left_ground_truth_entity_id": "E001",
+        "right_ground_truth_entity_id": "E001",
+        "left_names": [
+          "General Smith"
+        ],
+        "right_names": [
+          "John Smith"
+        ],
+        "left_source_refs": [
+          "doc_01"
+        ],
+        "right_source_refs": [
+          "doc_05"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_01_002",
+        "right_entity_id": "bare_doc_08_000",
+        "left_ground_truth_entity_id": "E001",
+        "right_ground_truth_entity_id": "E001",
+        "left_names": [
+          "General Smith"
+        ],
+        "right_names": [
+          "Gen. J. Smith"
+        ],
+        "left_source_refs": [
+          "doc_01"
+        ],
+        "right_source_refs": [
+          "doc_08"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_01_002",
+        "right_entity_id": "bare_doc_12_000",
+        "left_ground_truth_entity_id": "E001",
+        "right_ground_truth_entity_id": "E001",
+        "left_names": [
+          "General Smith"
+        ],
+        "right_names": [
+          "Gen. Smith"
+        ],
+        "left_source_refs": [
+          "doc_01"
+        ],
+        "right_source_refs": [
+          "doc_12"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_01_002",
+        "right_entity_id": "bare_doc_15_000",
+        "left_ground_truth_entity_id": "E001",
+        "right_ground_truth_entity_id": "E001",
+        "left_names": [
+          "General Smith"
+        ],
+        "right_names": [
+          "General Smith"
+        ],
+        "left_source_refs": [
+          "doc_01"
+        ],
+        "right_source_refs": [
+          "doc_15"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_01_002",
+        "right_entity_id": "bare_doc_20_001",
+        "left_ground_truth_entity_id": "E001",
+        "right_ground_truth_entity_id": "E001",
+        "left_names": [
+          "General Smith"
+        ],
+        "right_names": [
+          "General John Smith"
+        ],
+        "left_source_refs": [
+          "doc_01"
+        ],
+        "right_source_refs": [
+          "doc_20"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_02_000",
+        "right_entity_id": "bare_doc_04_000",
+        "left_ground_truth_entity_id": "E003",
+        "right_ground_truth_entity_id": "E003",
+        "left_names": [
+          "Adm. Olson"
+        ],
+        "right_names": [
+          "Eric Olson"
+        ],
+        "left_source_refs": [
+          "doc_02"
+        ],
+        "right_source_refs": [
+          "doc_04"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_02_000",
+        "right_entity_id": "bare_doc_09_002",
+        "left_ground_truth_entity_id": "E003",
+        "right_ground_truth_entity_id": "E003",
+        "left_names": [
+          "Adm. Olson"
+        ],
+        "right_names": [
+          "Eric Olson"
+        ],
+        "left_source_refs": [
+          "doc_02"
+        ],
+        "right_source_refs": [
+          "doc_09"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_02_000",
+        "right_entity_id": "bare_doc_16_000",
+        "left_ground_truth_entity_id": "E003",
+        "right_ground_truth_entity_id": "E003",
+        "left_names": [
+          "Adm. Olson"
+        ],
+        "right_names": [
+          "Olson"
+        ],
+        "left_source_refs": [
+          "doc_02"
+        ],
+        "right_source_refs": [
+          "doc_16"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_02_001",
+        "right_entity_id": "bare_doc_03_002",
+        "left_ground_truth_entity_id": "E002",
+        "right_ground_truth_entity_id": "E002",
+        "left_names": [
+          "U.S. Special Operations Command"
+        ],
+        "right_names": [
+          "US Special Operations Command"
+        ],
+        "left_source_refs": [
+          "doc_02"
+        ],
+        "right_source_refs": [
+          "doc_03"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_02_001",
+        "right_entity_id": "bare_doc_05_001",
+        "left_ground_truth_entity_id": "E002",
+        "right_ground_truth_entity_id": "E002",
+        "left_names": [
+          "U.S. Special Operations Command"
+        ],
+        "right_names": [
+          "Special Operations Command"
+        ],
+        "left_source_refs": [
+          "doc_02"
+        ],
+        "right_source_refs": [
+          "doc_05"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_02_001",
+        "right_entity_id": "bare_doc_07_002",
+        "left_ground_truth_entity_id": "E002",
+        "right_ground_truth_entity_id": "E002",
+        "left_names": [
+          "U.S. Special Operations Command"
+        ],
+        "right_names": [
+          "USSOCOM"
+        ],
+        "left_source_refs": [
+          "doc_02"
+        ],
+        "right_source_refs": [
+          "doc_07"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_02_001",
+        "right_entity_id": "bare_doc_09_001",
+        "left_ground_truth_entity_id": "E002",
+        "right_ground_truth_entity_id": "E002",
+        "left_names": [
+          "U.S. Special Operations Command"
+        ],
+        "right_names": [
+          "USSOCOM"
+        ],
+        "left_source_refs": [
+          "doc_02"
+        ],
+        "right_source_refs": [
+          "doc_09"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_02_001",
+        "right_entity_id": "bare_doc_14_002",
+        "left_ground_truth_entity_id": "E002",
+        "right_ground_truth_entity_id": "E002",
+        "left_names": [
+          "U.S. Special Operations Command"
+        ],
+        "right_names": [
+          "USSOCOM"
+        ],
+        "left_source_refs": [
+          "doc_02"
+        ],
+        "right_source_refs": [
+          "doc_14"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_02_001",
+        "right_entity_id": "bare_doc_18_001",
+        "left_ground_truth_entity_id": "E002",
+        "right_ground_truth_entity_id": "E002",
+        "left_names": [
+          "U.S. Special Operations Command"
+        ],
+        "right_names": [
+          "U.S. Special Operations Command"
+        ],
+        "left_source_refs": [
+          "doc_02"
+        ],
+        "right_source_refs": [
+          "doc_18"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_02_001",
+        "right_entity_id": "bare_doc_22_001",
+        "left_ground_truth_entity_id": "E002",
+        "right_ground_truth_entity_id": "E002",
+        "left_names": [
+          "U.S. Special Operations Command"
+        ],
+        "right_names": [
+          "USSOCOM"
+        ],
+        "left_source_refs": [
+          "doc_02"
+        ],
+        "right_source_refs": [
+          "doc_22"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_02_002",
+        "right_entity_id": "bare_doc_05_000",
+        "left_ground_truth_entity_id": "E001",
+        "right_ground_truth_entity_id": "E001",
+        "left_names": [
+          "General John Smith"
+        ],
+        "right_names": [
+          "John Smith"
+        ],
+        "left_source_refs": [
+          "doc_02"
+        ],
+        "right_source_refs": [
+          "doc_05"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_02_002",
+        "right_entity_id": "bare_doc_08_000",
+        "left_ground_truth_entity_id": "E001",
+        "right_ground_truth_entity_id": "E001",
+        "left_names": [
+          "General John Smith"
+        ],
+        "right_names": [
+          "Gen. J. Smith"
+        ],
+        "left_source_refs": [
+          "doc_02"
+        ],
+        "right_source_refs": [
+          "doc_08"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_02_002",
+        "right_entity_id": "bare_doc_12_000",
+        "left_ground_truth_entity_id": "E001",
+        "right_ground_truth_entity_id": "E001",
+        "left_names": [
+          "General John Smith"
+        ],
+        "right_names": [
+          "Gen. Smith"
+        ],
+        "left_source_refs": [
+          "doc_02"
+        ],
+        "right_source_refs": [
+          "doc_12"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_02_002",
+        "right_entity_id": "bare_doc_15_000",
+        "left_ground_truth_entity_id": "E001",
+        "right_ground_truth_entity_id": "E001",
+        "left_names": [
+          "General John Smith"
+        ],
+        "right_names": [
+          "General Smith"
+        ],
+        "left_source_refs": [
+          "doc_02"
+        ],
+        "right_source_refs": [
+          "doc_15"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_02_002",
+        "right_entity_id": "bare_doc_20_001",
+        "left_ground_truth_entity_id": "E001",
+        "right_ground_truth_entity_id": "E001",
+        "left_names": [
+          "General John Smith"
+        ],
+        "right_names": [
+          "General John Smith"
+        ],
+        "left_source_refs": [
+          "doc_02"
+        ],
+        "right_source_refs": [
+          "doc_20"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_03_000",
+        "right_entity_id": "bare_doc_06_001",
+        "left_ground_truth_entity_id": "E004",
+        "right_ground_truth_entity_id": "E004",
+        "left_names": [
+          "4th PSYOP Group"
+        ],
+        "right_names": [
+          "4th POG"
+        ],
+        "left_source_refs": [
+          "doc_03"
+        ],
+        "right_source_refs": [
+          "doc_06"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_03_000",
+        "right_entity_id": "bare_doc_10_002",
+        "left_ground_truth_entity_id": "E004",
+        "right_ground_truth_entity_id": "E004",
+        "left_names": [
+          "4th PSYOP Group"
+        ],
+        "right_names": [
+          "4th Psychological Operations Group"
+        ],
+        "left_source_refs": [
+          "doc_03"
+        ],
+        "right_source_refs": [
+          "doc_10"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_03_000",
+        "right_entity_id": "bare_doc_13_001",
+        "left_ground_truth_entity_id": "E004",
+        "right_ground_truth_entity_id": "E004",
+        "left_names": [
+          "4th PSYOP Group"
+        ],
+        "right_names": [
+          "4th POG(A)"
+        ],
+        "left_source_refs": [
+          "doc_03"
+        ],
+        "right_source_refs": [
+          "doc_13"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_03_000",
+        "right_entity_id": "bare_doc_17_000",
+        "left_ground_truth_entity_id": "E004",
+        "right_ground_truth_entity_id": "E004",
+        "left_names": [
+          "4th PSYOP Group"
+        ],
+        "right_names": [
+          "4th PSYOP Group"
+        ],
+        "left_source_refs": [
+          "doc_03"
+        ],
+        "right_source_refs": [
+          "doc_17"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_03_001",
+        "right_entity_id": "bare_doc_06_002",
+        "left_ground_truth_entity_id": "E005",
+        "right_ground_truth_entity_id": "E005",
+        "left_names": [
+          "Fort Bragg"
+        ],
+        "right_names": [
+          "Ft. Bragg"
+        ],
+        "left_source_refs": [
+          "doc_03"
+        ],
+        "right_source_refs": [
+          "doc_06"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_03_001",
+        "right_entity_id": "bare_doc_10_000",
+        "left_ground_truth_entity_id": "E005",
+        "right_ground_truth_entity_id": "E005",
+        "left_names": [
+          "Fort Bragg"
+        ],
+        "right_names": [
+          "Fort Liberty"
+        ],
+        "left_source_refs": [
+          "doc_03"
+        ],
+        "right_source_refs": [
+          "doc_10"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_03_001",
+        "right_entity_id": "bare_doc_13_002",
+        "left_ground_truth_entity_id": "E005",
+        "right_ground_truth_entity_id": "E005",
+        "left_names": [
+          "Fort Bragg"
+        ],
+        "right_names": [
+          "Fort Bragg"
+        ],
+        "left_source_refs": [
+          "doc_03"
+        ],
+        "right_source_refs": [
+          "doc_13"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_03_001",
+        "right_entity_id": "bare_doc_21_000",
+        "left_ground_truth_entity_id": "E005",
+        "right_ground_truth_entity_id": "E005",
+        "left_names": [
+          "Fort Bragg"
+        ],
+        "right_names": [
+          "Fort Bragg"
+        ],
+        "left_source_refs": [
+          "doc_03"
+        ],
+        "right_source_refs": [
+          "doc_21"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_03_002",
+        "right_entity_id": "bare_doc_05_001",
+        "left_ground_truth_entity_id": "E002",
+        "right_ground_truth_entity_id": "E002",
+        "left_names": [
+          "US Special Operations Command"
+        ],
+        "right_names": [
+          "Special Operations Command"
+        ],
+        "left_source_refs": [
+          "doc_03"
+        ],
+        "right_source_refs": [
+          "doc_05"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_03_002",
+        "right_entity_id": "bare_doc_07_002",
+        "left_ground_truth_entity_id": "E002",
+        "right_ground_truth_entity_id": "E002",
+        "left_names": [
+          "US Special Operations Command"
+        ],
+        "right_names": [
+          "USSOCOM"
+        ],
+        "left_source_refs": [
+          "doc_03"
+        ],
+        "right_source_refs": [
+          "doc_07"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_03_002",
+        "right_entity_id": "bare_doc_09_001",
+        "left_ground_truth_entity_id": "E002",
+        "right_ground_truth_entity_id": "E002",
+        "left_names": [
+          "US Special Operations Command"
+        ],
+        "right_names": [
+          "USSOCOM"
+        ],
+        "left_source_refs": [
+          "doc_03"
+        ],
+        "right_source_refs": [
+          "doc_09"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_03_002",
+        "right_entity_id": "bare_doc_14_002",
+        "left_ground_truth_entity_id": "E002",
+        "right_ground_truth_entity_id": "E002",
+        "left_names": [
+          "US Special Operations Command"
+        ],
+        "right_names": [
+          "USSOCOM"
+        ],
+        "left_source_refs": [
+          "doc_03"
+        ],
+        "right_source_refs": [
+          "doc_14"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_03_002",
+        "right_entity_id": "bare_doc_18_001",
+        "left_ground_truth_entity_id": "E002",
+        "right_ground_truth_entity_id": "E002",
+        "left_names": [
+          "US Special Operations Command"
+        ],
+        "right_names": [
+          "U.S. Special Operations Command"
+        ],
+        "left_source_refs": [
+          "doc_03"
+        ],
+        "right_source_refs": [
+          "doc_18"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_03_002",
+        "right_entity_id": "bare_doc_22_001",
+        "left_ground_truth_entity_id": "E002",
+        "right_ground_truth_entity_id": "E002",
+        "left_names": [
+          "US Special Operations Command"
+        ],
+        "right_names": [
+          "USSOCOM"
+        ],
+        "left_source_refs": [
+          "doc_03"
+        ],
+        "right_source_refs": [
+          "doc_22"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_04_000",
+        "right_entity_id": "bare_doc_09_002",
+        "left_ground_truth_entity_id": "E003",
+        "right_ground_truth_entity_id": "E003",
+        "left_names": [
+          "Eric Olson"
+        ],
+        "right_names": [
+          "Eric Olson"
+        ],
+        "left_source_refs": [
+          "doc_04"
+        ],
+        "right_source_refs": [
+          "doc_09"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_04_000",
+        "right_entity_id": "bare_doc_16_000",
+        "left_ground_truth_entity_id": "E003",
+        "right_ground_truth_entity_id": "E003",
+        "left_names": [
+          "Eric Olson"
+        ],
+        "right_names": [
+          "Olson"
+        ],
+        "left_source_refs": [
+          "doc_04"
+        ],
+        "right_source_refs": [
+          "doc_16"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_04_001",
+        "right_entity_id": "bare_doc_07_001",
+        "left_ground_truth_entity_id": "E006",
+        "right_ground_truth_entity_id": "E006",
+        "left_names": [
+          "CIA"
+        ],
+        "right_names": [
+          "Central Intelligence Agency"
+        ],
+        "left_source_refs": [
+          "doc_04"
+        ],
+        "right_source_refs": [
+          "doc_07"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_04_001",
+        "right_entity_id": "bare_doc_15_002",
+        "left_ground_truth_entity_id": "E006",
+        "right_ground_truth_entity_id": "E006",
+        "left_names": [
+          "CIA"
+        ],
+        "right_names": [
+          "CIA"
+        ],
+        "left_source_refs": [
+          "doc_04"
+        ],
+        "right_source_refs": [
+          "doc_15"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_04_001",
+        "right_entity_id": "bare_doc_19_003",
+        "left_ground_truth_entity_id": "E006",
+        "right_ground_truth_entity_id": "E006",
+        "left_names": [
+          "CIA"
+        ],
+        "right_names": [
+          "Central Intelligence Agency"
+        ],
+        "left_source_refs": [
+          "doc_04"
+        ],
+        "right_source_refs": [
+          "doc_19"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_04_001",
+        "right_entity_id": "bare_doc_23_000",
+        "left_ground_truth_entity_id": "E006",
+        "right_ground_truth_entity_id": "E006",
+        "left_names": [
+          "CIA"
+        ],
+        "right_names": [
+          "CIA"
+        ],
+        "left_source_refs": [
+          "doc_04"
+        ],
+        "right_source_refs": [
+          "doc_23"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_04_002",
+        "right_entity_id": "bare_doc_08_002",
+        "left_ground_truth_entity_id": "E012",
+        "right_ground_truth_entity_id": "E012",
+        "left_names": [
+          "Washington"
+        ],
+        "right_names": [
+          "Washington D.C."
+        ],
+        "left_source_refs": [
+          "doc_04"
+        ],
+        "right_source_refs": [
+          "doc_08"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_04_002",
+        "right_entity_id": "bare_doc_16_001",
+        "left_ground_truth_entity_id": "E012",
+        "right_ground_truth_entity_id": "E012",
+        "left_names": [
+          "Washington"
+        ],
+        "right_names": [
+          "D.C."
+        ],
+        "left_source_refs": [
+          "doc_04"
+        ],
+        "right_source_refs": [
+          "doc_16"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_04_002",
+        "right_entity_id": "bare_doc_23_002",
+        "left_ground_truth_entity_id": "E012",
+        "right_ground_truth_entity_id": "E012",
+        "left_names": [
+          "Washington"
+        ],
+        "right_names": [
+          "Washington"
+        ],
+        "left_source_refs": [
+          "doc_04"
+        ],
+        "right_source_refs": [
+          "doc_23"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_05_000",
+        "right_entity_id": "bare_doc_08_000",
+        "left_ground_truth_entity_id": "E001",
+        "right_ground_truth_entity_id": "E001",
+        "left_names": [
+          "John Smith"
+        ],
+        "right_names": [
+          "Gen. J. Smith"
+        ],
+        "left_source_refs": [
+          "doc_05"
+        ],
+        "right_source_refs": [
+          "doc_08"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_05_000",
+        "right_entity_id": "bare_doc_12_000",
+        "left_ground_truth_entity_id": "E001",
+        "right_ground_truth_entity_id": "E001",
+        "left_names": [
+          "John Smith"
+        ],
+        "right_names": [
+          "Gen. Smith"
+        ],
+        "left_source_refs": [
+          "doc_05"
+        ],
+        "right_source_refs": [
+          "doc_12"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_05_000",
+        "right_entity_id": "bare_doc_15_000",
+        "left_ground_truth_entity_id": "E001",
+        "right_ground_truth_entity_id": "E001",
+        "left_names": [
+          "John Smith"
+        ],
+        "right_names": [
+          "General Smith"
+        ],
+        "left_source_refs": [
+          "doc_05"
+        ],
+        "right_source_refs": [
+          "doc_15"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_05_000",
+        "right_entity_id": "bare_doc_20_001",
+        "left_ground_truth_entity_id": "E001",
+        "right_ground_truth_entity_id": "E001",
+        "left_names": [
+          "John Smith"
+        ],
+        "right_names": [
+          "General John Smith"
+        ],
+        "left_source_refs": [
+          "doc_05"
+        ],
+        "right_source_refs": [
+          "doc_20"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_05_001",
+        "right_entity_id": "bare_doc_07_002",
+        "left_ground_truth_entity_id": "E002",
+        "right_ground_truth_entity_id": "E002",
+        "left_names": [
+          "Special Operations Command"
+        ],
+        "right_names": [
+          "USSOCOM"
+        ],
+        "left_source_refs": [
+          "doc_05"
+        ],
+        "right_source_refs": [
+          "doc_07"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_05_001",
+        "right_entity_id": "bare_doc_09_001",
+        "left_ground_truth_entity_id": "E002",
+        "right_ground_truth_entity_id": "E002",
+        "left_names": [
+          "Special Operations Command"
+        ],
+        "right_names": [
+          "USSOCOM"
+        ],
+        "left_source_refs": [
+          "doc_05"
+        ],
+        "right_source_refs": [
+          "doc_09"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_05_001",
+        "right_entity_id": "bare_doc_14_002",
+        "left_ground_truth_entity_id": "E002",
+        "right_ground_truth_entity_id": "E002",
+        "left_names": [
+          "Special Operations Command"
+        ],
+        "right_names": [
+          "USSOCOM"
+        ],
+        "left_source_refs": [
+          "doc_05"
+        ],
+        "right_source_refs": [
+          "doc_14"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_05_001",
+        "right_entity_id": "bare_doc_18_001",
+        "left_ground_truth_entity_id": "E002",
+        "right_ground_truth_entity_id": "E002",
+        "left_names": [
+          "Special Operations Command"
+        ],
+        "right_names": [
+          "U.S. Special Operations Command"
+        ],
+        "left_source_refs": [
+          "doc_05"
+        ],
+        "right_source_refs": [
+          "doc_18"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_05_001",
+        "right_entity_id": "bare_doc_22_001",
+        "left_ground_truth_entity_id": "E002",
+        "right_ground_truth_entity_id": "E002",
+        "left_names": [
+          "Special Operations Command"
+        ],
+        "right_names": [
+          "USSOCOM"
+        ],
+        "left_source_refs": [
+          "doc_05"
+        ],
+        "right_source_refs": [
+          "doc_22"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_06_000",
+        "right_entity_id": "bare_doc_10_001",
+        "left_ground_truth_entity_id": "E007",
+        "right_ground_truth_entity_id": "E007",
+        "left_names": [
+          "Rodriguez"
+        ],
+        "right_names": [
+          "Colonel Rodriguez"
+        ],
+        "left_source_refs": [
+          "doc_06"
+        ],
+        "right_source_refs": [
+          "doc_10"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_06_000",
+        "right_entity_id": "bare_doc_13_000",
+        "left_ground_truth_entity_id": "E007",
+        "right_ground_truth_entity_id": "E007",
+        "left_names": [
+          "Rodriguez"
+        ],
+        "right_names": [
+          "James Rodriguez"
+        ],
+        "left_source_refs": [
+          "doc_06"
+        ],
+        "right_source_refs": [
+          "doc_13"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_06_000",
+        "right_entity_id": "bare_doc_17_001",
+        "left_ground_truth_entity_id": "E007",
+        "right_ground_truth_entity_id": "E007",
+        "left_names": [
+          "Rodriguez"
+        ],
+        "right_names": [
+          "James Rodriguez"
+        ],
+        "left_source_refs": [
+          "doc_06"
+        ],
+        "right_source_refs": [
+          "doc_17"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_06_001",
+        "right_entity_id": "bare_doc_10_002",
+        "left_ground_truth_entity_id": "E004",
+        "right_ground_truth_entity_id": "E004",
+        "left_names": [
+          "4th POG"
+        ],
+        "right_names": [
+          "4th Psychological Operations Group"
+        ],
+        "left_source_refs": [
+          "doc_06"
+        ],
+        "right_source_refs": [
+          "doc_10"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_06_001",
+        "right_entity_id": "bare_doc_13_001",
+        "left_ground_truth_entity_id": "E004",
+        "right_ground_truth_entity_id": "E004",
+        "left_names": [
+          "4th POG"
+        ],
+        "right_names": [
+          "4th POG(A)"
+        ],
+        "left_source_refs": [
+          "doc_06"
+        ],
+        "right_source_refs": [
+          "doc_13"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_06_001",
+        "right_entity_id": "bare_doc_17_000",
+        "left_ground_truth_entity_id": "E004",
+        "right_ground_truth_entity_id": "E004",
+        "left_names": [
+          "4th POG"
+        ],
+        "right_names": [
+          "4th PSYOP Group"
+        ],
+        "left_source_refs": [
+          "doc_06"
+        ],
+        "right_source_refs": [
+          "doc_17"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_06_002",
+        "right_entity_id": "bare_doc_10_000",
+        "left_ground_truth_entity_id": "E005",
+        "right_ground_truth_entity_id": "E005",
+        "left_names": [
+          "Ft. Bragg"
+        ],
+        "right_names": [
+          "Fort Liberty"
+        ],
+        "left_source_refs": [
+          "doc_06"
+        ],
+        "right_source_refs": [
+          "doc_10"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_06_002",
+        "right_entity_id": "bare_doc_13_002",
+        "left_ground_truth_entity_id": "E005",
+        "right_ground_truth_entity_id": "E005",
+        "left_names": [
+          "Ft. Bragg"
+        ],
+        "right_names": [
+          "Fort Bragg"
+        ],
+        "left_source_refs": [
+          "doc_06"
+        ],
+        "right_source_refs": [
+          "doc_13"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_06_002",
+        "right_entity_id": "bare_doc_21_000",
+        "left_ground_truth_entity_id": "E005",
+        "right_ground_truth_entity_id": "E005",
+        "left_names": [
+          "Ft. Bragg"
+        ],
+        "right_names": [
+          "Fort Bragg"
+        ],
+        "left_source_refs": [
+          "doc_06"
+        ],
+        "right_source_refs": [
+          "doc_21"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_07_000",
+        "right_entity_id": "bare_doc_11_000",
+        "left_ground_truth_entity_id": "E008",
+        "right_ground_truth_entity_id": "E008",
+        "left_names": [
+          "Chen"
+        ],
+        "right_names": [
+          "Sarah Chen"
+        ],
+        "left_source_refs": [
+          "doc_07"
+        ],
+        "right_source_refs": [
+          "doc_11"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_07_000",
+        "right_entity_id": "bare_doc_19_000",
+        "left_ground_truth_entity_id": "E008",
+        "right_ground_truth_entity_id": "E008",
+        "left_names": [
+          "Chen"
+        ],
+        "right_names": [
+          "Dr. Sarah Chen"
+        ],
+        "left_source_refs": [
+          "doc_07"
+        ],
+        "right_source_refs": [
+          "doc_19"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_07_001",
+        "right_entity_id": "bare_doc_15_002",
+        "left_ground_truth_entity_id": "E006",
+        "right_ground_truth_entity_id": "E006",
+        "left_names": [
+          "Central Intelligence Agency"
+        ],
+        "right_names": [
+          "CIA"
+        ],
+        "left_source_refs": [
+          "doc_07"
+        ],
+        "right_source_refs": [
+          "doc_15"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_07_001",
+        "right_entity_id": "bare_doc_19_003",
+        "left_ground_truth_entity_id": "E006",
+        "right_ground_truth_entity_id": "E006",
+        "left_names": [
+          "Central Intelligence Agency"
+        ],
+        "right_names": [
+          "Central Intelligence Agency"
+        ],
+        "left_source_refs": [
+          "doc_07"
+        ],
+        "right_source_refs": [
+          "doc_19"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_07_001",
+        "right_entity_id": "bare_doc_23_000",
+        "left_ground_truth_entity_id": "E006",
+        "right_ground_truth_entity_id": "E006",
+        "left_names": [
+          "Central Intelligence Agency"
+        ],
+        "right_names": [
+          "CIA"
+        ],
+        "left_source_refs": [
+          "doc_07"
+        ],
+        "right_source_refs": [
+          "doc_23"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_07_002",
+        "right_entity_id": "bare_doc_09_001",
+        "left_ground_truth_entity_id": "E002",
+        "right_ground_truth_entity_id": "E002",
+        "left_names": [
+          "USSOCOM"
+        ],
+        "right_names": [
+          "USSOCOM"
+        ],
+        "left_source_refs": [
+          "doc_07"
+        ],
+        "right_source_refs": [
+          "doc_09"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_07_002",
+        "right_entity_id": "bare_doc_14_002",
+        "left_ground_truth_entity_id": "E002",
+        "right_ground_truth_entity_id": "E002",
+        "left_names": [
+          "USSOCOM"
+        ],
+        "right_names": [
+          "USSOCOM"
+        ],
+        "left_source_refs": [
+          "doc_07"
+        ],
+        "right_source_refs": [
+          "doc_14"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_07_002",
+        "right_entity_id": "bare_doc_18_001",
+        "left_ground_truth_entity_id": "E002",
+        "right_ground_truth_entity_id": "E002",
+        "left_names": [
+          "USSOCOM"
+        ],
+        "right_names": [
+          "U.S. Special Operations Command"
+        ],
+        "left_source_refs": [
+          "doc_07"
+        ],
+        "right_source_refs": [
+          "doc_18"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_07_002",
+        "right_entity_id": "bare_doc_22_001",
+        "left_ground_truth_entity_id": "E002",
+        "right_ground_truth_entity_id": "E002",
+        "left_names": [
+          "USSOCOM"
+        ],
+        "right_names": [
+          "USSOCOM"
+        ],
+        "left_source_refs": [
+          "doc_07"
+        ],
+        "right_source_refs": [
+          "doc_22"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_08_000",
+        "right_entity_id": "bare_doc_12_000",
+        "left_ground_truth_entity_id": "E001",
+        "right_ground_truth_entity_id": "E001",
+        "left_names": [
+          "Gen. J. Smith"
+        ],
+        "right_names": [
+          "Gen. Smith"
+        ],
+        "left_source_refs": [
+          "doc_08"
+        ],
+        "right_source_refs": [
+          "doc_12"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_08_000",
+        "right_entity_id": "bare_doc_15_000",
+        "left_ground_truth_entity_id": "E001",
+        "right_ground_truth_entity_id": "E001",
+        "left_names": [
+          "Gen. J. Smith"
+        ],
+        "right_names": [
+          "General Smith"
+        ],
+        "left_source_refs": [
+          "doc_08"
+        ],
+        "right_source_refs": [
+          "doc_15"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_08_000",
+        "right_entity_id": "bare_doc_20_001",
+        "left_ground_truth_entity_id": "E001",
+        "right_ground_truth_entity_id": "E001",
+        "left_names": [
+          "Gen. J. Smith"
+        ],
+        "right_names": [
+          "General John Smith"
+        ],
+        "left_source_refs": [
+          "doc_08"
+        ],
+        "right_source_refs": [
+          "doc_20"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_08_001",
+        "right_entity_id": "bare_doc_12_001",
+        "left_ground_truth_entity_id": "E009",
+        "right_ground_truth_entity_id": "E009",
+        "left_names": [
+          "NSA"
+        ],
+        "right_names": [
+          "National Security Agency"
+        ],
+        "left_source_refs": [
+          "doc_08"
+        ],
+        "right_source_refs": [
+          "doc_12"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_08_001",
+        "right_entity_id": "bare_doc_19_002",
+        "left_ground_truth_entity_id": "E009",
+        "right_ground_truth_entity_id": "E009",
+        "left_names": [
+          "NSA"
+        ],
+        "right_names": [
+          "NSA"
+        ],
+        "left_source_refs": [
+          "doc_08"
+        ],
+        "right_source_refs": [
+          "doc_19"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_08_001",
+        "right_entity_id": "bare_doc_24_000",
+        "left_ground_truth_entity_id": "E009",
+        "right_ground_truth_entity_id": "E009",
+        "left_names": [
+          "NSA"
+        ],
+        "right_names": [
+          "National Security Agency"
+        ],
+        "left_source_refs": [
+          "doc_08"
+        ],
+        "right_source_refs": [
+          "doc_24"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_08_002",
+        "right_entity_id": "bare_doc_16_001",
+        "left_ground_truth_entity_id": "E012",
+        "right_ground_truth_entity_id": "E012",
+        "left_names": [
+          "Washington D.C."
+        ],
+        "right_names": [
+          "D.C."
+        ],
+        "left_source_refs": [
+          "doc_08"
+        ],
+        "right_source_refs": [
+          "doc_16"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_08_002",
+        "right_entity_id": "bare_doc_23_002",
+        "left_ground_truth_entity_id": "E012",
+        "right_ground_truth_entity_id": "E012",
+        "left_names": [
+          "Washington D.C."
+        ],
+        "right_names": [
+          "Washington"
+        ],
+        "left_source_refs": [
+          "doc_08"
+        ],
+        "right_source_refs": [
+          "doc_23"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_09_000",
+        "right_entity_id": "bare_doc_14_000",
+        "left_ground_truth_entity_id": "E010",
+        "right_ground_truth_entity_id": "E010",
+        "left_names": [
+          "Torres"
+        ],
+        "right_names": [
+          "Torres"
+        ],
+        "left_source_refs": [
+          "doc_09"
+        ],
+        "right_source_refs": [
+          "doc_14"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_09_000",
+        "right_entity_id": "bare_doc_18_000",
+        "left_ground_truth_entity_id": "E010",
+        "right_ground_truth_entity_id": "E010",
+        "left_names": [
+          "Torres"
+        ],
+        "right_names": [
+          "Michael Torres"
+        ],
+        "left_source_refs": [
+          "doc_09"
+        ],
+        "right_source_refs": [
+          "doc_18"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_09_000",
+        "right_entity_id": "bare_doc_22_000",
+        "left_ground_truth_entity_id": "E010",
+        "right_ground_truth_entity_id": "E010",
+        "left_names": [
+          "Torres"
+        ],
+        "right_names": [
+          "Michael Torres"
+        ],
+        "left_source_refs": [
+          "doc_09"
+        ],
+        "right_source_refs": [
+          "doc_22"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_09_001",
+        "right_entity_id": "bare_doc_14_002",
+        "left_ground_truth_entity_id": "E002",
+        "right_ground_truth_entity_id": "E002",
+        "left_names": [
+          "USSOCOM"
+        ],
+        "right_names": [
+          "USSOCOM"
+        ],
+        "left_source_refs": [
+          "doc_09"
+        ],
+        "right_source_refs": [
+          "doc_14"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_09_001",
+        "right_entity_id": "bare_doc_18_001",
+        "left_ground_truth_entity_id": "E002",
+        "right_ground_truth_entity_id": "E002",
+        "left_names": [
+          "USSOCOM"
+        ],
+        "right_names": [
+          "U.S. Special Operations Command"
+        ],
+        "left_source_refs": [
+          "doc_09"
+        ],
+        "right_source_refs": [
+          "doc_18"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_09_001",
+        "right_entity_id": "bare_doc_22_001",
+        "left_ground_truth_entity_id": "E002",
+        "right_ground_truth_entity_id": "E002",
+        "left_names": [
+          "USSOCOM"
+        ],
+        "right_names": [
+          "USSOCOM"
+        ],
+        "left_source_refs": [
+          "doc_09"
+        ],
+        "right_source_refs": [
+          "doc_22"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_09_002",
+        "right_entity_id": "bare_doc_16_000",
+        "left_ground_truth_entity_id": "E003",
+        "right_ground_truth_entity_id": "E003",
+        "left_names": [
+          "Eric Olson"
+        ],
+        "right_names": [
+          "Olson"
+        ],
+        "left_source_refs": [
+          "doc_09"
+        ],
+        "right_source_refs": [
+          "doc_16"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_10_000",
+        "right_entity_id": "bare_doc_13_002",
+        "left_ground_truth_entity_id": "E005",
+        "right_ground_truth_entity_id": "E005",
+        "left_names": [
+          "Fort Liberty"
+        ],
+        "right_names": [
+          "Fort Bragg"
+        ],
+        "left_source_refs": [
+          "doc_10"
+        ],
+        "right_source_refs": [
+          "doc_13"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_10_000",
+        "right_entity_id": "bare_doc_21_000",
+        "left_ground_truth_entity_id": "E005",
+        "right_ground_truth_entity_id": "E005",
+        "left_names": [
+          "Fort Liberty"
+        ],
+        "right_names": [
+          "Fort Bragg"
+        ],
+        "left_source_refs": [
+          "doc_10"
+        ],
+        "right_source_refs": [
+          "doc_21"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_10_001",
+        "right_entity_id": "bare_doc_13_000",
+        "left_ground_truth_entity_id": "E007",
+        "right_ground_truth_entity_id": "E007",
+        "left_names": [
+          "Colonel Rodriguez"
+        ],
+        "right_names": [
+          "James Rodriguez"
+        ],
+        "left_source_refs": [
+          "doc_10"
+        ],
+        "right_source_refs": [
+          "doc_13"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_10_001",
+        "right_entity_id": "bare_doc_17_001",
+        "left_ground_truth_entity_id": "E007",
+        "right_ground_truth_entity_id": "E007",
+        "left_names": [
+          "Colonel Rodriguez"
+        ],
+        "right_names": [
+          "James Rodriguez"
+        ],
+        "left_source_refs": [
+          "doc_10"
+        ],
+        "right_source_refs": [
+          "doc_17"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_10_002",
+        "right_entity_id": "bare_doc_13_001",
+        "left_ground_truth_entity_id": "E004",
+        "right_ground_truth_entity_id": "E004",
+        "left_names": [
+          "4th Psychological Operations Group"
+        ],
+        "right_names": [
+          "4th POG(A)"
+        ],
+        "left_source_refs": [
+          "doc_10"
+        ],
+        "right_source_refs": [
+          "doc_13"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_10_002",
+        "right_entity_id": "bare_doc_17_000",
+        "left_ground_truth_entity_id": "E004",
+        "right_ground_truth_entity_id": "E004",
+        "left_names": [
+          "4th Psychological Operations Group"
+        ],
+        "right_names": [
+          "4th PSYOP Group"
+        ],
+        "left_source_refs": [
+          "doc_10"
+        ],
+        "right_source_refs": [
+          "doc_17"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_11_000",
+        "right_entity_id": "bare_doc_19_000",
+        "left_ground_truth_entity_id": "E008",
+        "right_ground_truth_entity_id": "E008",
+        "left_names": [
+          "Sarah Chen"
+        ],
+        "right_names": [
+          "Dr. Sarah Chen"
+        ],
+        "left_source_refs": [
+          "doc_11"
+        ],
+        "right_source_refs": [
+          "doc_19"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_11_002",
+        "right_entity_id": "bare_doc_19_001",
+        "left_ground_truth_entity_id": "E013",
+        "right_ground_truth_entity_id": "E013",
+        "left_names": [
+          "George Washington University"
+        ],
+        "right_names": [
+          "GWU"
+        ],
+        "left_source_refs": [
+          "doc_11"
+        ],
+        "right_source_refs": [
+          "doc_19"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_12_000",
+        "right_entity_id": "bare_doc_15_000",
+        "left_ground_truth_entity_id": "E001",
+        "right_ground_truth_entity_id": "E001",
+        "left_names": [
+          "Gen. Smith"
+        ],
+        "right_names": [
+          "General Smith"
+        ],
+        "left_source_refs": [
+          "doc_12"
+        ],
+        "right_source_refs": [
+          "doc_15"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_12_000",
+        "right_entity_id": "bare_doc_20_001",
+        "left_ground_truth_entity_id": "E001",
+        "right_ground_truth_entity_id": "E001",
+        "left_names": [
+          "Gen. Smith"
+        ],
+        "right_names": [
+          "General John Smith"
+        ],
+        "left_source_refs": [
+          "doc_12"
+        ],
+        "right_source_refs": [
+          "doc_20"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_12_001",
+        "right_entity_id": "bare_doc_19_002",
+        "left_ground_truth_entity_id": "E009",
+        "right_ground_truth_entity_id": "E009",
+        "left_names": [
+          "National Security Agency"
+        ],
+        "right_names": [
+          "NSA"
+        ],
+        "left_source_refs": [
+          "doc_12"
+        ],
+        "right_source_refs": [
+          "doc_19"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_12_001",
+        "right_entity_id": "bare_doc_24_000",
+        "left_ground_truth_entity_id": "E009",
+        "right_ground_truth_entity_id": "E009",
+        "left_names": [
+          "National Security Agency"
+        ],
+        "right_names": [
+          "National Security Agency"
+        ],
+        "left_source_refs": [
+          "doc_12"
+        ],
+        "right_source_refs": [
+          "doc_24"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_13_000",
+        "right_entity_id": "bare_doc_17_001",
+        "left_ground_truth_entity_id": "E007",
+        "right_ground_truth_entity_id": "E007",
+        "left_names": [
+          "James Rodriguez"
+        ],
+        "right_names": [
+          "James Rodriguez"
+        ],
+        "left_source_refs": [
+          "doc_13"
+        ],
+        "right_source_refs": [
+          "doc_17"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_13_001",
+        "right_entity_id": "bare_doc_17_000",
+        "left_ground_truth_entity_id": "E004",
+        "right_ground_truth_entity_id": "E004",
+        "left_names": [
+          "4th POG(A)"
+        ],
+        "right_names": [
+          "4th PSYOP Group"
+        ],
+        "left_source_refs": [
+          "doc_13"
+        ],
+        "right_source_refs": [
+          "doc_17"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_13_002",
+        "right_entity_id": "bare_doc_21_000",
+        "left_ground_truth_entity_id": "E005",
+        "right_ground_truth_entity_id": "E005",
+        "left_names": [
+          "Fort Bragg"
+        ],
+        "right_names": [
+          "Fort Bragg"
+        ],
+        "left_source_refs": [
+          "doc_13"
+        ],
+        "right_source_refs": [
+          "doc_21"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_14_000",
+        "right_entity_id": "bare_doc_18_000",
+        "left_ground_truth_entity_id": "E010",
+        "right_ground_truth_entity_id": "E010",
+        "left_names": [
+          "Torres"
+        ],
+        "right_names": [
+          "Michael Torres"
+        ],
+        "left_source_refs": [
+          "doc_14"
+        ],
+        "right_source_refs": [
+          "doc_18"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_14_000",
+        "right_entity_id": "bare_doc_22_000",
+        "left_ground_truth_entity_id": "E010",
+        "right_ground_truth_entity_id": "E010",
+        "left_names": [
+          "Torres"
+        ],
+        "right_names": [
+          "Michael Torres"
+        ],
+        "left_source_refs": [
+          "doc_14"
+        ],
+        "right_source_refs": [
+          "doc_22"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_14_002",
+        "right_entity_id": "bare_doc_18_001",
+        "left_ground_truth_entity_id": "E002",
+        "right_ground_truth_entity_id": "E002",
+        "left_names": [
+          "USSOCOM"
+        ],
+        "right_names": [
+          "U.S. Special Operations Command"
+        ],
+        "left_source_refs": [
+          "doc_14"
+        ],
+        "right_source_refs": [
+          "doc_18"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_14_002",
+        "right_entity_id": "bare_doc_22_001",
+        "left_ground_truth_entity_id": "E002",
+        "right_ground_truth_entity_id": "E002",
+        "left_names": [
+          "USSOCOM"
+        ],
+        "right_names": [
+          "USSOCOM"
+        ],
+        "left_source_refs": [
+          "doc_14"
+        ],
+        "right_source_refs": [
+          "doc_22"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_15_000",
+        "right_entity_id": "bare_doc_20_001",
+        "left_ground_truth_entity_id": "E001",
+        "right_ground_truth_entity_id": "E001",
+        "left_names": [
+          "General Smith"
+        ],
+        "right_names": [
+          "General John Smith"
+        ],
+        "left_source_refs": [
+          "doc_15"
+        ],
+        "right_source_refs": [
+          "doc_20"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_15_002",
+        "right_entity_id": "bare_doc_19_003",
+        "left_ground_truth_entity_id": "E006",
+        "right_ground_truth_entity_id": "E006",
+        "left_names": [
+          "CIA"
+        ],
+        "right_names": [
+          "Central Intelligence Agency"
+        ],
+        "left_source_refs": [
+          "doc_15"
+        ],
+        "right_source_refs": [
+          "doc_19"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_15_002",
+        "right_entity_id": "bare_doc_23_000",
+        "left_ground_truth_entity_id": "E006",
+        "right_ground_truth_entity_id": "E006",
+        "left_names": [
+          "CIA"
+        ],
+        "right_names": [
+          "CIA"
+        ],
+        "left_source_refs": [
+          "doc_15"
+        ],
+        "right_source_refs": [
+          "doc_23"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_16_001",
+        "right_entity_id": "bare_doc_23_002",
+        "left_ground_truth_entity_id": "E012",
+        "right_ground_truth_entity_id": "E012",
+        "left_names": [
+          "D.C."
+        ],
+        "right_names": [
+          "Washington"
+        ],
+        "left_source_refs": [
+          "doc_16"
+        ],
+        "right_source_refs": [
+          "doc_23"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_18_000",
+        "right_entity_id": "bare_doc_22_000",
+        "left_ground_truth_entity_id": "E010",
+        "right_ground_truth_entity_id": "E010",
+        "left_names": [
+          "Michael Torres"
+        ],
+        "right_names": [
+          "Michael Torres"
+        ],
+        "left_source_refs": [
+          "doc_18"
+        ],
+        "right_source_refs": [
+          "doc_22"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_18_001",
+        "right_entity_id": "bare_doc_22_001",
+        "left_ground_truth_entity_id": "E002",
+        "right_ground_truth_entity_id": "E002",
+        "left_names": [
+          "U.S. Special Operations Command"
+        ],
+        "right_names": [
+          "USSOCOM"
+        ],
+        "left_source_refs": [
+          "doc_18"
+        ],
+        "right_source_refs": [
+          "doc_22"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_19_002",
+        "right_entity_id": "bare_doc_24_000",
+        "left_ground_truth_entity_id": "E009",
+        "right_ground_truth_entity_id": "E009",
+        "left_names": [
+          "NSA"
+        ],
+        "right_names": [
+          "National Security Agency"
+        ],
+        "left_source_refs": [
+          "doc_19"
+        ],
+        "right_source_refs": [
+          "doc_24"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      },
+      {
+        "left_entity_id": "bare_doc_19_003",
+        "right_entity_id": "bare_doc_23_000",
+        "left_ground_truth_entity_id": "E006",
+        "right_ground_truth_entity_id": "E006",
+        "left_names": [
+          "Central Intelligence Agency"
+        ],
+        "right_names": [
+          "CIA"
+        ],
+        "left_source_refs": [
+          "doc_19"
+        ],
+        "right_source_refs": [
+          "doc_23"
+        ],
+        "predicted_same_cluster": false,
+        "reason": "false split pair"
+      }
+    ],
+    "unmatched_observation_ids": [
+      "bare_doc_25_000"
+    ],
+    "ambiguous_observation_ids": [
+      "bare_doc_11_001",
+      "bare_doc_14_001",
+      "bare_doc_20_000",
+      "bare_doc_23_001"
+    ]
+  },
+  "question_summary": {
+    "total_questions": 10,
+    "answered_questions": 4,
+    "correct_questions": 3,
+    "answer_rate": 0.4,
+    "accuracy_over_all_questions": 0.3,
+    "accuracy_over_answered_questions": 0.75
+  },
+  "question_scores": [
+    {
+      "question_id": "q01",
+      "kind": "same_entity",
+      "prompt": "Do 'Gen. Smith' and 'General John Smith' refer to the same real-world entity?",
+      "answered": false,
+      "correct": false,
+      "predicted_answer": null,
+      "predicted_ground_truth_entity_id": null,
+      "note": "could not resolve one or both mentions to a unique predicted cluster"
+    },
+    {
+      "question_id": "q02",
+      "kind": "same_entity",
+      "prompt": "Do 'USSOCOM' and 'U.S. Special Operations Command' refer to the same organization?",
+      "answered": false,
+      "correct": false,
+      "predicted_answer": null,
+      "predicted_ground_truth_entity_id": null,
+      "note": "could not resolve one or both mentions to a unique predicted cluster"
+    },
+    {
+      "question_id": "q03",
+      "kind": "same_entity",
+      "prompt": "Do 'Adm. Olson' and 'Eric Olson' refer to the same person?",
+      "answered": false,
+      "correct": false,
+      "predicted_answer": null,
+      "predicted_ground_truth_entity_id": null,
+      "note": "could not resolve one or both mentions to a unique predicted cluster"
+    },
+    {
+      "question_id": "q04",
+      "kind": "same_entity",
+      "prompt": "Do 'Ft. Bragg' and 'Fort Liberty' refer to the same installation?",
+      "answered": true,
+      "correct": false,
+      "predicted_answer": false,
+      "predicted_ground_truth_entity_id": null,
+      "note": "scored from unique predicted cluster ids for both mentions"
+    },
+    {
+      "question_id": "q05",
+      "kind": "same_entity",
+      "prompt": "Do 'General John Smith' and 'James Smith' refer to the same person?",
+      "answered": false,
+      "correct": false,
+      "predicted_answer": null,
+      "predicted_ground_truth_entity_id": null,
+      "note": "could not resolve one or both mentions to a unique predicted cluster"
+    },
+    {
+      "question_id": "q06",
+      "kind": "same_entity",
+      "prompt": "Do 'Washington' and 'George Washington University' refer to the same entity?",
+      "answered": false,
+      "correct": false,
+      "predicted_answer": null,
+      "predicted_ground_truth_entity_id": null,
+      "note": "could not resolve one or both mentions to a unique predicted cluster"
+    },
+    {
+      "question_id": "q07",
+      "kind": "canonical_entity",
+      "prompt": "Which canonical entity does 'Gen. J. Smith' resolve to?",
+      "answered": true,
+      "correct": true,
+      "predicted_answer": null,
+      "predicted_ground_truth_entity_id": "E001",
+      "note": "scored from uniquely matched promoted observation(s)"
+    },
+    {
+      "question_id": "q08",
+      "kind": "canonical_entity",
+      "prompt": "Which canonical entity does 'the Agency' resolve to?",
+      "answered": false,
+      "correct": false,
+      "predicted_answer": null,
+      "predicted_ground_truth_entity_id": null,
+      "note": "could not resolve mention to a unique matched ground-truth entity"
+    },
+    {
+      "question_id": "q09",
+      "kind": "canonical_entity",
+      "prompt": "Which canonical entity does 'GWU' resolve to?",
+      "answered": true,
+      "correct": true,
+      "predicted_answer": null,
+      "predicted_ground_truth_entity_id": "E013",
+      "note": "scored from uniquely matched promoted observation(s)"
+    },
+    {
+      "question_id": "q10",
+      "kind": "canonical_entity",
+      "prompt": "Which canonical entity does 'Lt. Gen. Michael Torres' resolve to?",
+      "answered": true,
+      "correct": true,
+      "predicted_answer": null,
+      "predicted_ground_truth_entity_id": "E010",
+      "note": "scored from uniquely matched promoted observation(s)"
+    }
+  ]
+}

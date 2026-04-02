@@ -1,0 +1,522 @@
+{
+  "baseline_variant_name": "baseline",
+  "case_count": 1,
+  "case_diagnostics": [
+    {
+      "case_id": "psyop_017_full_chunk003_analytical_context_strict_omit",
+      "dimension_means": {
+        "count_alignment": 0.0,
+        "exact_f1": 0.0,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": [
+          {
+            "claim_level": "instance",
+            "claim_text": "The effectiveness of PSYOP was limited by cultural misunderstandings.",
+            "evidence_spans": [
+              {
+                "end_char": 571,
+                "start_char": 499,
+                "text": "the effectiveness of PSYOP was often limited by cultural misunderstandings"
+              }
+            ],
+            "predicate": "oc:limit_capability",
+            "roles": {
+              "capability": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "effectiveness",
+                  "raw": "effectiveness",
+                  "value_kind": "string"
+                }
+              ],
+              "subject": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:psychological_operation",
+                  "kind": "entity",
+                  "name": "PSYOP",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "topic": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "cultural misunderstandings",
+                  "raw": "cultural misunderstandings",
+                  "value_kind": "string"
+                }
+              ]
+            },
+            "valid_from": "2001",
+            "valid_to": "2015"
+          },
+          {
+            "claim_level": "instance",
+            "claim_text": "The effectiveness of PSYOP was limited by insufficient coordination with non-military actors.",
+            "evidence_spans": [
+              {
+                "end_char": 627,
+                "start_char": 499,
+                "text": "the effectiveness of PSYOP was often limited by cultural misunderstandings, insufficient coordination with non-military actors"
+              }
+            ],
+            "predicate": "oc:limit_capability",
+            "roles": {
+              "capability": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "effectiveness",
+                  "raw": "effectiveness",
+                  "value_kind": "string"
+                }
+              ],
+              "subject": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:psychological_operation",
+                  "kind": "entity",
+                  "name": "PSYOP",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "topic": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "insufficient coordination with non-military actors",
+                  "raw": "insufficient coordination with non-military actors",
+                  "value_kind": "string"
+                }
+              ]
+            },
+            "valid_from": "2001",
+            "valid_to": "2015"
+          }
+        ]
+      },
+      "failure_counts": {},
+      "mean_cost": 0.002767,
+      "mean_latency_ms": 7679.0,
+      "mean_score": 0.25,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 3151,
+      "variant_name": "baseline"
+    },
+    {
+      "case_id": "psyop_017_full_chunk003_analytical_context_strict_omit",
+      "dimension_means": {
+        "count_alignment": 1.0,
+        "exact_f1": 1.0,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": []
+      },
+      "failure_counts": {},
+      "mean_cost": 0.000829,
+      "mean_latency_ms": 760.0,
+      "mean_score": 1.0,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 2726,
+      "variant_name": "compact"
+    },
+    {
+      "case_id": "psyop_017_full_chunk003_analytical_context_strict_omit",
+      "dimension_means": {
+        "count_alignment": 1.0,
+        "exact_f1": 1.0,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": []
+      },
+      "failure_counts": {},
+      "mean_cost": 0.001041,
+      "mean_latency_ms": 717.0,
+      "mean_score": 1.0,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 3404,
+      "variant_name": "compact_operational_parity"
+    },
+    {
+      "case_id": "psyop_017_full_chunk003_analytical_context_strict_omit",
+      "dimension_means": {
+        "count_alignment": 0.0,
+        "exact_f1": 0.0,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": [
+          {
+            "claim_level": "instance",
+            "claim_text": "The effectiveness of PSYOP was limited by cultural misunderstandings, insufficient coordination with non-military actors, and the rapid evolution of adversary information tactics.",
+            "evidence_spans": [
+              {
+                "end_char": 639,
+                "start_char": 469,
+                "text": "However, the effectiveness of PSYOP was often limited by cultural misunderstandings, insufficient coordination with non-military actors, and the rapid evolution of adversary information tactics."
+              }
+            ],
+            "predicate": "oc:limit_capability",
+            "roles": {
+              "capability": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "effectiveness",
+                  "raw": "effectiveness",
+                  "value_kind": "string"
+                }
+              ],
+              "subject": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:psychological_operation",
+                  "kind": "entity",
+                  "name": "PSYOP",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "topic": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": "cultural misunderstandings, insufficient coordination with non-military actors, and the rapid evolution of adversary information tactics",
+                  "raw": "cultural misunderstandings, insufficient coordination with non-military actors, and the rapid evolution of adversary information tactics",
+                  "value_kind": "string"
+                }
+              ]
+            },
+            "valid_from": null,
+            "valid_to": null
+          },
+          {
+            "claim_level": "instance",
+            "claim_text": "Personnel assigned to PSYOP units belong to USSOCOM.",
+            "evidence_spans": [
+              {
+                "end_char": 1299,
+                "start_char": 1009,
+                "text": "The number of personnel assigned to PSYOP units grew significantly during this period, reflecting the increased demand for influence operations. By 2013, USSOCOM\u2019s total strength was reported at approximately 70,000, with a substantial proportion dedicated to PSYOP, civil affairs, and related functions"
+              }
+            ],
+            "predicate": "oc:belongs_to_organization",
+            "roles": {
+              "member": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:military_unit",
+                  "kind": "entity",
+                  "name": "personnel assigned to PSYOP units",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "organization": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:military_organization",
+                  "kind": "entity",
+                  "name": "USSOCOM",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ]
+            },
+            "valid_from": "2013",
+            "valid_to": null
+          }
+        ]
+      },
+      "failure_counts": {},
+      "mean_cost": 0.002835,
+      "mean_latency_ms": 3702.0,
+      "mean_score": 0.25,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 3290,
+      "variant_name": "hardened"
+    },
+    {
+      "case_id": "psyop_017_full_chunk003_analytical_context_strict_omit",
+      "dimension_means": {
+        "count_alignment": 0.0,
+        "exact_f1": 0.0,
+        "structural_usable_rate": 1.0
+      },
+      "example_failure": null,
+      "example_output": {
+        "candidates": [
+          {
+            "claim_level": "instance",
+            "claim_text": "The effectiveness of PSYOP was limited by cultural misunderstandings, insufficient coordination with non-military actors, and the rapid evolution of adversary information tactics.",
+            "evidence_spans": [
+              {
+                "end_char": 639,
+                "start_char": 479,
+                "text": "the effectiveness of PSYOP was often limited by cultural misunderstandings, insufficient coordination with non-military actors, and the rapid evolution of adversary information tactics"
+              }
+            ],
+            "predicate": "oc:limit_capability",
+            "roles": {
+              "capability": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": null,
+                  "raw": "effectiveness",
+                  "value_kind": "string"
+                }
+              ],
+              "subject": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:psychological_operation",
+                  "kind": "entity",
+                  "name": "PSYOP",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "topic": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": null,
+                  "raw": "cultural misunderstandings, insufficient coordination with non-military actors, and the rapid evolution of adversary information tactics",
+                  "value_kind": "string"
+                }
+              ]
+            },
+            "valid_from": null,
+            "valid_to": null
+          },
+          {
+            "claim_level": "instance",
+            "claim_text": "The \"hearts and minds\" campaigns in Iraq and Afghanistan were hampered by inconsistent messaging and occasional missteps that undermined credibility with local populations.",
+            "evidence_spans": [
+              {
+                "end_char": 809,
+                "start_char": 641,
+                "text": "The \u201chearts and minds\u201d campaigns in Iraq and Afghanistan were hampered by inconsistent messaging and occasional missteps that undermined credibility with local populations"
+              }
+            ],
+            "predicate": "oc:limit_capability",
+            "roles": {
+              "capability": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": null,
+                  "raw": "credibility",
+                  "value_kind": "string"
+                }
+              ],
+              "subject": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": "oc:psychological_operation",
+                  "kind": "entity",
+                  "name": "\u201chearts and minds\u201d campaigns",
+                  "normalized": null,
+                  "raw": null,
+                  "value_kind": null
+                }
+              ],
+              "topic": [
+                {
+                  "alias_ids": [],
+                  "entity_id": null,
+                  "entity_type": null,
+                  "kind": "value",
+                  "name": null,
+                  "normalized": null,
+                  "raw": "inconsistent messaging and occasional missteps that undermined credibility with local populations",
+                  "value_kind": "string"
+                }
+              ]
+            },
+            "valid_from": null,
+            "valid_to": null
+          }
+        ]
+      },
+      "failure_counts": {},
+      "mean_cost": 0.002378,
+      "mean_latency_ms": 2803.0,
+      "mean_score": 0.25,
+      "n_errors": 0,
+      "n_trials": 1,
+      "successful_trials": 1,
+      "total_tokens": 3320,
+      "variant_name": "single_response_hardened"
+    }
+  ],
+  "comparisons": [],
+  "execution_id": "31d862d74a8e",
+  "experiment_name": "onto_canon6_extraction_prompt_eval",
+  "fixture_id": "chunk_003_full_transfer_certification",
+  "fixture_path": "var/evaluation_runs/certification_fixtures/2026-04-01_chunk003_full_chunk_fixture.json",
+  "generated_at": "2026-04-01T23:56:07.255656+00:00",
+  "n_runs": 1,
+  "observability_dataset": "onto_canon6_extraction_prompt_eval",
+  "observability_phase": "evaluation",
+  "selected_model": "gemini/gemini-2.5-flash",
+  "selection_task": "budget_extraction",
+  "variant_summaries": [
+    {
+      "dimension_means": {
+        "count_alignment": 0.0,
+        "exact_f1": 0.0,
+        "structural_usable_rate": 1.0
+      },
+      "failure_counts": {},
+      "mean_cost": 0.0027669,
+      "mean_latency_ms": 7679.0,
+      "mean_score": 0.25,
+      "n_errors": 0,
+      "n_trials": 1,
+      "prompt_ref": "onto_canon6.extraction.prompt_eval_text_to_candidate_assertions_baseline@1",
+      "prompt_template": "prompts/extraction/prompt_eval_text_to_candidate_assertions_baseline.yaml",
+      "std_score": null,
+      "successful_trials": 1,
+      "total_tokens": 3151,
+      "variant_name": "baseline"
+    },
+    {
+      "dimension_means": {
+        "count_alignment": 1.0,
+        "exact_f1": 1.0,
+        "structural_usable_rate": 1.0
+      },
+      "failure_counts": {},
+      "mean_cost": 0.0008288,
+      "mean_latency_ms": 760.0,
+      "mean_score": 1.0,
+      "n_errors": 0,
+      "n_trials": 1,
+      "prompt_ref": "onto_canon6.extraction.prompt_eval_text_to_candidate_assertions_compact@3",
+      "prompt_template": "prompts/extraction/prompt_eval_text_to_candidate_assertions_compact.yaml",
+      "std_score": null,
+      "successful_trials": 1,
+      "total_tokens": 2726,
+      "variant_name": "compact"
+    },
+    {
+      "dimension_means": {
+        "count_alignment": 1.0,
+        "exact_f1": 1.0,
+        "structural_usable_rate": 1.0
+      },
+      "failure_counts": {},
+      "mean_cost": 0.0010409999999999998,
+      "mean_latency_ms": 717.0,
+      "mean_score": 1.0,
+      "n_errors": 0,
+      "n_trials": 1,
+      "prompt_ref": "onto_canon6.extraction.prompt_eval_text_to_candidate_assertions_compact_operational_parity@3",
+      "prompt_template": "prompts/extraction/prompt_eval_text_to_candidate_assertions_compact_operational_parity_v3.yaml",
+      "std_score": null,
+      "successful_trials": 1,
+      "total_tokens": 3404,
+      "variant_name": "compact_operational_parity"
+    },
+    {
+      "dimension_means": {
+        "count_alignment": 0.0,
+        "exact_f1": 0.0,
+        "structural_usable_rate": 1.0
+      },
+      "failure_counts": {},
+      "mean_cost": 0.0028350000000000003,
+      "mean_latency_ms": 3702.0,
+      "mean_score": 0.25,
+      "n_errors": 0,
+      "n_trials": 1,
+      "prompt_ref": "onto_canon6.extraction.prompt_eval_text_to_candidate_assertions_hardened@1",
+      "prompt_template": "prompts/extraction/prompt_eval_text_to_candidate_assertions_hardened.yaml",
+      "std_score": null,
+      "successful_trials": 1,
+      "total_tokens": 3290,
+      "variant_name": "hardened"
+    },
+    {
+      "dimension_means": {
+        "count_alignment": 0.0,
+        "exact_f1": 0.0,
+        "structural_usable_rate": 1.0
+      },
+      "failure_counts": {},
+      "mean_cost": 0.0023776,
+      "mean_latency_ms": 2803.0,
+      "mean_score": 0.25,
+      "n_errors": 0,
+      "n_trials": 1,
+      "prompt_ref": "onto_canon6.extraction.prompt_eval_text_to_candidate_assertions_single_response_hardened@1",
+      "prompt_template": "prompts/extraction/prompt_eval_text_to_candidate_assertions_single_response_hardened.yaml",
+      "std_score": null,
+      "successful_trials": 1,
+      "total_tokens": 3320,
+      "variant_name": "single_response_hardened"
+    }
+  ]
+}

@@ -170,6 +170,7 @@ class ExtractionPromptExperimentService:
         self._comparison_confidence = experiment.comparison_confidence
         self._max_candidates_per_case = experiment.max_candidates_per_case
         self._max_evidence_spans_per_candidate = experiment.max_evidence_spans_per_candidate
+        self._include_case_id_in_input = experiment.include_case_id_in_input
         self._variant_configs = experiment.variants
         self._overlay_root = config.overlay_root()
 
@@ -296,7 +297,10 @@ class ExtractionPromptExperimentService:
             inputs=[
                 prompt_eval_api.ExperimentInput(
                     id=case.case_id,
-                    content=_format_case_input(case),
+                    content=_format_case_input(
+                        case,
+                        include_case_id=self._include_case_id_in_input,
+                    ),
                     expected=case,
                 )
                 for case in cases
@@ -699,7 +703,7 @@ def _require_single_profile(cases: tuple[BenchmarkCase, ...]) -> ProfileRef:
     return ProfileRef(profile_id=profile_id, profile_version=profile_version)
 
 
-def _format_case_input(case: BenchmarkCase) -> str:
+def _format_case_input(case: BenchmarkCase, *, include_case_id: bool = False) -> str:
     """Format one benchmark case into the single `{input}` slot prompt_eval supports."""
 
     source_label = case.source_artifact.source_label or "none"
@@ -708,14 +712,20 @@ def _format_case_input(case: BenchmarkCase) -> str:
         raise ExtractionPromptExperimentError(
             f"benchmark case {case.case_id} is missing source text for prompt_eval"
         )
-    return (
-        f"Case id: {case.case_id}\n"
-        f"Source kind: {case.source_artifact.source_kind}\n"
-        f"Source ref: {case.source_artifact.source_ref}\n"
-        f"Source label: {source_label}\n\n"
-        "Source text:\n"
-        f"{source_text}"
+    lines = []
+    if include_case_id:
+        lines.append(f"Case id: {case.case_id}")
+    lines.extend(
+        [
+            f"Source kind: {case.source_artifact.source_kind}",
+            f"Source ref: {case.source_artifact.source_ref}",
+            f"Source label: {source_label}",
+            "",
+            "Source text:",
+            source_text,
+        ]
     )
+    return "\n".join(lines)
 
 
 def _observability_load_limit(*, case_count: int, variant_count: int, n_runs: int) -> int:

@@ -20,7 +20,15 @@ from .adapters import WhyGameImportService
 from .config import get_config
 from .core import CanonicalGraphService
 from .pipeline import OverlayApplicationService, ReviewService
-from .surfaces import GovernedWorkflowBundleService
+from .surfaces import (
+    AssertionSearchRequest,
+    EntitySearchRequest,
+    GetEntityRequest,
+    GetEvidenceRequest,
+    GetPromotedAssertionRequest,
+    GovernedWorkflowBundleService,
+    QuerySurfaceService,
+)
 
 _CONFIG = get_config()
 mcp = FastMCP(_CONFIG.project.name)
@@ -60,6 +68,15 @@ def _bundle_service(*, review_db_path: str | None = None) -> GovernedWorkflowBun
     """Build one governed-bundle export service for the current tool call."""
 
     return GovernedWorkflowBundleService(
+        review_service=_review_service(review_db_path=review_db_path),
+    )
+
+
+def _query_service(*, review_db_path: str | None = None) -> QuerySurfaceService:
+    """Build one read-only query surface for the current tool call."""
+
+    return QuerySurfaceService(
+        graph_service=_graph_service(review_db_path=review_db_path),
         review_service=_review_service(review_db_path=review_db_path),
     )
 
@@ -239,6 +256,83 @@ def canon6_export_governed_bundle(
     ).model_dump(mode="json")
 
 
+def canon6_search_entities(
+    query: str,
+    entity_type: str | None = None,
+    limit: int = 20,
+    review_db_path: str | None = None,
+) -> list[dict[str, Any]]:
+    """Search promoted entities and identity aliases over the read-only query surface."""
+
+    service = _query_service(review_db_path=review_db_path)
+    return [
+        result.model_dump(mode="json")
+        for result in service.search_entities(
+            EntitySearchRequest(query=query, entity_type=entity_type, limit=limit)
+        )
+    ]
+
+
+def canon6_get_entity(
+    entity_id: str | None = None,
+    identity_id: str | None = None,
+    review_db_path: str | None = None,
+) -> dict[str, Any]:
+    """Return one promoted entity or identity detail view."""
+
+    service = _query_service(review_db_path=review_db_path)
+    return service.get_entity(
+        GetEntityRequest(entity_id=entity_id, identity_id=identity_id)
+    ).model_dump(mode="json")
+
+
+def canon6_search_promoted_assertions(
+    predicate: str | None = None,
+    entity_id: str | None = None,
+    text_query: str | None = None,
+    limit: int = 20,
+    review_db_path: str | None = None,
+) -> list[dict[str, Any]]:
+    """Search promoted assertions by predicate, linked entity, or claim text."""
+
+    service = _query_service(review_db_path=review_db_path)
+    return [
+        result.model_dump(mode="json")
+        for result in service.search_promoted_assertions(
+            AssertionSearchRequest(
+                predicate=predicate,
+                entity_id=entity_id,
+                text_query=text_query,
+                limit=limit,
+            )
+        )
+    ]
+
+
+def canon6_get_promoted_assertion(
+    assertion_id: str,
+    review_db_path: str | None = None,
+) -> dict[str, Any]:
+    """Return one promoted assertion with source, epistemic, and evidence context."""
+
+    service = _query_service(review_db_path=review_db_path)
+    return service.get_promoted_assertion(
+        GetPromotedAssertionRequest(assertion_id=assertion_id)
+    ).model_dump(mode="json")
+
+
+def canon6_get_evidence(
+    assertion_id: str,
+    review_db_path: str | None = None,
+) -> dict[str, Any]:
+    """Return evidence and lineage context for one promoted assertion."""
+
+    service = _query_service(review_db_path=review_db_path)
+    return service.get_evidence(
+        GetEvidenceRequest(assertion_id=assertion_id)
+    ).model_dump(mode="json")
+
+
 def main() -> None:
     """Run the thin MCP server using the configured transport."""
 
@@ -253,6 +347,11 @@ mcp.tool()(canon6_review_proposal)
 mcp.tool()(canon6_apply_overlay)
 mcp.tool()(canon6_promote_candidate)
 mcp.tool()(canon6_export_governed_bundle)
+mcp.tool()(canon6_search_entities)
+mcp.tool()(canon6_get_entity)
+mcp.tool()(canon6_search_promoted_assertions)
+mcp.tool()(canon6_get_promoted_assertion)
+mcp.tool()(canon6_get_evidence)
 
 
 if __name__ == "__main__":

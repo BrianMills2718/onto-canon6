@@ -19,14 +19,16 @@ so they can be distinguished from manual identity assignments.
 from __future__ import annotations
 
 import asyncio
-import json
 import logging
+import re
 import uuid as _uuid
 from collections import defaultdict
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from importlib import import_module
 from pathlib import Path
-from typing import Any, Literal, Protocol
+from typing import Any, Literal
+
+from pydantic import BaseModel, ConfigDict, Field
 
 from .graph_models import PromotedGraphAssertionRecord
 from .graph_service import CanonicalGraphService
@@ -36,86 +38,106 @@ logger = logging.getLogger(__name__)
 
 ResolutionStrategy = Literal["exact", "fuzzy", "llm"]
 
-
-def _oc_type_to_sumo(oc_type: str) -> str:
-    """Convert oc:snake_case entity type to SUMO CamelCase.
-
-    ``oc:military_organization`` → ``MilitaryOrganization``
-    ``oc_military_organization`` → ``MilitaryOrganization``
-    ``militaryorganization`` → ``MilitaryOrganization`` (best effort)
-    """
-    # Strip oc: or oc_ prefix
-    t = oc_type
-    if t.startswith("oc:"):
-        t = t[3:]
-    elif t.startswith("oc_"):
-        t = t[3:]
-
-    # Convert snake_case to CamelCase
-    parts = t.split("_")
-    return "".join(p.capitalize() for p in parts if p)
-
-
-def _types_compatible(type_a: str, type_b: str, *, sumo_db_path: Path | None = None) -> bool:
-    """Check if two entity types are compatible for resolution.
-
-    Compatible means: same type, one is ancestor of the other, or they share
-    a common ancestor within depth 3 (top-level category like Organization,
-    Person, etc.).
-
-    Falls back to exact match if sumo_plus.db is not available.
-    """
-    if not type_a or not type_b:
-        return True  # Unknown types are compatible with anything
-
-    # Normalize both to SUMO CamelCase
-    sumo_a = _oc_type_to_sumo(type_a)
-    sumo_b = _oc_type_to_sumo(type_b)
-
-    # Exact match after normalization
-    if sumo_a.lower() == sumo_b.lower():
-        return True
-
-    # Try ancestor lookup if DB available
-    if sumo_db_path is None:
-        # Try default location
-        default_db = Path("data/sumo_plus.db")
-        if default_db.exists():
-            sumo_db_path = default_db
-
-    if sumo_db_path is None or not sumo_db_path.exists():
-        # No DB — fall back to exact match (already failed above)
-        return False
-
-    import sqlite3
-    conn = sqlite3.connect(str(sumo_db_path))
-    try:
-        # Get ancestors of both types (within depth 3)
-        ancestors_a = {
-            row[0].lower()
-            for row in conn.execute(
-                "SELECT ancestor_id FROM type_ancestors WHERE type_id = ? AND depth <= 3",
-                (sumo_a,),
-            ).fetchall()
-        }
-        ancestors_a.add(sumo_a.lower())
-
-        ancestors_b = {
-            row[0].lower()
-            for row in conn.execute(
-                "SELECT ancestor_id FROM type_ancestors WHERE type_id = ? AND depth <= 3",
-                (sumo_b,),
-            ).fetchall()
-        }
-        ancestors_b.add(sumo_b.lower())
-
-        # Compatible if one is ancestor of the other, or they share an ancestor
-        return bool(ancestors_a & ancestors_b)
-    finally:
-        conn.close()
-
 ACTOR_ID = "auto:resolution"
 DEFAULT_FUZZY_THRESHOLD = 85
+_ORGANIZATION_TYPE_SLUGS = {
+    "org",
+    "organization",
+    "military_organization",
+    "military_organization_unit",
+    "government_organization",
+    "government_agency",
+    "intelligence_agency",
+    "educational_institution",
+    "university",
+    "civilian_organization",
+    "combatant_command",
+    "unit",
+}
+_PLACE_TYPE_SLUGS = {
+    "location",
+    "place",
+    "city",
+    "installation",
+    "military_installation",
+    "military_base",
+    "base",
+    "facility",
+}
+_PERSON_TYPE_SLUGS = {"person", "gp_person"}
+_PERSON_LIKE_RANK_TYPE_SLUGS = {"military_rank"}
+_INSTALLATION_NAME_PREFIXES = (
+    "fort ",
+    "ft ",
+    "camp ",
+    "base ",
+    "station ",
+)
+_GENERIC_TYPE_SLUGS = {"entity", "unknown"}
+_ORGANIZATION_NAME_HINTS = {
+    "agency",
+    "bureau",
+    "center",
+    "centre",
+    "command",
+    "commands",
+    "committee",
+    "department",
+    "directorate",
+    "division",
+    "group",
+    "groups",
+    "headquarters",
+    "office",
+    "organization",
+    "university",
+    "unit",
+    "units",
+}
+_ORGANIZATION_DESCRIPTOR_HEADS = (
+    "agency",
+    "bureau",
+    "command",
+    "department",
+    "group",
+    "office",
+    "organization",
+    "unit",
+    "university",
+)
+_INSTALLATION_EQUIVALENCE_GROUPS = (
+    frozenset({"fort bragg", "ft bragg", "fort liberty"}),
+)
+_INSTALLATION_EQUIVALENCE_LOOKUP = {
+    normalized_name: f"installation:{index}"
+    for index, names in enumerate(_INSTALLATION_EQUIVALENCE_GROUPS, start=1)
+    for normalized_name in names
+}
+_ALIAS_STOPWORDS = {
+    "a",
+    "an",
+    "and",
+    "at",
+    "for",
+    "from",
+    "in",
+    "of",
+    "on",
+    "the",
+    "to",
+    "with",
+}
+_COMPOUND_ACRONYM_PARTS = {
+    ("special", "operations"): "so",
+    ("psychological", "operations"): "po",
+}
+_WORD_ACRONYM_PARTS = {
+    "agency": "a",
+    "command": "com",
+    "group": "g",
+    "headquarters": "hq",
+    "university": "u",
+}
 
 # Title/honorific patterns for name normalization (military, government, academic, civilian)
 _TITLE_PATTERNS: list[tuple[str, str]] = [
@@ -186,12 +208,44 @@ class ResolutionResult:
     strategy: str
 
 
+@dataclass(frozen=True)
+class _PersonNameInfo:
+    """Minimal person-name decomposition for conservative merge checks."""
+
+    surname: str | None
+    full_given: str | None
+    initial: str | None
+    surname_only: bool
+    has_title: bool
+
+
+@dataclass(frozen=True)
+class _PersonGroupBridgeInfo:
+    """Group-level bridge signals for conservative titled-person collapse."""
+
+    surname: str | None
+    full_given_names: frozenset[str]
+    initials: frozenset[str]
+    titled_full_given_names: frozenset[str]
+    titled_initials: frozenset[str]
+    has_titled_surname_only: bool
+
+
+@dataclass(frozen=True)
+class _PlaceGroupBridgeInfo:
+    """Group-level bridge signals for bounded district-style place collapse."""
+
+    district_heads: frozenset[str]
+    district_abbrevs: frozenset[str]
+    single_token_places: frozenset[str]
+
+
 def auto_resolve_identities(
     *,
     db_path: Path,
     strategy: ResolutionStrategy = "exact",
     fuzzy_threshold: int = DEFAULT_FUZZY_THRESHOLD,
-    require_llm_review: bool | None = None,
+    model_override: str | None = None,
 ) -> ResolutionResult:
     """Run automated entity resolution over all promoted entities.
 
@@ -199,25 +253,13 @@ def auto_resolve_identities(
     stable identities for each group. The first entity in each group
     becomes the canonical member; subsequent entities become aliases.
 
-    When ``require_llm_review`` is True (default from config), candidate
-    groups from exact/fuzzy strategies are validated by an LLM before
-    merging. The LLM sees entity names + context and confirms or rejects
-    each proposed merge. The ``llm`` strategy always does LLM review
-    regardless of this flag.
+    For ``fuzzy`` strategy, entities with token_sort_ratio >= threshold
+    AND a compatible resolution family are grouped together. The family guard
+    prevents false positives (e.g., "USSOCOM" the org vs "USSOCOM Commander"
+    the person).
 
     Entities that already have an identity membership are skipped.
     """
-    # Load config for defaults
-    try:
-        from ..config import get_config
-        config = get_config()
-        res_cfg = config.resolution
-    except Exception:
-        res_cfg = None
-
-    if require_llm_review is None:
-        require_llm_review = res_cfg.require_llm_review if res_cfg else False
-
     graph_service = CanonicalGraphService(db_path=db_path)
     identity_service = IdentityService(db_path=db_path)
 
@@ -228,39 +270,65 @@ def auto_resolve_identities(
             "SELECT entity_id, entity_type FROM promoted_graph_entities "
             "ORDER BY created_at, entity_id"
         ).fetchall()
+        source_candidate_ids = [assertion.source_candidate_id for assertion in assertions]
+        source_text_by_candidate_id: dict[str, str] = {}
+        if source_candidate_ids:
+            placeholders = ",".join("?" for _ in source_candidate_ids)
+            for row in conn.execute(
+                f"SELECT candidate_id, source_text FROM candidate_assertions "
+                f"WHERE candidate_id IN ({placeholders})",
+                tuple(source_candidate_ids),
+            ).fetchall():
+                candidate_id = str(row[0])
+                source_text = str(row[1]).strip() if row[1] else ""
+                if source_text:
+                    source_text_by_candidate_id[candidate_id] = source_text
 
     entity_ids = [str(row[0]) for row in all_entities]
     entity_types = {str(row[0]): str(row[1]) if row[1] else "" for row in all_entities}
     name_map = _build_entity_name_map(assertions)
-    context_map = _build_context_map(assertions)
 
-    # Step 1: Generate candidate groups
     if strategy == "llm":
-        groups = _group_by_llm(
-            entity_ids, name_map, entity_types, context_map, assertions,
-            model=res_cfg.model_override if res_cfg else None,
-            max_budget=res_cfg.max_budget_usd if res_cfg else 0.50,
-            prompt_template=res_cfg.cluster_prompt_template if res_cfg else "prompts/resolution/cluster_entities.yaml",
-            fuzzy_pre_filter_threshold=res_cfg.fuzzy_pre_filter_threshold if res_cfg else 80,
-            batch_token_limit=res_cfg.batch_token_limit if res_cfg else 50000,
-            min_entities_for_llm=res_cfg.min_entities_for_llm if res_cfg else 2,
+        context_map = _build_context_map(
+            assertions,
+            source_text_by_candidate_id=source_text_by_candidate_id,
         )
-        # LLM strategy already validates — skip require_llm_review
+        # Load resolution config
+        try:
+            from ..config import get_config
+            config = get_config()
+            res_cfg = config.resolution
+            groups = _group_by_llm(
+                entity_ids, name_map, entity_types, context_map, assertions,
+                model=(
+                    model_override.strip()
+                    if model_override is not None and model_override.strip()
+                    else res_cfg.model_override
+                ),
+                max_budget=res_cfg.max_budget_usd,
+                prompt_template=res_cfg.prompt_template,
+                fuzzy_pre_filter_threshold=res_cfg.fuzzy_pre_filter_threshold,
+                batch_token_limit=res_cfg.batch_token_limit,
+                min_entities_for_llm=res_cfg.min_entities_for_llm,
+            )
+        except Exception:
+            # Fall back to config-less defaults
+            context_map = _build_context_map(
+                assertions,
+                source_text_by_candidate_id=source_text_by_candidate_id,
+            )
+            groups = _group_by_llm(
+                entity_ids, name_map, entity_types, context_map, assertions,
+                model=(
+                    model_override.strip()
+                    if model_override is not None and model_override.strip()
+                    else None
+                ),
+            )
     elif strategy == "fuzzy":
         groups = _group_by_fuzzy(entity_ids, name_map, entity_types, fuzzy_threshold)
     else:
         groups = _group_by_name(entity_ids, name_map, strategy)
-
-    # Step 2: LLM validation of candidate groups (if required and not already LLM)
-    if require_llm_review and strategy != "llm":
-        has_multi_member = any(len(g) >= 2 for g in groups.values())
-        if has_multi_member:
-            groups = _validate_groups_with_llm(
-                groups, name_map, entity_types, context_map,
-                model=res_cfg.model_override if res_cfg else None,
-                max_budget=res_cfg.max_budget_usd if res_cfg else 0.50,
-                validate_prompt_template=res_cfg.validate_prompt_template if res_cfg else "prompts/resolution/validate_merge.yaml",
-            )
 
     identities_created = 0
     aliases_attached = 0
@@ -417,7 +485,7 @@ def _group_by_fuzzy(
     Uses rapidfuzz token_sort_ratio for similarity scoring. Two entities
     are grouped only if:
     1. Their normalized names score >= threshold on token_sort_ratio
-    2. They share the same entity_type (false-positive guard)
+    2. They share a compatible resolution family (false-positive guard)
 
     Uses union-find for transitive closure of fuzzy matches.
     """
@@ -445,9 +513,13 @@ def _group_by_fuzzy(
             type_a = entity_types.get(eid_a, "")
             type_b = entity_types.get(eid_b, "")
 
-            # Entity type guard: only merge compatible-type entities
-            # Uses SUMO type hierarchy when available (is-a relationship)
-            if type_a and type_b and not _types_compatible(type_a, type_b):
+            # Entity type guard: only merge same-type entities
+            if type_a and type_b and not _entity_types_compatible(
+                type_a,
+                type_b,
+                left_name=name_map.get(eid_a, eid_a),
+                right_name=name_map.get(eid_b, eid_b),
+            ):
                 continue
 
             score = fuzz.token_sort_ratio(normalized[eid_a], normalized[eid_b])
@@ -468,10 +540,8 @@ def _group_by_fuzzy(
 
 
 # ---------------------------------------------------------------------------
-# LLM-based entity clustering and merge validation
+# LLM-based entity clustering (Phase 2)
 # ---------------------------------------------------------------------------
-
-from pydantic import BaseModel, ConfigDict, Field
 
 
 class EntityCluster(BaseModel):
@@ -490,15 +560,6 @@ class ClusteringResult(BaseModel):
     model_config = ConfigDict(extra="ignore")
 
     clusters: list[EntityCluster]
-
-
-class MergeValidation(BaseModel):
-    """LLM output: whether a proposed merge group should be confirmed."""
-
-    model_config = ConfigDict(extra="ignore")
-
-    confirm: bool = Field(description="True if all entities in the group refer to the same real-world entity")
-    reasoning: str = Field(description="Why the merge is confirmed or rejected")
 
 
 @dataclass(frozen=True)
@@ -538,12 +599,17 @@ def _build_entity_info_list(
 
 def _build_context_map(
     assertions: list[PromotedGraphAssertionRecord],
+    *,
+    source_text_by_candidate_id: dict[str, str] | None = None,
 ) -> dict[str, str]:
     """Build entity_id → context snippet map from assertion claim_text."""
     context_map: dict[str, str] = {}
+    source_text_by_candidate_id = source_text_by_candidate_id or {}
     for assertion in assertions:
-        claim_text = assertion.claim_text or ""
-        if not claim_text:
+        context_text = source_text_by_candidate_id.get(assertion.source_candidate_id)
+        if not context_text:
+            context_text = assertion.claim_text or ""
+        if not context_text:
             continue
         roles = assertion.normalized_body.get("roles")
         if not isinstance(roles, dict):
@@ -556,8 +622,8 @@ def _build_context_map(
                     continue
                 entity_id = filler.get("entity_id")
                 if isinstance(entity_id, str) and entity_id not in context_map:
-                    # Use first ~200 chars of claim_text as context
-                    context_map[entity_id] = claim_text[:200]
+                    # Prefer first ~200 chars of source text when available.
+                    context_map[entity_id] = context_text[:200]
     return context_map
 
 
@@ -570,8 +636,6 @@ def _fuzzy_pre_filter(
     Returns (proposals, unclustered). Proposals are groups of 2+ entities
     with fuzzy similarity above threshold. Unclustered are singletons.
     """
-    from rapidfuzz import fuzz
-
     entity_ids = [e.entity_id for e in entities]
     name_map = {e.entity_id: e.name for e in entities}
     entity_types = {e.entity_id: e.entity_type for e in entities}
@@ -590,103 +654,6 @@ def _fuzzy_pre_filter(
             unclustered.extend(group_entities)
 
     return proposals, unclustered
-
-
-def _validate_groups_with_llm(
-    groups: dict[str, list[str]],
-    name_map: dict[str, str],
-    entity_types: dict[str, str],
-    context_map: dict[str, str],
-    *,
-    model: str | None = None,
-    max_budget: float = 0.50,
-    validate_prompt_template: str = "prompts/resolution/validate_merge.yaml",
-) -> dict[str, list[str]]:
-    """Validate candidate merge groups using LLM.
-
-    For each group of 2+ entities, asks the LLM whether the merge should be
-    confirmed. Confirmed groups are kept; rejected groups are split into
-    singletons. Single-entity groups pass through unchanged.
-
-    All LLM calls go through llm_client with task/trace_id/max_budget.
-    """
-    llm_mod = import_module("llm_client")
-    render_prompt = llm_mod.render_prompt
-    acall_llm = llm_mod.acall_llm
-
-    if model is None:
-        try:
-            model = llm_mod.get_model("fast_extraction", use_performance=False)
-        except Exception:
-            model = "gemini/gemini-2.5-flash"
-
-    schema = MergeValidation.model_json_schema()
-    validated_groups: dict[str, list[str]] = {}
-    group_counter = 0
-
-    for _key, group_eids in groups.items():
-        if len(group_eids) < 2:
-            # Singletons pass through without LLM call
-            validated_groups[f"singleton_{group_counter}"] = group_eids
-            group_counter += 1
-            continue
-
-        # Determine entity type for the group (all should be same type)
-        etypes = {entity_types.get(eid, "unknown") for eid in group_eids}
-        entity_type = etypes.pop() if len(etypes) == 1 else "mixed"
-
-        entities = [
-            {"entity_id": eid, "name": name_map.get(eid, eid), "context": context_map.get(eid, "")}
-            for eid in group_eids
-        ]
-
-        messages = render_prompt(
-            validate_prompt_template,
-            entity_type=entity_type,
-            entities=entities,
-        )
-
-        trace_id = f"resolution.validate.{entity_type}.{_uuid.uuid4().hex[:8]}"
-
-        result = asyncio.run(
-            acall_llm(
-                model,
-                messages,
-                task="entity_resolution_validation",
-                trace_id=trace_id,
-                max_budget=max_budget,
-                response_format={
-                    "type": "json_schema",
-                    "json_schema": {
-                        "name": "MergeValidation",
-                        "schema": schema,
-                    },
-                },
-            )
-        )
-
-        response_text = result.content if hasattr(result, "content") else str(result)
-        validation = MergeValidation.model_validate_json(response_text)
-
-        if validation.confirm:
-            logger.info(
-                "LLM confirmed merge of %d entities (type=%s): %s",
-                len(group_eids), entity_type, validation.reasoning[:100],
-            )
-            validated_groups[f"confirmed_{group_counter}"] = group_eids
-        else:
-            logger.info(
-                "LLM rejected merge of %d entities (type=%s): %s",
-                len(group_eids), entity_type, validation.reasoning[:100],
-            )
-            # Split into singletons
-            for eid in group_eids:
-                validated_groups[f"rejected_{group_counter}"] = [eid]
-                group_counter += 1
-
-        group_counter += 1
-
-    return validated_groups
 
 
 def _group_by_llm(
@@ -729,16 +696,17 @@ def _group_by_llm(
         except Exception:
             model = "gemini/gemini-2.5-flash"
 
-    # Group entities by type
+    # Group entities by compatibility family so subtype-equivalent org and place
+    # mentions can still be compared in one LLM call.
     type_groups: dict[str, list[str]] = defaultdict(list)
     for eid in entity_ids:
         etype = entity_types.get(eid, "unknown")
-        type_groups[etype].append(eid)
+        type_groups[_entity_resolution_family(etype, name_map.get(eid, eid))].append(eid)
 
     all_groups: dict[str, list[str]] = {}
     group_counter = 0
 
-    for entity_type, type_eids in type_groups.items():
+    for entity_type_family, type_eids in type_groups.items():
         if len(type_eids) < min_entities_for_llm:
             # Single entity — no clustering needed
             for eid in type_eids:
@@ -759,25 +727,40 @@ def _group_by_llm(
             )
 
         # Build prompt context
-        prompt_context: dict[str, Any] = {"entity_type": entity_type}
+        prompt_context: dict[str, Any] = {"entity_type_family": entity_type_family}
 
         if fuzzy_proposals is not None and unclustered is not None:
             prompt_context["fuzzy_proposals"] = [
                 {
                     "entities": [
-                        {"entity_id": e.entity_id, "name": e.name, "context": e.context}
+                        {
+                            "entity_id": e.entity_id,
+                            "name": e.name,
+                            "entity_type": e.entity_type,
+                            "context": e.context,
+                        }
                         for e in p.entities
                     ]
                 }
                 for p in fuzzy_proposals
             ]
             prompt_context["unclustered_entities"] = [
-                {"entity_id": e.entity_id, "name": e.name, "context": e.context}
+                {
+                    "entity_id": e.entity_id,
+                    "name": e.name,
+                    "entity_type": e.entity_type,
+                    "context": e.context,
+                }
                 for e in unclustered
             ]
         else:
             prompt_context["entities"] = [
-                {"entity_id": e.entity_id, "name": e.name, "context": e.context}
+                {
+                    "entity_id": e.entity_id,
+                    "name": e.name,
+                    "entity_type": e.entity_type,
+                    "context": e.context,
+                }
                 for e in entities
             ]
 
@@ -785,7 +768,9 @@ def _group_by_llm(
         messages = render_prompt(prompt_template, **prompt_context)
 
         # Call LLM
-        trace_id = f"resolution.cluster.{entity_type}.{_uuid.uuid4().hex[:8]}"
+        trace_id = (
+            f"resolution.cluster.{entity_type_family}.{_uuid.uuid4().hex[:8]}"
+        )
         schema = ClusteringResult.model_json_schema()
 
         # Call LLM — fail loud on errors
@@ -811,9 +796,9 @@ def _group_by_llm(
         clustering = ClusteringResult.model_validate_json(response_text)
 
         logger.info(
-            "LLM clustering for type %s: %d entities → %d clusters "
+            "LLM clustering for family %s: %d entities → %d clusters "
             "(entity_count=%d, trace=%s)",
-            entity_type, len(type_eids), len(clustering.clusters),
+            entity_type_family, len(type_eids), len(clustering.clusters),
             len(type_eids), trace_id,
         )
 
@@ -827,9 +812,15 @@ def _group_by_llm(
                 eid for eid in cluster.entity_ids
                 if eid in valid_eids and eid not in claimed_ids
             ]
-            if valid_cluster_ids:
-                all_groups[f"llm_{group_counter}"] = valid_cluster_ids
-                claimed_ids.update(valid_cluster_ids)
+            if not valid_cluster_ids:
+                continue
+            for subgroup in _postprocess_llm_cluster(
+                valid_cluster_ids,
+                name_map=name_map,
+                entity_types=entity_types,
+            ):
+                all_groups[f"llm_{group_counter}"] = subgroup
+                claimed_ids.update(subgroup)
                 group_counter += 1
 
         # Any entities not claimed by LLM clusters get singleton groups
@@ -838,7 +829,717 @@ def _group_by_llm(
                 all_groups[f"unclaimed_{group_counter}"] = [eid]
                 group_counter += 1
 
-    return all_groups
+    return _collapse_equivalent_llm_groups(
+        all_groups,
+        name_map=name_map,
+        entity_types=entity_types,
+        context_map=context_map,
+    )
+
+
+def _entity_type_slug(entity_type: str) -> str:
+    """Return the normalized type slug without CURIE prefix."""
+
+    normalized = entity_type.strip().lower()
+    if not normalized:
+        return "unknown"
+    return normalized.split(":")[-1]
+
+
+def _resolution_type_family(entity_type: str) -> str:
+    """Map fine-grained entity types into conservative resolution families."""
+
+    slug = _entity_type_slug(entity_type)
+    if slug in _PERSON_TYPE_SLUGS:
+        return "person"
+    if slug in _ORGANIZATION_TYPE_SLUGS:
+        return "organization"
+    if slug in _PLACE_TYPE_SLUGS:
+        return "place"
+    return slug
+
+
+def _entity_resolution_family(entity_type: str, name: str | None = None) -> str:
+    """Return a conservative name-aware resolution family for one mention."""
+
+    base_family = _resolution_type_family(entity_type)
+    if not name or not name.strip():
+        return base_family
+
+    normalized_name = _normalize_name(name)
+    if not normalized_name:
+        return base_family
+
+    slug = _entity_type_slug(entity_type)
+    if slug in _PERSON_LIKE_RANK_TYPE_SLUGS and _looks_like_person_mention(normalized_name):
+        return "person"
+    if normalized_name.startswith(_INSTALLATION_NAME_PREFIXES):
+        return "place"
+    if slug in _GENERIC_TYPE_SLUGS and _looks_like_generic_person_name(name):
+        return "person"
+    if slug in _GENERIC_TYPE_SLUGS and _looks_like_organization_name(
+        name,
+        normalized_name=normalized_name,
+    ):
+        return "organization"
+    return base_family
+
+
+def _looks_like_organization_name(
+    name: str,
+    *,
+    normalized_name: str | None = None,
+) -> bool:
+    """Return whether a normalized surface form carries strong organization signal."""
+
+    normalized_name = normalized_name or _normalize_name(name)
+    tokens = [token for token in normalized_name.split() if token]
+    if not tokens:
+        return False
+    if any(token in _ORGANIZATION_NAME_HINTS for token in tokens):
+        return True
+    if len(tokens) >= 2 and bool(_acronym_signatures(normalized_name)):
+        return True
+    compact_raw = re.sub(r"[^A-Za-z0-9]+", "", name.strip())
+    return (
+        len(tokens) == 1
+        and len(compact_raw) >= 3
+        and any(character.isalpha() for character in compact_raw)
+        and compact_raw.upper() == compact_raw
+    )
+
+
+def _has_leading_title(name: str) -> bool:
+    """Return whether a raw surface form starts with a title or rank token."""
+
+    normalized = " ".join(name.lower().split()).strip(" .,;:")
+    normalized_no_punct = re.sub(r"[.,;:]+", "", normalized)
+    if not normalized:
+        return False
+    for abbrev, _expansion in sorted(_TITLE_PATTERNS, key=lambda item: -len(item[0])):
+        cleaned = abbrev.strip(" .,;:")
+        if (
+            normalized == cleaned
+            or normalized.startswith(f"{cleaned} ")
+            or normalized_no_punct == cleaned
+            or normalized_no_punct.startswith(f"{cleaned} ")
+        ):
+            return True
+    for title in sorted(_STRIP_TITLES, key=len, reverse=True):
+        if (
+            normalized == title
+            or normalized.startswith(f"{title} ")
+            or normalized_no_punct == title
+            or normalized_no_punct.startswith(f"{title} ")
+        ):
+            return True
+    return False
+
+
+def _looks_like_generic_person_name(name: str) -> bool:
+    """Return whether a generic surface form is strongly person-like."""
+
+    normalized_name = _normalize_name(name)
+    tokens = [
+        token.strip(".,;:")
+        for token in normalized_name.split()
+        if token.strip(".,;:")
+    ]
+    if not tokens:
+        return False
+    if _has_leading_title(name):
+        return all(token.isalpha() for token in tokens) and len(tokens) <= 3
+    return len(tokens) == 2 and len(tokens[0]) == 1 and all(
+        token.isalpha() for token in tokens
+    )
+
+
+def _installation_equivalence_key(name: str) -> str | None:
+    """Return the bounded installation-equivalence key for one surface form."""
+
+    tokens = _alias_signature_tokens(name)
+    if not tokens:
+        return None
+    normalized = " ".join(tokens)
+    return _INSTALLATION_EQUIVALENCE_LOOKUP.get(normalized)
+
+
+def _looks_like_person_mention(normalized_name: str) -> bool:
+    """Return whether a normalized name still looks like a person mention."""
+
+    tokens = [token for token in normalized_name.split() if token]
+    if not tokens:
+        return False
+    bare_rank_tokens = {
+        "general",
+        "lieutenant",
+        "major",
+        "colonel",
+        "captain",
+        "commander",
+        "admiral",
+        "sergeant",
+        "corporal",
+        "private",
+    }
+    return any(token not in bare_rank_tokens for token in tokens)
+
+
+def _entity_types_compatible(
+    left_type: str,
+    right_type: str,
+    *,
+    left_name: str | None = None,
+    right_name: str | None = None,
+) -> bool:
+    """Return whether two entity types are compatible for resolution."""
+
+    if left_type == right_type:
+        return True
+    return _entity_resolution_family(left_type, left_name) == _entity_resolution_family(
+        right_type,
+        right_name,
+    )
+
+
+def _person_name_info(name: str) -> _PersonNameInfo:
+    """Extract a conservative person-name signature for merge checks."""
+
+    has_title = _has_leading_title(name)
+    normalized = _normalize_name(name)
+    if not normalized:
+        return _PersonNameInfo(None, None, None, False, has_title)
+    tokens = normalized.split()
+    if not tokens:
+        return _PersonNameInfo(None, None, None, False, has_title)
+    surname = tokens[-1]
+    given_tokens = tokens[:-1]
+    if not given_tokens:
+        return _PersonNameInfo(surname, None, None, True, has_title)
+    given = given_tokens[0].strip(".,;:")
+    if len(given) == 1:
+        return _PersonNameInfo(surname, None, given, False, has_title)
+    return _PersonNameInfo(surname, given, given[0], False, has_title)
+
+
+def _person_group_bridge_info(
+    group_ids: list[str],
+    *,
+    name_map: dict[str, str],
+) -> _PersonGroupBridgeInfo | None:
+    """Summarize one candidate person group for titled-mention bridge logic."""
+
+    surnames: set[str] = set()
+    full_given_names: set[str] = set()
+    initials: set[str] = set()
+    titled_full_given_names: set[str] = set()
+    titled_initials: set[str] = set()
+    has_titled_surname_only = False
+
+    for entity_id in group_ids:
+        info = _person_name_info(name_map.get(entity_id, entity_id))
+        if info.surname is None:
+            continue
+        surnames.add(info.surname)
+        if info.full_given is not None:
+            full_given_names.add(info.full_given)
+            initials.add(info.full_given[0])
+        elif info.initial is not None:
+            initials.add(info.initial)
+        if not info.has_title:
+            continue
+        if info.full_given is not None:
+            titled_full_given_names.add(info.full_given)
+            titled_initials.add(info.full_given[0])
+            continue
+        if info.initial is not None:
+            titled_initials.add(info.initial)
+            continue
+        if info.surname_only:
+            has_titled_surname_only = True
+
+    if len(surnames) != 1:
+        return None
+
+    return _PersonGroupBridgeInfo(
+        surname=next(iter(surnames)),
+        full_given_names=frozenset(sorted(full_given_names)),
+        initials=frozenset(sorted(initials)),
+        titled_full_given_names=frozenset(sorted(titled_full_given_names)),
+        titled_initials=frozenset(sorted(titled_initials)),
+        has_titled_surname_only=has_titled_surname_only,
+    )
+
+
+def _place_group_bridge_info(
+    group_ids: list[str],
+    *,
+    name_map: dict[str, str],
+) -> _PlaceGroupBridgeInfo | None:
+    """Summarize one place group for bounded district-style bridge logic."""
+
+    district_heads: set[str] = set()
+    district_abbrevs: set[str] = set()
+    single_token_places: set[str] = set()
+
+    for entity_id in group_ids:
+        tokens = _alias_signature_tokens(name_map.get(entity_id, entity_id))
+        if not tokens:
+            continue
+        compact = "".join(tokens)
+        if compact == "dc":
+            district_abbrevs.add("dc")
+            continue
+        if len(tokens) >= 2 and compact.endswith("dc") and tokens[-2:] == ["d", "c"]:
+            district_abbrevs.add("dc")
+            head_tokens = tokens[:-2]
+            if len(head_tokens) == 1:
+                district_heads.add(head_tokens[0])
+            continue
+        if len(tokens) == 1:
+            single_token_places.add(tokens[0])
+
+    if not district_heads and not district_abbrevs and not single_token_places:
+        return None
+
+    return _PlaceGroupBridgeInfo(
+        district_heads=frozenset(sorted(district_heads)),
+        district_abbrevs=frozenset(sorted(district_abbrevs)),
+        single_token_places=frozenset(sorted(single_token_places)),
+    )
+
+
+def _postprocess_llm_cluster(
+    entity_ids: list[str],
+    *,
+    name_map: dict[str, str],
+    entity_types: dict[str, str],
+) -> list[list[str]]:
+    """Apply deterministic safety guards to one LLM-proposed cluster."""
+
+    if len(entity_ids) < 2:
+        return [entity_ids]
+
+    representative_type = entity_types.get(entity_ids[0], "")
+    if _resolution_type_family(representative_type) != "person":
+        return [entity_ids]
+
+    infos = {
+        eid: _person_name_info(name_map.get(eid, eid))
+        for eid in entity_ids
+    }
+    surname_groups: dict[str, list[str]] = defaultdict(list)
+    for eid, info in infos.items():
+        surname_groups[info.surname or eid].append(eid)
+
+    output_groups: list[list[str]] = []
+    for group_ids in surname_groups.values():
+        full_given_names: set[str] = set()
+        for eid in group_ids:
+            full_given = infos[eid].full_given
+            if full_given is not None:
+                full_given_names.add(full_given)
+        if len(full_given_names) <= 1:
+            output_groups.append(group_ids)
+            continue
+
+        anchored_groups: dict[str, list[str]] = {
+            given_name: []
+            for given_name in sorted(full_given_names)
+        }
+        ambiguous_ids: list[str] = []
+        for eid in group_ids:
+            info = infos[eid]
+            if info.full_given is not None:
+                anchored_groups[info.full_given].append(eid)
+                continue
+            if info.initial is not None:
+                matching_full = [
+                    given_name
+                    for given_name in anchored_groups
+                    if given_name.startswith(info.initial)
+                ]
+                if len(matching_full) == 1:
+                    anchored_groups[matching_full[0]].append(eid)
+                    continue
+            ambiguous_ids.append(eid)
+
+        output_groups.extend(
+            [members for members in anchored_groups.values() if members]
+        )
+        output_groups.extend([[eid] for eid in ambiguous_ids])
+
+    return output_groups
+
+
+def _alias_signature_tokens(name: str) -> list[str]:
+    """Tokenize one surface form for conservative alias-signature generation."""
+
+    normalized = name.strip().lower()
+    if not normalized:
+        return []
+    normalized = normalized.replace("u.s.", "us")
+    normalized = re.sub(r"\bu\.s\b", "us", normalized)
+    normalized = re.sub(r"'s\b.*", "", normalized)
+    normalized = re.sub(r"[^a-z0-9]+", " ", normalized)
+    return [
+        token
+        for token in normalized.split()
+        if token and token not in _ALIAS_STOPWORDS
+    ]
+
+
+def _acronym_signatures(name: str) -> set[str]:
+    """Return high-confidence acronym signatures for organization-like names."""
+
+    tokens = _alias_signature_tokens(name)
+    if not tokens:
+        return set()
+    if len(tokens) == 1 and len(tokens[0]) >= 2:
+        compact = tokens[0]
+        signatures = {compact}
+        if compact.startswith("us") and len(compact) > 2:
+            signatures.add(compact[2:])
+        return signatures
+
+    parts: list[str] = []
+    index = 0
+    while index < len(tokens):
+        if index + 1 < len(tokens):
+            compound = _COMPOUND_ACRONYM_PARTS.get((tokens[index], tokens[index + 1]))
+            if compound is not None:
+                parts.append(compound)
+                index += 2
+                continue
+        token = tokens[index]
+        if token == "us":
+            parts.append("us")
+        elif token in _WORD_ACRONYM_PARTS:
+            parts.append(_WORD_ACRONYM_PARTS[token])
+        elif token[0].isdigit():
+            parts.append(token)
+        else:
+            parts.append(token[0])
+        index += 1
+
+    compact = "".join(parts)
+    if not compact:
+        return set()
+    signatures = {compact}
+    if compact.startswith("us") and len(compact) > 2:
+        signatures.add(compact[2:])
+    return signatures
+
+
+def _organization_descriptor_heads_from_name(name: str) -> set[str]:
+    """Return bounded descriptor heads from definite organization alias names."""
+
+    lowered = " ".join(name.lower().split()).strip()
+    if not lowered.startswith("the "):
+        return set()
+    head = re.sub(r"[^a-z0-9]+", " ", lowered[4:]).strip()
+    if head in _ORGANIZATION_DESCRIPTOR_HEADS:
+        return {head}
+    return set()
+
+
+def _organization_descriptor_heads_from_text(text: str) -> set[str]:
+    """Return bounded descriptor heads explicitly attested in one source text."""
+
+    lowered = text.lower()
+    heads: set[str] = set()
+    for head in _ORGANIZATION_DESCRIPTOR_HEADS:
+        if re.search(rf"\bthe {head}\b", lowered) or re.search(
+            rf"\bthe {head}'s\b",
+            lowered,
+        ):
+            heads.add(head)
+            continue
+        if re.search(rf"\b{head} leadership\b", lowered):
+            heads.add(head)
+    return heads
+
+
+def _unit_alias_signatures(name: str) -> set[str]:
+    """Return bounded unit-alias signatures for acronymized military-unit names."""
+
+    tokens = _alias_signature_tokens(name)
+    if len(tokens) < 2:
+        return set()
+    lead = tokens[0]
+    if not lead[0].isdigit():
+        return set()
+    tail = tokens[1:]
+    if tail in (["psyop", "group"], ["pog"]):
+        return {f"unitabbr:{lead}:pog"}
+    if tail in (["psyop", "group", "a"], ["pog", "a"]):
+        return {f"unitabbr:{lead}:pog:a"}
+    return set()
+
+
+def _group_alias_signatures(
+    group_ids: list[str],
+    *,
+    name_map: dict[str, str],
+    entity_types: dict[str, str],
+) -> set[str]:
+    """Return deterministic merge signatures for one candidate cluster."""
+
+    if not group_ids:
+        return set()
+    representative_type = entity_types.get(group_ids[0], "")
+    family = _entity_resolution_family(
+        representative_type,
+        name_map.get(group_ids[0], group_ids[0]),
+    )
+    signatures: set[str] = set()
+    for entity_id in group_ids:
+        observed_name = name_map.get(entity_id, entity_id)
+        if family == "person":
+            info = _person_name_info(observed_name)
+            if info.full_given is not None and info.surname is not None:
+                signatures.add(f"person:{info.full_given}:{info.surname}")
+            continue
+        normalized = _normalize_name(observed_name)
+        if normalized:
+            signatures.add(f"norm:{normalized}")
+            installation_equivalence = _installation_equivalence_key(observed_name)
+            if installation_equivalence is not None:
+                signatures.add(installation_equivalence)
+        for acronym in _acronym_signatures(observed_name):
+            signatures.add(f"acr:{acronym}")
+        signatures.update(_unit_alias_signatures(observed_name))
+    return signatures
+
+
+def _collapse_equivalent_llm_groups(
+    groups: dict[str, list[str]],
+    *,
+    name_map: dict[str, str],
+    entity_types: dict[str, str],
+    context_map: dict[str, str] | None = None,
+) -> dict[str, list[str]]:
+    """Merge LLM output groups that share high-confidence alias signatures."""
+
+    context_map = context_map or {}
+    keys = list(groups.keys())
+    if len(keys) < 2:
+        return groups
+
+    signatures_by_key = {
+        key: _group_alias_signatures(
+            groups[key],
+            name_map=name_map,
+            entity_types=entity_types,
+        )
+        for key in keys
+    }
+
+    parent: dict[str, str] = {key: key for key in keys}
+
+    def find(key: str) -> str:
+        while parent[key] != key:
+            parent[key] = parent[parent[key]]
+            key = parent[key]
+        return key
+
+    def union(left: str, right: str) -> None:
+        root_left = find(left)
+        root_right = find(right)
+        if root_left != root_right:
+            parent[root_right] = root_left
+
+    for index, left in enumerate(keys):
+        left_group = groups[left]
+        left_type = entity_types.get(left_group[0], "") if left_group else ""
+        left_family = _entity_resolution_family(
+            left_type,
+            name_map.get(left_group[0], left_group[0]) if left_group else None,
+        )
+        left_signatures = signatures_by_key[left]
+        if not left_signatures:
+            continue
+        for right in keys[index + 1:]:
+            right_group = groups[right]
+            right_type = entity_types.get(right_group[0], "") if right_group else ""
+            if left_family != _entity_resolution_family(
+                right_type,
+                name_map.get(right_group[0], right_group[0]) if right_group else None,
+            ):
+                continue
+            if left_signatures & signatures_by_key[right]:
+                union(left, right)
+
+    person_bridge_info_by_key: dict[str, _PersonGroupBridgeInfo] = {}
+    person_keys_by_surname: dict[str, list[str]] = defaultdict(list)
+    for key in keys:
+        group = groups[key]
+        if not group:
+            continue
+        representative_name = name_map.get(group[0], group[0])
+        if _entity_resolution_family(entity_types.get(group[0], ""), representative_name) != "person":
+            continue
+        bridge_info = _person_group_bridge_info(group, name_map=name_map)
+        if bridge_info is None or bridge_info.surname is None:
+            continue
+        person_bridge_info_by_key[key] = bridge_info
+        person_keys_by_surname[bridge_info.surname].append(key)
+
+    for surname_keys in person_keys_by_surname.values():
+        titled_full_keys = [
+            key
+            for key in surname_keys
+            if person_bridge_info_by_key[key].titled_full_given_names
+        ]
+        full_anchor_keys = [
+            key
+            for key in surname_keys
+            if person_bridge_info_by_key[key].full_given_names
+        ]
+        initial_only_keys = [
+            key
+            for key in surname_keys
+            if (
+                person_bridge_info_by_key[key].titled_initials
+                and not person_bridge_info_by_key[key].titled_full_given_names
+            )
+        ]
+        surname_only_keys = [
+            key
+            for key in surname_keys
+            if person_bridge_info_by_key[key].has_titled_surname_only
+        ]
+        titled_full_roots: set[str] = {find(key) for key in titled_full_keys}
+        full_anchor_roots: set[str] = {find(key) for key in full_anchor_keys}
+
+        for initial_key in initial_only_keys:
+            initials = person_bridge_info_by_key[initial_key].titled_initials
+            anchor_pool = titled_full_keys
+            if not anchor_pool and len(full_anchor_roots) == 1:
+                anchor_pool = full_anchor_keys
+            candidates = []
+            for full_key in anchor_pool:
+                candidate_initials = person_bridge_info_by_key[full_key].titled_initials
+                if not candidate_initials:
+                    candidate_initials = frozenset(
+                        given_name[0]
+                        for given_name in person_bridge_info_by_key[full_key].full_given_names
+                    )
+                if initials & candidate_initials:
+                    candidates.append(full_key)
+            if len(candidates) == 1:
+                union(initial_key, candidates[0])
+        if len(titled_full_roots) != 1:
+            if len(full_anchor_roots) != 1:
+                continue
+        for surname_only_key in surname_only_keys:
+            bridge_info = person_bridge_info_by_key[surname_only_key]
+            anchor_candidates = titled_full_keys
+            if not anchor_candidates and len(full_anchor_roots) == 1:
+                anchor_candidates = full_anchor_keys
+            if bridge_info.full_given_names:
+                anchor_candidates = [
+                    full_key
+                    for full_key in anchor_candidates
+                    if bridge_info.full_given_names
+                    & person_bridge_info_by_key[full_key].titled_full_given_names
+                ]
+            elif bridge_info.initials:
+                anchor_candidates = [
+                    full_key
+                    for full_key in anchor_candidates
+                    if bridge_info.initials
+                    & person_bridge_info_by_key[full_key].titled_initials
+                ]
+            if len(anchor_candidates) == 1:
+                union(surname_only_key, anchor_candidates[0])
+
+    place_keys_by_district_head: dict[str, list[str]] = defaultdict(list)
+    place_keys_by_district_abbrev: dict[str, list[str]] = defaultdict(list)
+    place_keys_by_single_token: dict[str, list[str]] = defaultdict(list)
+    for key in keys:
+        group = groups[key]
+        if not group:
+            continue
+        representative_name = name_map.get(group[0], group[0])
+        representative_family = _entity_resolution_family(
+            entity_types.get(group[0], ""),
+            representative_name,
+        )
+        if representative_family not in {"place", "unknown"}:
+            continue
+        place_bridge_info = _place_group_bridge_info(group, name_map=name_map)
+        if place_bridge_info is None:
+            continue
+        if representative_family == "place":
+            for district_head in place_bridge_info.district_heads:
+                place_keys_by_district_head[district_head].append(key)
+            for district_abbrev in place_bridge_info.district_abbrevs:
+                place_keys_by_district_abbrev[district_abbrev].append(key)
+        elif representative_family == "unknown":
+            for district_abbrev in place_bridge_info.district_abbrevs:
+                place_keys_by_district_abbrev[district_abbrev].append(key)
+        for token in place_bridge_info.single_token_places:
+            place_keys_by_single_token[token].append(key)
+
+    for district_head, district_head_keys in place_keys_by_district_head.items():
+        if len({find(key) for key in district_head_keys}) != 1:
+            continue
+        token_keys = place_keys_by_single_token.get(district_head, [])
+        for token_key in token_keys:
+            union(token_key, district_head_keys[0])
+        for abbrev_key in place_keys_by_district_abbrev.get("dc", []):
+            union(abbrev_key, district_head_keys[0])
+
+    organization_descriptor_surface_keys: dict[str, list[str]] = defaultdict(list)
+    organization_descriptor_context_keys: dict[str, list[str]] = defaultdict(list)
+    for key in keys:
+        group = groups[key]
+        if not group:
+            continue
+        representative_name = name_map.get(group[0], group[0])
+        if (
+            _entity_resolution_family(
+                entity_types.get(group[0], ""),
+                representative_name,
+            )
+            != "organization"
+        ):
+            continue
+        descriptor_heads_from_names: set[str] = set()
+        descriptor_heads_from_context: set[str] = set()
+        for entity_id in group:
+            observed_name = name_map.get(entity_id, entity_id)
+            descriptor_heads_from_names.update(
+                _organization_descriptor_heads_from_name(observed_name),
+            )
+            descriptor_heads_from_context.update(
+                _organization_descriptor_heads_from_text(
+                    context_map.get(entity_id, ""),
+                ),
+            )
+        for descriptor_head in descriptor_heads_from_names:
+            organization_descriptor_surface_keys[descriptor_head].append(key)
+        for descriptor_head in descriptor_heads_from_context:
+            organization_descriptor_context_keys[descriptor_head].append(key)
+
+    for descriptor_head, surface_keys in organization_descriptor_surface_keys.items():
+        surface_roots = {find(key) for key in surface_keys}
+        context_roots = {
+            find(key)
+            for key in organization_descriptor_context_keys.get(descriptor_head, [])
+        }
+        if len(surface_roots) != 1 or len(context_roots) != 1:
+            continue
+        surface_root = next(iter(surface_roots))
+        context_root = next(iter(context_roots))
+        if surface_root != context_root:
+            union(surface_root, context_root)
+
+    collapsed: dict[str, list[str]] = defaultdict(list)
+    for key in keys:
+        collapsed[find(key)].extend(groups[key])
+    return dict(collapsed)
 
 
 __all__ = [
@@ -846,5 +1547,9 @@ __all__ = [
     "EntityCluster",
     "ResolutionResult",
     "ResolutionStrategy",
+    "_acronym_signatures",
+    "_entity_types_compatible",
+    "_postprocess_llm_cluster",
+    "_resolution_type_family",
     "auto_resolve_identities",
 ]

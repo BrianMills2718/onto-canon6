@@ -1,0 +1,34 @@
+{
+  "results": [
+    {
+      "name": "positive_chunk002_commander",
+      "labels": [
+        "supported"
+      ]
+    },
+    {
+      "name": "omit_011_hearts_and_minds",
+      "labels": [
+        "supported"
+      ]
+    },
+    {
+      "name": "omit_012_ethical_questions_without_speaker",
+      "labels": [
+        "unsupported"
+      ]
+    },
+    {
+      "name": "omit_015_local_limit_capability",
+      "labels": [
+        "supported"
+      ]
+    },
+    {
+      "name": "omit_016_ethical_questions_with_scrutiny",
+      "labels": [
+        "unsupported"
+      ]
+    }
+  ]
+}

@@ -46,18 +46,15 @@ The producer side is intentionally replaceable:
 
 The repo is beyond pure design/bootstrap work. It has:
 
-1. a maintained local test surface (451 tests);
+1. a maintained local test surface;
 2. two real non-fixture runs (PSYOP Stage 1 and Shield AI WhyGame);
 3. a proved E2E text -> review -> promotion path;
-4. proved downstream artifact exports and consumer-facing adapter slices;
-5. **DIGIMON adopted as first consumer** (Plan 0024 Lane 2, verified 2026-03-31:
-   110 entities + 99 relationships exported and imported);
-6. cross-document entity resolution via LLM clustering (Plan 0025, Phases 1-3
-   landed; scale test harness operational);
-7. default operating mode: `review_mode: llm` with `enable_judge_filter: true`.
+4. proved downstream artifact exports and consumer-facing adapter slices.
 
 Current emphasis is not "recover every capability now." It is "keep the full
 vision visible while making the proved workflow stronger and more usable."
+That now includes a first read-only query surface over promoted knowledge via
+Plan 0028 / Plan 0029, not just export-only downstream access.
 
 ## Canonical Workflow
 
@@ -144,13 +141,18 @@ High-signal reading order:
 - `docs/SUCCESSOR_CHARTER.md`
 - `docs/STATUS.md`
 - `docs/plans/0024_post_cutover_program.md`
+- `docs/plans/0026_schema_stability_gate.md`
+- `docs/plans/0014_extraction_quality_baseline.md`
+- `docs/plans/0027_deferred_parity_reprioritization.md`
+- `docs/plans/0028_query_browse_surface.md`
+- `docs/plans/0029_24h_query_surface_execution_block.md`
+- `docs/plans/0025_cross_document_entity_resolution.md`
 - `docs/plans/0005_v1_capability_parity_matrix.md`
 - `docs/plans/0020_vision_gap_closure.md`
 - `docs/plans/0021_repo_honesty_and_reproducibility_cleanup.md`
 - `docs/plans/0022_donor_absorption_and_archive_readiness.md`
 - `docs/plans/0023_24h_successor_ownership_execution_block.md`
 - `docs/plans/0001_successor_roadmap.md` (historical bootstrap baseline)
-- `docs/plans/0014_extraction_quality_baseline.md`
 - `docs/AUDIT_2026_03_26.md`
 - `docs/EXTRACTION_EXPERIMENT_RUNBOOK.md`
 - `notebooks/README.md`

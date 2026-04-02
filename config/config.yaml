@@ -17,13 +17,13 @@ pipeline:
 ontology_runtime:
   overlay_pack_suffix: __overlay
 extraction:
-  selection_task: fast_extraction
+  selection_task: budget_extraction
   selection_use_performance: false
-  model_override: gemini/gemini-3-flash-preview
+  model_override: gemini/gemini-2.5-flash
   default_extraction_goal: Extract all factual assertions directly supported by the
     source text.
-  prompt_template: prompts/extraction/text_to_candidate_assertions.yaml
-  prompt_ref: onto_canon6.extraction.text_to_candidate_assertions@1
+  prompt_template: prompts/extraction/text_to_candidate_assertions_compact_v5.yaml
+  prompt_ref: onto_canon6.extraction.text_to_candidate_assertions_compact_v5@3
   timeout_seconds: 60
   num_retries: 2
   max_budget_usd: 0.25
@@ -40,7 +40,7 @@ evaluation:
   observability_phase: evaluation
   judge_selection_task: judging
   judge_prompt_template: prompts/evaluation/judge_candidate_reasonableness.yaml
-  judge_prompt_ref: onto_canon6.evaluation.judge_candidate_reasonableness@1
+  judge_prompt_ref: onto_canon6.evaluation.judge_candidate_reasonableness@2
   judge_timeout_seconds: 60
   judge_num_retries: 2
   judge_max_budget_usd: 0.25
@@ -55,7 +55,7 @@ evaluation:
     observability_phase: evaluation
     selection_task: fast_extraction
     selection_use_performance: false
-    model_override: gemini/gemini-3-flash-preview
+    model_override: gemini/gemini-2.5-flash
     n_runs: 2
     temperature: 0.0
     timeout_seconds: 60
@@ -66,6 +66,7 @@ evaluation:
     comparison_confidence: 0.95
     max_candidates_per_case: 2
     max_evidence_spans_per_candidate: 1
+    include_case_id_in_input: false
     variants:
     - name: baseline
       prompt_template: prompts/extraction/prompt_eval_text_to_candidate_assertions_baseline.yaml
@@ -79,8 +80,8 @@ evaluation:
       max_candidates_per_case: 1
       max_evidence_spans_per_candidate: 1
     - name: compact_operational_parity
-      prompt_template: prompts/extraction/prompt_eval_text_to_candidate_assertions_compact_operational_parity_v2.yaml
-      prompt_ref: onto_canon6.extraction.prompt_eval_text_to_candidate_assertions_compact_operational_parity@2
+      prompt_template: prompts/extraction/prompt_eval_text_to_candidate_assertions_compact_operational_parity_v3.yaml
+      prompt_ref: onto_canon6.extraction.prompt_eval_text_to_candidate_assertions_compact_operational_parity@3
       max_candidates_per_case: 10
       max_evidence_spans_per_candidate: 1
     - name: single_response_hardened
@@ -89,12 +90,10 @@ evaluation:
       max_candidates_per_case: 2
       max_evidence_spans_per_candidate: 1
 resolution:
-  default_strategy: exact
-  require_llm_review: true
-  model_override: gemini/gemini-3-flash-preview
+  default_strategy: llm
+  model_override: gemini/gemini-2.5-flash
   max_budget_usd: 0.50
-  cluster_prompt_template: prompts/resolution/cluster_entities.yaml
-  validate_prompt_template: prompts/resolution/validate_merge.yaml
+  prompt_template: prompts/resolution/cluster_entities.yaml
   fuzzy_pre_filter_threshold: 80
   batch_token_limit: 50000
   min_entities_for_llm: 2

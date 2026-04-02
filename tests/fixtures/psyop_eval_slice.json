@@ -1,5 +1,5 @@
 {
-  "fixture_id": "psyop_eval_slice_v5",
+  "fixture_id": "psyop_eval_slice_v7",
   "cases": [
     {
       "case_id": "psyop_001_designation_change",
@@ -970,17 +970,20 @@
       "expected_candidates": []
     },
     {
-      "case_id": "psyop_017_full_chunk003_analytical_context_strict_omit",
+      "case_id": "psyop_017_personnel_dedication_not_membership_strict_omit",
       "profile": {
         "profile_id": "psyop_seed",
         "profile_version": "0.1.0"
       },
       "source_artifact": {
-        "source_kind": "text_file",
-        "source_ref": "var/real_runs/2026-03-21_phase_b_prompt_verification/chunks/01_stage1_query2/01_stage1_query2__chunk_003.md",
-        "source_label": "01_stage1_query2__chunk_003.md",
-        "source_metadata": {},
-        "content_text": "### Effectiveness and Limitations\n\nUSSOCOM’s PSYOP programs between 2001 and 2015 were characterized by both innovation and controversy. On the one hand, the integration of PSYOP into joint and coalition operations allowed for unprecedented reach and flexibility. The use of airborne broadcasting platforms, sophisticated audience analysis, and tailored messaging contributed to tactical and operational successes, particularly in persuading enemy combatants to surrender and in undermining insurgent propaganda.\n\nHowever, the effectiveness of PSYOP was often limited by cultural misunderstandings, insufficient coordination with non-military actors, and the rapid evolution of adversary information tactics. The “hearts and minds” campaigns in Iraq and Afghanistan were hampered by inconsistent messaging and occasional missteps that undermined credibility with local populations. Furthermore, the proliferation of digital media meant that adversaries could quickly counter or distort PSYOP messages, reducing their impact.\n\n### Command and Control Challenges\n\nThe joint nature of modern PSYOP required complex coordination among multiple service branches and coalition partners. While the establishment of USSOCOM and the JPOTF model improved unity of effort, bureaucratic friction and differing organizational cultures sometimes impeded rapid decision-making and message approval.\n\n### Ethical and Legal Considerations\n\nThe expansion of PSYOP into the digital domain raised new ethical and legal questions, particularly regarding the targeting of foreign versus domestic audiences and the potential for unintended consequences. Congressional oversight and public scrutiny increased, leading to periodic reviews and adjustments of doctrine.\n\n## Personnel and Resource Trends\n\nThe number of personnel assigned to PSYOP units grew significantly during this period, reflecting the increased demand for influence operations. By 2013, USSOCOM’s total strength was reported at approximately 70,000, with a substantial proportion dedicated to PSYOP, civil affairs, and related functions ([SOCOM Fact Book 2013](https://en.wikipedia.org/wiki/United_States_Special_Operations_Command)).\n\n## Conclusion and Opinion\n\nBased on the available evidence, it is my considered opinion that USSOCOM’s psychological operations from 2001 to 2015 represented a period of rapid adaptation, institutional learning, and operational expansion. While significant challenges persisted—particularly in measuring the long-term impact of PSYOP and ensuring cultural relevance—the overall trajectory was one of increasing sophistication and integration with broader U.S. strategy.\n\nThe command structure, led by a succession of capable USSOCOM commanders, provided the necessary unity of effort, while innovations such as the JPOTF and the embrace of digital technologies positioned PSYOP as a central tool of 21st-century warfare. However, the limitations observed—especially regarding coordination and credibility—underscore the need for ongoing reform and investment in cross-cultural expertise.\n\nIn sum, USSOCOM’s PSYOP efforts during this era were indispensable to U.S. military objectives, but their ultimate effectiveness depended on the ability to adapt to rapidly changing information environments and to learn from both successes and failures.\n"
+        "source_kind": "benchmark_fixture_text",
+        "source_ref": "onto-canon://benchmark/psyop_eval_slice#case=psyop_017_personnel_dedication_not_membership_strict_omit",
+        "source_label": "psyop_eval:personnel_dedication_not_membership_strict_omit",
+        "source_metadata": {
+          "doc_id": "psyop_eval_slice",
+          "chunk_id": "psyop_017"
+        },
+        "content_text": "By 2013, USSOCOM’s total strength was reported at approximately 70,000, with a substantial proportion dedicated to PSYOP, civil affairs, and related functions."
       },
       "expected_candidates": []
     }

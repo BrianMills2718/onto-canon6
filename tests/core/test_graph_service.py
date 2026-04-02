@@ -11,6 +11,7 @@ from onto_canon6.core import CanonicalGraphPromotionConflictError, CanonicalGrap
 from onto_canon6.extensions.epistemic import EpistemicService
 from onto_canon6.pipeline import OverlayApplicationService, ProposalAcceptancePolicy, ReviewService
 from onto_canon6.surfaces import EpistemicReportService, PromotedGraphReportService
+from tests.compatibility_helpers import load_json_fixture, normalize_snapshot
 
 
 def _seed_review_service(tmp_path: Path) -> tuple[ReviewService, OverlayApplicationService]:
@@ -124,6 +125,10 @@ def test_promote_candidate_materializes_assertion_entities_and_fillers(tmp_path:
     title_filler = next(filler for filler in promotion.role_fillers if filler.role_id == "title")
     assert title_filler.filler_kind == "value"
     assert title_filler.value_kind == "string"
+    assert normalize_snapshot(promotion.model_dump(mode="json")) == load_json_fixture(
+        "promoted_graph",
+        "minimal_promotion_result.json",
+    )
 
 
 def test_promote_candidate_accepts_normalized_value_fillers(tmp_path: Path) -> None:

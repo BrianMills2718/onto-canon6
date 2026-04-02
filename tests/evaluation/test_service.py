@@ -170,7 +170,7 @@ def test_load_benchmark_fixture_reads_local_cases() -> None:
 
     fixture = load_benchmark_fixture(_fixture_path())
 
-    assert fixture.fixture_id == "psyop_eval_slice_v5"
+    assert fixture.fixture_id == "psyop_eval_slice_v7"
     assert len(fixture.cases) == 17
     assert fixture.cases[0].profile.profile_id == "psyop_seed"
     assert fixture.cases[0].source_artifact.content_text is not None
@@ -207,8 +207,6 @@ def test_load_benchmark_fixture_covers_targeted_semantic_failure_modes() -> None
     ethical_questions_local_context_case = cases_by_id[
         "psyop_016_local_context_ethical_questions_with_following_scrutiny_strict_omit"
     ]
-    full_chunk_case = cases_by_id["psyop_017_full_chunk003_analytical_context_strict_omit"]
-
     assert alias_case.expected_candidates == ()
     assert len(subordinate_case.expected_candidates) == 1
     assert subordinate_case.expected_candidates[0].payload["predicate"] == "oc:belongs_to_organization"
@@ -225,7 +223,6 @@ def test_load_benchmark_fixture_covers_targeted_semantic_failure_modes() -> None
     assert hearts_and_minds_local_context_case.expected_candidates == ()
     assert loose_capability_local_context_case.expected_candidates == ()
     assert ethical_questions_local_context_case.expected_candidates == ()
-    assert full_chunk_case.expected_candidates == ()
 
 
 def test_run_live_benchmark_separates_reasonableness_and_exact_fidelity(
@@ -250,7 +247,7 @@ def test_run_live_benchmark_separates_reasonableness_and_exact_fidelity(
     ) -> tuple[evaluation_service_module._JudgeResponse, object]:
         assert model == "fake-judge-model"
         assert kwargs["task"] == "judging"
-        assert kwargs["prompt_ref"] == "onto_canon6.evaluation.judge_candidate_reasonableness@1"
+        assert kwargs["prompt_ref"] == "onto_canon6.evaluation.judge_candidate_reasonableness@2"
         assert "Candidate assertions JSON" in messages[-1]["content"]
         parsed = response_model(
             candidate_reviews=(
@@ -295,7 +292,7 @@ def test_run_live_benchmark_separates_reasonableness_and_exact_fidelity(
     assert report.cases[0].candidate_evaluations[0].exact_preferred_match is True
     assert report.cases[0].candidate_evaluations[1].exact_preferred_match is False
     assert report.cases[0].extraction_run.prompt_ref == "onto_canon6.extraction.text_to_candidate_assertions@1"
-    assert report.cases[0].judge_run.prompt_ref == "onto_canon6.evaluation.judge_candidate_reasonableness@1"
+    assert report.cases[0].judge_run.prompt_ref == "onto_canon6.evaluation.judge_candidate_reasonableness@2"
     assert report.cases[0].important_missing_facts == (
         "The source also names PSYOP and MISO as designation labels.",
     )
@@ -374,7 +371,7 @@ def test_run_live_benchmark_emits_shared_experiment_records(
         **kwargs: object,
     ) -> tuple[evaluation_service_module._JudgeResponse, object]:
         del model, messages
-        assert kwargs["prompt_ref"] == "onto_canon6.evaluation.judge_candidate_reasonableness@1"
+        assert kwargs["prompt_ref"] == "onto_canon6.evaluation.judge_candidate_reasonableness@2"
         parsed = response_model(
             candidate_reviews=(
                 evaluation_service_module._JudgeCandidateReview(

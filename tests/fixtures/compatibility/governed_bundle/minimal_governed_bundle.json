@@ -1,0 +1,216 @@
+{
+  "candidate_bundles": [
+    {
+      "artifact_links": [
+        {
+          "artifact_id": "<ARTIFACT_ID>",
+          "candidate_id": "<CANDIDATE_ID>",
+          "created_at": "<TIMESTAMP>",
+          "reference_detail": "aligned messaging span",
+          "support_kind": "quoted_from"
+        }
+      ],
+      "artifacts": [
+        {
+          "artifact_id": "<ARTIFACT_ID>",
+          "artifact_kind": "source",
+          "created_at": "<TIMESTAMP>",
+          "fingerprint": null,
+          "label": "fixture source",
+          "metadata": {},
+          "uri": "fixture.txt"
+        }
+      ],
+      "candidate": {
+        "candidate_id": "<CANDIDATE_ID>",
+        "claim_text": null,
+        "evidence_spans": [],
+        "normalized_payload": {
+          "predicate": "oc:signals_alignment",
+          "roles": {
+            "object": [
+              {
+                "kind": "value",
+                "value": "aligned messaging",
+                "value_kind": "string"
+              }
+            ],
+            "subject": [
+              {
+                "kind": "value",
+                "value": "Campaign Alpha",
+                "value_kind": "string"
+              }
+            ]
+          }
+        },
+        "payload": {
+          "predicate": "oc:signals_alignment",
+          "roles": {
+            "object": [
+              {
+                "kind": "value",
+                "value": "aligned messaging",
+                "value_kind": "string"
+              }
+            ],
+            "subject": [
+              {
+                "kind": "value",
+                "value": "Campaign Alpha",
+                "value_kind": "string"
+              }
+            ]
+          }
+        },
+        "payload_hash": "sha256:61808a0228906bbaaf1280423471693fa04fa39e993210adeea8b53d4f7e0b71",
+        "profile": {
+          "profile_id": "psyop_seed",
+          "profile_version": "0.1.0"
+        },
+        "proposal_ids": [
+          "<PROPOSAL_ID>"
+        ],
+        "provenance": {
+          "source_artifact": {
+            "content_text": "Campaign Alpha used aligned messaging across channels.",
+            "source_kind": "text_file",
+            "source_label": null,
+            "source_metadata": {},
+            "source_ref": "fixture.txt"
+          },
+          "submitted_by": "analyst:test"
+        },
+        "review": {
+          "actor_id": "analyst:reviewer",
+          "candidate_id": "<CANDIDATE_ID>",
+          "created_at": "<TIMESTAMP>",
+          "decision": "accepted",
+          "note_text": null,
+          "review_id": "<REVIEW_ID>"
+        },
+        "review_status": "accepted",
+        "submitted_at": "<TIMESTAMP>",
+        "validation": {
+          "hard_errors": [],
+          "soft_violations": [
+            {
+              "code": "oc:profile_unknown_predicate",
+              "message": "predicate 'oc:signals_alignment' is not declared in profile psyop_seed; mixed ontology mode routes it as a proposal",
+              "path": "predicate",
+              "severity": "soft"
+            }
+          ],
+          "type_checks_total": 0,
+          "type_checks_unknown": 0
+        },
+        "validation_status": "needs_review"
+      },
+      "confidence": {
+        "actor_id": "analyst:reviewer",
+        "assessment_id": "<CONFIDENCE_ASSESSMENT_ID>",
+        "candidate_id": "<CANDIDATE_ID>",
+        "confidence_score": 0.83,
+        "created_at": "<TIMESTAMP>",
+        "rationale": "Reviewed and accepted after governance.",
+        "source_kind": "user"
+      },
+      "epistemic_status": "active",
+      "lineage_edges": [],
+      "linked_overlay_applications": [
+        {
+          "application_id": "<OVERLAY_APPLICATION_ID>",
+          "applied_by": "analyst:reviewer",
+          "applied_value": "oc:signals_alignment",
+          "content_path": "<PATH:predicate_additions.jsonl>",
+          "created_at": "<TIMESTAMP>",
+          "overlay_pack": {
+            "pack_id": "onto_canon_psyop_seed__overlay",
+            "pack_version": "0.1.0"
+          },
+          "profile": {
+            "profile_id": "psyop_seed",
+            "profile_version": "0.1.0"
+          },
+          "proposal_id": "<PROPOSAL_ID>",
+          "proposal_kind": "predicate"
+        }
+      ],
+      "linked_proposals": [
+        {
+          "application_status": "applied_to_overlay",
+          "candidate_ids": [
+            "<CANDIDATE_ID>"
+          ],
+          "created_at": "<TIMESTAMP>",
+          "details": {
+            "candidate_source_kind": "text_file",
+            "source": "validate_assertion_payload"
+          },
+          "overlay_application": {
+            "application_id": "<OVERLAY_APPLICATION_ID>",
+            "applied_by": "analyst:reviewer",
+            "applied_value": "oc:signals_alignment",
+            "content_path": "<PATH:predicate_additions.jsonl>",
+            "created_at": "<TIMESTAMP>",
+            "overlay_pack": {
+              "pack_id": "onto_canon_psyop_seed__overlay",
+              "pack_version": "0.1.0"
+            },
+            "profile": {
+              "profile_id": "psyop_seed",
+              "profile_version": "0.1.0"
+            },
+            "proposal_id": "<PROPOSAL_ID>",
+            "proposal_kind": "predicate"
+          },
+          "profile": {
+            "profile_id": "psyop_seed",
+            "profile_version": "0.1.0"
+          },
+          "proposal_id": "<PROPOSAL_ID>",
+          "proposal_key": "sha256:22e13cd665e9fe60f13aad1e953d210364351edb2239969e344895ea2afaab97",
+          "proposal_kind": "predicate",
+          "proposed_value": "oc:signals_alignment",
+          "reason": "default ontology mode 'mixed' resolved action 'propose' for predicate",
+          "review": {
+            "acceptance_policy": "apply_to_overlay",
+            "actor_id": "analyst:reviewer",
+            "application_status": "pending_overlay_apply",
+            "created_at": "<TIMESTAMP>",
+            "decision": "accepted",
+            "decision_id": "<DECISION_ID>",
+            "note_text": null,
+            "proposal_id": "<PROPOSAL_ID>"
+          },
+          "status": "accepted",
+          "target_pack": {
+            "pack_id": "onto_canon_psyop_seed__overlay",
+            "pack_version": "0.1.0"
+          }
+        }
+      ],
+      "superseded_by": null,
+      "supersedes": []
+    }
+  ],
+  "generated_at": "<TIMESTAMP>",
+  "scope": {
+    "candidate_ids": [],
+    "profile_id": null,
+    "profile_version": null,
+    "review_status_filter": "accepted"
+  },
+  "summary": {
+    "profile_counts": {
+      "psyop_seed@0.1.0": 1
+    },
+    "total_candidates": 1,
+    "total_candidates_with_artifacts": 1,
+    "total_candidates_with_confidence": 1,
+    "total_linked_proposals": 1,
+    "total_overlay_applications": 1,
+    "total_superseded_candidates": 0
+  },
+  "workflow_id": "governed_text_to_reviewed_assertions"
+}

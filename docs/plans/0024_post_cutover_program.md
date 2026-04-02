@@ -1,8 +1,8 @@
 # Post-Cutover Program
 
-Status: complete (all 5 lanes done)
+Status: active
 
-Last updated: 2026-04-02
+Last updated: 2026-03-31
 Workstream: successor completion after runtime ownership cutover
 
 ## Purpose
@@ -146,19 +146,6 @@ Verified on 2026-03-31 against the real Shield AI review DB:
 4. DIGIMON's default benchmark lane remains DIGIMON-native. The richer
    convergence experiment still lives under DIGIMON Plan 23.
 
-#### Value Proof (2026-04-01)
-
-Plan 0025 Phase 4 demonstrated the value of onto-canon6's entity resolution
-pipeline on a 25-document synthetic corpus with ground truth:
-
-- **Entity resolution**: 0 false merges, 70-100% recall (model-dependent)
-- **Cross-document QA**: onto-canon6 answers 90% of cross-doc questions vs
-  20% for bare extraction (+70% improvement)
-- **Bare extraction comparison**: simple name dedup cannot merge acronyms,
-  title variations, or name variants that LLM resolution handles
-
-Results: `docs/runs/scale_test_llm_*.scores.json`, `docs/runs/cross_doc_qa_*.json`
-
 #### Tasks
 
 1. keep the DIGIMON consumer workflow explicit and truthful;
@@ -201,6 +188,14 @@ on them.
 This lane now executes through
 [0026_schema_stability_gate.md](0026_schema_stability_gate.md).
 
+#### Current State
+
+The minimum in-repo compatibility gate is now landed for the four named Lane 3
+surfaces, the change-classification policy is written down, and the DIGIMON
+consumer-proof question is resolved. Lane 3 is complete; any future richer
+DIGIMON automation is follow-on hardening, not part of this lane's closure
+criteria.
+
 #### Tasks
 
 1. choose the contract surfaces that matter:
@@ -240,6 +235,12 @@ not become undirected churn.
 3. Golden-set exact match is necessary but insufficient; reasonableness and
    transfer matter too.
 
+#### Current State
+
+Plan 0014 now carries the explicit promotion policy for this lane. The current
+state remains: no compact-family candidate is eligible to replace the live
+default yet because prose-heavy chunk transfer is still negative or mixed.
+
 #### Tasks
 
 1. keep the canonical corpora explicit;
@@ -263,19 +264,17 @@ not become undirected churn.
 2. promotion based on one slice that does not transfer;
 3. benchmark results that collapse different failure classes into one score.
 
-#### Status
-
-Completed 2026-04-01. Transfer evaluation on 5 real PSYOP chunks with
-gemini-3-flash-preview: 0 noise, 100% precision, correct omission behavior.
-Prompt promoted as production default with evidence documented in Plan 0014.
-See commit `fdd3ec9`.
-
 ### Lane 5. Deferred Parity Reprioritization
 
 #### Goal
 
 Turn the parity matrix from a preserved vision ledger into a better-ordered
 backlog after the first consumer and stability gates are real.
+
+#### Execution Surface
+
+This lane now executes through
+[0027_deferred_parity_reprioritization.md](0027_deferred_parity_reprioritization.md).
 
 #### Pre-Made Decisions
 
@@ -305,6 +304,19 @@ backlog after the first consumer and stability gates are real.
 2. new work starts from intuition rather than the consumer/stability evidence;
 3. important deferred capabilities remain architecturally visible but
    operationally unowned forever.
+
+#### Current State
+
+Lane 5 now has an explicit classification surface. The current next-active
+order after the active gates is:
+
+1. finish the entity-resolution value proof under Plan 0025;
+2. treat the first read-only query surface as landed through
+   [0028_query_browse_surface.md](0028_query_browse_surface.md) and
+   [0029_24h_query_surface_execution_block.md](0029_24h_query_surface_execution_block.md),
+   then widen/harden it only after consumer/value evidence justifies that work;
+3. keep richer DIGIMON interchange consumer-blocked rather than silently
+   widening the supported v1 seam.
 
 ## Program Order
 

@@ -10,6 +10,7 @@ from onto_canon6.artifacts import ArtifactLineageService
 from onto_canon6.extensions.epistemic import EpistemicService
 from onto_canon6.pipeline import OverlayApplicationService, ReviewService
 from onto_canon6.surfaces import EpistemicReportService, GovernedWorkflowBundleService
+from tests.compatibility_helpers import load_json_fixture, normalize_snapshot
 
 
 def _seed_accepted_candidate_with_overlay(
@@ -110,6 +111,10 @@ def test_build_bundle_includes_governance_lineage_and_epistemic_state(tmp_path: 
     assert candidate_bundle.epistemic_status == "active"
     assert candidate_bundle.confidence is not None
     assert candidate_bundle.confidence.confidence_score == pytest.approx(0.83)
+    assert normalize_snapshot(bundle.model_dump(mode="json")) == load_json_fixture(
+        "governed_bundle",
+        "minimal_governed_bundle.json",
+    )
 
 
 def test_bundle_filter_fails_loud_for_non_accepted_candidate_id(tmp_path: Path) -> None:

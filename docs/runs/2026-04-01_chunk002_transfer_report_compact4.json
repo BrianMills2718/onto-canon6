@@ -1,0 +1,116 @@
+{
+  "review_db_path": "/home/brian/projects/.worktrees/onto-canon6-integration-planning/var/real_runs/2026-04-01_compact4_real_chunk_verification_chunk002/review_state_max10.sqlite3",
+  "source_ref": "text://phase-b/2026-04-01/01_stage1_query2/chunk_002_compact4_max10",
+  "source_kind": "text_file",
+  "source_label": "01_stage1_query2__chunk_002.md",
+  "profile": {
+    "profile_id": "psyop_seed",
+    "profile_version": "0.1.0"
+  },
+  "prompt_template": "prompts/extraction/text_to_candidate_assertions_compact_v4.yaml",
+  "prompt_ref": "onto_canon6.extraction.text_to_candidate_assertions_compact_v4@1",
+  "selection_task": "budget_extraction",
+  "candidates": [
+    {
+      "candidate_id": "cand_a54922acbe064ae4913be19d",
+      "review_status": "accepted",
+      "validation_status": "valid",
+      "predicate": "oc:hold_command_role",
+      "claim_text": "Gen. Charles R. Holland held the role of Commander in USSOCOM.",
+      "evidence_span_count": 1
+    },
+    {
+      "candidate_id": "cand_d4c5f51d27d7482cb5250114",
+      "review_status": "accepted",
+      "validation_status": "valid",
+      "predicate": "oc:hold_command_role",
+      "claim_text": "Gen. Bryan D. Brown held the role of Commander in USSOCOM.",
+      "evidence_span_count": 1
+    },
+    {
+      "candidate_id": "cand_6d02c33706a24f10ac1f2ac1",
+      "review_status": "accepted",
+      "validation_status": "valid",
+      "predicate": "oc:hold_command_role",
+      "claim_text": "Adm. Eric T. Olson held the role of Commander in USSOCOM.",
+      "evidence_span_count": 1
+    },
+    {
+      "candidate_id": "cand_2b5be2fb8dcd4f0d8ac1c40e",
+      "review_status": "accepted",
+      "validation_status": "valid",
+      "predicate": "oc:hold_command_role",
+      "claim_text": "Adm. William H. McRaven held the role of Commander in USSOCOM.",
+      "evidence_span_count": 1
+    },
+    {
+      "candidate_id": "cand_49c842f07c7043d892710ebf",
+      "review_status": "accepted",
+      "validation_status": "valid",
+      "predicate": "oc:hold_command_role",
+      "claim_text": "Gen. Joseph L. Votel held the role of Commander in USSOCOM.",
+      "evidence_span_count": 1
+    },
+    {
+      "candidate_id": "cand_36f8095926c24bd38de1851a",
+      "review_status": "accepted",
+      "validation_status": "valid",
+      "predicate": "oc:belongs_to_organization",
+      "claim_text": "The 4th PSYOP Group belongs to the Army organization.",
+      "evidence_span_count": 1
+    },
+    {
+      "candidate_id": "cand_09fba64856734273bd319072",
+      "review_status": "accepted",
+      "validation_status": "valid",
+      "predicate": "oc:limit_capability",
+      "claim_text": "The sensitive nature of their work limited the availability of names for PSYOP Group commanders.",
+      "evidence_span_count": 1
+    },
+    {
+      "candidate_id": "cand_8d6b868aeb3042c1a550f6d9",
+      "review_status": "accepted",
+      "validation_status": "valid",
+      "predicate": "oc:use_organizational_form",
+      "claim_text": "Operation Iraqi Freedom used the Joint PSYOP Task Force model.",
+      "evidence_span_count": 1
+    },
+    {
+      "candidate_id": "cand_c3da6c3267ae4ab291c7a116",
+      "review_status": "accepted",
+      "validation_status": "valid",
+      "predicate": "oc:create_organizational_unit",
+      "claim_text": "Joint PSYOP Task Forces (JPOTF) were established.",
+      "evidence_span_count": 1
+    },
+    {
+      "candidate_id": "cand_6fadf34008c64c4199cecc12",
+      "review_status": "accepted",
+      "validation_status": "valid",
+      "predicate": "oc:express_concern",
+      "claim_text": "A 2005 review by the National Defense University expressed concern about the need for better integration and improved effectiveness measurement in PSYOP.",
+      "evidence_span_count": 1
+    }
+  ],
+  "summary": {
+    "total_candidates": 10,
+    "accepted_candidates": 10,
+    "rejected_candidates": 0,
+    "pending_candidates": 0,
+    "reviewed_candidates": 10,
+    "acceptance_rate": 1.0,
+    "review_complete": true,
+    "verdict": "positive",
+    "predicate_counts": {
+      "oc:hold_command_role": 5,
+      "oc:belongs_to_organization": 1,
+      "oc:limit_capability": 1,
+      "oc:use_organizational_form": 1,
+      "oc:create_organizational_unit": 1,
+      "oc:express_concern": 1
+    },
+    "review_status_counts": {
+      "accepted": 10
+    }
+  }
+}

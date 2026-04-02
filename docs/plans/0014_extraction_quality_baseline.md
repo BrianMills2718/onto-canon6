@@ -1,6 +1,6 @@
 # Extraction Quality Baseline
 
-Status: active (transfer eval passed; ongoing quality work)
+Status: active
 
 Last updated: 2026-04-02
 Workstream: post-bootstrap extraction R&D (ADR-0022)
@@ -35,6 +35,112 @@ This plan fails if:
    downstream normalization differences;
 3. real-document runs regress back into empty roles, invalid filler shape, or
    other structural failures as the main blocker.
+
+## Promotion Gate (Current Policy)
+
+This is the current Lane 4 promotion policy for prompt/model changes on the
+live extraction path.
+
+### A candidate prompt/model pair may be promoted only when all of the following are true
+
+1. it wins or clearly passes the current frozen extraction-boundary benchmark
+   contract with reproducible evidence, not a one-off run;
+2. it shows no structural trial failures on the bounded benchmark sweep used
+   for the promotion decision;
+3. it passes chunk-level transfer on at least two explicitly named real chunks;
+4. at least one of those chunks is analytical/prose-heavy rather than only a
+   straightforward organizational fact chunk;
+5. the real-chunk review outcome shows the remaining misses are semantic/domain
+   questions, not schema, grounding, or prompt/render-path failures;
+6. the promotion record names the benchmark artifact, the transfer artifacts,
+   and the exact prompt/model asset being promoted.
+
+### A candidate prompt/model pair must not be promoted when any of the following are true
+
+1. prompt-eval wins on sentence-level or synthetic cases but chunk-level
+   transfer remains negative;
+2. the live extraction path and the prompt-eval parity lane still disagree in a
+   way that has not been explained;
+3. structural validity regresses, even if semantic metrics improve;
+4. the apparent gain comes mainly from reviewer-only normalization differences
+   instead of extraction-boundary behavior;
+5. the evidence comes from one friendly chunk and one unresolved failure family
+   remains active on another named chunk.
+
+### Required promotion record
+
+Every future prompt/model promotion must cite:
+
+1. the benchmark fixture and run artifact;
+2. the exact prompt asset path and model/task configuration;
+3. the named real chunks used for transfer;
+4. the transfer report artifacts;
+5. the specific reason the candidate is judged better than the current live
+   default.
+
+### Current policy consequence
+
+No compact-family candidate is eligible to replace the live repo-default
+extraction prompt yet.
+
+Plan `0040` narrowed the blocker more precisely than before:
+
+1. chunk `002` is now a positive live compact-v4 transfer case;
+2. chunk `003` remains a negative live compact-v4 transfer case; and
+3. full-chunk prompt-eval/live parity still diverges materially on both named
+   chunks, so prompt-eval cannot certify promotion by itself.
+
+The current blocker is therefore no longer "missing positive-control transfer
+evidence." Plan `0041` closed the prompt-surface uncertainty, Plan `0042`
+proved that one more narrow semantic prompt revision still did not recover the
+live chunk-003 path, and Plan `0043` proved the same-model divergence begins
+before review and is then amplified by review/judge acceptance. Plan `0044`
+proved wrapper alignment is not the main rescue lever, and Plans `0046`
+through `0049` then removed the remaining prompt-path blockers (`sync/async`
+speculation, prompt_eval-only `Case id`, and the prompt_eval `Case input`
+wrapper). Plan `0051` then proved that another section-level suppression pass
+was not enough and actually widened the compact-operational-parity spillover
+family. Plan `0052` then proved predicate-local gating can shrink that family,
+but not eliminate it, and Plan `0053` proved that even stronger hard-negative
+prompt wording still does not close the full chunk residual. Plan `0054` then
+proved the remaining blocker was benchmark-contract truth for the repaired
+chunk-003 strict-omit case, not another prompt tweak. The user approved the
+recommended contract cutover:
+
+1. remove/demote chunk `017` from the strict-omit gate; and
+2. rely on the cleaner local controls `008` through `016`.
+
+Plan `0055` now completed that fixture cutover plus one corrected-fixture
+rerun. Plan `0056` then improved the compact operational-parity lane enough to
+restore the benchmark lead on corrected fixture `v6`.
+
+The next owned residual family is now:
+
+1. `psyop_001_designation_change`
+2. `psyop_002_concerns_about_truth_based_shift`
+3. `psyop_007_named_institutional_concern`
+4. `psyop_008_jpotf_establishment_not_org_form`
+
+Benchmark improvement still does not certify promotion by itself. The named
+real chunk-transfer gate remains active.
+
+Plan `0057` owned the first corrected-fixture transfer recertification block.
+It then proved the next blocker was not the extraction prompt alone: the live
+review contract was misaligned with corrected fixture `v6` semantics. Plan
+`0058` then fixed that contract and reduced the live chunk-003 false-positive
+family. Plan `0059` then reduced the chunk-003 residual to three abstract
+evaluative `limit_capability` claims plus one staffing-summary membership
+leak. Plan `0060` then removed the abstract `limit_capability` family from
+the live accepted set.
+
+Plan `0061` then removed the final remaining staffing-summary membership
+family from the chunk-003 accepted set. Plan `0062` then completed promotion
+certification and repo-default cutover for the proved compact
+operational-parity candidate.
+
+There is no active transfer-cleanup block remaining. Future extraction-quality
+work should start from the promoted default surface rather than reopening the
+old transfer-hardening chain.
 
 ## Current State
 
@@ -261,8 +367,9 @@ The configured `compact_operational_parity` variant now uses:
 
 1. an extraction-compatible prompt asset aligned to live `compact_v3`
    semantics;
-2. the prompt-eval `Case input` render path that preserves source metadata and
-   full chunk text; and
+2. the repaired prompt-eval render path that now passes source metadata and
+   full chunk text without benchmark-only `Case id` or `Case input` wrappers;
+   and
 3. the live candidate budget (`max_candidates_per_case = 10`).
 
 On the full chunk-003 strict-omit case, the new lane reproduced the live
@@ -374,15 +481,15 @@ After those fixes, the focused full-chunk parity rerun still returned:
 That means the remaining live/prompt-eval gap is no longer explained by the
 obvious parity bugs the repo had already found.
 
-The remaining differences are now narrow:
+The old prompt-eval wrapper differences were real and have now been repaired:
 
-1. the prompt-eval user message still wraps the live source payload inside a
-   `Case input` block and adds `Case id`; and
-2. the live and prompt-eval calls are still separate provider invocations, so
-   model variance or runtime-path differences may still matter.
+1. extraction prompt_eval input no longer adds `Case id:` by default;
+2. extraction prompt_eval templates no longer prepend `Case input:`; and
+3. the remaining rendered user-surface difference on chunk `003` is only a
+   trailing newline, not a content-line mismatch.
 
 So yes, there was an onto-canon6 prompt-eval parity problem worth fixing. But
-after the fix, the evidence no longer supports the stronger claim that this is
+after the repair, the evidence no longer supports the stronger claim that this is
 just a generic prompt-eval defect. The repo now needs either:
 
 1. a deeper live-vs-parity call comparison; or
@@ -496,61 +603,6 @@ Build in this order:
 8. Current evidence suggests candidate-budget parity and longer chunk context
    are bigger sources of transfer failure than the remaining system-prompt
    wording differences.
-
-## gemini-3-flash-preview Validation (2026-04-01)
-
-Tested gemini-3-flash-preview with the improved extraction prompt (entity
-discrimination instruction + list[RoleEntry] schema) on real PSYOP benchmark
-cases:
-
-- **Case 0** (Admiral Olson / USSOCOM, 204 chars): 1 correct candidate
-  (`gp:holds_role`), 0 noise entities
-- **Case 1** (critics / concerns, 167 chars): 0 candidates — correctly omitted
-  (sentiment without named entity action)
-
-The prose-heavy analytical-section false positives (unattributed
-`oc:express_concern`, loose `oc:limit_capability`) that dominated earlier
-testing are no longer produced. The entity discrimination instruction ("only
-extract named, specific real-world things") combined with gemini-3-flash's
-higher extraction quality resolves the Plan 0014 noise issue.
-
-**Previous noise issues from synthetic corpus also resolved**: gemini-3-flash
-produced 0 noise clusters in the scale test (vs 4 with gemini-2.0-flash and 1
-with gemini-2.5-flash-lite).
-
-## Transfer Evaluation (2026-04-01) — ADR 0023 gate
-
-Chunk-level transfer evaluation on 5 real PSYOP benchmark chunks:
-
-| Metric | Result |
-|---|---|
-| Model | gemini/gemini-3-flash-preview |
-| Prompt | text_to_candidate_assertions.yaml (with entity discrimination) |
-| Chunks evaluated | 5 |
-| Candidates extracted | 2 (from chunks with extractable assertions) |
-| Noise candidates | **0** (0% noise rate) |
-| Errors | 0 |
-| Correct omissions | 3/3 (alias-only, unattributed opinion) |
-
-**Transfer evidence supports prompt promotion.** The improved extraction prompt
-with entity discrimination instruction + gemini-3-flash-preview + list[RoleEntry]
-schema produces zero noise on real PSYOP text. Correct omission behavior
-confirmed (alias-only text and unattributed opinions correctly produce 0
-candidates).
-
-**Promoted as production default:** config.yaml now uses this combination.
-
-## Known Issues (2026-03-31)
-
-1. **Noise entities from descriptive phrases**: LLM extraction produces entities
-   like "several initiatives to modernize its force structure", "met",
-   "a ceremony". These survive structural validation because they have valid
-   entity types. Two mitigation paths: (a) judge filter rejects as unsupported
-   (judge filter now fixed — was broken by API mismatch), (b) extraction prompt
-   needs discriminating instruction to avoid treating noun phrases as entities.
-
-2. ~~Module entrypoint missing~~ — RESOLVED (2026-04-01). `__main__.py` exists.
-   Both `python -m onto_canon6` and `onto-canon6` console script work.
 
 ## Non-Goals
 

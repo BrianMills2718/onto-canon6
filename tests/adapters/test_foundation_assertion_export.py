@@ -15,6 +15,7 @@ from onto_canon6.adapters.foundation_assertion_export import (
 )
 from onto_canon6.core.graph_models import PromotedGraphAssertionRecord
 from onto_canon6.pipeline import ProfileRef
+from tests.compatibility_helpers import load_json_fixture
 
 
 def _make_assertion(
@@ -171,6 +172,10 @@ def test_alias_lookup_enriches_entity_fillers() -> None:
     # Parent entity has no aliases — alias_ids should be absent.
     parent_filler = result.roles["parent"][0]
     assert "alias_ids" not in parent_filler
+    assert result.model_dump(exclude_none=True) == load_json_fixture(
+        "foundation_ir",
+        "minimal_foundation_assertion.json",
+    )
 
 
 def test_alias_lookup_none_is_backward_compatible() -> None:
