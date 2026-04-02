@@ -9,10 +9,10 @@ runtime.
 1. `README.md`
 2. `docs/SUCCESSOR_CHARTER.md`
 3. `docs/STATUS.md`
-4. `docs/plans/0025_cross_document_entity_resolution.md` (current active work)
-5. `docs/plans/0024_post_cutover_program.md`
-6. `docs/plans/0005_v1_capability_parity_matrix.md`
-7. `docs/plans/0001_successor_roadmap.md`
+4. `docs/plans/0024_post_cutover_program.md` (post-cutover authority — all lanes complete)
+5. `docs/plans/0005_v1_capability_parity_matrix.md` (capability vision ledger)
+6. `HANDOFF.md` (session handoff — current priorities)
+7. `docs/plans/0001_successor_roadmap.md` (historical bootstrap)
 
 ## Commands
 
@@ -52,19 +52,18 @@ config/
   classification, chunk-level transfer evaluation).
 - Predicate Canon bridge, ancestor-aware evaluator, and Digimon export
   adapter operational.
-- **Active work**: extraction quality hardening (Plan 0014), vision-gap closure
-  tracking (Plan 0020), the post-cutover execution program (Plan 0024), and
-  the explicit schema-stability gate (Plan 0026). The chunk-level transfer
-  evaluation requirement remains active through ADR 0023 and Plans 0024/0014
-  even though there is no standalone Plan 0019 file.
+- **Post-cutover program complete (2026-04-01)**: All 5 lanes of Plan 0024
+  are done. Plans 0025 (entity resolution, 100%/100%), 0026 (schema stability,
+  9 tests), and 0027 (governed baseline alignment) are complete. Transfer
+  evaluation passed and prompt promoted. See HANDOFF.md for current priorities.
 
-## Strategic Direction (2026-03-31)
+## Strategic Direction (2026-04-02)
 
-- **Architecture is sound. Current priority: cross-document entity resolution
-  and scale test.** Plan 0025 implements KGGen-style LLM clustering over
-  promoted entities, then tests on a 20-50 document corpus to prove onto-canon6's
-  value proposition (cross-doc entity resolution, contradiction detection, typed
-  reasoning). This is the prerequisite for consumer adoption (Plan 0024 Lane 2).
+- **Architecture is sound. Value proposition is proven.** Plan 0025 demonstrated
+  100% precision/100% recall entity resolution, +70% cross-doc QA vs bare
+  extraction. Plans 0024-0027 all complete. Current priority: cross-project
+  integration (epistemic-contracts, grounded-research pipeline) and documentation
+  consolidation.
 - **Default operating mode is `review_mode: llm` with `enable_judge_filter: true`.**
   Human review is for debugging, not production. Auto-accept is for bulk
   throughput when you trust the schema. LLM-judge is the standard mode.
@@ -200,43 +199,62 @@ happens.
    resolution *infrastructure*. Export adapters wire the identity subsystem.
    Consumers should not have to reimplement dedup.
 
-## Active Execution Block (2026-04-01 night — ecosystem-wide)
+## Active Execution Block (2026-04-02 — cross-project integration)
 
 **CONTINUOUS AUTONOMOUS EXECUTION. DO NOT STOP.**
 
-onto-canon6 plans are complete. Remaining work is cross-project integration.
+All onto-canon6 internal plans (0024-0027) are complete. This block focuses on
+cross-project integration, documentation consolidation, and long-term planning.
 
-Phases A-P complete (42 commits). Remaining work:
+**Previous block (2026-04-01):** Phases A-T complete (~55 commits). Entity
+resolution proven (100%/100%), schema stability gate shipped (9 tests),
+transfer evaluation passed, browsing CLI shipped, docs cleaned up.
 
-### Phase Q: Concept/entity browsing CLI
-**Goal**: Agents and users can browse what's in the promoted graph — entities,
-assertions, identity clusters. This is the next-active capability from Lane 5.
-**Success**: CLI commands for: list-entities (with type filter), search-entities
-(name substring), get-entity-detail (assertions + identity + aliases).
-**Approach**: Add to cli.py. Query promoted graph store directly.
+### Current Phases (2026-04-02)
 
-### Phase R: Plan 0024 Lane 4 — Extraction quality promotion gate
-**Goal**: Formally promote the current extraction prompt + model combination
-with transfer evidence per ADR 0023.
-**Success**: Chunk-level transfer evaluation documented. Current prompt/model
-promoted as the production default with evidence.
-**Approach**: Run extraction on 2+ real PSYOP chunks, score with benchmark
-evaluator, document transfer evidence in Plan 0014.
+#### Phase 1: Documentation inconsistency cleanup
+**Goal**: Fix all stale references, dates, and cross-doc contradictions after
+55 commits in 3 days. A fresh agent session should not be confused by stale docs.
+**Success**: All top-level docs (CLAUDE.md, STATUS.md, README.md, plans/CLAUDE.md,
+HANDOFF.md) are self-consistent, current, and point to the same execution state.
 
-### Phase S: Clean up docs/runs/
-**Goal**: Remove intermediate/superseded scale test results. Keep only the
-final definitive results.
-**Success**: docs/runs/ has one result per strategy (exact, llm, exact+llm_review,
-bare_extraction, cross_doc_qa). No duplicates.
+#### Phase 2: epistemic-contracts repo cleanup
+**Goal**: Ship the shared library properly — README, .gitignore, no committed
+build artifacts.
+**Success**: `pip install -e ~/projects/epistemic-contracts` works, README
+explains purpose, no egg-info in git.
 
-### Phase T: Push to GitHub
-**Goal**: Push all 40+ commits to remote.
-**Success**: `git push` succeeds.
+#### Phase 3: E2E integration test — grounded-research → onto-canon6
+**Goal**: Prove the full cross-project pipeline with real data, not just
+smoke-tested adapter objects. This is the #1 HANDOFF priority.
+**Success**: Real grounded-research output → shared_export.py → onto-canon6
+grounded_research_import.py → assertions visible in promoted graph.
+
+#### Phase 4: Plan 56 Phase 5 — research_v3 boundary adapter
+**Goal**: Complete the last phase of the shared epistemic infrastructure plan.
+**Success**: research_v3 Finding/Claim exports to shared ClaimRecord with FtM
+entity IDs preserved as external_ids.
+
+#### Phase 5: Evidence quality scoring extraction
+**Goal**: Extract grounded-research's recency/staleness scoring to
+epistemic-contracts as shared utility functions.
+**Success**: Scoring logic importable from epistemic-contracts, tested.
+
+#### Phase 6: Long-term roadmap consolidation
+**Goal**: Write a clear, unambiguous roadmap for the next 3-6 months. Define
+what "done" looks like for onto-canon6.
+**Success**: One document that a new agent session can read to understand
+priorities, dependencies, and acceptance criteria.
+
+#### Phase 7: Final verification, commit, push
+**Goal**: Run full test suites, verify doc consistency, push everything.
+**Success**: 451+ tests pass, all repos pushed.
 
 **Pre-made decisions:**
-- Model: `gemini/gemini-3-flash-preview`
+- Model: `gemini/gemini-3-flash-preview` for any LLM calls
 - Config: `review_mode: llm`, `enable_judge_filter: true`, `require_llm_review: true`
 - Commit each verified phase immediately
+- Do not stop between phases unless a real blocker requires user input
 
 ## Principles
 

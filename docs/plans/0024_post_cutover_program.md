@@ -1,8 +1,8 @@
 # Post-Cutover Program
 
-Status: active
+Status: complete (all 5 lanes done)
 
-Last updated: 2026-03-31
+Last updated: 2026-04-02
 Workstream: successor completion after runtime ownership cutover
 
 ## Purpose
@@ -262,6 +262,13 @@ not become undirected churn.
 1. prompt churn without durable evidence;
 2. promotion based on one slice that does not transfer;
 3. benchmark results that collapse different failure classes into one score.
+
+#### Status
+
+Completed 2026-04-01. Transfer evaluation on 5 real PSYOP chunks with
+gemini-3-flash-preview: 0 noise, 100% precision, correct omission behavior.
+Prompt promoted as production default with evidence documented in Plan 0014.
+See commit `fdd3ec9`.
 
 ### Lane 5. Deferred Parity Reprioritization
 

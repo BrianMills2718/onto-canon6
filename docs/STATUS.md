@@ -1,6 +1,6 @@
 # onto-canon6 Status
 
-Updated: 2026-03-31
+Updated: 2026-04-02
 
 ## Current Program
 
@@ -293,26 +293,33 @@ Planning companion:
 
 ## What Is Not Proven Yet
 
-Still missing:
+Still missing (updated 2026-04-02):
 
-1. extraction quality improvement — API reliability (55% timeout rate in
-   experiment) and empty-roles issue are the primary bottlenecks, not prompt
-   quality. Operational prompt works; experiment variants need rework;
-2. one-command consumer-side adoption flow; the stitched proof exists, but no
-   consumer currently runs the full path as part of its own normal workflow;
-3. entity resolution across 2+ independent extraction runs with fuzzy or
-   external-reference strategies; exact-name auto-resolution is proven, broader
-   resolution is not;
-4. cross-investigation conflict detection on real data; single-run tension
+1. **cross-project integration test** — epistemic-contracts adapters
+   (grounded-research → onto-canon6) are smoke-tested with manually constructed
+   objects, NOT tested against actual pipeline output;
+2. one-command consumer-side adoption flow; the DIGIMON v1 seam is documented
+   and verified, but no consumer runs the full path as part of its own normal
+   workflow automatically;
+3. cross-investigation conflict detection on real data; single-run tension
    detection is proven, but contradiction policy across multiple investigations
    is not;
-5. broader benchmark coverage beyond 17 PSYOP military cases;
-6. the broader v1 concept/belief graph and system-belief layer beyond the
+4. broader benchmark coverage beyond 25-doc synthetic PSYOP corpus;
+5. the broader v1 concept/belief graph and system-belief layer beyond the
    first promoted-assertion/entity slice;
-7. broader producer-side semantic adapters beyond pack-driven canonicalization;
-8. any richer interactive surface beyond the thin MCP slice;
-9. OpenClaw mission-runner consumption of repo-local `.openclaw` contracts;
-10. temporal/inference recovery (deferred by ADR).
+6. broader producer-side semantic adapters beyond pack-driven canonicalization;
+7. any richer interactive surface beyond the thin MCP slice + browsing CLI;
+8. OpenClaw mission-runner consumption of repo-local `.openclaw` contracts;
+9. temporal/inference recovery (deferred by ADR);
+10. entity resolution at 500+ document scale (deferred to Plan 0025a).
+
+Resolved since last update:
+- extraction quality: gemini-3-flash-preview + entity discrimination prompt
+  produces 0 noise, 100% precision/recall. Empty-roles regression fixed
+  (list[RoleEntry] workaround). Transfer evaluation passed.
+- entity resolution: LLM clustering achieves 100% precision/recall on 25-doc
+  synthetic corpus (Plan 0025 complete).
+- schema stability: 9 compatibility tests across 4 surfaces (Plan 0026 complete).
 
 ## Current Donor Dependencies
 
@@ -403,45 +410,23 @@ The authoritative parity ledger for the broader successor now lives in
    semantic adapters and richer pack metadata are still not implemented.
 11. Phase 15 recovered promoted-assertion corroboration/tension and broader
    disposition state, but temporal/inference are still explicitly deferred.
-12. First-pass extraction quality is below baseline: 37.5% acceptance rate
-   on Stage 1 corpus, with distinct failure modes (alias self-references,
-   wrong predicate choices, unattributed opinion claims). Active plan:
-   `docs/plans/0014_extraction_quality_baseline.md`.
+12. First-pass extraction quality was 37.5% acceptance on Stage 1 (early run);
+   now at 100% precision/0 noise with gemini-3-flash-preview + entity
+   discrimination. Plan 0014 transfer evaluation passed 2026-04-01.
 
-## Immediate Next Step
+## Immediate Next Step (2026-04-02)
 
-The current roadmap is now proved through Phase 15.
+The post-cutover program (Plan 0024, all 5 lanes) is complete. The immediate
+priorities are now cross-project integration and documentation consolidation:
 
-The first real non-fixture workflow run has now been completed over local PSYOP
-research outputs. See:
+1. **E2E integration test**: grounded-research → epistemic-contracts →
+   onto-canon6 pipeline with real data (adapters are smoke-tested only);
+2. **Plan 56 Phase 5**: Wire research_v3 → epistemic-contracts boundary;
+3. **Evidence quality scoring**: Extract to epistemic-contracts as shared utils;
+4. **Long-term roadmap**: Consolidate into one clear document.
 
-1. `docs/plans/0011_first_real_run_psyop_stage1.md`
-2. `docs/runs/2026-03-18_psyop_stage1_run_summary.md`
-3. `docs/runs/2026-03-18_psyop_stage1_friction_log.md`
-
-A second real cross-project consumer run has also been completed over local
-`research-agent` Shield AI relationship output. See:
-
-1. `docs/plans/0012_research_agent_shield_ai_whygame_run.md`
-2. `docs/runs/2026-03-18_research_agent_shield_ai_whygame_run_summary.md`
-3. `docs/runs/2026-03-18_research_agent_shield_ai_whygame_friction_log.md`
-
-The immediate next step is the **extraction quality baseline** work described
-in `docs/plans/0014_extraction_quality_baseline.md`. This is driven by
-Stage 1 friction log entries 5 and 7:
-
-1. prompt hardening for observed error patterns (alias self-references,
-   predicate disambiguation, entity type boundaries);
-2. typed-but-unidentified entity fillers at the extraction boundary so the
-   model can express “I know this is a person but I can't name them”;
-3. profile-level policy for whether unidentified entity fillers pass
-   validation — strict profiles reject them, permissive profiles let them
-   through to review;
-4. prompt rendering of the active unidentified-filler policy.
-
-The target is >50% acceptance rate on the Stage 1 corpus, not perfection.
-The review workflow exists precisely because first-pass extraction will
-never be perfect.
+See `HANDOFF.md` for full prioritized list and `CLAUDE.md` Active Execution
+Block for the current session plan.
 
 Broader roadmap rules remain:
 

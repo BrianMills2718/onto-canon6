@@ -1,8 +1,8 @@
 # Extraction Quality Baseline
 
-Status: active
+Status: active (transfer eval passed; ongoing quality work)
 
-Last updated: 2026-03-28
+Last updated: 2026-04-02
 Workstream: post-bootstrap extraction R&D (ADR-0022)
 
 ## Purpose
