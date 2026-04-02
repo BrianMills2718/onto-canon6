@@ -2,7 +2,7 @@
 
 ## Session Focus
 
-Plans `0051` closeout and Plan `0052` activation in the isolated worktree
+Plan `0052` closeout and Plan `0053` activation in the isolated worktree
 branch `codex/onto-canon6-integration-planning`.
 
 ## What Landed
@@ -22,36 +22,42 @@ Committed and documented in the isolated worktree:
 5. the decision-grade closeout note now exists:
    - `docs/runs/2026-04-02_analytical_section_suppression_decision.md`
 6. Plan `0051` is now complete as a failed bounded suppression attempt;
-7. Plan `0052` is now the active bounded execution surface.
+7. Plan `0052` is now complete as a narrowing block with a smaller but still
+   invalid family;
+8. Plan `0053` is now the active bounded execution surface.
 
 ## Current State
 
 1. The compact operational-parity lane is still **not promotable**.
 2. Plan `0051` did **not** shrink the chunk-003 spillover family.
-3. Compact-operational-parity before/after observability comparison now shows:
+3. Plan `0052` did shrink it, but not enough:
    - before (`90003aea587c`): 4 candidates
    - after (`b349a4681e04`): 6 candidates
-4. The widened family is narrower and more specific than "analytical section":
-   - `express_concern` is still inferred from governance reactions
-   - `limit_capability` is still inferred from abstract result nouns
-   - aggregate staffing still leaks into `belongs_to_organization`
-5. The active frontier is therefore predicate-local gating on the repaired
-   chunk-003 path under Plan `0052`, not more prompt-path plumbing or another
-   section-heading pass.
+   - latest (`bb8be70d4504`): 5 candidates
+4. The remaining family is narrower and more specific than generic
+   predicate-local spillover:
+   - `limit_capability` still accepts abstract result nouns
+   - governance-reaction `express_concern` still survives
+   - staffing-summary residue shifted into citation/report `send_report`
+5. The active frontier is therefore hard-negative abstract-result and
+   citation/report suppression on the repaired chunk-003 path under Plan
+   `0053`, not more prompt-path plumbing, another section-heading pass, or a
+   generic predicate-local rewrite.
 
 ## Recommended Next Step
 
 If work continues:
 
 1. stay on `codex/onto-canon6-integration-planning`;
-2. execute Plan `0052` in order:
-   - freeze the `0051` compact-operational-parity before/after family
-   - name one predicate-local spillover family
-   - land one bounded predicate-local revision
+2. execute Plan `0053` in order:
+   - freeze the `0052` compact-operational-parity family
+   - name one abstract-result/citation spillover family
+   - land one bounded hard-negative revision
    - rerun the one-case chunk-003 diagnostic
    - recover the compact parity response from observability
 3. keep all worktree runtime commands on `PYTHONPATH=src`;
-4. do not reopen `Case id`, `Case input`, or generic section-heading parity
+4. use `LLM_CLIENT_TIMEOUT_POLICY=allow` for the one-case rerun in this block;
+5. do not reopen `Case id`, `Case input`, or generic section-heading parity
    work unless new evidence directly contradicts the prompt-parity repair
    decision.
 

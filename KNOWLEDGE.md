@@ -229,6 +229,24 @@ as predicate-local gating (`express_concern` concern-act requirement,
 section-level omission pass.
 
 ### 2026-04-02 — codex — bug-pattern
+Plan 0052 proved that predicate-local gating can shrink the chunk-003 family
+without fixing it. The compact-operational-parity family went from 6
+candidates to 5, but the remaining errors became clearer: abstract evaluative
+`limit_capability` fillers (`effectiveness`, `impact`, `credibility`) survived,
+governance-reaction `express_concern` survived in combined form, and the old
+staffing-summary leak shifted into a citation-driven `send_report` candidate.
+Treat the next block as hard-negative abstract-result and citation/report
+suppression, not another generic predicate-local rewrite.
+
+### 2026-04-02 — codex — workaround
+The bounded one-case prompt-eval rerun for Plan 0052 stalled under
+`LLM_CLIENT_TIMEOUT_POLICY=ban` after only logging the baseline variant. The
+same command completed successfully with `LLM_CLIENT_TIMEOUT_POLICY=allow`.
+For future one-case chunk-003 reruns in this worktree, use
+`LLM_CLIENT_TIMEOUT_POLICY=allow` unless the active plan is explicitly testing
+timeout behavior.
+
+### 2026-04-02 — codex — bug-pattern
 Plan 0046 proved the prompt_eval-only `Case id:` line was materially changing
 chunk-003 extraction behavior. Replaying the captured prompt_eval async call
 without only that line flipped the parsed result from `0` candidates to `5`.

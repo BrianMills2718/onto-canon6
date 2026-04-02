@@ -3,32 +3,32 @@
 ## Current 24h Execution Block
 
 Source of truth:
-- `docs/plans/0052_24h_predicate_locality_gate_block.md`
+- `docs/plans/0053_24h_abstract_result_and_citation_block.md`
 
-### Phase 1 — Freeze The Predicate-Local Residual
-- [ ] Freeze the `0051` compact-operational-parity before/after family
-- [ ] Name one explicit predicate-local spillover family
+### Phase 1 — Freeze The Post-0052 Residual
+- [ ] Freeze the `0052` compact-operational-parity family
+- [ ] Name one explicit abstract-result/citation spillover family
 - [ ] Commit verified phase
 
-### Phase 2 — Land One Bounded Predicate-Local Revision
-- [ ] Tighten `express_concern` to explicit concern/speech-act evidence
-- [ ] Tighten `limit_capability` to concrete operational capability or named activity evidence
+### Phase 2 — Land One Bounded Hard-Negative Revision
+- [ ] Forbid abstract evaluative `limit_capability` fillers
+- [ ] Forbid citation/report-style `send_report` without an explicit delivery act
 - [ ] Preserve the case-id and wrapper parity repairs
 - [ ] Commit verified phase
 
 ### Phase 3 — Re-run The Chunk-003 Diagnostic
-- [ ] Run one bounded post-change chunk-003 prompt_eval diagnostic
+- [ ] Run one bounded post-change chunk-003 prompt_eval diagnostic with `LLM_CLIENT_TIMEOUT_POLICY=allow`
 - [ ] Capture the new artifact
 - [ ] Recover the compact-operational-parity response from observability
 - [ ] Commit verified phase
 
 ### Phase 4 — Classify The Result
-- [ ] Decide whether the predicate-local change improved, failed, or shifted the blocker
+- [ ] Decide whether the abstract-result/citation change improved, failed, or shifted the blocker
 - [ ] Record any narrow uncertainty separately
 - [ ] Commit verified phase
 
 ### Phase 5 — Closeout
-- [ ] Write the decision-grade predicate-local gating note
+- [ ] Write the decision-grade abstract-result/citation gating note
 - [ ] Refresh docs/status/handoff
 - [ ] Mark execution block complete
 - [ ] Commit verified phase

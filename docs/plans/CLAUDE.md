@@ -14,7 +14,8 @@ This subtree owns active gaps, acceptance criteria, and verification notes.
 | 0025a | [Entity Resolution Scale-Out](0025a_entity_resolution_scale_out.md) | Deferred (activates after 0025 Phase 4) |
 | 0027 | [Deferred Parity Reprioritization](0027_deferred_parity_reprioritization.md) | Active (Lane 5 execution surface; next-active order now explicit) |
 | 0028 | [Query And Browse Surface](0028_query_browse_surface.md) | Active (first read-only slice landed and proved; wider hardening still open) |
-| 0052 | [24h Predicate-Locality Gate Block](0052_24h_predicate_locality_gate_block.md) | Active (section-level suppression failed; predicate-local spillover gating now active) |
+| 0053 | [24h Abstract-Result And Citation Block](0053_24h_abstract_result_and_citation_block.md) | Active (predicate-local gating narrowed the family, but abstract-result and citation spillover remain) |
+| 0052 | [24h Predicate-Locality Gate Block](0052_24h_predicate_locality_gate_block.md) | Complete (family shrank from 6 to 5, but abstract-result and citation spillover remained) |
 | 0051 | [24h Analytical Section Suppression Block](0051_24h_analytical_section_suppression_block.md) | Complete (section-level suppression worsened the compact-operational-parity spillover family) |
 | 0050 | [24h Post-Parity Semantic Recovery Block](0050_24h_post_parity_semantic_recovery_block.md) | Complete (changed chunk-003 family without improving the score gate) |
 | 0049 | [24h Post-Repair Transfer Block](0049_24h_post_repair_transfer_block.md) | Complete (post-repair chunk-003 rerun restored prompt_eval output and moved blocker back to semantics) |

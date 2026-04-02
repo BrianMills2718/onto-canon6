@@ -1,12 +1,12 @@
 # 24h Predicate-Locality Gate Block
 
-Status: active
+Status: complete
 Phase status:
-- Phase 1 pending
-- Phase 2 pending
-- Phase 3 pending
-- Phase 4 pending
-- Phase 5 pending
+- Phase 1 complete
+- Phase 2 complete
+- Phase 3 complete
+- Phase 4 complete
+- Phase 5 complete
 
 Last updated: 2026-04-02
 Workstream: tighten predicate-local gating for chunk-003 semantic spillover
@@ -151,3 +151,23 @@ This block is complete only when:
 2. the worktree is clean;
 3. the repo contains committed predicate-local gating artifacts and a decision
    note.
+
+## Outcome
+
+Plan `0052` is complete and useful, but not sufficient.
+
+It narrowed the compact-operational-parity family from `6` candidates to `5`
+and collapsed the split concern-speaker family, but it did not remove the core
+semantic residual:
+
+1. abstract-result `limit_capability` candidates survived;
+2. governance-reaction `express_concern` survived in combined form; and
+3. the old staffing-summary `belongs_to_organization` spillover shifted into a
+   citation/report-style `send_report` spillover.
+
+Decision artifact:
+
+- `docs/runs/2026-04-02_predicate_locality_gate_decision.md`
+
+The next active bounded block is therefore even narrower:
+`docs/plans/0053_24h_abstract_result_and_citation_block.md`.

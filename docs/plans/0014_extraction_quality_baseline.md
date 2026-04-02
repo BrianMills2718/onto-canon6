@@ -100,8 +100,10 @@ through `0049` then removed the remaining prompt-path blockers (`sync/async`
 speculation, prompt_eval-only `Case id`, and the prompt_eval `Case input`
 wrapper). Plan `0051` then proved that another section-level suppression pass
 was not enough and actually widened the compact-operational-parity spillover
-family. The remaining blocker is now predicate-local semantic gating on the
-repaired chunk-003 path, tracked under Plan `0052`.
+family. Plan `0052` then proved predicate-local gating can shrink that family,
+but not eliminate it. The remaining blocker is now hard-negative suppression
+for abstract-result and citation/report spillovers on the repaired chunk-003
+path, tracked under Plan `0053`.
 
 ## Current State
 

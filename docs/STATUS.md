@@ -48,9 +48,12 @@ Current post-cutover program state:
     blockers on chunk `003`;
 14. Plan `0051` is now complete and proved that section-level analytical
     suppression did not shrink the repaired chunk-003 spillover family;
-15. the remaining active program gate is now predicate-local semantic gating
-    on the repaired chunk-003 path under Plans `0014` and `0052`, not another
-    prompt-path or section-heading diagnosis block.
+15. Plan `0052` is now complete and proved predicate-local gating can shrink
+    the spillover family, but not close it;
+16. the remaining active program gate is now hard-negative abstract-result and
+    citation/report suppression on the repaired chunk-003 path under Plans
+    `0014` and `0053`, not another prompt-path, section-heading, or generic
+    predicate-local diagnosis block.
 
 ## What Is Proven
 
