@@ -3,56 +3,62 @@
 Implementation plans and parity/extraction work tracking for `onto-canon6`.
 
 This subtree owns active gaps, acceptance criteria, and verification notes.
-`docs/plans/AGENTS.md` mirrors this file for Codex-facing loading.
 
 ## Active Plans
 
 | # | Plan | Status |
 |---|------|--------|
-| 0024 | [Post-Cutover Program](0024_post_cutover_program.md) | Active (Lanes 1-3 done; Lane 4 evidence gate and Lane 5 reprioritization still pending) |
-| 0025 | [Cross-Document Entity Resolution](0025_cross_document_entity_resolution.md) | Complete (Phase 4 value proof and rerun-stability closure achieved; 0025a remains deferred) |
-| 0025a | [Entity Resolution Scale-Out](0025a_entity_resolution_scale_out.md) | Deferred (activates after 0025 Phase 4) |
-| 0027 | [Deferred Parity Reprioritization](0027_deferred_parity_reprioritization.md) | Active (Lane 5 execution surface; queryability remains next-active) |
-| 0028 | [Query And Browse Surface](0028_query_browse_surface.md) | Active (browse widening landed; next narrowed follow-on is source-artifact query unless reprioritized) |
-| 0064 | [24h Identity / External-Reference Browse Block](0064_24h_identity_external_reference_browse_block.md) | Complete (identity/external-reference browse and search landed with operational proof) |
-| 0063 | [24h Query Browse Widening Block](0063_24h_query_browse_widening_block.md) | Complete (entity browse, source-centric assertion browse, CLI/MCP widening, real-proof) |
-| 0062 | [24h Default Extraction Cutover Block](0062_24h_default_extraction_cutover_block.md) | Complete (proved compact operational-parity lane is now the repo default) |
-| 0061 | [24h Personnel-Membership Enforcement Block](0061_24h_personnel_membership_enforcement_block.md) | Complete (staffing-summary membership leak closed; chunk 003 now transfers negative without accepted spillover) |
-| 0060 | [24h Limit-Capability Enforcement Block](0060_24h_limit_capability_enforcement_block.md) | Complete (bounded guard removed the abstract limit-capability family; staffing-summary membership leak remains) |
-| 0059 | [24h Live Chunk-003 Semantic Residual Block](0059_24h_live_chunk003_semantic_residual_block.md) | Complete (staffing leak removed, chunk 003 downgraded from positive to mixed, three abstract limit-capability claims remain) |
-| 0058 | [24h Live Review Alignment Block](0058_24h_live_review_alignment_block.md) | Complete (review-mode acceptance fixed; chunk 003 residual shrank but remained positive) |
-| 0057 | [24h Corrected-Fixture Transfer Recertification Block](0057_24h_corrected_fixture_transfer_recertification_block.md) | Complete (chunk 002 remained positive; chunk 003 transfer report was a false positive under misaligned live review semantics) |
-| 0056 | [24h Corrected-Fixture Semantic Recovery Block](0056_24h_corrected_fixture_semantic_recovery_block.md) | Complete (benchmark lead restored on corrected fixture; transfer recertification now blocks promotion) |
-| 0055 | [24h Chunk-017 Contract Cutover And Rebaseline Block](0055_24h_chunk017_contract_cutover_and_rebaseline_block.md) | Complete (corrected fixture rerun proved the next blocker is the smaller 001/002/007/008 family) |
-| 0054 | [24h Full-Chunk Strict-Omit Contract Audit](0054_24h_full_chunk_strict_omit_contract_audit.md) | Complete (chunk 017 is a mixed-content contract question; user approved removal/demotion) |
-| 0053 | [24h Abstract-Result And Citation Block](0053_24h_abstract_result_and_citation_block.md) | Complete (hard-negative prompt revision failed; full-chunk contract audit activated) |
-| 0052 | [24h Predicate-Locality Gate Block](0052_24h_predicate_locality_gate_block.md) | Complete (family shrank from 6 to 5, but abstract-result and citation spillover remained) |
-| 0051 | [24h Analytical Section Suppression Block](0051_24h_analytical_section_suppression_block.md) | Complete (section-level suppression worsened the compact-operational-parity spillover family) |
-| 0050 | [24h Post-Parity Semantic Recovery Block](0050_24h_post_parity_semantic_recovery_block.md) | Complete (changed chunk-003 family without improving the score gate) |
-| 0049 | [24h Post-Repair Transfer Block](0049_24h_post_repair_transfer_block.md) | Complete (post-repair chunk-003 rerun restored prompt_eval output and moved blocker back to semantics) |
-| 0048 | [24h Prompt-Wrapper Parity Block](0048_24h_prompt_wrapper_parity_block.md) | Complete (prompt_eval `Case input:` wrapper removed from extraction templates) |
-| 0047 | [24h Case-Metadata Parity Block](0047_24h_case_metadata_parity_block.md) | Complete (`Case id:` removed from extraction prompt_eval input by default) |
-| 0046 | [24h Sync/Async And Case-Id Residual Block](0046_24h_sync_async_and_caseid_residual_block.md) | Complete (prompt metadata, not sync/async API path, was dominant) |
-| 0045 | [24h Extraction-Path Block](0045_24h_extraction_path_block.md) | Complete (temperature/source-ref alignment proved real but insufficient) |
-| 0044 | [24h Wrapper Alignment Block](0044_24h_wrapper_alignment_block.md) | Complete (wrapper alignment ruled out as main rescue lever) |
-| 0043 | [24h Live-Path Divergence Block](0043_24h_live_path_divergence_block.md) | Complete (same-model live divergence localized; review/judge secondary) |
-| 0042 | [24h Semantic Transfer Residual Block](0042_24h_semantic_transfer_residual_block.md) | Complete (bounded prompt revision did not recover live chunk transfer) |
-| 0041 | [24h Full-Chunk Transfer Parity Block](0041_24h_full_chunk_transfer_parity_block.md) | Complete (prompt-surface uncertainty closed; semantic residual now dominant) |
-| 0040 | [24h Extraction Transfer Certification Block](0040_24h_extraction_transfer_certification_block.md) | Complete (chunk 002 positive control proved; compact lane still not promotable) |
-| 0030 | [24h Entity Resolution Value-Proof Block](0030_24h_entity_resolution_value_proof_block.md) | Complete (Plan 0025 now has decision-grade evidence) |
-| 0031 | [24h Entity Resolution Hardening Block](0031_24h_entity_resolution_hardening_block.md) | Complete (judge parity fixed, false-merge family removed, rerun decision recorded) |
-| 0032 | [24h Entity Resolution Recall Recovery Block](0032_24h_entity_resolution_recall_recovery_block.md) | Complete (gate-clearing rerun landed; docs survived, recall and answerability improved) |
-| 0033 | [24h Entity Resolution Answerability Block](0033_24h_entity_resolution_answerability_block.md) | Complete (localized remaining miss through a failed-measurement rerun) |
-| 0034 | [24h Entity Resolution Clean Measurement Block](0034_24h_entity_resolution_clean_measurement_block.md) | Complete (measurement-valid rerun landed; residual misses localized) |
-| 0035 | [24h Entity Resolution Alias-Family Completion Block](0035_24h_entity_resolution_alias_family_completion_block.md) | Complete (closed q02/q04/q08; fresh clean rerun exposed a new same-surname blocker) |
-| 0036 | [24h Entity Resolution Negative-Control Recovery Block](0036_24h_entity_resolution_negative_control_recovery_block.md) | Complete (same-surname safety restored; q05/q06 recovered on fresh rerun) |
-| 0037 | [24h Entity Resolution False-Split Cleanup Block](0037_24h_entity_resolution_false_split_cleanup_block.md) | Complete (Rodriguez and Washington residual families closed; fresh rerun exposed a new blocker family) |
-| 0038 | [24h Entity Resolution Surface Stability Block](0038_24h_entity_resolution_surface_stability_block.md) | Complete (best rerun improved the owned family; next rerun exposed a broader stability problem) |
-| 0039 | [24h Entity Resolution Rerun Stability Block](0039_24h_entity_resolution_rerun_stability_block.md) | Complete (two fresh reruns held the question/safety gate) |
-| 0014 | [Extraction Quality Baseline](0014_extraction_quality_baseline.md) | Active (explicit promotion gate defined; no active transfer-cleanup block remains) |
-| 0020 | [Vision Gap Closure](0020_vision_gap_closure.md) | Active (tracking) |
+| 0014 | [Extraction Quality Baseline](0014_extraction_quality_baseline.md) | Active (promotion gate defined; compact default promoted via Plan 0062) |
+| 0020 | [Vision Gap Closure](0020_vision_gap_closure.md) | Active (tracking — Gaps 1-9 closed, Gap 10 partial) |
+| 0028 | [Query And Browse Surface](0028_query_browse_surface.md) | Active (browse widening landed; source-artifact query next) |
+| 0025a | [Entity Resolution Scale-Out](0025a_entity_resolution_scale_out.md) | Deferred (activates when corpus exceeds 500 docs) |
 
-## Completed/Historical
+## Completed Plans (recent)
+
+| # | Plan | Completed |
+|---|------|-----------|
+| 0064 | Identity/External-Reference Browse | 2026-04-02 |
+| 0063 | Query Browse Widening | 2026-04-02 |
+| 0062 | Default Extraction Cutover | 2026-04-02 |
+| 0061 | Personnel-Membership Enforcement | 2026-04-02 |
+| 0060 | Limit-Capability Enforcement | 2026-04-02 |
+| 0059 | Live Chunk-003 Semantic Residual | 2026-04-02 |
+| 0058 | Live Review Alignment | 2026-04-01 |
+| 0057 | Corrected-Fixture Transfer Recertification | 2026-04-01 |
+| 0056 | Corrected-Fixture Semantic Recovery | 2026-04-01 |
+| 0055 | Chunk-017 Contract Cutover | 2026-04-01 |
+| 0054 | Full-Chunk Strict-Omit Contract Audit | 2026-04-01 |
+| 0053 | Abstract-Result And Citation | 2026-04-01 |
+| 0052 | Predicate-Locality Gate | 2026-04-01 |
+| 0051 | Analytical Section Suppression | 2026-04-01 |
+| 0050 | Post-Parity Semantic Recovery | 2026-04-01 |
+| 0049 | Post-Repair Transfer | 2026-04-01 |
+| 0048 | Prompt-Wrapper Parity | 2026-04-01 |
+| 0047 | Case-Metadata Parity | 2026-04-01 |
+| 0046 | Sync/Async And Case-Id Residual | 2026-04-01 |
+| 0045 | Extraction-Path | 2026-04-01 |
+| 0044 | Wrapper Alignment | 2026-04-01 |
+| 0043 | Live-Path Divergence | 2026-04-01 |
+| 0042 | Semantic Transfer Residual | 2026-04-01 |
+| 0041 | Full-Chunk Transfer Parity | 2026-04-01 |
+| 0040 | Extraction Transfer Certification | 2026-04-01 |
+| 0039 | Entity Resolution Rerun Stability | 2026-04-01 |
+| 0038 | Entity Resolution Surface Stability | 2026-04-01 |
+| 0037 | Entity Resolution False-Split Cleanup | 2026-04-01 |
+| 0036 | Entity Resolution Negative-Control Recovery | 2026-04-01 |
+| 0035 | Entity Resolution Alias-Family Completion | 2026-04-01 |
+| 0034 | Entity Resolution Clean Measurement | 2026-04-01 |
+| 0033 | Entity Resolution Answerability | 2026-04-01 |
+| 0032 | Entity Resolution Recall Recovery | 2026-04-01 |
+| 0031 | Entity Resolution Hardening | 2026-04-01 |
+| 0030 | Entity Resolution Value-Proof | 2026-04-01 |
+| 0029 | First Query Surface Execution | 2026-03-31 |
+| 0027 | Deferred Parity Reprioritization | 2026-04-01 |
+| 0026 | Schema Stability Gate | 2026-04-01 |
+| 0025 | Cross-Document Entity Resolution | 2026-04-01 |
+| 0024 | Post-Cutover Program | 2026-04-01 |
+
+## Historical
 
 | # | Plan | Status |
 |---|------|--------|
@@ -61,5 +67,3 @@ This subtree owns active gaps, acceptance criteria, and verification notes.
 | 0021 | Repo Honesty Cleanup | Complete |
 | 0022a | Donor Dependency Inventory | Complete |
 | 0023 | 24h Successor Ownership Block | Complete |
-| 0026 | [Schema Stability Gate](0026_schema_stability_gate.md) | Complete (Lane 3 closed; remains the contract policy reference) |
-| 0029 | [24h Query Surface Execution Block](0029_24h_query_surface_execution_block.md) | Complete (first query surface landed end to end) |
