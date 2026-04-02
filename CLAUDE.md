@@ -48,8 +48,9 @@ runtime.
 40. `docs/plans/0027_deferred_parity_reprioritization.md`
 41. `docs/plans/0028_query_browse_surface.md`
 42. `docs/plans/0063_24h_query_browse_widening_block.md` (completed browse widening block)
-43. `docs/plans/0005_v1_capability_parity_matrix.md`
-44. `docs/plans/0001_successor_roadmap.md`
+43. `docs/plans/0064_24h_identity_external_reference_browse_block.md` (active browse widening block)
+44. `docs/plans/0005_v1_capability_parity_matrix.md`
+45. `docs/plans/0001_successor_roadmap.md`
 
 ## Commands
 
@@ -162,11 +163,12 @@ config/
 
 ## Strategic Direction (2026-03-31)
 
-- **Architecture is sound. Current priority: cross-document entity resolution
-  and scale test.** Plan 0025 implements KGGen-style LLM clustering over
-  promoted entities, then tests on a 20-50 document corpus to prove onto-canon6's
-  value proposition (cross-doc entity resolution, contradiction detection, typed
-  reasoning). This is the prerequisite for consumer adoption (Plan 0024 Lane 2).
+- **Architecture is sound. Current priority: queryability widening over the landed promoted-state surface.**
+  Plan `0064` is the active 24h block: it widens browse/search so operators and
+  agents can find entities through identity and external-reference state without
+  dropping back to maintenance-only identity commands. Cross-document
+  entity-resolution proof is complete at the Phase 4 gate; any next entity
+  resolution work is scale-out under `0025a`, not the repo-default active lane.
 - **Default operating mode is `review_mode: llm` with `enable_judge_filter: true`.**
   Human review is for debugging, not production. Auto-accept is for bulk
   throughput when you trust the schema. LLM-judge is the standard mode.
@@ -205,8 +207,12 @@ config/
   default for tiny edits or when a worktree would create a bigger risk than it
   removes.
 - **Queryability is the active deferred-capability lane now.** Plan 0027 fixed
-  the ordering, Plan 0028 landed the first read-only slice, and Plan `0063` completed the first widening block that turns search/get into a real browse surface with source-centric provenance entrypoints. Do not reopen extraction-transfer rescue work or widen the DIGIMON seam as a substitute for the next narrowed queryability choice.
-- **24h execution in this repo is mandatory, not aspirational.** When a block like Plan `0063` is active, agents must keep working through every declared phase in the isolated worktree until the block is truthfully complete. Do not stop at planning. Do not stop after one feature slice. Log uncertainties in the active plan, `TODO.md`, and `KNOWLEDGE.md`, then continue unless the uncertainty changes the contract itself.
+  the ordering, Plan 0028 landed the first read-only slice, Plan `0063`
+  completed the first widening block, and Plan `0064` is the active next step:
+  identity/external-reference-aware browse. Do not reopen extraction-transfer
+  rescue work or widen the DIGIMON seam as a substitute for this narrowed
+  queryability choice.
+- **24h execution in this repo is mandatory, not aspirational.** When a block like Plan `0064` is active, agents must keep working through every declared phase in the isolated worktree until the block is truthfully complete. Do not stop at planning. Do not stop after one feature slice. Log uncertainties in the active plan, `TODO.md`, and `KNOWLEDGE.md`, then continue unless the uncertainty changes the contract itself.
 - **Flat filler model with strong descriptions** — discriminated unions (oneOf)
   are architecturally correct but no current model can navigate them (all produce
   empty roles). Reverted to flat model with `Field(description=...)` enforcing
