@@ -2,44 +2,39 @@
 
 ## Session Focus
 
-Plan `0058` closeout and Plan `0059` activation in the isolated worktree
+Plan `0059` closeout and Plan `0060` activation in the isolated worktree
 branch `codex/onto-canon6-integration-planning`.
 
 ## What Landed
 
 Committed and documented in the isolated worktree:
 
-1. Plan `0057` now truthfully closes as a transfer recertification audit, not a
-   promotion win;
-2. Plan `0058` then fixed the live review contract so only `supported`
-   candidates auto-accept in `review_mode: llm`;
-3. the aligned rerun reduced chunk `003` from `5` accepted candidates to `4`,
-   while chunk `002` remained a valid positive control;
+1. Plan `0059` is now truthfully closed as a bounded semantic-reduction block;
+2. the live prompt-side hardening removed the staffing-summary membership leak;
+3. the fresh rerun downgraded chunk `003` from `positive` to `mixed`;
 4. the repo now records the smaller remaining blocker: three abstract
-   `limit_capability` acceptances plus one personnel-allocation-to-membership
-   over-extraction on chunk `003`; and
-5. Plan `0059` is now the active execution block.
+   evaluative `limit_capability` acceptances on chunk `003`; and
+5. Plan `0060` is now the active execution block.
 
 ## Current State
 
 1. The compact operational-parity lane is still **not promotable**.
 2. The corrected benchmark lead is real, and the live review contract is now
    aligned.
-3. Chunk `003` still remains positive under live review, but on a smaller
-   explicit semantic residual family.
-4. The active frontier is now prompt-side chunk-003 residual hardening under
-   Plan `0059`.
+3. Chunk `003` is now `mixed`, not `positive`, but the remaining accepted set
+   is still too permissive for promotion.
+4. The active frontier is now bounded live-path enforcement for the remaining
+   abstract `limit_capability` family under Plan `0060`.
 
 ## Recommended Next Step
 
 If work continues:
 
 1. stay on `codex/onto-canon6-integration-planning`;
-2. execute Plan `0059` in order:
-   - freeze the four remaining chunk-003 accepted candidates as the incoming
-     residual contract
-   - add the smallest missing local regression coverage if needed
-   - harden the compact prompt family against that residual
+2. execute Plan `0060` in order:
+   - freeze the three remaining accepted `limit_capability` claims as the
+     owned family
+   - land one bounded enforcement seam for that family
    - rerun chunk `002` and chunk `003` under a fresh live DB
    - classify promotion posture against Plan `0014`
 3. keep all worktree runtime commands on `PYTHONPATH=src`;

@@ -39,13 +39,14 @@ runtime.
 31. `docs/plans/0056_24h_corrected_fixture_semantic_recovery_block.md` (completed corrected-fixture recovery block)
 32. `docs/plans/0057_24h_corrected_fixture_transfer_recertification_block.md` (completed false-positive transfer audit)
 33. `docs/plans/0058_24h_live_review_alignment_block.md` (completed review-alignment block)
-34. `docs/plans/0059_24h_live_chunk003_semantic_residual_block.md` (current active execution block)
-35. `docs/plans/0026_schema_stability_gate.md` (completed Lane 3 contract policy)
-36. `docs/plans/0014_extraction_quality_baseline.md` (active Lane 4 promotion gate)
-37. `docs/plans/0027_deferred_parity_reprioritization.md`
-38. `docs/plans/0028_query_browse_surface.md`
-39. `docs/plans/0005_v1_capability_parity_matrix.md`
-40. `docs/plans/0001_successor_roadmap.md`
+34. `docs/plans/0059_24h_live_chunk003_semantic_residual_block.md` (completed semantic-reduction block)
+35. `docs/plans/0060_24h_limit_capability_enforcement_block.md` (current active execution block)
+36. `docs/plans/0026_schema_stability_gate.md` (completed Lane 3 contract policy)
+37. `docs/plans/0014_extraction_quality_baseline.md` (active Lane 4 promotion gate)
+38. `docs/plans/0027_deferred_parity_reprioritization.md`
+39. `docs/plans/0028_query_browse_surface.md`
+40. `docs/plans/0005_v1_capability_parity_matrix.md`
+41. `docs/plans/0001_successor_roadmap.md`
 
 ## Commands
 
@@ -140,9 +141,10 @@ config/
   fixture `v6`. Plan `0057` then reran the named transfer chunks and proved
   that the first chunk-003 positive transfer result was overstated by live
   review-contract drift. Plan `0058` then fixed that contract and reduced the
-  chunk-003 false-positive family, but the live chunk still remains positive
-  on a smaller semantic residual. The next blocker is therefore live chunk-003
-  semantic hardening, owned by Plan `0059`.
+  chunk-003 false-positive family. Plan `0059` then removed the staffing leak
+  and downgraded chunk `003` from `positive` to `mixed`, but three abstract
+  evaluative `limit_capability` claims still remain accepted. The next blocker
+  is therefore bounded enforcement of that family, owned by Plan `0060`.
   The chunk-level transfer evaluation requirement remains active through
   ADR 0023 and Plans 0024/0014 even though there is no standalone Plan 0019
   file.
@@ -173,10 +175,11 @@ config/
   not a suggestion: keep executing, keep rerunning, keep committing, and only
   stop when the active block is either complete or explicitly narrowed to a new
   documented blocker.
-- **Current extraction-quality execution rule:** Plans `0056`, `0057`, and
-  `0058` are complete. Plan `0059` is now the active block and must run
-  straight through residual freeze, bounded prompt hardening, chunk-002 rerun,
-  chunk-003 rerun, and promotion-posture classification before stopping.
+- **Current extraction-quality execution rule:** Plans `0056`, `0057`,
+  `0058`, and `0059` are complete. Plan `0060` is now the active block and
+  must run straight through family freeze, bounded enforcement, chunk-002
+  rerun, chunk-003 rerun, and promotion-posture classification before
+  stopping.
 - **Continuous execution rule is hard, not advisory.** When a 24h block is
   active, keep executing until the approved contract is implemented, the
   bounded rerun is recorded, the next blocker is written down, and the block is
@@ -336,20 +339,20 @@ active, the required behavior is: plan the next concrete phase, execute it,
 verify it, commit it, log any uncertainty, and continue. Do not wait for
 "what next?" confirmation mid-block.
 
-The current valid stop condition is no longer the `0058` review-alignment
+The current valid stop condition is no longer the `0059` semantic-reduction
 boundary.
 
-1. Plans `0056`, `0057`, and `0058` are complete and committed.
+1. Plans `0056`, `0057`, `0058`, and `0059` are complete and committed.
 2. The benchmark lead is restored on corrected fixture `v6`, and the review
-   contract is aligned, but chunk `003` still has a smaller live semantic
-   residual.
-3. Plan `0059` is now the active block and must run through residual freeze,
-   bounded hardening, fresh reruns, and promotion-posture decision before
+   contract is aligned, but chunk `003` still has a smaller live
+   `limit_capability` residual.
+3. Plan `0060` is now the active block and must run through family freeze,
+   bounded enforcement, fresh reruns, and promotion-posture decision before
    stopping.
 
-Do not silently widen scope inside Plan `0059`. Work the live chunk-003
-semantic residual, preserve the corrected benchmark contract, and close the block
-truthfully.
+Do not silently widen scope inside Plan `0060`. Work the remaining abstract
+`limit_capability` family, preserve the corrected benchmark contract, and
+close the block truthfully.
 
 Pre-made decisions (do not ask about these):
 - Work stays in the isolated `codex/onto-canon6-integration-planning` worktree

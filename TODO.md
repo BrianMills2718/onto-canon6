@@ -3,32 +3,32 @@
 ## Current 24h Execution Block
 
 Source of truth:
-- `docs/plans/0059_24h_live_chunk003_semantic_residual_block.md`
+- `docs/plans/0060_24h_limit_capability_enforcement_block.md`
 
-### Phase 1 — Freeze The Residual Contract
-- [x] Close Plan `0058` truthfully
-- [x] Freeze the exact remaining chunk-003 residual family
-- [x] Decide whether one new local regression case is required
+### Phase 1 — Freeze The Remaining Family
+- [x] Close Plan `0059` truthfully
+- [x] Freeze the exact remaining chunk-003 accepted claims
+- [x] Record the governing local benchmark cases for this family
 - [ ] Commit verified phase
 
-### Phase 2 — Add The Smallest Missing Regression Coverage
-- [x] Add/update the minimum local coverage for the remaining residual
-- [x] Verify the new coverage
+### Phase 2 — Land One Bounded Enforcement Seam
+- [ ] Add one deterministic guard for the remaining abstract `limit_capability` family
+- [ ] Keep the rule family-level, not row-specific
 - [ ] Commit verified phase
 
-### Phase 3 — Harden The Compact Prompt Family
-- [x] Revise the compact prompt family for the remaining chunk-003 residual
-- [x] Update prompt-surface parity tests as needed
+### Phase 3 — Verify The Enforcement Seam
+- [ ] Add/update targeted tests for the enforcement seam
+- [ ] Verify the family through the narrow test slice
 - [ ] Commit verified phase
 
 ### Phase 4 — Rerun Chunk 002 And Chunk 003
-- [ ] Rerun chunk `002` with the revised compact prompt
-- [ ] Rerun chunk `003` with the revised compact prompt
+- [ ] Rerun chunk `002` under the bounded enforcement seam
+- [ ] Rerun chunk `003` under the bounded enforcement seam
 - [ ] Export both reviewed chunk-transfer reports
 - [ ] Commit verified phase
 
 ### Phase 5 — Closeout
-- [ ] Write the live chunk-003 residual decision note
+- [ ] Write the limit-capability enforcement decision note
 - [ ] Refresh docs/status/handoff/knowledge
 - [ ] Mark the block complete and name the next blocker explicitly
 - [ ] Commit verified phase
@@ -118,7 +118,7 @@ Source of truth:
 - [x] Localize the remaining post-wrapper extraction-path divergence to one dominant surface
 - [x] Localize and repair the remaining prompt-side parity residual through Plans `0046`-`0049`
 - [x] Run one bounded post-parity semantic recovery attempt and classify it honestly
-- [ ] Eliminate the smaller live chunk-003 semantic residual under Plan `0059`
+- [ ] Eliminate the remaining abstract `limit_capability` family under Plan `0060`
 
 ## Longer-Term Queue
 

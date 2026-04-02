@@ -62,8 +62,10 @@ Current post-cutover program state:
     under misaligned live review semantics; and
 21. Plan `0058` is now complete and proved that live review alignment reduces
     the chunk-003 false-positive family but does not eliminate it; and
-22. the next extraction-quality blocker is now the smaller live chunk-003
-    semantic residual, owned by Plan `0059`.
+22. Plan `0059` is now complete and proved that chunk `003` can be reduced from
+    `positive` to `mixed` while preserving the chunk-002 positive control; and
+23. the next extraction-quality blocker is now the remaining abstract
+    `limit_capability` family on chunk `003`, owned by Plan `0060`.
 
 ## What Is Proven
 

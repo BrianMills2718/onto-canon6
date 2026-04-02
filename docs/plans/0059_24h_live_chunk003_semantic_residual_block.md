@@ -1,12 +1,12 @@
 # 24h Live Chunk-003 Semantic Residual Block
 
-Status: active
+Status: complete
 Phase status:
-- Phase 1 pending
-- Phase 2 pending
-- Phase 3 pending
-- Phase 4 pending
-- Phase 5 pending
+- Phase 1 complete
+- Phase 2 complete
+- Phase 3 complete
+- Phase 4 complete
+- Phase 5 complete
 
 Last updated: 2026-04-02
 Workstream: post-review-alignment live semantic hardening for chunk `003`
@@ -142,3 +142,34 @@ This block succeeds only if:
 1. the lane status is explicit and decision-grade;
 2. the next blocker is named precisely if the lane is still not promotable;
 3. the worktree is clean.
+
+## Outcome
+
+This block materially reduced the live chunk-003 residual, but it did not clear
+the lane for promotion.
+
+What changed:
+
+1. corrected fixture `v7` now includes one new local strict-omit case for the
+   personnel-dedication-to-membership leak;
+2. the live compact prompt now carries the stronger retrospective-assessment
+   and staffing-summary omission rules already present on the parity side; and
+3. the fresh live rerun under
+   `onto_canon6.extraction.text_to_candidate_assertions_compact_v5@3`
+   reduced chunk `003` from a positive report with `4` accepted candidates to a
+   mixed report with `3` accepted and `1` rejected.
+
+What remains:
+
+1. the staffing-summary `belongs_to_organization` leak is gone;
+2. the bogus chunk-003 `create_organizational_unit` candidate is now rejected;
+3. chunk `002` remains a positive control; but
+4. chunk `003` still accepts three abstract evaluative
+   `oc:limit_capability` claims.
+
+Decision:
+
+1. Plan `0059` is complete and truthful;
+2. prompt-side hardening alone is no longer the best next lever; and
+3. the next owned block is a bounded enforcement block for the remaining
+   abstract `limit_capability` family, owned by Plan `0060`.
