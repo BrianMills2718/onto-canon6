@@ -1,0 +1,26 @@
+{"predicate_id":"agent_ops:producedMemory","label":"produced memory","status":"active"}
+{"predicate_id":"agent_ops:learnedFrom","label":"learned from","status":"active"}
+{"predicate_id":"agent_ops:formationEvidence","label":"formation evidence","status":"active"}
+{"predicate_id":"agent_ops:generalizesOver","label":"generalizes over","status":"active"}
+{"predicate_id":"agent_ops:hasStatus","label":"has status","status":"active"}
+{"predicate_id":"agent_ops:supersedes","label":"supersedes","status":"active"}
+{"predicate_id":"agent_ops:contradicts","label":"contradicts","status":"active"}
+{"predicate_id":"agent_ops:validFrom","label":"valid from","status":"active"}
+{"predicate_id":"agent_ops:validUntil","label":"valid until","status":"active"}
+{"predicate_id":"agent_ops:hasConfidence","label":"has confidence","status":"active"}
+{"predicate_id":"agent_ops:hasSharingPolicy","label":"has sharing policy","status":"active"}
+{"predicate_id":"agent_ops:belongsTo","label":"belongs to","status":"active"}
+{"predicate_id":"agent_ops:appliesTo","label":"applies to","status":"active"}
+{"predicate_id":"agent_ops:executedTask","label":"executed task","status":"active"}
+{"predicate_id":"agent_ops:hasOutcome","label":"has outcome","status":"active"}
+{"predicate_id":"agent_ops:decidedBy","label":"decided by","status":"active"}
+{"predicate_id":"agent_ops:hasReasoning","label":"has reasoning","status":"active"}
+{"predicate_id":"agent_ops:hasKeySignals","label":"has key signals","status":"active"}
+{"predicate_id":"agent_ops:partOf","label":"part of","status":"active"}
+{"predicate_id":"agent_ops:blockedBy","label":"blocked by","status":"active"}
+{"predicate_id":"agent_ops:claimsScope","label":"claims scope","status":"active"}
+{"predicate_id":"agent_ops:reviewedBy","label":"reviewed by","status":"active"}
+{"predicate_id":"agent_ops:hasReviewOutcome","label":"has review outcome","status":"active"}
+{"predicate_id":"agent_ops:investigates","label":"investigates","status":"active"}
+{"predicate_id":"agent_ops:detectsGap","label":"detects gap","status":"active"}
+{"predicate_id":"agent_ops:addressesGap","label":"addresses gap","status":"active"}

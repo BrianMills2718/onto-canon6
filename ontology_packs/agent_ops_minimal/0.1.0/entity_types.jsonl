@@ -1,0 +1,35 @@
+{"type_id":"agent_ops:Agent","preferred_label":"Agent","category":"entity","status":"active"}
+{"type_id":"agent_ops:AgentSession","preferred_label":"Agent Session","category":"entity","status":"active"}
+{"type_id":"agent_ops:AgentTask","preferred_label":"Agent Task","category":"entity","status":"active"}
+{"type_id":"agent_ops:AgentMission","preferred_label":"Agent Mission","category":"entity","status":"active"}
+{"type_id":"agent_ops:MemoryRecord","preferred_label":"Memory Record","category":"entity","status":"active"}
+{"type_id":"agent_ops:EpisodicMemory","preferred_label":"Episodic Memory","category":"entity","status":"active"}
+{"type_id":"agent_ops:SemanticMemory","preferred_label":"Semantic Memory","category":"entity","status":"active"}
+{"type_id":"agent_ops:ProceduralMemory","preferred_label":"Procedural Memory","category":"entity","status":"active"}
+{"type_id":"agent_ops:CommunityMemory","preferred_label":"Community Memory","category":"entity","status":"active"}
+{"type_id":"agent_ops:ScopeClaim","preferred_label":"Scope Claim","category":"entity","status":"active"}
+{"type_id":"agent_ops:DecisionRecord","preferred_label":"Decision Record","category":"entity","status":"active"}
+{"type_id":"agent_ops:ReviewOutcome","preferred_label":"Review Outcome","category":"entity","status":"active"}
+{"type_id":"agent_ops:InterestTrack","preferred_label":"Interest Track","category":"entity","status":"active"}
+{"type_id":"agent_ops:CapabilityGap","preferred_label":"Capability Gap","category":"entity","status":"active"}
+{"type_id":"agent_ops:Project","preferred_label":"Project","category":"entity","status":"active"}
+{"type_id":"agent_ops:TaskOutcome","preferred_label":"Task Outcome","category":"entity","status":"active"}
+{"type_id":"agent_ops:TaskOutcomeCompleted","preferred_label":"Completed","category":"entity","status":"active"}
+{"type_id":"agent_ops:TaskOutcomeFailed","preferred_label":"Failed","category":"entity","status":"active"}
+{"type_id":"agent_ops:TaskOutcomeBlocked","preferred_label":"Blocked","category":"entity","status":"active"}
+{"type_id":"agent_ops:TaskOutcomeAbandoned","preferred_label":"Abandoned","category":"entity","status":"active"}
+{"type_id":"agent_ops:MemoryStatus","preferred_label":"Memory Status","category":"entity","status":"active"}
+{"type_id":"agent_ops:MemoryStatusStaged","preferred_label":"Staged","category":"entity","status":"active"}
+{"type_id":"agent_ops:MemoryStatusActive","preferred_label":"Active","category":"entity","status":"active"}
+{"type_id":"agent_ops:MemoryStatusSuperseded","preferred_label":"Superseded","category":"entity","status":"active"}
+{"type_id":"agent_ops:MemoryStatusExpired","preferred_label":"Expired","category":"entity","status":"active"}
+{"type_id":"agent_ops:ConfidenceLevel","preferred_label":"Confidence Level","category":"entity","status":"active"}
+{"type_id":"agent_ops:ConfidenceCertain","preferred_label":"Certain","category":"entity","status":"active"}
+{"type_id":"agent_ops:ConfidenceHigh","preferred_label":"High","category":"entity","status":"active"}
+{"type_id":"agent_ops:ConfidenceMedium","preferred_label":"Medium","category":"entity","status":"active"}
+{"type_id":"agent_ops:ConfidenceLow","preferred_label":"Low","category":"entity","status":"active"}
+{"type_id":"agent_ops:ConfidenceVeryLow","preferred_label":"Very Low","category":"entity","status":"active"}
+{"type_id":"agent_ops:SharingPolicy","preferred_label":"Sharing Policy","category":"entity","status":"active"}
+{"type_id":"agent_ops:SharingPrivate","preferred_label":"Private","category":"entity","status":"active"}
+{"type_id":"agent_ops:SharingTeam","preferred_label":"Team","category":"entity","status":"active"}
+{"type_id":"agent_ops:SharingEcosystem","preferred_label":"Ecosystem","category":"entity","status":"active"}
