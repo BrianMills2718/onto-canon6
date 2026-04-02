@@ -1,0 +1,224 @@
+{
+  "call_kwargs": {
+    "api_base": null,
+    "base_delay": 1.0,
+    "fallback_models": null,
+    "max_budget": 0.25,
+    "max_delay": 30.0,
+    "num_retries": 2,
+    "prompt_ref": "onto_canon6.extraction.prompt_eval_text_to_candidate_assertions_compact_operational_parity@3",
+    "reasoning_effort": null,
+    "retry_on": null,
+    "task": "budget_extraction",
+    "temperature": 0.0,
+    "timeout": 0,
+    "trace_id": "replay.async.prompt_eval.chunk003.no_case_id_no_wrapper"
+  },
+  "parsed": {
+    "candidates": [
+      {
+        "claim_level": "instance",
+        "claim_text": "The effectiveness of PSYOP was limited by cultural misunderstandings, insufficient coordination with non-military actors, and the rapid evolution of adversary information tactics.",
+        "evidence_spans": [
+          {
+            "end_char": 549,
+            "start_char": 379,
+            "text": "the effectiveness of PSYOP was often limited by cultural misunderstandings, insufficient coordination with non-military actors, and the rapid evolution of adversary information tactics"
+          }
+        ],
+        "predicate": "oc:limit_capability",
+        "roles": {
+          "capability": [
+            {
+              "alias_ids": [],
+              "entity_id": null,
+              "entity_type": null,
+              "kind": "value",
+              "name": null,
+              "normalized": "effectiveness",
+              "raw": "effectiveness",
+              "value_kind": "string"
+            }
+          ],
+          "subject": [
+            {
+              "alias_ids": [],
+              "entity_id": null,
+              "entity_type": "oc:psychological_operation",
+              "kind": "entity",
+              "name": "PSYOP",
+              "normalized": null,
+              "raw": null,
+              "value_kind": null
+            }
+          ],
+          "topic": [
+            {
+              "alias_ids": [],
+              "entity_id": null,
+              "entity_type": null,
+              "kind": "value",
+              "name": null,
+              "normalized": "cultural misunderstandings, insufficient coordination with non-military actors, and the rapid evolution of adversary information tactics",
+              "raw": "cultural misunderstandings, insufficient coordination with non-military actors, and the rapid evolution of adversary information tactics",
+              "value_kind": "string"
+            }
+          ]
+        },
+        "valid_from": null,
+        "valid_to": null
+      },
+      {
+        "claim_level": "instance",
+        "claim_text": "The proliferation of digital media limited the impact of PSYOP messages.",
+        "evidence_spans": [
+          {
+            "end_char": 824,
+            "start_char": 700,
+            "text": "the proliferation of digital media meant that adversaries could quickly counter or distort PSYOP messages, reducing their impact"
+          }
+        ],
+        "predicate": "oc:limit_capability",
+        "roles": {
+          "capability": [
+            {
+              "alias_ids": [],
+              "entity_id": null,
+              "entity_type": null,
+              "kind": "value",
+              "name": null,
+              "normalized": "impact",
+              "raw": "impact",
+              "value_kind": "string"
+            }
+          ],
+          "subject": [
+            {
+              "alias_ids": [],
+              "entity_id": null,
+              "entity_type": "oc:psychological_operation",
+              "kind": "entity",
+              "name": "PSYOP messages",
+              "normalized": null,
+              "raw": null,
+              "value_kind": null
+            }
+          ],
+          "topic": [
+            {
+              "alias_ids": [],
+              "entity_id": null,
+              "entity_type": null,
+              "kind": "value",
+              "name": null,
+              "normalized": "the proliferation of digital media meant that adversaries could quickly counter or distort PSYOP messages",
+              "raw": "the proliferation of digital media meant that adversaries could quickly counter or distort PSYOP messages",
+              "value_kind": "string"
+            }
+          ]
+        },
+        "valid_from": null,
+        "valid_to": null
+      },
+      {
+        "claim_level": "instance",
+        "claim_text": "Congressional oversight and public scrutiny expressed concern about the expansion of PSYOP into the digital domain, ethical and legal questions, targeting of foreign versus domestic audiences, and potential for unintended consequences.",
+        "evidence_spans": [
+          {
+            "end_char": 1300,
+            "start_char": 1020,
+            "text": "The expansion of PSYOP into the digital domain raised new ethical and legal questions, particularly regarding the targeting of foreign versus domestic audiences and the potential for unintended consequences. Congressional oversight and public scrutiny increased, leading to periodic reviews and adjustments of doctrine."
+          }
+        ],
+        "predicate": "oc:express_concern",
+        "roles": {
+          "speaker": [
+            {
+              "alias_ids": [],
+              "entity_id": null,
+              "entity_type": "oc:community",
+              "kind": "entity",
+              "name": "Congressional oversight and public scrutiny",
+              "normalized": null,
+              "raw": null,
+              "value_kind": null
+            }
+          ],
+          "topic": [
+            {
+              "alias_ids": [],
+              "entity_id": null,
+              "entity_type": null,
+              "kind": "value",
+              "name": null,
+              "normalized": "the expansion of PSYOP into the digital domain raised new ethical and legal questions, particularly regarding the targeting of foreign versus domestic audiences and the potential for unintended consequences",
+              "raw": "The expansion of PSYOP into the digital domain raised new ethical and legal questions, particularly regarding the targeting of foreign versus domestic audiences and the potential for unintended consequences",
+              "value_kind": "string"
+            }
+          ]
+        },
+        "valid_from": null,
+        "valid_to": null
+      },
+      {
+        "claim_level": "instance",
+        "claim_text": "Personnel assigned to PSYOP units belonged to USSOCOM.",
+        "evidence_spans": [
+          {
+            "end_char": 1589,
+            "start_char": 1430,
+            "text": "By 2013, USSOCOM\u2019s total strength was reported at approximately 70,000, with a substantial proportion dedicated to PSYOP, civil affairs, and related functions"
+          }
+        ],
+        "predicate": "oc:belongs_to_organization",
+        "roles": {
+          "member": [
+            {
+              "alias_ids": [],
+              "entity_id": null,
+              "entity_type": "oc:military_unit",
+              "kind": "entity",
+              "name": "personnel assigned to PSYOP units",
+              "normalized": null,
+              "raw": null,
+              "value_kind": null
+            }
+          ],
+          "organization": [
+            {
+              "alias_ids": [],
+              "entity_id": null,
+              "entity_type": "oc:military_organization",
+              "kind": "entity",
+              "name": "USSOCOM",
+              "normalized": null,
+              "raw": null,
+              "value_kind": null
+            }
+          ]
+        },
+        "valid_from": "2013",
+        "valid_to": null
+      }
+    ]
+  },
+  "project": "onto-canon6-replay-async-prompt-eval-chunk003-no-case-id-no-wrapper",
+  "prompt_mutations": {
+    "remove_line_prefixes": [
+      "Case id:",
+      "Case input:"
+    ],
+    "strip_blank_line_before_prefixes": [
+      "Source text:"
+    ]
+  },
+  "prompt_ref": "onto_canon6.extraction.prompt_eval_text_to_candidate_assertions_compact_operational_parity@3",
+  "replayed_public_api": "acall_llm_structured",
+  "requested_model": "gemini/gemini-2.5-flash",
+  "resolved_model": "gemini/gemini-2.5-flash",
+  "response_model_fqn": "onto_canon6.pipeline.text_extraction.TextExtractionResponse",
+  "source_call_id": 292439,
+  "source_public_api": "acall_llm_structured",
+  "task": "budget_extraction",
+  "trace_id": "replay.async.prompt_eval.chunk003.no_case_id_no_wrapper"
+}

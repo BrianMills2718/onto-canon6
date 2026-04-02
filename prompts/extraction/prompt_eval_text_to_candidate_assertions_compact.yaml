@@ -121,5 +121,4 @@ messages:
       Active entity-type catalog:
       {{ entity_type_catalog }}
 
-      Case input:
       {input}

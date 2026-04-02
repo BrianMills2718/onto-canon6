@@ -896,7 +896,8 @@ def test_run_prompt_experiment_builds_report_and_variant_comparison(
     compact_messages = experiment.variants[2].messages
     compact_operational_parity_messages = experiment.variants[3].messages
     single_response_messages = experiment.variants[4].messages
-    assert "Case input:\n{input}" in baseline_messages[-1]["content"]
+    assert "{input}" in baseline_messages[-1]["content"]
+    assert "Case input:" not in baseline_messages[-1]["content"]
     assert "Return at most 2 candidates." in baseline_messages[0]["content"]
     assert "Use at most 1 evidence spans per" in baseline_messages[0]["content"]
     assert "Use exact source surface forms for entity names and values." in baseline_messages[0]["content"]
@@ -920,7 +921,8 @@ def test_run_prompt_experiment_builds_report_and_variant_comparison(
     assert "Return at most 10 candidates." in compact_operational_parity_messages[0]["content"]
     assert "conclusion sections, opinion sections, and summary prose usually" in compact_operational_parity_messages[0]["content"]
     assert "do not inherit the document's main organization, campaign, or topic as" in compact_operational_parity_messages[0]["content"]
-    assert "Case input:\n{input}" in compact_operational_parity_messages[-1]["content"]
+    assert "{input}" in compact_operational_parity_messages[-1]["content"]
+    assert "Case input:" not in compact_operational_parity_messages[-1]["content"]
     assert "Return exactly one structured response object" in single_response_messages[0]["content"]
     assert "Return at most 2 candidates." in single_response_messages[0]["content"]
     assert "Use at most 1 evidence spans per" in single_response_messages[0]["content"]

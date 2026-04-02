@@ -31,6 +31,7 @@ def replay_structured_call_surface(
     project: str | None = None,
     remove_line_prefixes: tuple[str, ...] = (),
     strip_blank_line_before_prefixes: tuple[str, ...] = (),
+    replace_line_prefixes: tuple[tuple[str, str], ...] = (),
 ) -> dict[str, Any]:
     """Replay one captured structured call through the chosen public API."""
 
@@ -48,6 +49,7 @@ def replay_structured_call_surface(
         messages,
         remove_line_prefixes=remove_line_prefixes,
         strip_blank_line_before_prefixes=strip_blank_line_before_prefixes,
+        replace_line_prefixes=replace_line_prefixes,
     )
     control = _normalize_object(request.get("control"))
     public_kwargs = _normalize_object(request.get("kwargs"))
@@ -115,6 +117,10 @@ def replay_structured_call_surface(
         "prompt_mutations": {
             "remove_line_prefixes": list(remove_line_prefixes),
             "strip_blank_line_before_prefixes": list(strip_blank_line_before_prefixes),
+            "replace_line_prefixes": [
+                {"prefix": prefix, "replacement": replacement}
+                for prefix, replacement in replace_line_prefixes
+            ],
         },
         "call_kwargs": call_kwargs,
         "parsed": parsed_json,
@@ -179,6 +185,7 @@ def _normalize_messages(
     *,
     remove_line_prefixes: tuple[str, ...],
     strip_blank_line_before_prefixes: tuple[str, ...],
+    replace_line_prefixes: tuple[tuple[str, str], ...],
 ) -> list[dict[str, Any]]:
     """Apply bounded prompt-surface mutations to captured chat messages."""
 
@@ -193,6 +200,7 @@ def _normalize_messages(
                 content,
                 remove_line_prefixes=remove_line_prefixes,
                 strip_blank_line_before_prefixes=strip_blank_line_before_prefixes,
+                replace_line_prefixes=replace_line_prefixes,
             )
         normalized.append(copied)
     return normalized
@@ -203,10 +211,24 @@ def _mutate_message_content(
     *,
     remove_line_prefixes: tuple[str, ...],
     strip_blank_line_before_prefixes: tuple[str, ...],
+    replace_line_prefixes: tuple[tuple[str, str], ...],
 ) -> str:
     """Apply bounded line-level prompt mutations while preserving other text."""
 
     lines = content.splitlines()
+    if replace_line_prefixes:
+        replaced: list[str] = []
+        for line in lines:
+            replacement = next(
+                (
+                    replacement_text
+                    for prefix, replacement_text in replace_line_prefixes
+                    if line.startswith(prefix)
+                ),
+                None,
+            )
+            replaced.append(replacement if replacement is not None else line)
+        lines = replaced
     if remove_line_prefixes:
         lines = [
             line

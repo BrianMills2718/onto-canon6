@@ -36,7 +36,19 @@ def main() -> int:
         default=[],
         help="Remove one immediately preceding blank line before matching prefixes.",
     )
+    parser.add_argument(
+        "--replace-line-prefix",
+        action="append",
+        default=[],
+        help="Replace one matching line prefix using PREFIX=REPLACEMENT.",
+    )
     args = parser.parse_args()
+    replace_line_prefixes: list[tuple[str, str]] = []
+    for item in args.replace_line_prefix:
+        prefix, separator, replacement = item.partition("=")
+        if not separator:
+            raise SystemExit("--replace-line-prefix requires PREFIX=REPLACEMENT")
+        replace_line_prefixes.append((prefix, replacement))
 
     result = replay_structured_call_surface(
         observability_db_path=args.observability_db,
@@ -48,6 +60,7 @@ def main() -> int:
         project=args.project,
         remove_line_prefixes=tuple(args.remove_line_prefix),
         strip_blank_line_before_prefixes=tuple(args.strip_blank_line_before),
+        replace_line_prefixes=tuple(replace_line_prefixes),
     )
     print(json.dumps(result, indent=2, sort_keys=True))
     return 0

@@ -155,6 +155,62 @@ def test_replay_structured_call_surface_can_remove_metadata_lines(
     assert "\n\nSource text:" not in user_content
 
 
+def test_replay_structured_call_surface_can_replace_matching_lines(
+    tmp_path: Path,
+    monkeypatch: Any,
+) -> None:
+    """Replay should support bounded line replacement for residual diagnosis."""
+
+    db_path = _make_llm_calls_db(tmp_path / "observability.db")
+    _insert_snapshot(
+        db_path,
+        call_id=13,
+        prompt_ref="onto_canon6.extraction.live@1",
+        public_api="acall_llm_structured",
+    )
+    seen_messages: dict[str, Any] = {}
+
+    async def fake_acall(
+        model: str,
+        messages: list[dict[str, str]],
+        *,
+        response_model: type[object],
+        **kwargs: object,
+    ) -> tuple[_FakeResponse, object]:
+        del model, response_model, kwargs
+        seen_messages["messages"] = messages
+        return _FakeResponse({"candidates": []}), SimpleNamespace(resolved_model="async-model")
+
+    import llm_client
+
+    monkeypatch.setattr(llm_client, "acall_llm_structured", fake_acall)
+
+    replay_structured_call_surface(
+        observability_db_path=db_path,
+        call_id=13,
+        public_api="acall_llm_structured",
+        trace_id="replay/async",
+        task="budget_extraction",
+        max_budget=0.25,
+        project="replay-project",
+        replace_line_prefixes=(
+            ("Case input:", "Source text only:"),
+            ("Source text:", "Body:"),
+        ),
+    )
+
+    messages = seen_messages["messages"]
+    assert isinstance(messages, list)
+    user_message = messages[1]
+    assert isinstance(user_message, dict)
+    user_content = user_message["content"]
+    assert isinstance(user_content, str)
+    assert "Source text only:" in user_content
+    assert "Body:" in user_content
+    assert "Case input:" not in user_content
+    assert "Source text:" not in user_content
+
+
 def _make_llm_calls_db(path: Path) -> Path:
     """Create the minimum llm_calls table needed by the replay helper."""
 
