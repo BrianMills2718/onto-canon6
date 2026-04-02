@@ -119,12 +119,13 @@ config/
   0039 is now also complete: fresh reruns `145141` and `152927` both restored
   `10/10` question accuracy while keeping precision `1.00` and false merges
   `0`, which is enough to close the rerun-stability gate. Plan 0025 is now
-  complete at its Phase 4 value-proof level. Plan 0040 is now also complete:
-  chunk `002` proved positive live transfer for compact-v4, but chunk `003`
-  remained negative and full-chunk prompt-eval/live parity still diverged on
-  both named chunks. Plan 0041 is now complete: it proved the prompt-surface
-  difference is stable and bounded, but not the dominant blocker family. The
-  there is no further autonomous prompt block after Plan 0054. Plans `0046` through
+  complete at its Phase 4 value-proof level. Plans `0040` through `0045`
+  completed the chunk-transfer certification and localization sequence:
+  chunk `002` stayed a real positive control, chunk `003` remained the only
+  meaningful residual, and prompt-surface / wrapper / live-path differences
+  were narrowed to a bounded family instead of left speculative. There was no
+  further truthful autonomous prompt-only rescue block after Plan `0054`.
+  Plans `0046` through
   `0049` are now complete and proved that sync/async API speculation,
   prompt_eval-only `Case id` metadata, and the prompt_eval `Case input:`
   wrapper were all real prompt-path issues but are no longer the active
@@ -144,9 +145,13 @@ config/
   that the first chunk-003 positive transfer result was overstated by live
   review-contract drift. Plan `0058` then fixed that contract and reduced the
   chunk-003 false-positive family. Plan `0059` then removed the staffing leak
-  and downgraded chunk `003` from `positive` to `mixed`, but three abstract
-  evaluative `limit_capability` claims still remain accepted. The next blocker
-  is therefore bounded enforcement of that family, owned by Plan `0060`.
+  and downgraded chunk `003` from `positive` to `mixed`. Plan `0060` then
+  removed the remaining abstract `limit_capability` spillover family, Plan
+  `0061` removed the staffing-summary membership spillover family, and Plan
+  `0062` completed the repo-default extraction cutover onto the proved compact
+  operational-parity lane. There is no active extraction-transfer cleanup
+  block now; any future extraction-quality work must start from the promoted
+  default surface instead of reopening Plans `0057` through `0062`.
   The chunk-level transfer evaluation requirement remains active through
   ADR 0023 and Plans 0024/0014 even though there is no standalone Plan 0019
   file.

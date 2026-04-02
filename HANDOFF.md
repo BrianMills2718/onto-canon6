@@ -2,42 +2,45 @@
 
 ## Session Focus
 
-Plan `0062` default-cutover completion in the isolated worktree branch
-`codex/onto-canon6-integration-planning`.
+Integration-planning worktree closeout, with the extraction-transfer cleanup
+chain completed through Plan `0062` and prepared for merge-back to `main`.
 
 ## What Landed
 
-Committed and documented in the isolated worktree:
+Committed and documented in the isolated worktree branch
+`codex/onto-canon6-integration-planning`:
 
-1. Plan `0062` is now truthfully closed as the repo-default cutover block;
-2. the proved compact operational-parity lane is now the repo-default
+1. Plans `0055` through `0062` are truthfully closed;
+2. chunk `017` is no longer treated as a strict-omit zero-output gate;
+3. the proved compact operational-parity lane is now the repo-default
    extraction surface;
-3. the no-override default path still keeps chunk `002` positive and chunk
-   `003` free of accepted spillover; and
-4. there is no active extraction-transfer cleanup block remaining.
+4. the no-override default path keeps chunk `002` as a positive control and
+   chunk `003` free of accepted spillover families; and
+5. the repo now explicitly treats isolated worktrees as the default mode for
+   substantial autonomous execution blocks, with explicit merge-back after the
+   block is truthfully complete.
 
 ## Current State
 
-1. The compact operational-parity lane is still **not promotable**.
-2. The corrected benchmark lead is real, and the live review contract is now
-   aligned.
-3. Chunk `003` is now `mixed`, not `positive`, but the remaining accepted set
-   is still too permissive for promotion.
-4. The active frontier is no longer transfer cleanup. Future extraction-quality
-   work should start from the promoted default surface.
+1. The extraction-transfer cleanup chain is complete.
+2. There is no active extraction-transfer rescue block.
+3. Future extraction-quality work must start from the promoted default
+   extraction surface rather than reopening Plans `0057` through `0062`.
+4. The next active frontier is the higher-level post-cutover program:
+   - Plan `0024` for ordered program control
+   - Plan `0027` for deferred parity ordering
+   - Plan `0028` for wider queryability hardening
 
 ## Recommended Next Step
 
 If work continues:
 
-1. stay on `codex/onto-canon6-integration-planning`;
-2. do not reopen Plans `0057`-`0062` unless a new regression appears;
-3. if extraction-quality work continues, treat the promoted compact default as
-   the new baseline surface;
-4. otherwise return to the higher-level active program under Plans `0024`,
-   `0027`, and `0028`.
-3. keep all worktree runtime commands on `PYTHONPATH=src`;
-4. keep chunk `017` removed from the strict-omit gate and treat `005`, `006`,
+1. keep substantial autonomous work on isolated worktree branches by default;
+2. merge this worktree back into `main` with an explicit merge commit;
+3. do not reopen Plans `0057` through `0062` unless a fresh regression is
+   observed on the promoted default surface;
+4. keep all worktree runtime commands on `PYTHONPATH=src`; and
+5. keep chunk `017` removed from the strict-omit gate and treat `005`, `006`,
    and `008` through `016` as the corrected benchmark regression set.
 
 # Handoff: onto-canon6 — 2026-04-01
