@@ -62,7 +62,7 @@ config/
 - Model: `gemini/gemini-3-flash-preview`
 - Shared contracts: epistemic-contracts library (3 projects wired)
 
-## Active Execution Block (2026-04-02 overnight)
+## Active Execution Block (2026-04-02 overnight — feature completion)
 
 **CONTINUOUS AUTONOMOUS EXECUTION. DO NOT STOP. STOPPING EARLY IS A FAILURE MODE.**
 
@@ -72,46 +72,36 @@ Do not pause between phases. The only valid stop conditions are:
 2. A real architectural uncertainty not covered by this plan
 3. An irreversible action affecting shared state
 
-### Phase 1: Fix 5 test failures from Codex merge
-Re-apply fixes overwritten by Codex worktree merges:
-- `test_cli_flow.py`: add `extraction_goal` kwarg to `_FakeTextExtractionService`
-- `test_mcp_server.py`: `list_tools()` → `get_tools()` (FastMCP API)
-- `notebook_registry.yaml`: remove stale plan file references
-- Master journey notebook: fix Q-code Q5388397→Q348250, add `extraction_goal`
-**Success**: `pytest` shows 0 failures.
+### Phase 1: Source-artifact browse/query surface
+Add list-sources, search-sources, get-source to query surface, CLI, and MCP.
+Agents need to browse by source document, not just by entity.
+**Success**: `onto-canon6 list-sources` returns sources from the review DB.
 
-### Phase 2: Clean up plans/CLAUDE.md
-Move 35+ completed 24h blocks from Active to Completed table.
-**Success**: Active Plans table has ≤5 entries.
+### Phase 2: One-command pipeline (Makefile target)
+`make pipeline INPUT=path/to/graph.yaml` runs the full chain end-to-end.
+**Success**: Single make command produces DIGIMON-importable artifacts.
 
-### Phase 3: Restore docs/ROADMAP.md
-Recreate forward-looking roadmap (deleted by Codex merge).
-**Success**: One document that answers "what should I work on next?"
+### Phase 3: Non-unity confidence DIGIMON weight test
+Verify DIGIMON export weights match onto-canon6 confidence for varied values.
+**Success**: Test passes showing weight=confidence for 0.3, 0.5, 0.8, 1.0.
 
-### Phase 4: Update HANDOFF.md
-Merge both sessions' work into one coherent handoff.
-**Success**: New session can understand full state from HANDOFF alone.
+### Phase 4: Cross-investigation conflict detection
+Import claims from two different investigations, detect tensions on merge.
+**Success**: Tensions detected on overlapping entities across investigations.
 
-### Phase 5: Update README.md
-Fix test count, update maturity, add cross-project integration.
-**Success**: README reflects current state.
+### Phase 5: Diverse domain extraction test
+Run compact default prompt on non-military text (financial/academic).
+**Success**: Valid candidates extracted from non-military text.
 
-### Phase 6: LLM resolution on Booz Allen corpus
-Run full_pipeline_e2e.py with strategy=llm for real entity merges.
-**Success**: Resolution finds real alias merges.
-
-### Phase 7: Ecosystem docs update
-Update ECOSYSTEM_STATUS.md, CAPABILITY_BOUNDARIES.md, Plan 56.
-**Success**: Ecosystem docs consistent with code.
-
-### Phase 8: Final verification + push
-Full test suite, push all repos.
-**Success**: 0 failures, all repos pushed.
+### Phase 6: Final doc update, test, push
+Update ROADMAP/HANDOFF, run full suite, push all repos.
+**Success**: 0 failures, all repos pushed, docs current.
 
 **Pre-made decisions:**
 - Model: `gemini/gemini-3-flash-preview`
-- Config: `review_mode: llm`, `enable_judge_filter: true`
 - Commit each verified phase immediately
+- Source query: thin wrapper over existing promoted-graph SQLite tables
+- Pipeline target: delegate to full_pipeline_e2e.py
 - Do not stop between phases
 
 ## Composability Principle
