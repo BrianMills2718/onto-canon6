@@ -199,62 +199,139 @@ happens.
    resolution *infrastructure*. Export adapters wire the identity subsystem.
    Consumers should not have to reimplement dedup.
 
-## Active Execution Block (2026-04-02 — cross-project integration)
+## Active Execution Block (2026-04-02 overnight — hardening + full pipeline)
 
-**CONTINUOUS AUTONOMOUS EXECUTION. DO NOT STOP.**
+**CONTINUOUS AUTONOMOUS EXECUTION. DO NOT STOP. STOPPING EARLY IS A FAILURE MODE.**
 
-All onto-canon6 internal plans (0024-0027) are complete. This block focuses on
-cross-project integration, documentation consolidation, and long-term planning.
+Execute all phases below in order. Commit each verified phase immediately.
+Do not pause for confirmation between phases. Do not stop after one commit.
+The only valid stop conditions are:
+1. All phases are complete
+2. A real architectural uncertainty not covered by this plan
+3. An irreversible action affecting shared state
 
-**Previous block (2026-04-01):** Phases A-T complete (~55 commits). Entity
-resolution proven (100%/100%), schema stability gate shipped (9 tests),
-transfer evaluation passed, browsing CLI shipped, docs cleaned up.
+**Previous blocks:** Phases A-T (2026-04-01, ~55 commits), Phases 1-7
+(2026-04-02 early, ~8 commits across 4 repos). Cross-project integration
+proven, docs cleaned up, roadmap written.
 
-### Current Phases (2026-04-02)
+### Phase A: Fix all 21 pre-existing test failures
 
-#### Phase 1: Documentation inconsistency cleanup
-**Goal**: Fix all stale references, dates, and cross-doc contradictions after
-55 commits in 3 days. A fresh agent session should not be confused by stale docs.
-**Success**: All top-level docs (CLAUDE.md, STATUS.md, README.md, plans/CLAUDE.md,
-HANDOFF.md) are self-consistent, current, and point to the same execution state.
+21 tests fail across 5 categories. Fix each category:
 
-#### Phase 2: epistemic-contracts repo cleanup
-**Goal**: Ship the shared library properly — README, .gitignore, no committed
-build artifacts.
-**Success**: `pip install -e ~/projects/epistemic-contracts` works, README
-explains purpose, no egg-info in git.
+**A1. Missing rapidfuzz (5 tests)**
+- `pip install rapidfuzz` in the .venv
+- Tests: `test_auto_resolution.py::TestFuzzyResolution` (4) + `TestFuzzyPreFilter` (1)
+- Success: all 5 pass
 
-#### Phase 3: E2E integration test — grounded-research → onto-canon6
-**Goal**: Prove the full cross-project pipeline with real data, not just
-smoke-tested adapter objects. This is the #1 HANDOFF priority.
-**Success**: Real grounded-research output → shared_export.py → onto-canon6
-grounded_research_import.py → assertions visible in promoted graph.
+**A2. ProbLog adapter broken (2 tests)**
+- `test_problog_adapter.py::test_simple_rule_evaluation`
+- `test_cli_evaluate_rules.py::test_evaluate_simple_rules`
+- Diagnose: `assert 0 >= 1` means ProbLog returns 0 results. Check if
+  ProbLog is installed, if the fact-store adapter loads, if the rule syntax
+  is correct.
+- Success: both pass
 
-#### Phase 4: Plan 56 Phase 5 — research_v3 boundary adapter
-**Goal**: Complete the last phase of the shared epistemic infrastructure plan.
-**Success**: research_v3 Finding/Claim exports to shared ClaimRecord with FtM
-entity IDs preserved as external_ids.
+**A3. CLI flow extraction_goal kwarg (3 tests)**
+- `test_cli_flow.py` — `_FakeTextExtractionService.extract_and_submit()`
+  doesn't accept `extraction_goal`. Update the fake to match the real API.
+- Success: all 3 pass
 
-#### Phase 5: Evidence quality scoring extraction
-**Goal**: Extract grounded-research's recency/staleness scoring to
-epistemic-contracts as shared utility functions.
-**Success**: Scoring logic importable from epistemic-contracts, tested.
+**A4. FastMCP API change (1 test)**
+- `test_mcp_server.py::test_phase14_mcp_tools_are_registered`
+- `list_tools` → check what the correct method name is on the current
+  FastMCP version
+- Success: test passes
 
-#### Phase 6: Long-term roadmap consolidation
-**Goal**: Write a clear, unambiguous roadmap for the next 3-6 months. Define
-what "done" looks like for onto-canon6.
-**Success**: One document that a new agent session can read to understand
-priorities, dependencies, and acceptance criteria.
+**A5. Text extraction response parsing (8 tests)**
+- `test_text_extraction.py` — `TypeError: list indices must be integers`
+  means the response parsing code expects a dict but gets a list (or vice
+  versa) after the `list[RoleEntry]` schema change.
+- Root cause: the test fixtures still use the old `dict[str, list[Filler]]`
+  format for roles. Update fixtures to `list[RoleEntry]` format.
+- Success: all 8 pass
 
-#### Phase 7: Final verification, commit, push
-**Goal**: Run full test suites, verify doc consistency, push everything.
-**Success**: 451+ tests pass, all repos pushed.
+**A6. Notebook process (2 tests)**
+- `test_notebook_registry_validates` — references `docs/plans/0002_phase8_artifact_lineage_shape.md`
+  which was removed/renamed. Update notebook_registry.yaml.
+- `test_master_journey_notebook_executes` — notebook execution error.
+  Run notebook to diagnose, fix the cell.
+- Success: both pass
+
+**Acceptance**: `pytest -q` shows 0 failures, 500+ passed.
+
+### Phase B: Shared-claim validation profile
+
+Imported claims get `validation_status=invalid` because `general_purpose_open`
+doesn't recognize `shared:fact_claim` as a predicate.
+
+**Tasks:**
+1. Create `shared_import` ontology pack with predicates covering shared
+   contract claim types (`shared:fact_claim`, `shared:relationship_claim`,
+   `shared:financial_claim`, `shared:temporal_claim`, `shared:finding`)
+2. Create `shared_import_permissive` profile (open policy for imported claims)
+3. Update `grounded_research_import.py` to default to this profile
+4. Test: E2E integration script should produce `validation_status=valid`
+
+**Success**: Imported claims validate correctly.
+
+### Phase C: Full pipeline E2E — research_v3 → onto-canon6 → DIGIMON
+
+Write a single script that runs the complete chain on real data:
+1. Load research_v3 graph.yaml (Booz Allen lobbying, 123 claims)
+2. Convert via shared_export → shared ClaimRecords
+3. Import into onto-canon6 via grounded_research_import
+4. Accept all candidates (auto-accept for bulk import)
+5. Promote accepted candidates to graph
+6. Run entity resolution
+7. Export to DIGIMON format
+8. Verify: entity count, relationship count, identity clusters
+
+**Success**: Script runs end-to-end, produces DIGIMON-importable artifacts.
+
+### Phase D: Concept/entity browsing MCP surface
+
+CLI is done (list-entities, search-entities, get-entity). Add MCP tools.
+
+**Tasks:**
+1. Add MCP tools to `mcp_server.py`: `canon6_list_entities`,
+   `canon6_search_entities`, `canon6_get_entity`
+2. Wire to the same promoted-graph queries as CLI
+3. Test with the MCP test harness
+
+**Success**: MCP tools registered and functional.
+
+### Phase E: Scale test — full 123 Booz Allen claims
+
+Run the Phase C pipeline script with the full Booz Allen corpus.
+Document results in `docs/runs/`.
+
+**Success**: Results documented with entity count, dedup ratio, identity
+clusters, and any failures.
+
+### Phase F: Ecosystem docs update
+
+Update project-meta ecosystem docs to reflect current state:
+1. `ECOSYSTEM_STATUS.md` — update onto-canon6 section
+2. `CAPABILITY_BOUNDARIES.md` — update integration status
+3. Plan 56 — mark Phase 5 complete
+
+**Success**: All ecosystem docs consistent with actual code state.
+
+### Phase G: Final verification + push
+
+1. Run full test suite (target: 0 failures)
+2. Verify all doc cross-references
+3. Commit and push all repos
 
 **Pre-made decisions:**
 - Model: `gemini/gemini-3-flash-preview` for any LLM calls
-- Config: `review_mode: llm`, `enable_judge_filter: true`, `require_llm_review: true`
+- Config: `review_mode: llm`, `enable_judge_filter: true`
 - Commit each verified phase immediately
-- Do not stop between phases unless a real blocker requires user input
+- rapidfuzz, problog: install in .venv, do not add to pyproject.toml
+  unless already listed
+- Shared-import profile: open policy (no strict validation for imports)
+- MCP tools: thin wrappers over existing CLI queries
+- Do not stop between phases
 
 ## Principles
 
