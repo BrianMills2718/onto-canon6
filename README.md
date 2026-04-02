@@ -46,7 +46,7 @@ The producer side is intentionally replaceable:
 
 The repo is beyond pure design/bootstrap work. It has:
 
-1. a maintained local test surface;
+1. a maintained local test surface (551 tests, 0 failures);
 2. two real non-fixture runs (PSYOP Stage 1 and Shield AI WhyGame);
 3. a proved E2E text -> review -> promotion path;
 4. proved downstream artifact exports and consumer-facing adapter slices.
