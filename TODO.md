@@ -8,11 +8,11 @@ Source of truth:
 ### Phase 1 — Freeze The Approved Contract
 - [x] Create and activate Plan `0055`
 - [x] Refresh authority docs so chunk `017` is no longer waiting on user sign-off
-- [ ] Commit verified phase
+- [x] Commit verified phase
 
 ### Phase 2 — Cut Over The Fixture And Tests
-- [ ] Remove chunk `017` from the strict-omit benchmark fixture
-- [ ] Bump the fixture revision and update service tests
+- [x] Remove chunk `017` from the strict-omit benchmark fixture
+- [x] Bump the fixture revision and update service tests
 - [ ] Commit verified phase
 
 ### Phase 3 — Rebaseline The Corrected Benchmark
