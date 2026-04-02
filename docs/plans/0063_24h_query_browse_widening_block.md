@@ -1,8 +1,8 @@
 # 24h Query Browse Widening Block
 
-Status: active
+Status: complete
 
-Last updated: 2026-04-02
+Last updated: 2026-04-02 (closeout)
 Workstream: Plan 0028 widening/hardening after first read-only slice
 
 ## Purpose
@@ -159,6 +159,29 @@ If a new uncertainty appears during this block:
 2. continue on the next bounded phase unless the uncertainty changes the
    contract itself;
 3. stop only if the uncertainty is a real contract decision the user must make.
+
+## Outcome
+
+This block is complete. It landed:
+
+1. typed entity-browse and promoted-assertion-browse contracts in the shared
+   query surface;
+2. `source_ref` and `source_kind` as first-class assertion-browse/search
+   filters;
+3. `list-entities` in the CLI plus query-surface-backed
+   `list-promoted-assertions`;
+4. matching MCP browse tools; and
+5. a real-proof note against the Booz Allen promoted DB in
+   `docs/runs/2026-04-02_query_browse_widening_real_proof.md`.
+
+## Next Narrowed Queryability Question
+
+This block intentionally leaves only two truthful follow-ons:
+
+1. identity/external-reference-aware browse and filters; or
+2. first-class source-artifact query beyond source-centric assertion filters.
+
+No third broadening track is active until one of those is chosen explicitly.
 
 ## Open Questions
 

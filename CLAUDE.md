@@ -47,7 +47,7 @@ runtime.
 39. `docs/plans/0014_extraction_quality_baseline.md` (Lane 4 policy reference; no active transfer-rescue block)
 40. `docs/plans/0027_deferred_parity_reprioritization.md`
 41. `docs/plans/0028_query_browse_surface.md`
-42. `docs/plans/0063_24h_query_browse_widening_block.md` (active 24h block)
+42. `docs/plans/0063_24h_query_browse_widening_block.md` (completed browse widening block)
 43. `docs/plans/0005_v1_capability_parity_matrix.md`
 44. `docs/plans/0001_successor_roadmap.md`
 
@@ -120,9 +120,10 @@ config/
   0039 is now also complete: fresh reruns `145141` and `152927` both restored
   `10/10` question accuracy while keeping precision `1.00` and false merges
   `0`, which is enough to close the rerun-stability gate. Plan 0025 is now
-  complete at its Phase 4 value-proof level. Plan `0063` is now the active
-  24h execution block: it widens the landed first query surface into a real
-  browse surface with source-centric provenance entrypoints. Plans `0040` through `0045`
+  complete at its Phase 4 value-proof level. Plan `0063` is now complete: it
+  widened the landed first query surface into a real browse surface with
+  source-centric provenance entrypoints and proved that widened surface on the
+  real Booz Allen promoted DB. Plans `0040` through `0045`
   completed the chunk-transfer certification and localization sequence:
   chunk `002` stayed a real positive control, chunk `003` remained the only
   meaningful residual, and prompt-surface / wrapper / live-path differences
@@ -204,16 +205,8 @@ config/
   default for tiny edits or when a worktree would create a bigger risk than it
   removes.
 - **Queryability is the active deferred-capability lane now.** Plan 0027 fixed
-  the ordering, Plan 0028 landed the first read-only slice, and Plan `0063` is
-  the active widening block that turns search/get into a real browse surface
-  with source-centric provenance entrypoints. Do not reopen extraction-transfer
-  rescue work or widen the DIGIMON seam while Plan `0063` is active.
-- **24h execution in this repo is mandatory, not aspirational.** When a block
-  like Plan `0063` is active, agents must keep working through every declared
-  phase in the isolated worktree until the block is truthfully complete. Do not
-  stop at planning. Do not stop after one feature slice. Log uncertainties in
-  the active plan, `TODO.md`, and `KNOWLEDGE.md`, then continue unless the
-  uncertainty changes the contract itself.
+  the ordering, Plan 0028 landed the first read-only slice, and Plan `0063` completed the first widening block that turns search/get into a real browse surface with source-centric provenance entrypoints. Do not reopen extraction-transfer rescue work or widen the DIGIMON seam as a substitute for the next narrowed queryability choice.
+- **24h execution in this repo is mandatory, not aspirational.** When a block like Plan `0063` is active, agents must keep working through every declared phase in the isolated worktree until the block is truthfully complete. Do not stop at planning. Do not stop after one feature slice. Log uncertainties in the active plan, `TODO.md`, and `KNOWLEDGE.md`, then continue unless the uncertainty changes the contract itself.
 - **Flat filler model with strong descriptions** — discriminated unions (oneOf)
   are architecturally correct but no current model can navigate them (all produce
   empty roles). Reverted to flat model with `Field(description=...)` enforcing

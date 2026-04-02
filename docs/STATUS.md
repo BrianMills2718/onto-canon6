@@ -23,9 +23,10 @@ Current post-cutover program state:
    `docs/plans/0026_schema_stability_gate.md`;
 3. Lane 4 now has an explicit promotion policy in
    `docs/plans/0014_extraction_quality_baseline.md`;
-4. the first read-only query surface is now landed and proved through
-   `docs/plans/0028_query_browse_surface.md` and
-   `docs/plans/0029_24h_query_surface_execution_block.md`;
+4. the query surface is now widened beyond the first read-only slice through
+   `docs/plans/0028_query_browse_surface.md`,
+   `docs/plans/0029_24h_query_surface_execution_block.md`, and
+   `docs/plans/0063_24h_query_browse_widening_block.md`;
 5. Plan 0025 is now complete at the Phase 4 value-proof level;
 6. Plan 0039 proved rerun stability at the question/safety gate with two fresh
    reruns (`145141`, `152927`) that both held `10/10` question accuracy,
@@ -70,7 +71,9 @@ Current post-cutover program state:
     spillover family from chunk `003`; and
 25. Plan `0062` is now complete and the proved compact operational-parity
     candidate is the repo-default extraction surface; and
-26. no active extraction-transfer cleanup block remains under Plan `0014`.
+26. no active extraction-transfer cleanup block remains under Plan `0014`; and
+27. Plan `0063` is now complete and proved entity browse plus source-centric
+    assertion browse on the real Booz Allen promoted DB.
 
 ## What Is Proven
 

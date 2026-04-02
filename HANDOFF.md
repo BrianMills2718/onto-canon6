@@ -2,6 +2,54 @@
 
 ## Session Focus
 
+Plan `0063` closeout in the isolated worktree branch
+`codex/onto-canon6-next-24h`.
+
+## What Landed
+
+Committed in the isolated worktree as:
+
+- `964b066` — `Activate Plan 0063 query browse widening block`
+- `7fd2919` — `Add query-surface browse and source filters`
+- `f9cfd26` — `Widen query browse CLI and MCP surfaces`
+
+Main effects:
+
+1. the shared query surface now supports deterministic entity browse and
+   promoted-assertion browse;
+2. promoted-assertion browse/search now accepts `source_ref` and `source_kind`
+   as first-class provenance filters;
+3. the CLI now exposes `list-entities`, and `list-promoted-assertions` is
+   query-surface-backed instead of a separate raw graph read;
+4. the MCP surface now exposes matching browse tools; and
+5. the widened browse surface is proved on the real Booz Allen promoted DB in
+   `docs/runs/2026-04-02_query_browse_widening_real_proof.md`.
+
+## Current State
+
+1. Plan `0063` is complete.
+2. Plan `0028` remains active as the umbrella queryability plan, but the next
+   choice is now narrow instead of vague.
+3. The next truthful queryability follow-ons are:
+   - identity/external-reference-aware browse and filters
+   - first-class source-artifact query beyond source-centric assertion filters
+4. There is no active extraction-transfer cleanup block and no active query
+   browse widening block.
+
+## Recommended Next Step
+
+If work continues:
+
+1. keep substantial autonomous work on isolated worktree branches by default;
+2. choose one of the two narrowed queryability follow-ons before activating the
+   next 24h block; and
+3. do not reopen the old extraction-transfer chain or broaden the DIGIMON seam
+   as a substitute for that choice.
+
+# Handoff: onto-canon6 — 2026-04-02
+
+## Session Focus
+
 Integration-planning worktree closeout, with the extraction-transfer cleanup
 chain completed through Plan `0062` and prepared for merge-back to `main`.
 

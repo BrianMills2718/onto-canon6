@@ -335,3 +335,10 @@ stayed free of accepted spillover, but the no-override default path produced a
 slightly different candidate set than the override-based proof. Treat
 verdict-level stability as the gating contract here, not exact candidate-body
 replay across live runs.
+
+### 2026-04-02 — codex — best-practice
+For real query-surface proof on this repo, the default config DB may be the
+wrong target if `var/review_state.sqlite3` is empty. The proved real browse
+verification for Plan `0063` used the full-pipeline artifact DB at
+`var/full_pipeline_e2e/pipeline_review.sqlite3`, which contains 123 promoted
+Booz Allen claims.
