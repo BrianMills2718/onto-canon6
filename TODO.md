@@ -3,27 +3,27 @@
 ## Current 24h Execution Block
 
 Source of truth:
-- `docs/plans/0056_24h_corrected_fixture_semantic_recovery_block.md`
+- `docs/plans/0057_24h_corrected_fixture_transfer_recertification_block.md`
 
-### Phase 1 — Freeze The Residual Contract
-- [x] Restate the `0055` decision as the incoming contract
-- [x] Freeze cases `001`, `002`, `007`, and `008` with their current scores
-- [x] Mark regression guards explicitly
+### Phase 1 — Freeze The Transfer Contract
+- [ ] Restate the `0056` result as the incoming contract
+- [ ] Define the fresh run directory, review DB path, source refs, and report paths
+- [ ] Keep the prompt override/ref explicit
 - [x] Commit verified phase
 
-### Phase 2 — Localize The Remaining Semantic Failures
-- [x] Compare expected vs actual outputs for `001`, `002`, `007`, and `008`
-- [x] Classify each miss and pre-decide one bounded prompt strategy
-- [x] Commit verified phase
-
-### Phase 3 — Land One Bounded Prompt Revision
-- [x] Update both compact prompt surfaces in lockstep
-- [x] Extend prompt tests only as needed
+### Phase 2 — Rerun Chunk 002 Positive Control
+- [ ] Run live extraction on chunk `002`
+- [ ] Export the reviewed chunk-transfer report
 - [ ] Commit verified phase
 
-### Phase 4 — Rerun The Focus Slice And Corrected Fixture
-- [ ] Run the focused rerun over `001`, `002`, `007`, and `008`
-- [ ] Run one corrected-fixture rerun if the focus slice is structurally clean
+### Phase 3 — Rerun Chunk 003 Stress Case
+- [ ] Run live extraction on chunk `003`
+- [ ] Export the reviewed chunk-transfer report
+- [ ] Commit verified phase
+
+### Phase 4 — Classify Promotion Posture
+- [ ] Compare the new reports against the Plan `0014` promotion gate
+- [ ] Decide promotable vs transfer-blocked vs mixed
 - [ ] Commit verified phase
 
 ### Phase 5 — Closeout
@@ -117,7 +117,7 @@ Source of truth:
 - [x] Localize the remaining post-wrapper extraction-path divergence to one dominant surface
 - [x] Localize and repair the remaining prompt-side parity residual through Plans `0046`-`0049`
 - [x] Run one bounded post-parity semantic recovery attempt and classify it honestly
-- [ ] Recover the corrected-fixture semantic residual family under Plan `0056`
+- [ ] Re-certify named real chunk transfer under Plan `0057`
 
 ## Longer-Term Queue
 

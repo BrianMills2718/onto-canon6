@@ -180,6 +180,14 @@ fixture `psyop_eval_slice_v6`, the real residual family narrowed to cases
 `006`, and `009` through `016` all held at `1.0`. Treat chunk `017` as a
 contract distortion that is now gone, not as the active semantic blocker.
 
+### 2026-04-02 — codex — best-practice
+The bounded semantic prompt recovery after the chunk-017 cutover restored the
+compact operational-parity lane to the top score on corrected fixture `v6`
+(`0.8859` vs `compact = 0.8484375`) and fully repaired `psyop_008`, but that
+still does not certify promotion. Once the benchmark lead is back, the next
+gate is immediately the named live transfer pair (`chunk_002`, `chunk_003`),
+not another benchmark-only prompt loop.
+
 ### 2026-04-01 — codex — schema-gotcha
 Prompt-eval report `execution_id` is not the same key as
 `experiment_items.run_id` in the observability DB. For transfer-comparison

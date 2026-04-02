@@ -14,7 +14,8 @@ This subtree owns active gaps, acceptance criteria, and verification notes.
 | 0025a | [Entity Resolution Scale-Out](0025a_entity_resolution_scale_out.md) | Deferred (activates after 0025 Phase 4) |
 | 0027 | [Deferred Parity Reprioritization](0027_deferred_parity_reprioritization.md) | Active (Lane 5 execution surface; next-active order now explicit) |
 | 0028 | [Query And Browse Surface](0028_query_browse_surface.md) | Active (first read-only slice landed and proved; wider hardening still open) |
-| 0056 | [24h Corrected-Fixture Semantic Recovery Block](0056_24h_corrected_fixture_semantic_recovery_block.md) | Active (cases 001/002/007/008 now define the owned semantic residual family) |
+| 0057 | [24h Corrected-Fixture Transfer Recertification Block](0057_24h_corrected_fixture_transfer_recertification_block.md) | Active (benchmark lead restored; real chunk-transfer gate now being rerun) |
+| 0056 | [24h Corrected-Fixture Semantic Recovery Block](0056_24h_corrected_fixture_semantic_recovery_block.md) | Complete (benchmark lead restored on corrected fixture; transfer recertification now blocks promotion) |
 | 0055 | [24h Chunk-017 Contract Cutover And Rebaseline Block](0055_24h_chunk017_contract_cutover_and_rebaseline_block.md) | Complete (corrected fixture rerun proved the next blocker is the smaller 001/002/007/008 family) |
 | 0054 | [24h Full-Chunk Strict-Omit Contract Audit](0054_24h_full_chunk_strict_omit_contract_audit.md) | Complete (chunk 017 is a mixed-content contract question; user approved removal/demotion) |
 | 0053 | [24h Abstract-Result And Citation Block](0053_24h_abstract_result_and_citation_block.md) | Complete (hard-negative prompt revision failed; full-chunk contract audit activated) |
@@ -41,7 +42,7 @@ This subtree owns active gaps, acceptance criteria, and verification notes.
 | 0037 | [24h Entity Resolution False-Split Cleanup Block](0037_24h_entity_resolution_false_split_cleanup_block.md) | Complete (Rodriguez and Washington residual families closed; fresh rerun exposed a new blocker family) |
 | 0038 | [24h Entity Resolution Surface Stability Block](0038_24h_entity_resolution_surface_stability_block.md) | Complete (best rerun improved the owned family; next rerun exposed a broader stability problem) |
 | 0039 | [24h Entity Resolution Rerun Stability Block](0039_24h_entity_resolution_rerun_stability_block.md) | Complete (two fresh reruns held the question/safety gate) |
-| 0014 | [Extraction Quality Baseline](0014_extraction_quality_baseline.md) | Active (explicit promotion gate defined; Plan 0055 now owns the approved chunk-017 cutover and corrected-fixture rerun) |
+| 0014 | [Extraction Quality Baseline](0014_extraction_quality_baseline.md) | Active (explicit promotion gate defined; Plan 0057 now owns corrected-fixture transfer recertification) |
 | 0020 | [Vision Gap Closure](0020_vision_gap_closure.md) | Active (tracking) |
 
 ## Completed/Historical

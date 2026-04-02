@@ -55,8 +55,10 @@ Current post-cutover program state:
 17. Plan `0054` is now complete and proved the remaining blocker is a
     benchmark-contract question, not another prompt-wording diagnosis block;
 18. the chunk-017 contract cutover is complete under Plan `0055`;
-19. the next extraction-quality blocker is the corrected-fixture semantic
-    family `001`, `002`, `007`, and `008`, now owned by Plan `0056`.
+19. Plan `0056` restored the compact operational-parity lane to the benchmark
+    lead on corrected fixture `v6`;
+20. the next extraction-quality blocker is now transfer recertification on the
+    two named real chunks, owned by Plan `0057`.
 
 ## What Is Proven
 

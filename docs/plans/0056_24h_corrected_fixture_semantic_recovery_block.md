@@ -1,12 +1,12 @@
 # 24h Corrected-Fixture Semantic Recovery Block
 
-Status: active
+Status: complete
 Phase status:
 - Phase 1 complete
 - Phase 2 complete
 - Phase 3 complete
-- Phase 4 pending
-- Phase 5 pending
+- Phase 4 complete
+- Phase 5 complete
 
 Last updated: 2026-04-02
 Workstream: extraction-quality semantic recovery after chunk-017 contract cutover
@@ -139,3 +139,25 @@ This block succeeds only if:
 1. the result is decision-grade;
 2. the worktree is clean;
 3. the next step is explicit.
+
+## Outcome
+
+Plan `0056` is complete.
+
+Artifacts:
+
+1. `docs/runs/2026-04-02_corrected_fixture_focus_report.json`
+2. `docs/runs/2026-04-02_corrected_fixture_full_report.json`
+3. `docs/runs/2026-04-02_corrected_fixture_semantic_recovery_decision.md`
+
+Result:
+
+1. `compact_operational_parity` regained the benchmark lead on corrected
+   fixture `v6`;
+2. `psyop_008` is repaired and the strict-omit regression guards remain clean;
+3. the lane is still not promotable from benchmark evidence alone because the
+   named real chunk-transfer gate has not yet been rerun.
+
+The next active block is:
+
+- `docs/plans/0057_24h_corrected_fixture_transfer_recertification_block.md`

@@ -111,9 +111,8 @@ recommended contract cutover:
 2. rely on the cleaner local controls `008` through `016`.
 
 Plan `0055` now completed that fixture cutover plus one corrected-fixture
-rerun. The corrected rerun proved that the benchmark distortion is gone, but
-the compact operational-parity lane still trails `compact` and remains
-non-promotable.
+rerun. Plan `0056` then improved the compact operational-parity lane enough to
+restore the benchmark lead on corrected fixture `v6`.
 
 The next owned residual family is now:
 
@@ -122,7 +121,10 @@ The next owned residual family is now:
 3. `psyop_007_named_institutional_concern`
 4. `psyop_008_jpotf_establishment_not_org_form`
 
-Plan `0056` now owns that semantic recovery block on the corrected fixture.
+Benchmark improvement still does not certify promotion by itself. The named
+real chunk-transfer gate remains active.
+
+Plan `0057` now owns that transfer recertification block.
 
 ## Current State
 
