@@ -200,9 +200,11 @@ happens.
    resolution *infrastructure*. Export adapters wire the identity subsystem.
    Consumers should not have to reimplement dedup.
 
-## Active Execution Block (2026-04-01 evening)
+## Active Execution Block (2026-04-01 night — ecosystem-wide)
 
 **CONTINUOUS AUTONOMOUS EXECUTION. DO NOT STOP.**
+
+onto-canon6 plans are complete. Remaining work is cross-project integration.
 
 Phases A-P complete (42 commits). Remaining work:
 
