@@ -923,6 +923,8 @@ def test_run_prompt_experiment_builds_report_and_variant_comparison(
     assert "do not inherit the document's main organization, campaign, or topic as" in compact_operational_parity_messages[0]["content"]
     assert "coordinated governance-process nouns such as `Congressional oversight" in compact_operational_parity_messages[0]["content"]
     assert "retrospective assessment prose such as `was limited`, `was hampered`" in compact_operational_parity_messages[0]["content"]
+    assert "analytical section headings such as `Effectiveness and Limitations`" in compact_operational_parity_messages[0]["content"]
+    assert "aggregate resource or staffing summaries such as `total strength`" in compact_operational_parity_messages[0]["content"]
     assert "{input}" in compact_operational_parity_messages[-1]["content"]
     assert "Case input:" not in compact_operational_parity_messages[-1]["content"]
     assert "Return exactly one structured response object" in single_response_messages[0]["content"]

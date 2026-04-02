@@ -167,6 +167,16 @@ messages:
         signals analytical wrap-up, not a reviewable event; default to omission
         unless the same evidence span still states a concrete typed fact with
         all needed named roles
+      - analytical section headings such as `Effectiveness and Limitations`,
+        `Ethical and Legal Considerations`, `Personnel and Resource Trends`,
+        or `Conclusion and Opinion` strengthen the omission default; treat
+        claims under those headings as analytical/background context unless the
+        same evidence span states a concrete typed event with all required
+        named roles
+      - aggregate resource or staffing summaries such as `total strength`,
+        `a substantial proportion`, or `personnel were dedicated to` are not
+        `belongs_to_organization` facts unless the same evidence span names a
+        concrete member unit belonging to a distinct named organization
 
       Return only the structured candidate payload. Do not add explanatory
       prose before or after it.

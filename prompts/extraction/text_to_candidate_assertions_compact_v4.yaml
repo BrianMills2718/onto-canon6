@@ -155,6 +155,16 @@ messages:
         the `express_concern` speaker or `limit_capability` subject from
         section context alone; the speaker or limited subject must be explicit
         in the same evidence span you cite
+      - analytical section headings such as `Effectiveness and Limitations`,
+        `Ethical and Legal Considerations`, `Personnel and Resource Trends`,
+        or `Conclusion and Opinion` strengthen the omission default; treat
+        claims under those headings as analytical/background context unless the
+        same evidence span states a concrete typed event with all required
+        named roles
+      - aggregate resource or staffing summaries such as `total strength`,
+        `a substantial proportion`, or `personnel were dedicated to` are not
+        `belongs_to_organization` facts unless the same evidence span names a
+        concrete member unit belonging to a distinct named organization
 
       Return only the structured candidate payload. Do not add explanatory
       prose before or after it.
