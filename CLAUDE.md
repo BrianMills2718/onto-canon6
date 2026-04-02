@@ -62,48 +62,50 @@ config/
 - Model: `gemini/gemini-3-flash-preview`
 - Shared contracts: epistemic-contracts library (3 projects wired)
 
-## Active Execution Block (2026-04-02 overnight — Tier 2 hardening)
+## Active Execution Block (2026-04-02 overnight — cross-project verification)
 
 **CONTINUOUS AUTONOMOUS EXECUTION. DO NOT STOP. STOPPING EARLY IS A FAILURE MODE.**
 
-Tier 1 is done. This block hardens Tier 2 items and fixes known issues.
+Tier 1 and Tier 2 core work are done. This block proves the cross-project
+pipeline end-to-end with real consumers and fixes remaining doc staleness.
 
-### Phase 1: Fix stale STATUS.md
-Update "What Is Not Proven" to reflect reality (many items now proven).
-**Success**: STATUS.md is truthful.
+### Phase 1: Fix STATUS.md (items 1-2 now resolved)
+Cross-investigation policy (ADR 0024) and role-free promotion are done.
+**Success**: STATUS.md "Still missing" is truthful.
 
-### Phase 2: Role-free assertion promotion
-grounded-research claims without entity_refs can't promote. Fix.
-**Success**: EU sanctions claims promote and export to DIGIMON.
+### Phase 2: DIGIMON consumer verification
+Run the DIGIMON importer on our Booz Allen pipeline output and verify
+the graph materializes correctly.
+**Success**: DIGIMON imports entities.jsonl + relationships.jsonl, produces GraphML.
 
-### Phase 3: Cross-investigation conflict policy (ADR)
-Define when tensions across investigations trigger action.
-**Success**: ADR adopted, tension report includes cross-investigation metadata.
+### Phase 3: Write adapter tests in grounded-research
+The `load_handoff_claims()` bridge has no tests. Add tests in
+grounded-research/tests/.
+**Success**: Tests pass for load_handoff_claims on EU sanctions handoff.
 
-### Phase 4: Integration tests for full pipeline
-Add tests for: pipeline E2E, source query, role-free promotion.
-**Success**: 3+ new tests passing.
+### Phase 4: Write adapter tests in research_v3
+The `shared_export.py` has no tests. Add tests in research_v3/tests/.
+**Success**: Tests pass for load_graph_claims on Booz Allen graph.yaml.
 
-### Phase 5: Consolidate run records
-Archive superseded runs, keep <30 definitive files.
-**Success**: docs/runs/ cleaned up.
+### Phase 5: Update ecosystem docs
+Update ECOSYSTEM_STATUS.md with: 558 tests, ADR 0024, role-free promotion,
+source query surface, run record consolidation.
+**Success**: Ecosystem docs are truthful.
 
-### Phase 6: Final verification + push
-**Success**: 0 failures, all repos pushed.
+### Phase 6: Update ROADMAP.md and HANDOFF.md
+Mark cross-investigation conflict as DONE (ADR adopted), role-free as DONE.
+Update "What's Next" to reflect actual remaining work.
+**Success**: Forward-looking docs are current.
+
+### Phase 7: Push all repos
+**Success**: onto-canon6, grounded-research, research_v3, project-meta pushed.
 
 **Pre-made decisions:**
-- Role-free assertions: promote with predicate + claim_text, empty roles
-- Conflict policy: flag-only (no auto-resolution in v1)
+- DIGIMON import: use existing scripts/import_onto_canon_jsonl.py
+- Adapter tests: lightweight, fixture-based, no LLM calls
 - Commit each verified phase immediately
+- Do not stop between phases
 
-## Composability Principle
-
-onto-canon6 is a composable toolkit, not a monolithic application:
-
-- **Vocabulary is pluggable.** Packs and profiles are the mechanism. Don't
-  hardcode assumptions about specific predicates or entity types.
-- **Extensions are pluggable.** The epistemic engine is ONE extension. Keep
-  extensions in `extensions/`, not in core.
 - **Extraction is a producer, not core.** Don't couple core governance logic
   to extraction-specific assumptions.
 - **Resolution strategies are consumer-chosen.** onto-canon6 provides
