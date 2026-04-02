@@ -126,9 +126,11 @@ real chunk-transfer gate remains active.
 
 Plan `0057` owned the first corrected-fixture transfer recertification block.
 It then proved the next blocker was not the extraction prompt alone: the live
-review contract was misaligned with corrected fixture `v6` semantics.
+review contract was misaligned with corrected fixture `v6` semantics. Plan
+`0058` then fixed that contract and reduced the live chunk-003 false-positive
+family, but it did not eliminate it.
 
-Plan `0058` now owns that live review-alignment block.
+Plan `0059` now owns the smaller live chunk-003 semantic residual.
 
 ## Current State
 

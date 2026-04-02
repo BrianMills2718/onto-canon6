@@ -2,7 +2,7 @@
 
 ## Session Focus
 
-Plan `0057` closeout and Plan `0058` activation in the isolated worktree
+Plan `0058` closeout and Plan `0059` activation in the isolated worktree
 branch `codex/onto-canon6-integration-planning`.
 
 ## What Landed
@@ -11,32 +11,36 @@ Committed and documented in the isolated worktree:
 
 1. Plan `0057` now truthfully closes as a transfer recertification audit, not a
    promotion win;
-2. chunk `002` remained a positive live transfer control;
-3. chunk `003` produced a nominally positive transfer report, but that result
-   does not survive comparison to corrected fixture `v6` semantics;
-4. the repo now records the actual blocker: live `review_mode: llm` semantics
-   are too permissive for the chunk-003 analytical-prose omit family; and
-5. Plan `0058` is now the active execution block.
+2. Plan `0058` then fixed the live review contract so only `supported`
+   candidates auto-accept in `review_mode: llm`;
+3. the aligned rerun reduced chunk `003` from `5` accepted candidates to `4`,
+   while chunk `002` remained a valid positive control;
+4. the repo now records the smaller remaining blocker: three abstract
+   `limit_capability` acceptances plus one personnel-allocation-to-membership
+   over-extraction on chunk `003`; and
+5. Plan `0059` is now the active execution block.
 
 ## Current State
 
 1. The compact operational-parity lane is still **not promotable**.
-2. The corrected benchmark lead is real, but the first live recertification
-   pass was overstated by the live review contract.
-3. The chunk-transfer report surface only summarizes accepted/rejected counts.
-4. The current live `review_mode: llm` path still accepts candidates too
-   readily for the chunk-003 analytical-prose family.
-5. The active frontier is now review-contract alignment under Plan `0058`.
+2. The corrected benchmark lead is real, and the live review contract is now
+   aligned.
+3. Chunk `003` still remains positive under live review, but on a smaller
+   explicit semantic residual family.
+4. The active frontier is now prompt-side chunk-003 residual hardening under
+   Plan `0059`.
 
 ## Recommended Next Step
 
 If work continues:
 
 1. stay on `codex/onto-canon6-integration-planning`;
-2. execute Plan `0058` in order:
-   - align `review_mode: llm` so only `supported` candidates auto-accept
-   - harden the judge prompt against the corrected analytical-prose omit family
-   - rerun chunk `002` and chunk `003` under a fresh aligned review DB
+2. execute Plan `0059` in order:
+   - freeze the four remaining chunk-003 accepted candidates as the incoming
+     residual contract
+   - add the smallest missing local regression coverage if needed
+   - harden the compact prompt family against that residual
+   - rerun chunk `002` and chunk `003` under a fresh live DB
    - classify promotion posture against Plan `0014`
 3. keep all worktree runtime commands on `PYTHONPATH=src`;
 4. keep chunk `017` removed from the strict-omit gate and treat `005`, `006`,

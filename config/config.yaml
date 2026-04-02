@@ -40,7 +40,7 @@ evaluation:
   observability_phase: evaluation
   judge_selection_task: judging
   judge_prompt_template: prompts/evaluation/judge_candidate_reasonableness.yaml
-  judge_prompt_ref: onto_canon6.evaluation.judge_candidate_reasonableness@1
+  judge_prompt_ref: onto_canon6.evaluation.judge_candidate_reasonableness@2
   judge_timeout_seconds: 60
   judge_num_retries: 2
   judge_max_budget_usd: 0.25

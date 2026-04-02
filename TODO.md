@@ -3,33 +3,32 @@
 ## Current 24h Execution Block
 
 Source of truth:
-- `docs/plans/0058_24h_live_review_alignment_block.md`
+- `docs/plans/0059_24h_live_chunk003_semantic_residual_block.md`
 
-### Phase 1 — Freeze The Live Review Contract
-- [x] Close Plan `0057` truthfully with the false-positive transfer finding
-- [x] Activate Plan `0058` in docs and trackers
-- [x] Freeze the supported/partial/unsupported acceptance policy
+### Phase 1 — Freeze The Residual Contract
+- [x] Close Plan `0058` truthfully
+- [x] Freeze the exact remaining chunk-003 residual family
+- [x] Decide whether one new local regression case is required
 - [ ] Commit verified phase
 
-### Phase 2 — Align Review Behavior In Code
-- [x] Accept only `supported` labels in `review_mode: llm`
-- [x] Leave `partially_supported` labels pending review
-- [x] Add/update targeted review-mode tests
+### Phase 2 — Add The Smallest Missing Regression Coverage
+- [ ] Add/update the minimum local coverage for the remaining residual
+- [ ] Verify the new coverage
 - [ ] Commit verified phase
 
-### Phase 3 — Harden The Judge Prompt
-- [ ] Encode corrected analytical-prose omit semantics in the judge prompt
-- [ ] Verify the prompt-side contract with narrow tests or replay evidence
+### Phase 3 — Harden The Compact Prompt Family
+- [ ] Revise the compact prompt family for the remaining chunk-003 residual
+- [ ] Update prompt-surface parity tests as needed
 - [ ] Commit verified phase
 
-### Phase 4 — Rerun The Named Transfer Chunks
-- [ ] Rerun chunk `002` under the aligned review contract
-- [ ] Rerun chunk `003` under the aligned review contract
+### Phase 4 — Rerun Chunk 002 And Chunk 003
+- [ ] Rerun chunk `002` with the revised compact prompt
+- [ ] Rerun chunk `003` with the revised compact prompt
 - [ ] Export both reviewed chunk-transfer reports
 - [ ] Commit verified phase
 
 ### Phase 5 — Closeout
-- [ ] Write the rerun/alignment decision note
+- [ ] Write the live chunk-003 residual decision note
 - [ ] Refresh docs/status/handoff/knowledge
 - [ ] Mark the block complete and name the next blocker explicitly
 - [ ] Commit verified phase
@@ -119,7 +118,7 @@ Source of truth:
 - [x] Localize the remaining post-wrapper extraction-path divergence to one dominant surface
 - [x] Localize and repair the remaining prompt-side parity residual through Plans `0046`-`0049`
 - [x] Run one bounded post-parity semantic recovery attempt and classify it honestly
-- [ ] Re-align live LLM review with corrected benchmark semantics under Plan `0058`
+- [ ] Eliminate the smaller live chunk-003 semantic residual under Plan `0059`
 
 ## Longer-Term Queue
 

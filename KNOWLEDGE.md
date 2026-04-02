@@ -291,3 +291,18 @@ line (`source material` -> `source text`) hung for minutes and had to be
 aborted. That instability did not block the decision because the repaired
 prompt surface and the post-repair prompt_eval rerun already proved the active
 blocker had moved back to semantics.
+
+### 2026-04-02 — codex — bug-pattern
+Plan 0058 proved the live chunk-transfer report can overstate success when the
+live review contract drifts. The report itself only summarizes
+accepted/rejected counts; it does not independently re-score semantics. Before
+trusting a new positive chunk-transfer result after a benchmark-contract
+change, compare the accepted live candidates against the corrected local
+benchmark families.
+
+### 2026-04-02 — codex — best-practice
+For `review_mode: llm`, only `supported` should auto-accept. Leaving
+`partially_supported` candidates pending review materially narrowed the
+chunk-003 false-positive family without hurting the chunk-002 positive control.
+Treat `partially_supported -> accepted` as a contract bug, not a permissive
+default.

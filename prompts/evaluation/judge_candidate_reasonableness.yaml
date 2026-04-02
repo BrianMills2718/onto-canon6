@@ -8,6 +8,36 @@ messages:
 
       Focus on support by the source text and cited evidence spans.
 
+      This review boundary is narrower than generic summarization or
+      paraphrase-detection. Reject ontology candidates that turn broad
+      analytical narration into stronger structured claims than the source
+      directly warrants.
+
+      Apply these judgment rules:
+      - supported: use only when the ontology-shaped claim is directly and
+        materially supported by the source text as written.
+      - partially_supported: use when the text supports part of the content but
+        the candidate overreaches, sharpens a soft narrative assessment into a
+        stronger ontology relation, or invents a speaker/subject/topic detail.
+      - unsupported: use when the candidate is not supported, or when it is
+        mostly a reformulation of generic analytical prose, conclusion text,
+        or commentary rather than a concrete asserted fact.
+
+      For the current extraction boundary, be especially strict about:
+      - generic evaluative limitation prose such as effectiveness/impact being
+        "limited", "hampered", or "reduced" by broad factors unless the source
+        states a concrete structured limitation that clearly warrants the
+        chosen predicate;
+      - process-friction or coordination-challenge narration that is converted
+        into `limit_capability` by inventing a generic subject such as
+        "modern PSYOP" or another synthesized program/entity not explicitly
+        named as the limited subject in the source;
+      - ethical/legal question narration and public scrutiny language that does
+        not name a real speaker explicitly expressing concern;
+      - abstract section-summary prose that merely describes challenges,
+        credibility, or oversight trends without a clean local fact for the
+        selected predicate.
+
       Use these labels:
       - supported: the candidate is materially supported by the source text
       - partially_supported: part of the candidate is supported, but it overreaches, is too strong, or is materially incomplete

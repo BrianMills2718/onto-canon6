@@ -1,12 +1,12 @@
 # 24h Live Review Alignment Block
 
-Status: active
+Status: complete
 Phase status:
-- Phase 1 pending
-- Phase 2 pending
-- Phase 3 pending
-- Phase 4 pending
-- Phase 5 pending
+- Phase 1 complete
+- Phase 2 complete
+- Phase 3 complete
+- Phase 4 complete
+- Phase 5 complete
 
 Last updated: 2026-04-02
 Workstream: corrected-fixture transfer recovery through live review-contract alignment
@@ -156,3 +156,40 @@ This block succeeds only if:
 1. the promotion posture is explicit and decision-grade;
 2. the next blocker is named precisely;
 3. the worktree is clean.
+
+## Outcome
+
+This block fixed the live review contract but did not clear the transfer gate.
+
+What landed:
+
+1. `review_mode: llm` now auto-accepts only `supported` candidates;
+2. `partially_supported` candidates now remain pending review instead of being
+   silently accepted;
+3. the live judge prompt was revised and versioned to
+   `onto_canon6.evaluation.judge_candidate_reasonableness@2`; and
+4. narrow judge replay evidence now exists in
+   `docs/runs/2026-04-02_live_review_alignment_judge_replay.json`.
+
+What the rerun proved:
+
+1. chunk `002` remained a valid positive control with a positive reviewed
+   transfer report;
+2. chunk `003` shrank from `5` accepted candidates to `4`, so the review
+   alignment did materially reduce the false-positive family; but
+3. chunk `003` is still **positive**, so the compact operational-parity lane is
+   still not promotable.
+
+The remaining live chunk-003 residual is now explicit:
+
+1. three accepted `oc:limit_capability` claims that still restate abstract
+   evaluative narration; and
+2. one accepted `oc:belongs_to_organization` claim that turns personnel
+   dedication/allocation prose into a membership assertion.
+
+Decision:
+
+1. Plan `0058` is complete and truthful;
+2. the review-contract mismatch is no longer the dominant blocker; and
+3. the next owned block is live chunk-003 semantic hardening, owned by Plan
+   `0059`.

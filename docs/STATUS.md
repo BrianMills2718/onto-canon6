@@ -60,8 +60,10 @@ Current post-cutover program state:
 20. Plan `0057` is now complete and proved that chunk `002` remains a valid
     positive control but chunk `003` produced a false-positive transfer report
     under misaligned live review semantics; and
-21. the next extraction-quality blocker is now live review alignment plus fresh
-    transfer reruns, owned by Plan `0058`.
+21. Plan `0058` is now complete and proved that live review alignment reduces
+    the chunk-003 false-positive family but does not eliminate it; and
+22. the next extraction-quality blocker is now the smaller live chunk-003
+    semantic residual, owned by Plan `0059`.
 
 ## What Is Proven
 
