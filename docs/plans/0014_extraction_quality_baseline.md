@@ -96,7 +96,8 @@ proved that one more narrow semantic prompt revision still did not recover the
 live chunk-003 path, and Plan `0043` proved the same-model divergence begins
 before review and is then amplified by review/judge acceptance. Plan `0044`
 then proved wrapper alignment is not the main rescue lever. The remaining
-blocker is now extraction-path localization, tracked under Plan `0045`.
+blocker is now the sync/async and `Case id` residual left after extraction-path
+localization, tracked under Plan `0046`.
 
 ## Current State
 

@@ -1,12 +1,12 @@
 # 24h Extraction-Path Block
 
-Status: active
+Status: complete
 Phase status:
-- Phase 1 pending
-- Phase 2 pending
-- Phase 3 pending
-- Phase 4 pending
-- Phase 5 pending
+- Phase 1 completed
+- Phase 2 completed
+- Phase 3 completed
+- Phase 4 completed
+- Phase 5 completed
 
 Last updated: 2026-04-01
 Workstream: narrow the post-0044 blocker from wrapper alignment to live
@@ -76,6 +76,17 @@ This block succeeds only if:
 1. the active blocker is no longer described as wrapper alignment;
 2. the current artifacts are enough to localize the next surface.
 
+Progress note:
+
+1. the incoming decision note is now frozen in:
+   `docs/runs/2026-04-01_wrapper_alignment_decision.md`
+2. the aligned-wrapper failure artifacts are now explicit:
+   - `docs/runs/2026-04-01_chunk003_prompt_surface_parity_v6.json`
+   - `docs/runs/2026-04-01_chunk003_transfer_report_compact6_wrapper_align.json`
+   - `docs/runs/2026-04-01_chunk003_semantic_transfer_diff_compact6_wrapper_align.json`
+3. chunk `002` remains the regression guard only; chunk `003` remains the
+   localization target.
+
 ### Phase 2: Compare Extraction-Service Behavior Directly
 
 #### Tasks
@@ -90,6 +101,23 @@ This block succeeds only if:
    final candidate mismatches;
 2. the artifact is committed and reusable.
 
+Progress note:
+
+1. the extraction-path comparison artifact now exists:
+   `docs/runs/2026-04-02_chunk003_extraction_call_surface_diff.json`
+2. that artifact proved the first real live-path difference beyond prompt
+   wording:
+   - live omitted `temperature=0.0`
+   - prompt-eval passed `temperature=0.0`
+3. a follow-on aligned rerun artifact now exists:
+   `docs/runs/2026-04-02_chunk003_extraction_call_surface_diff_temp0_relref.json`
+4. after aligning temperature and relative `source_ref`, the remaining
+   differences narrowed to:
+   - `call_llm_structured` vs `acall_llm_structured`
+   - timeout `60` vs `0`
+   - the prompt_eval-only `Case id` line and one blank line before
+     `Source text:`
+
 ### Phase 3: Land One Narrow Diagnostic Aid
 
 #### Tasks
@@ -103,6 +131,15 @@ This block succeeds only if:
 1. future diagnosis does not depend on conversational SQL snippets;
 2. the aid remains bounded to extraction-path behavior.
 
+Progress note:
+
+1. the bounded helper landed as:
+   - `src/onto_canon6/evaluation/extraction_path_comparison.py`
+   - `scripts/compare_extraction_call_surfaces.py`
+   - `tests/evaluation/test_extraction_path_comparison.py`
+2. the live extraction service now also supports a bounded temperature override
+   for honest extraction-path experiments without changing default behavior.
+
 ### Phase 4: Classify The Dominant Blocker
 
 #### Tasks
@@ -115,6 +152,17 @@ This block succeeds only if:
 
 1. one dominant blocker family is named explicitly;
 2. the classification is backed by committed artifacts.
+
+Progress note:
+
+1. the temperature omission was real but not dominant:
+   - before temperature/source-ref alignment, the aligned live rerun had `6`
+     accepted candidates
+   - after temperature/source-ref alignment, the rerun still had `5`
+     accepted candidates
+   - both reruns had `0` body-level overlap with prompt-eval
+2. the dominant blocker therefore remains live extraction-service behavior
+   before review, not review/judge policy.
 
 ### Phase 5: Closeout
 
@@ -130,6 +178,13 @@ This block succeeds only if:
 1. the next block is narrower than `0045`;
 2. top-level docs truthfully reflect the new blocker family.
 
+Progress note:
+
+1. the decision note now exists:
+   `docs/runs/2026-04-02_extraction_path_decision.md`
+2. the next bounded block is now explicit:
+   `docs/plans/0046_24h_sync_async_and_caseid_residual_block.md`
+
 ## Exit Criteria
 
 This block is complete only when:
@@ -137,3 +192,18 @@ This block is complete only when:
 1. all five phases above meet their success criteria;
 2. the worktree is clean;
 3. the repo contains committed extraction-path artifacts and a decision note.
+
+## Closeout
+
+Plan `0045` is complete.
+
+It answered its bounded question honestly:
+
+1. the live path was missing at least one real control-plane input
+   (`temperature=0.0`);
+2. aligning that control-plane input and the relative `source_ref` still did
+   not recover chunk-003 transfer; and
+3. the remaining blocker is now narrower than "extraction path in general":
+   it is the residual between the sync live structured-call path and the
+   prompt_eval async path, plus the remaining prompt_eval-only `Case id`
+   metadata line.

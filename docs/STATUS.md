@@ -40,8 +40,11 @@ Current post-cutover program state:
     begins before review and is then amplified by review/judge acceptance;
 11. Plan `0044` is now complete and proved wrapper alignment did not narrow
     the chunk-003 divergence;
-12. the remaining active program gate is now Lane 4 extraction-path
-    localization under Plans `0014` and `0045`, not another
+12. Plan `0045` is now complete and proved live had omitted `temperature=0.0`,
+    but temperature/source-ref alignment still did not recover chunk-003
+    transfer;
+13. the remaining active program gate is now Lane 4 sync/async and `Case id`
+    residual localization under Plans `0014` and `0046`, not another
     entity-resolution rerun block.
 
 ## What Is Proven

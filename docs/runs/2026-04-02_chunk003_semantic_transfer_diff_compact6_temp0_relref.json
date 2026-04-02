@@ -1,0 +1,192 @@
+{
+  "body_only_live": [
+    {
+      "claim_text": "The effectiveness of PSYOP was limited by cultural misunderstandings, insufficient coordination with non-military actors, and the rapid evolution of adversary information tactics.",
+      "evidence": [
+        "However, the effectiveness of PSYOP was often limited by cultural misunderstandings, insufficient coordination with non-military actors, and the rapid evolution of adversary information tactics."
+      ],
+      "predicate": "oc:limit_capability",
+      "roles": [
+        "capability:value:effectiveness",
+        "subject:entity:PSYOP",
+        "topic:value:cultural misunderstandings, insufficient coordination with non-military actors, and the rapid evolution of adversary information tactics"
+      ]
+    },
+    {
+      "claim_text": "The \u201chearts and minds\u201d campaigns in Iraq and Afghanistan were hampered by inconsistent messaging and occasional missteps that undermined credibility with local populations.",
+      "evidence": [
+        "The \u201chearts and minds\u201d campaigns in Iraq and Afghanistan were hampered by inconsistent messaging and occasional missteps that undermined credibility with local populations."
+      ],
+      "predicate": "oc:limit_capability",
+      "roles": [
+        "capability:value:effectiveness",
+        "subject:entity:\u201chearts and minds\u201d campaigns",
+        "topic:value:inconsistent messaging and occasional missteps that undermined credibility with local populations"
+      ]
+    },
+    {
+      "claim_text": "The proliferation of digital media meant that adversaries could quickly counter or distort PSYOP messages, reducing their impact.",
+      "evidence": [
+        "Furthermore, the proliferation of digital media meant that adversaries could quickly counter or distort PSYOP messages, reducing their impact."
+      ],
+      "predicate": "oc:limit_capability",
+      "roles": [
+        "capability:value:impact",
+        "subject:entity:PSYOP messages",
+        "topic:value:the proliferation of digital media meant that adversaries could quickly counter or distort PSYOP messages"
+      ]
+    },
+    {
+      "claim_text": "Congressional oversight and public scrutiny increased due to ethical and legal questions regarding the expansion of PSYOP into the digital domain, particularly concerning the targeting of foreign versus domestic audiences and potential unintended consequences.",
+      "evidence": [
+        "The expansion of PSYOP into the digital domain raised new ethical and legal questions, particularly regarding the targeting of foreign versus domestic audiences and the potential for unintended consequences. Congressional oversight and public scrutiny increased, leading to periodic reviews and adjustments of doctrine."
+      ],
+      "predicate": "oc:express_concern",
+      "roles": [
+        "speaker:entity:Congressional oversight",
+        "speaker:entity:public scrutiny",
+        "topic:value:the expansion of PSYOP into the digital domain raised new ethical and legal questions, particularly regarding the targeting of foreign versus domestic audiences and the potential for unintended consequences"
+      ]
+    },
+    {
+      "claim_text": "A substantial proportion of USSOCOM's total strength of approximately 70,000 personnel in 2013 was dedicated to PSYOP, civil affairs, and related functions.",
+      "evidence": [
+        "The number of personnel assigned to PSYOP units grew significantly during this period, reflecting the increased demand for influence operations. By 2013, USSOCOM\u2019s total strength was reported at approximately 70,000, with a substantial proportion dedicated to PSYOP, civil affairs, and related functions"
+      ],
+      "predicate": "oc:belongs_to_organization",
+      "roles": [
+        "member:entity:personnel assigned to PSYOP units",
+        "organization:entity:USSOCOM"
+      ]
+    }
+  ],
+  "body_only_prompt_eval": [],
+  "body_shared": [],
+  "live_candidates": [
+    {
+      "claim_text": "The effectiveness of PSYOP was limited by cultural misunderstandings, insufficient coordination with non-military actors, and the rapid evolution of adversary information tactics.",
+      "evidence": [
+        "However, the effectiveness of PSYOP was often limited by cultural misunderstandings, insufficient coordination with non-military actors, and the rapid evolution of adversary information tactics."
+      ],
+      "predicate": "oc:limit_capability",
+      "roles": [
+        "capability:value:effectiveness",
+        "subject:entity:PSYOP",
+        "topic:value:cultural misunderstandings, insufficient coordination with non-military actors, and the rapid evolution of adversary information tactics"
+      ]
+    },
+    {
+      "claim_text": "The \u201chearts and minds\u201d campaigns in Iraq and Afghanistan were hampered by inconsistent messaging and occasional missteps that undermined credibility with local populations.",
+      "evidence": [
+        "The \u201chearts and minds\u201d campaigns in Iraq and Afghanistan were hampered by inconsistent messaging and occasional missteps that undermined credibility with local populations."
+      ],
+      "predicate": "oc:limit_capability",
+      "roles": [
+        "capability:value:effectiveness",
+        "subject:entity:\u201chearts and minds\u201d campaigns",
+        "topic:value:inconsistent messaging and occasional missteps that undermined credibility with local populations"
+      ]
+    },
+    {
+      "claim_text": "The proliferation of digital media meant that adversaries could quickly counter or distort PSYOP messages, reducing their impact.",
+      "evidence": [
+        "Furthermore, the proliferation of digital media meant that adversaries could quickly counter or distort PSYOP messages, reducing their impact."
+      ],
+      "predicate": "oc:limit_capability",
+      "roles": [
+        "capability:value:impact",
+        "subject:entity:PSYOP messages",
+        "topic:value:the proliferation of digital media meant that adversaries could quickly counter or distort PSYOP messages"
+      ]
+    },
+    {
+      "claim_text": "Congressional oversight and public scrutiny increased due to ethical and legal questions regarding the expansion of PSYOP into the digital domain, particularly concerning the targeting of foreign versus domestic audiences and potential unintended consequences.",
+      "evidence": [
+        "The expansion of PSYOP into the digital domain raised new ethical and legal questions, particularly regarding the targeting of foreign versus domestic audiences and the potential for unintended consequences. Congressional oversight and public scrutiny increased, leading to periodic reviews and adjustments of doctrine."
+      ],
+      "predicate": "oc:express_concern",
+      "roles": [
+        "speaker:entity:Congressional oversight",
+        "speaker:entity:public scrutiny",
+        "topic:value:the expansion of PSYOP into the digital domain raised new ethical and legal questions, particularly regarding the targeting of foreign versus domestic audiences and the potential for unintended consequences"
+      ]
+    },
+    {
+      "claim_text": "A substantial proportion of USSOCOM's total strength of approximately 70,000 personnel in 2013 was dedicated to PSYOP, civil affairs, and related functions.",
+      "evidence": [
+        "The number of personnel assigned to PSYOP units grew significantly during this period, reflecting the increased demand for influence operations. By 2013, USSOCOM\u2019s total strength was reported at approximately 70,000, with a substantial proportion dedicated to PSYOP, civil affairs, and related functions"
+      ],
+      "predicate": "oc:belongs_to_organization",
+      "roles": [
+        "member:entity:personnel assigned to PSYOP units",
+        "organization:entity:USSOCOM"
+      ]
+    }
+  ],
+  "only_live": [
+    {
+      "claim_text": "The effectiveness of PSYOP was limited by cultural misunderstandings, insufficient coordination with non-military actors, and the rapid evolution of adversary information tactics.",
+      "evidence": [
+        "However, the effectiveness of PSYOP was often limited by cultural misunderstandings, insufficient coordination with non-military actors, and the rapid evolution of adversary information tactics."
+      ],
+      "predicate": "oc:limit_capability",
+      "roles": [
+        "capability:value:effectiveness",
+        "subject:entity:PSYOP",
+        "topic:value:cultural misunderstandings, insufficient coordination with non-military actors, and the rapid evolution of adversary information tactics"
+      ]
+    },
+    {
+      "claim_text": "The \u201chearts and minds\u201d campaigns in Iraq and Afghanistan were hampered by inconsistent messaging and occasional missteps that undermined credibility with local populations.",
+      "evidence": [
+        "The \u201chearts and minds\u201d campaigns in Iraq and Afghanistan were hampered by inconsistent messaging and occasional missteps that undermined credibility with local populations."
+      ],
+      "predicate": "oc:limit_capability",
+      "roles": [
+        "capability:value:effectiveness",
+        "subject:entity:\u201chearts and minds\u201d campaigns",
+        "topic:value:inconsistent messaging and occasional missteps that undermined credibility with local populations"
+      ]
+    },
+    {
+      "claim_text": "The proliferation of digital media meant that adversaries could quickly counter or distort PSYOP messages, reducing their impact.",
+      "evidence": [
+        "Furthermore, the proliferation of digital media meant that adversaries could quickly counter or distort PSYOP messages, reducing their impact."
+      ],
+      "predicate": "oc:limit_capability",
+      "roles": [
+        "capability:value:impact",
+        "subject:entity:PSYOP messages",
+        "topic:value:the proliferation of digital media meant that adversaries could quickly counter or distort PSYOP messages"
+      ]
+    },
+    {
+      "claim_text": "Congressional oversight and public scrutiny increased due to ethical and legal questions regarding the expansion of PSYOP into the digital domain, particularly concerning the targeting of foreign versus domestic audiences and potential unintended consequences.",
+      "evidence": [
+        "The expansion of PSYOP into the digital domain raised new ethical and legal questions, particularly regarding the targeting of foreign versus domestic audiences and the potential for unintended consequences. Congressional oversight and public scrutiny increased, leading to periodic reviews and adjustments of doctrine."
+      ],
+      "predicate": "oc:express_concern",
+      "roles": [
+        "speaker:entity:Congressional oversight",
+        "speaker:entity:public scrutiny",
+        "topic:value:the expansion of PSYOP into the digital domain raised new ethical and legal questions, particularly regarding the targeting of foreign versus domestic audiences and the potential for unintended consequences"
+      ]
+    },
+    {
+      "claim_text": "A substantial proportion of USSOCOM's total strength of approximately 70,000 personnel in 2013 was dedicated to PSYOP, civil affairs, and related functions.",
+      "evidence": [
+        "The number of personnel assigned to PSYOP units grew significantly during this period, reflecting the increased demand for influence operations. By 2013, USSOCOM\u2019s total strength was reported at approximately 70,000, with a substantial proportion dedicated to PSYOP, civil affairs, and related functions"
+      ],
+      "predicate": "oc:belongs_to_organization",
+      "roles": [
+        "member:entity:personnel assigned to PSYOP units",
+        "organization:entity:USSOCOM"
+      ]
+    }
+  ],
+  "only_prompt_eval": [],
+  "prompt_eval_candidates": [],
+  "prompt_eval_item_id": "psyop_017_full_chunk003_analytical_context_strict_omit",
+  "prompt_eval_run_id": "8071271687f9",
+  "shared": []
+}

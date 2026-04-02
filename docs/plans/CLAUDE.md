@@ -14,7 +14,8 @@ This subtree owns active gaps, acceptance criteria, and verification notes.
 | 0025a | [Entity Resolution Scale-Out](0025a_entity_resolution_scale_out.md) | Deferred (activates after 0025 Phase 4) |
 | 0027 | [Deferred Parity Reprioritization](0027_deferred_parity_reprioritization.md) | Active (Lane 5 execution surface; next-active order now explicit) |
 | 0028 | [Query And Browse Surface](0028_query_browse_surface.md) | Active (first read-only slice landed and proved; wider hardening still open) |
-| 0045 | [24h Extraction-Path Block](0045_24h_extraction_path_block.md) | Active (post-0044 extraction-path localization block) |
+| 0046 | [24h Sync/Async And Case-Id Residual Block](0046_24h_sync_async_and_caseid_residual_block.md) | Active (post-0045 residual-localization block) |
+| 0045 | [24h Extraction-Path Block](0045_24h_extraction_path_block.md) | Complete (temperature/source-ref alignment proved real but insufficient) |
 | 0044 | [24h Wrapper Alignment Block](0044_24h_wrapper_alignment_block.md) | Complete (wrapper alignment ruled out as main rescue lever) |
 | 0043 | [24h Live-Path Divergence Block](0043_24h_live_path_divergence_block.md) | Complete (same-model live divergence localized; review/judge secondary) |
 | 0042 | [24h Semantic Transfer Residual Block](0042_24h_semantic_transfer_residual_block.md) | Complete (bounded prompt revision did not recover live chunk transfer) |

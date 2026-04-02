@@ -2,49 +2,56 @@
 
 ## Session Focus
 
-Plan `0044` closeout and Plan `0045` activation in the isolated worktree
+Plan `0045` closeout and Plan `0046` activation in the isolated worktree
 branch `codex/onto-canon6-integration-planning`.
 
 ## What Landed
 
 Committed and documented in the isolated worktree:
 
-1. wrapper/parity artifacts for the aligned `compact_v6_wrapper_align` live
-   candidate:
-   - `docs/runs/2026-04-01_chunk003_prompt_surface_parity_v6.json`
-2. live-path observability helper:
-   - `scripts/show_project_llm_calls.py`
-3. wrapper-alignment rerun artifacts:
-   - `docs/runs/2026-04-01_chunk003_transfer_report_compact6_wrapper_align.json`
-   - `docs/runs/2026-04-01_chunk003_semantic_transfer_diff_compact6_wrapper_align.json`
-4. decision-grade closeout notes:
-   - `docs/runs/2026-04-01_live_path_divergence_decision.md`
-   - `docs/runs/2026-04-01_wrapper_alignment_decision.md`
-5. Plan `0044` is now complete;
-6. Plan `0045` is now the active bounded execution surface.
+1. extraction-path call-surface helper:
+   - `src/onto_canon6/evaluation/extraction_path_comparison.py`
+   - `scripts/compare_extraction_call_surfaces.py`
+   - `tests/evaluation/test_extraction_path_comparison.py`
+2. one real call-surface artifact proving live omitted `temperature=0.0`:
+   - `docs/runs/2026-04-02_chunk003_extraction_call_surface_diff.json`
+3. bounded live temperature override:
+   - `src/onto_canon6/config.py`
+   - `src/onto_canon6/pipeline/text_extraction.py`
+   - `src/onto_canon6/cli.py`
+4. one deterministic temperature/source-ref aligned rerun and its artifacts:
+   - `docs/runs/2026-04-02_chunk003_extraction_call_surface_diff_temp0_relref.json`
+   - `docs/runs/2026-04-02_chunk003_semantic_transfer_diff_compact6_temp0_relref.json`
+5. decision-grade closeout note:
+   - `docs/runs/2026-04-02_extraction_path_decision.md`
+6. Plan `0045` is now complete;
+7. Plan `0046` is now the active bounded execution surface.
 
 ## Current State
 
 1. The compact operational-parity lane is still **not promotable**.
-2. Wrapper alignment is now ruled out as the main rescue lever:
-   - the aligned surface reduced the prompt-surface gap;
-   - the live chunk-003 rerun still had `0` shared bodies with prompt-eval;
-   - the live-only family widened from `4` to `6` accepted candidates.
-3. The active frontier is therefore extraction-path localization under Plan
-   `0045`, not more generic prompt tuning and not another entity-resolution
-   block.
+2. The extraction-path localization result is now narrower:
+   - live had been omitting `temperature=0.0`;
+   - aligning `temperature=0.0` and relative `source_ref` still left `0`
+     shared bodies with prompt-eval;
+   - the aligned rerun still produced `5` accepted candidates.
+3. The active frontier is therefore the residual between:
+   - sync vs async structured-call behavior; and
+   - prompt_eval-only `Case id` metadata
+   under Plan `0046`, not more generic prompt tuning and not another
+   entity-resolution block.
 
 ## Recommended Next Step
 
 If work continues:
 
 1. stay on `codex/onto-canon6-integration-planning`;
-2. execute Plan `0045` in order:
-   - freeze the extraction-path contract
-   - compare live and prompt-eval extraction-service behavior directly
-   - land one narrow extraction-path diagnostic aid
-   - decide whether the dominant remaining blocker is extraction-service
-     behavior or review/judge amplification
+2. execute Plan `0046` in order:
+   - freeze the residual contract from Plan `0045`
+   - replay the remaining sync/async and `Case id` residuals directly
+   - land one bounded replay aid if needed
+   - decide whether the dominant residual belongs in llm_client invocation
+     parity or prompt metadata parity
 3. keep all worktree runtime commands on `PYTHONPATH=src`;
 4. do not reopen entity-resolution heuristics unless the extraction lane stops
    being the active bottleneck.

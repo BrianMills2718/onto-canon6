@@ -25,13 +25,14 @@ runtime.
 17. `docs/plans/0042_24h_semantic_transfer_residual_block.md` (completed semantic-residual block)
 18. `docs/plans/0043_24h_live_path_divergence_block.md` (completed live-path divergence block)
 19. `docs/plans/0044_24h_wrapper_alignment_block.md` (completed wrapper-alignment block)
-20. `docs/plans/0045_24h_extraction_path_block.md` (current active execution block)
-21. `docs/plans/0026_schema_stability_gate.md` (completed Lane 3 contract policy)
-22. `docs/plans/0014_extraction_quality_baseline.md` (active Lane 4 promotion gate)
-23. `docs/plans/0027_deferred_parity_reprioritization.md`
-24. `docs/plans/0028_query_browse_surface.md`
-25. `docs/plans/0005_v1_capability_parity_matrix.md`
-26. `docs/plans/0001_successor_roadmap.md`
+20. `docs/plans/0045_24h_extraction_path_block.md` (completed extraction-path localization block)
+21. `docs/plans/0046_24h_sync_async_and_caseid_residual_block.md` (current active execution block)
+22. `docs/plans/0026_schema_stability_gate.md` (completed Lane 3 contract policy)
+23. `docs/plans/0014_extraction_quality_baseline.md` (active Lane 4 promotion gate)
+24. `docs/plans/0027_deferred_parity_reprioritization.md`
+25. `docs/plans/0028_query_browse_surface.md`
+26. `docs/plans/0005_v1_capability_parity_matrix.md`
+27. `docs/plans/0001_successor_roadmap.md`
 
 ## Commands
 
@@ -107,11 +108,13 @@ config/
   remained negative and full-chunk prompt-eval/live parity still diverged on
   both named chunks. Plan 0041 is now complete: it proved the prompt-surface
   difference is stable and bounded, but not the dominant blocker family. The
-  current active bounded block is therefore Plan 0045. Plan 0044 is now
-  complete and proved that wrapper alignment does not materially reduce the
-  chunk-003 divergence. The current question is narrower: what part of the
-  live extraction path still causes that divergence once wrapper alignment is
-  ruled out.
+  current active bounded block is therefore Plan 0046. Plan 0045 is now
+  complete and proved that missing `temperature=0.0` was a real live-path
+  difference but not the dominant rescue lever: after temperature and
+  `source_ref` alignment, chunk `003` still had zero body overlap with
+  prompt-eval. The current question is narrower: whether the residual is now
+  dominated by sync vs async llm_client behavior or by the prompt_eval-only
+  `Case id` metadata line.
   The chunk-level transfer evaluation requirement remains active through
   ADR 0023 and Plans 0024/0014 even though there is no standalone Plan 0019
   file.
@@ -142,14 +145,14 @@ config/
   not a suggestion: keep executing, keep rerunning, keep committing, and only
   stop when the active block is either complete or explicitly narrowed to a new
   documented blocker.
-- **Current execution rule for Plan 0045:** the next 24h sequence is already
-  pre-decided. Freeze the extraction-path contract, compare the live and
-  prompt-eval extraction-service behavior directly, land one bounded
-  extraction-path diagnostic aid, classify whether the dominant remaining
-  blocker is extraction-service behavior or review/judge amplification, and
-  close the block with a decision note. Do not pause between those phases for
-  a conversational check-in unless the active docs record a real blocker or
-  uncertainty that changes the plan.
+- **Current execution rule for Plan 0046:** the next 24h sequence is already
+  pre-decided. Freeze the residual contract from Plan 0045, replay the
+  remaining sync/async and `Case id` residuals directly, land one bounded
+  replay aid if needed, classify whether the dominant blocker belongs in
+  llm_client invocation parity or prompt metadata parity, and close the block
+  with a decision note. Do not pause between those phases for a conversational
+  check-in unless the active docs record a real blocker or uncertainty that
+  changes the plan.
 - **After the current value-proof work, the next-active deferred capability is
   queryability.** Plan 0027 now fixes the deferred-capability order, and Plan
   0028 now has a landed first read-only browse/search surface over promoted
@@ -283,7 +286,7 @@ happens.
 
 ## Active Execution Block (2026-04-01)
 
-**Plan 0045: 24h Extraction-Path Block — active until fully closed.**
+**Plan 0046: 24h Sync/Async And Case-Id Residual Block — active until fully closed.**
 
 Within an active 24h execution block, the default operating mode is continuous
 execution: finish the current phase, verify it, commit it, update the active
@@ -305,7 +308,7 @@ verify it, commit it, log any uncertainty, and continue. Do not wait for
 
 The only valid stop conditions are:
 
-1. all 5 phases in `docs/plans/0045_24h_extraction_path_block.md`
+1. all 5 phases in `docs/plans/0046_24h_sync_async_and_caseid_residual_block.md`
    are complete and committed;
 2. a real blocker that cannot be resolved from repo context or the plan;
 3. a material uncertainty not covered by the pre-made decisions below.
@@ -320,22 +323,24 @@ Pre-made decisions (do not ask about these):
 - Work stays in the isolated `codex/onto-canon6-integration-planning` worktree
 - chunk `002` and chunk `003` remain the canonical transfer chunks
 - the current compact operational-parity lane is the only candidate under test
-- no broad prompt rewrite starts before extraction-path behavior is localized
+- no broad prompt rewrite starts before the sync/async and `Case id` residual
+  is localized
 - Commit each verified phase immediately
 
 ## Most Recent Execution Block (2026-04-01)
 
-**Plan 0044: 24h Wrapper Alignment Block — complete.**
+**Plan 0045: 24h Extraction-Path Block — complete.**
 
-The wrapper-alignment block now has:
+The extraction-path block now has:
 
-1. one bounded aligned live prompt candidate (`compact_v6_wrapper_align`);
-2. prompt-surface parity evidence showing the wrapper gap shrank materially;
-3. one live chunk-003 rerun proving the divergence did not narrow;
-4. semantic comparison evidence showing `0` shared bodies with prompt-eval and
-   a widened live-only family; and
-5. a decision note proving the next blocker is deeper extraction-path behavior,
-   not wrapper wording alone.
+1. one bounded extraction-call comparator over `llm_calls.call_snapshot`;
+2. explicit proof that live extraction had been omitting `temperature=0.0`;
+3. one live temperature/source-ref aligned chunk-003 rerun;
+4. semantic comparison evidence showing the aligned rerun still had `0`
+   shared bodies with prompt-eval; and
+5. a decision note proving the next blocker is narrower than generic
+   extraction-path behavior: sync/async call-path residual plus prompt_eval-only
+   `Case id` metadata.
 
 Decision from the block:
 

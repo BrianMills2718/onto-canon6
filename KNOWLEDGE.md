@@ -208,3 +208,11 @@ user wrapper closer to prompt-eval reduced the prompt-surface diff, but the
 live chunk-003 rerun still had zero shared bodies with prompt-eval and widened
 from four to six accepted candidates. The next blocker is deeper extraction-path
 behavior, not wrapper wording alone.
+
+### 2026-04-02 — codex — integration-issue
+Plan 0045 localized the extraction-path residual further. The live extractor
+had been omitting `temperature=0.0`, but aligning both `temperature=0.0` and
+the relative `source_ref` still left zero body overlap with prompt-eval on
+chunk `003` and produced five accepted candidates. The remaining residual is
+now bounded to sync vs async structured-call behavior and the prompt_eval-only
+`Case id` metadata line.
