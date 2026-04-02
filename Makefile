@@ -238,3 +238,11 @@ endif
 help:  ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
 		awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-20s\033[0m %s\n", $$1, $$2}'
+
+# ─── Full pipeline (cross-project) ──────────────────────────────────────────
+
+pipeline:  ## Full pipeline: research_v3 graph.yaml → onto-canon6 → DIGIMON export
+ifndef INPUT
+	$(error INPUT is required: make pipeline INPUT=path/to/graph.yaml)
+endif
+	@$(PYTHON) scripts/full_pipeline_e2e.py --graph $(INPUT) --output-dir var/pipeline_run --strategy $(or $(STRATEGY),exact)
