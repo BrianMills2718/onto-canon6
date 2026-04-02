@@ -49,7 +49,7 @@ onto-canon6 is done when:
 |------|------|--------|
 | Diverse domain extraction | 0014 | Compact default promoted; ongoing |
 | Entity resolution 500+ docs | 0025a | Deferred — tiered pipeline design exists |
-| Cross-investigation conflict | — | Tension detection exists, no cross-investigation policy |
+| Cross-investigation conflict | ADR 0024 | **DONE** — flag-only policy adopted, 871 tensions verified |
 | DIGIMON weight validation | 0020 Gap 5 | **DONE** — 6 distinct weights (0.1-1.0) verified |
 
 ### Tier 3: Capability Expansion (deferred-but-protected)
