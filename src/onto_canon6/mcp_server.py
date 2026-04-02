@@ -399,6 +399,57 @@ def canon6_get_evidence(
     ).model_dump(mode="json")
 
 
+def canon6_list_sources(
+    source_kind: str | None = None,
+    limit: int = 50,
+    review_db_path: str | None = None,
+) -> list[dict[str, Any]]:
+    """Browse distinct source artifacts over the read-only query surface."""
+
+    from .surfaces.query_models import SourceBrowseRequest
+
+    service = _query_service(review_db_path=review_db_path)
+    return [
+        result.model_dump(mode="json")
+        for result in service.list_sources(
+            SourceBrowseRequest(source_kind=source_kind, limit=limit)
+        )
+    ]
+
+
+def canon6_search_sources(
+    query: str,
+    source_kind: str | None = None,
+    limit: int = 20,
+    review_db_path: str | None = None,
+) -> list[dict[str, Any]]:
+    """Search source artifacts by ref or label text."""
+
+    from .surfaces.query_models import SourceSearchRequest
+
+    service = _query_service(review_db_path=review_db_path)
+    return [
+        result.model_dump(mode="json")
+        for result in service.search_sources(
+            SourceSearchRequest(query=query, source_kind=source_kind, limit=limit)
+        )
+    ]
+
+
+def canon6_get_source(
+    source_ref: str,
+    review_db_path: str | None = None,
+) -> dict[str, Any]:
+    """Return one source detail with linked assertions."""
+
+    from .surfaces.query_models import GetSourceRequest
+
+    service = _query_service(review_db_path=review_db_path)
+    return service.get_source(
+        GetSourceRequest(source_ref=source_ref)
+    ).model_dump(mode="json")
+
+
 def main() -> None:
     """Run the thin MCP server using the configured transport."""
 

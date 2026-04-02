@@ -41,7 +41,12 @@ from .query_models import (
     GetEntityRequest,
     GetEvidenceRequest,
     GetPromotedAssertionRequest,
+    GetSourceRequest,
     PromotedAssertionDetail,
+    SourceBrowseRequest,
+    SourceBrowseResult,
+    SourceDetail,
+    SourceSearchRequest,
 )
 
 
@@ -441,6 +446,90 @@ class QuerySurfaceService:
             )
         return contexts
 
+    # ------------------------------------------------------------------
+    # Source-artifact browse / search / get
+    # ------------------------------------------------------------------
+
+    def list_sources(self, request: SourceBrowseRequest) -> tuple[SourceBrowseResult, ...]:
+        """Browse distinct source artifacts in deterministic order."""
+
+        candidates = self._review_service.list_candidate_assertions()
+        source_groups: dict[str, list[CandidateAssertionRecord]] = defaultdict(list)
+        for candidate in candidates:
+            source_groups[candidate.provenance.source_ref].append(candidate)
+
+        results = []
+        for source_ref, group in sorted(source_groups.items()):
+            first = group[0]
+            if request.source_kind and first.provenance.source_kind != request.source_kind:
+                continue
+            results.append(SourceBrowseResult(
+                source_ref=source_ref,
+                source_kind=first.provenance.source_kind,
+                source_label=first.provenance.source_label,
+                assertion_count=len(group),
+            ))
+            if len(results) >= request.limit:
+                break
+
+        return tuple(results)
+
+    def search_sources(self, request: SourceSearchRequest) -> tuple[SourceBrowseResult, ...]:
+        """Search source artifacts by ref or label text."""
+
+        needle = request.query.casefold()
+        candidates = self._review_service.list_candidate_assertions()
+        source_groups: dict[str, list[CandidateAssertionRecord]] = defaultdict(list)
+        for candidate in candidates:
+            source_groups[candidate.provenance.source_ref].append(candidate)
+
+        results = []
+        for source_ref, group in sorted(source_groups.items()):
+            first = group[0]
+            if request.source_kind and first.provenance.source_kind != request.source_kind:
+                continue
+            label = first.provenance.source_label or ""
+            if needle in source_ref.casefold() or needle in label.casefold():
+                results.append(SourceBrowseResult(
+                    source_ref=source_ref,
+                    source_kind=first.provenance.source_kind,
+                    source_label=first.provenance.source_label,
+                    assertion_count=len(group),
+                ))
+                if len(results) >= request.limit:
+                    break
+
+        return tuple(results)
+
+    def get_source(self, request: GetSourceRequest) -> SourceDetail:
+        """Return one source detail with all linked assertions."""
+
+        candidates = self._review_service.list_candidate_assertions()
+        matching = [c for c in candidates if c.provenance.source_ref == request.source_ref]
+        if not matching:
+            raise QuerySurfaceNotFoundError(f"source not found: {request.source_ref}")
+
+        first = matching[0]
+
+        # Build assertion summaries for promoted candidates
+        assertion_results = []
+        promoted = self._graph_service.list_promoted_assertions()
+        matching_ids = {c.candidate_id for c in matching}
+        for assertion in promoted:
+            if assertion.source_candidate_id in matching_ids:
+                assertion_results.append(
+                    self._build_assertion_summary(assertion_id=assertion.assertion_id)
+                )
+
+        return SourceDetail(
+            source_ref=request.source_ref,
+            source_kind=first.provenance.source_kind,
+            source_label=first.provenance.source_label,
+            linked_assertions=tuple(assertion_results),
+        )
+
+
+
 
 _MATCH_RANK: dict[EntityMatchReason, int] = {
     "canonical_exact": 0,
@@ -727,7 +816,6 @@ def _any_contains_match(needle: str, haystack: Iterable[str]) -> bool:
     """Return true when any candidate contains the query."""
 
     return any(needle in candidate.casefold() for candidate in haystack if candidate)
-
 
 __all__ = [
     "QuerySurfaceConflictError",

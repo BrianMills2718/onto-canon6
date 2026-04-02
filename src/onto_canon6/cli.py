@@ -96,6 +96,8 @@ from .surfaces import (
     GetEntityRequest,
     GetEvidenceRequest,
     GetPromotedAssertionRequest,
+    SourceBrowseResult,
+    SourceDetail,
     GovernedWorkflowBundle,
     GovernedWorkflowBundleService,
     IdentityReport,
@@ -1025,6 +1027,36 @@ def _build_parser() -> argparse.ArgumentParser:
     _add_output_arg(get_evidence_parser, default_output=config.cli.default_output_format)
     get_evidence_parser.set_defaults(handler=_handle_get_evidence)
 
+    list_sources_parser = subparsers.add_parser(
+        "list-sources",
+        help="Browse distinct source artifacts through the read-only query surface.",
+    )
+    _add_store_args(list_sources_parser, include_overlay_root=False)
+    list_sources_parser.add_argument("--source-kind", help="Optional source-kind filter.")
+    list_sources_parser.add_argument("--limit", type=int, default=50, help="Maximum results.")
+    _add_output_arg(list_sources_parser, default_output=config.cli.default_output_format)
+    list_sources_parser.set_defaults(handler=_handle_list_sources)
+
+    search_sources_parser = subparsers.add_parser(
+        "search-sources",
+        help="Search source artifacts by ref or label text.",
+    )
+    _add_store_args(search_sources_parser, include_overlay_root=False)
+    search_sources_parser.add_argument("--query", required=True, help="Source ref/label query.")
+    search_sources_parser.add_argument("--source-kind", help="Optional source-kind filter.")
+    search_sources_parser.add_argument("--limit", type=int, default=20, help="Maximum results.")
+    _add_output_arg(search_sources_parser, default_output=config.cli.default_output_format)
+    search_sources_parser.set_defaults(handler=_handle_search_sources)
+
+    get_source_parser = subparsers.add_parser(
+        "get-source",
+        help="Return one source detail with linked assertions.",
+    )
+    _add_store_args(get_source_parser, include_overlay_root=False)
+    get_source_parser.add_argument("--source-ref", required=True, help="Source reference ID.")
+    _add_output_arg(get_source_parser, default_output=config.cli.default_output_format)
+    get_source_parser.set_defaults(handler=_handle_get_source)
+
     export_digimon_parser = subparsers.add_parser(
         "export-digimon",
         help="Export promoted graph assertions in Digimon-compatible JSONL format.",
@@ -1789,6 +1821,43 @@ def _handle_get_evidence(args: argparse.Namespace) -> int:
 
 
 
+def _handle_list_sources(args: argparse.Namespace) -> int:
+    """Browse distinct source artifacts through the read-only query surface."""
+
+    from .surfaces.query_models import SourceBrowseRequest
+
+    service = _build_query_surface_service(args)
+    result = service.list_sources(
+        SourceBrowseRequest(source_kind=args.source_kind, limit=args.limit)
+    )
+    _emit_output(result, output_format=args.output)
+    return 0
+
+
+def _handle_search_sources(args: argparse.Namespace) -> int:
+    """Search source artifacts by ref or label text."""
+
+    from .surfaces.query_models import SourceSearchRequest
+
+    service = _build_query_surface_service(args)
+    result = service.search_sources(
+        SourceSearchRequest(query=args.query, source_kind=args.source_kind, limit=args.limit)
+    )
+    _emit_output(result, output_format=args.output)
+    return 0
+
+
+def _handle_get_source(args: argparse.Namespace) -> int:
+    """Return one source detail with linked assertions."""
+
+    from .surfaces.query_models import GetSourceRequest
+
+    service = _build_query_surface_service(args)
+    result = service.get_source(GetSourceRequest(source_ref=args.source_ref))
+    _emit_output(result, output_format=args.output)
+    return 0
+
+
 def _handle_evaluate_rules(args: argparse.Namespace) -> int:
     """Evaluate ProbLog rules over promoted assertions."""
     from .extensions.problog_adapter import evaluate_rules
@@ -2094,6 +2163,8 @@ def _to_jsonable(value: object) -> Any:
             IdentityReport,
             PromotedAssertionDetail,
             PromotedAssertionEpistemicCollectionReport,
+            SourceBrowseResult,
+            SourceDetail,
             ProposalRecord,
             PromotedGraphAssertionRecord,
             PromotedGraphReport,

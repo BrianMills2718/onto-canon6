@@ -208,6 +208,55 @@ class PromotedAssertionDetail(BaseModel):
     evidence: EvidenceBundle
 
 
+class SourceBrowseRequest(BaseModel):
+    """Browse distinct source artifacts in deterministic order."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    source_kind: str | None = None
+    limit: int = Field(default=50, ge=1, le=200)
+
+
+class SourceBrowseResult(BaseModel):
+    """One summary result from source browsing."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    source_ref: str = Field(min_length=1)
+    source_kind: str = Field(min_length=1)
+    source_label: str | None = None
+    assertion_count: int = Field(ge=0)
+
+
+class SourceSearchRequest(BaseModel):
+    """Search source artifacts by ref or label text."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    query: str = Field(min_length=1)
+    source_kind: str | None = None
+    limit: int = Field(default=20, ge=1, le=200)
+
+
+class GetSourceRequest(BaseModel):
+    """Fetch one source detail by source_ref."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    source_ref: str = Field(min_length=1)
+
+
+class SourceDetail(BaseModel):
+    """Detailed view of one source artifact with linked assertions."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    source_ref: str = Field(min_length=1)
+    source_kind: str = Field(min_length=1)
+    source_label: str | None = None
+    linked_assertions: tuple[AssertionSearchResult, ...] = ()
+
+
 __all__ = [
     "AssertionBrowseRequest",
     "AssertionSearchRequest",
@@ -222,5 +271,10 @@ __all__ = [
     "GetEntityRequest",
     "GetEvidenceRequest",
     "GetPromotedAssertionRequest",
+    "GetSourceRequest",
     "PromotedAssertionDetail",
+    "SourceBrowseRequest",
+    "SourceBrowseResult",
+    "SourceDetail",
+    "SourceSearchRequest",
 ]
