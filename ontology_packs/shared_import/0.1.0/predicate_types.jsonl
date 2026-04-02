@@ -1,0 +1,6 @@
+{"predicate_id":"shared:fact_claim","family":"claim","preferred_label":"fact claim","description":"An imported factual assertion from a shared epistemic contract.","status":"active"}
+{"predicate_id":"shared:relationship_claim","family":"claim","preferred_label":"relationship claim","description":"An imported relationship assertion between entities.","status":"active"}
+{"predicate_id":"shared:financial_claim","family":"claim","preferred_label":"financial claim","description":"An imported assertion about financial transactions or relationships.","status":"active"}
+{"predicate_id":"shared:temporal_claim","family":"claim","preferred_label":"temporal claim","description":"An imported assertion with temporal bounds.","status":"active"}
+{"predicate_id":"shared:finding","family":"claim","preferred_label":"finding","description":"An imported investigation finding.","status":"active"}
+{"predicate_id":"shared:assertion","family":"claim","preferred_label":"assertion","description":"A generic imported assertion.","status":"active"}

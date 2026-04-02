@@ -1,0 +1,21 @@
+profile:
+  id: shared_import_permissive
+  version: "0.1.0"
+  name: "Shared Import Permissive"
+  ontology_version: "shared_import@0.1.0"
+  rule_version: "shared_import_rules@0.1.0"
+
+ontology:
+  source: custom
+  mode: open
+  normalization_policy: conservative
+  proposal_policy: reject
+  pack_id: shared_import
+  pack_version: "0.1.0"
+
+validation:
+  type_adapter: ontology_pack
+  type_check_policy: hierarchical
+
+ingestion:
+  allow_heuristic_default: false

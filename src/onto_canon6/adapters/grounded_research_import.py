@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
 def import_shared_claims(
     claims: list[ClaimRecord],
     *,
-    profile_id: str = "general_purpose_open",
+    profile_id: str = "shared_import_permissive",
     profile_version: str = "0.1.0",
 ) -> list[CandidateAssertionImport]:
     """Convert shared ClaimRecords to onto-canon6 CandidateAssertionImports.

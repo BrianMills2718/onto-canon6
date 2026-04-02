@@ -1,0 +1,8 @@
+{"entity_type_id":"oc:person","preferred_label":"person","description":"A natural person.","status":"active"}
+{"entity_type_id":"oc:organization","preferred_label":"organization","description":"An organization.","status":"active"}
+{"entity_type_id":"oc:company","preferred_label":"company","description":"A commercial company or corporation.","status":"active"}
+{"entity_type_id":"oc:government_organization","preferred_label":"government organization","description":"A government body or public agency.","status":"active"}
+{"entity_type_id":"oc:legal_entity","preferred_label":"legal entity","description":"A legally recognized entity.","status":"active"}
+{"entity_type_id":"oc:location","preferred_label":"location","description":"A geographic location.","status":"active"}
+{"entity_type_id":"oc:event","preferred_label":"event","description":"An event or occurrence.","status":"active"}
+{"entity_type_id":"oc:entity","preferred_label":"entity","description":"A generic entity.","status":"active"}
