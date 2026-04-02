@@ -17,13 +17,13 @@ pipeline:
 ontology_runtime:
   overlay_pack_suffix: __overlay
 extraction:
-  selection_task: fast_extraction
+  selection_task: budget_extraction
   selection_use_performance: false
   model_override: gemini/gemini-2.5-flash
   default_extraction_goal: Extract all factual assertions directly supported by the
     source text.
-  prompt_template: prompts/extraction/text_to_candidate_assertions.yaml
-  prompt_ref: onto_canon6.extraction.text_to_candidate_assertions@1
+  prompt_template: prompts/extraction/text_to_candidate_assertions_compact_v5.yaml
+  prompt_ref: onto_canon6.extraction.text_to_candidate_assertions_compact_v5@3
   timeout_seconds: 60
   num_retries: 2
   max_budget_usd: 0.25

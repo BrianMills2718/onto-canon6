@@ -3,32 +3,32 @@
 ## Current 24h Execution Block
 
 Source of truth:
-- `docs/plans/0061_24h_personnel_membership_enforcement_block.md`
+- `docs/plans/0062_24h_default_extraction_cutover_block.md`
 
-### Phase 1 — Freeze The Remaining Family
-- [x] Close Plan `0060` truthfully
-- [x] Freeze the exact remaining chunk-003 accepted claim
-- [x] Record the governing local benchmark case for this family
+### Phase 1 — Freeze The Promotion Contract
+- [x] Close Plan `0061` truthfully
+- [x] Freeze the exact candidate to be promoted
+- [x] Record the benchmark and transfer artifacts that justify the cutover
 - [x] Commit verified phase
 
-### Phase 2 — Land One Bounded Enforcement Seam
-- [x] Add one deterministic guard for the staffing-summary membership family
-- [x] Keep the rule family-level, not row-specific
+### Phase 2 — Change The Repo Defaults
+- [x] Update repo-default extraction config to the proved candidate
+- [x] Keep the cutover minimal and bounded
 - [x] Commit verified phase
 
-### Phase 3 — Verify The Enforcement Seam
-- [x] Add/update targeted tests for the enforcement seam
-- [x] Verify the family through the narrow test slice
+### Phase 3 — Verify The Default Surface
+- [x] Add/update targeted tests for the default surface
+- [x] Verify the default surface through the narrow test slice
 - [x] Commit verified phase
 
 ### Phase 4 — Rerun Chunk 002 And Chunk 003
-- [ ] Rerun chunk `002` under the bounded enforcement seam
-- [ ] Rerun chunk `003` under the bounded enforcement seam
+- [ ] Rerun chunk `002` under the repo-default no-override path
+- [ ] Rerun chunk `003` under the same fresh DB
 - [ ] Export both reviewed chunk-transfer reports
 - [ ] Commit verified phase
 
 ### Phase 5 — Closeout
-- [ ] Write the personnel-membership enforcement decision note
+- [ ] Write the default-cutover decision note
 - [ ] Refresh docs/status/handoff/knowledge
 - [ ] Mark the block complete and name the next blocker explicitly
 - [ ] Commit verified phase
@@ -120,6 +120,7 @@ Source of truth:
 - [x] Run one bounded post-parity semantic recovery attempt and classify it honestly
 - [x] Eliminate the remaining abstract `limit_capability` family under Plan `0060`
 - [ ] Eliminate the remaining staffing-summary membership family under Plan `0061`
+- [ ] Promote the proved compact operational-parity lane into the repo default under Plan `0062`
 
 ## Longer-Term Queue
 

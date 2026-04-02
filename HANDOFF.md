@@ -2,21 +2,20 @@
 
 ## Session Focus
 
-Plan `0060` closeout and Plan `0061` activation in the isolated worktree
+Plan `0061` closeout and Plan `0062` activation in the isolated worktree
 branch `codex/onto-canon6-integration-planning`.
 
 ## What Landed
 
 Committed and documented in the isolated worktree:
 
-1. Plan `0060` is now truthfully closed as a bounded live-path enforcement
+1. Plan `0061` is now truthfully closed as a bounded live-path enforcement
    block;
-2. the abstract evaluative `limit_capability` family is no longer accepted on
-   chunk `003`;
-3. the fresh rerun kept chunk `002` positive and kept chunk `003` mixed;
-4. the repo now records the smaller remaining blocker: one staffing-summary
-   `belongs_to_organization` acceptance on chunk `003`; and
-5. Plan `0061` is now the active execution block.
+2. the staffing-summary membership leak is no longer accepted on chunk `003`;
+3. the fresh rerun kept chunk `002` positive and made chunk `003` cleanly
+   negative under the corrected contract;
+4. the named chunk-transfer blocker families are now closed; and
+5. Plan `0062` is now the active execution block.
 
 ## Current State
 
@@ -25,18 +24,18 @@ Committed and documented in the isolated worktree:
    aligned.
 3. Chunk `003` is now `mixed`, not `positive`, but the remaining accepted set
    is still too permissive for promotion.
-4. The active frontier is now bounded live-path enforcement for the remaining
-   staffing-summary membership family under Plan `0061`.
+4. The active frontier is now promotion certification and repo-default
+   cutover for the proved compact operational-parity lane under Plan `0062`.
 
 ## Recommended Next Step
 
 If work continues:
 
 1. stay on `codex/onto-canon6-integration-planning`;
-2. execute Plan `0061` in order:
-   - freeze the remaining staffing-summary membership claim as the owned family
-   - land one bounded enforcement seam for that family
-   - rerun chunk `002` and chunk `003` under a fresh live DB
+2. execute Plan `0062` in order:
+   - freeze the exact candidate and evidence record
+   - update the repo-default extraction config to that candidate
+   - rerun chunk `002` and chunk `003` with no prompt/selection-task override
    - classify promotion posture against Plan `0014`
 3. keep all worktree runtime commands on `PYTHONPATH=src`;
 4. keep chunk `017` removed from the strict-omit gate and treat `005`, `006`,

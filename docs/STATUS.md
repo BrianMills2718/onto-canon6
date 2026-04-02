@@ -66,8 +66,10 @@ Current post-cutover program state:
     `positive` to `mixed` while preserving the chunk-002 positive control; and
 23. Plan `0060` is now complete and removed the remaining abstract
     `limit_capability` family from chunk `003`; and
-24. the next extraction-quality blocker is now the staffing-summary
-    membership family on chunk `003`, owned by Plan `0061`.
+24. Plan `0061` is now complete and removed the staffing-summary membership
+    spillover family from chunk `003`; and
+25. the next extraction-quality question is repo-default promotion/cutover,
+    owned by Plan `0062`.
 
 ## What Is Proven
 

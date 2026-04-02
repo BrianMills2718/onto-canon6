@@ -138,13 +138,13 @@ def test_extract_candidate_imports_uses_llm_client_boundary(tmp_path: Path, monk
     assert imports[0].evidence_spans[0].text == "Mission planning"
     assert imports[0].evidence_spans[0].start_char == 0
     assert imports[0].source_artifact.content_text is not None
-    assert calls["selection_task"] == "fast_extraction"
+    assert calls["selection_task"] == "budget_extraction"
     assert calls["selection_use_performance"] is False
     call_kwargs = calls["kwargs"]
     assert isinstance(call_kwargs, dict)
-    assert call_kwargs["task"] == "fast_extraction"
+    assert call_kwargs["task"] == "budget_extraction"
     assert call_kwargs["max_budget"] == 0.25
-    assert call_kwargs["prompt_ref"] == "onto_canon6.extraction.text_to_candidate_assertions@1"
+    assert call_kwargs["prompt_ref"] == "onto_canon6.extraction.text_to_candidate_assertions_compact_v5@3"
     assert str(call_kwargs["trace_id"]).startswith("onto_canon6.extract.")
     messages = calls["messages"]
     assert isinstance(messages, list)
@@ -518,26 +518,28 @@ def test_main_extraction_prompt_includes_current_winning_guidance() -> None:
     """The live extraction prompt should carry the proven Phase A guidance."""
 
     messages = _render_prompt(
-        PROJECT_ROOT / "prompts" / "extraction" / "text_to_candidate_assertions.yaml",
+        PROJECT_ROOT / "prompts" / "extraction" / "text_to_candidate_assertions_compact_v5.yaml",
         profile_id="psyop_seed",
         profile_version="0.1.0",
         predicate_catalog="- oc:replace_designation",
         entity_type_catalog="- oc:person",
-        extraction_goal="",
-        source_kind="raw_text",
+        extraction_goal="Extract all factual assertions directly supported by the source text.",
+        source_kind="text_file",
         source_ref="text://phase-b/prompt",
         source_label="prompt test",
         source_text="Admiral Eric Olson replaced PSYOP with MISO.",
+        max_candidates_per_case=10,
+        max_evidence_spans_per_candidate=1,
     )
 
     system_prompt = messages[0]["content"]
-    assert "Every `entity` filler must include a reviewer-meaningful `name` and an" in system_prompt
-    assert "`entity_type` chosen from the active ontology catalog" in system_prompt
-    assert "if one sentence explicitly states multiple independent facts" in system_prompt
+    assert "Prefer the smallest sufficient candidate set." in system_prompt
+    assert "Every filler object must include `kind` set to `entity`, `value`, or" in system_prompt
+    assert "aggregate resource or staffing summaries such as `total strength`" in system_prompt
     assert "abbreviation expansions, acronym definitions" in system_prompt
-    assert "the `subject` must be the" in system_prompt
-    assert "enduring named entity being renamed" in system_prompt
-    assert "if the text explicitly states both a concern and a concrete lost or" in system_prompt
+    assert "if `limit_capability` would use only an abstract evaluative filler" in system_prompt
+    assert "do not invent generic or likely institutions" in system_prompt
+    assert "analytical section headings such as `Effectiveness and Limitations`" in system_prompt
 
 
 def test_extract_and_submit_persists_extracted_candidates(
