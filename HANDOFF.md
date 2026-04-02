@@ -2,7 +2,7 @@
 
 ## Session Focus
 
-Plans `0046` through `0049` closeout and Plan `0050` activation in the isolated
+Plans `0046` through `0050` closeout and Plan `0051` activation in the isolated
 worktree branch `codex/onto-canon6-integration-planning`.
 
 ## What Landed
@@ -33,7 +33,8 @@ Committed and documented in the isolated worktree:
 7. decision-grade closeout note:
    - `docs/runs/2026-04-02_prompt_parity_repair_decision.md`
 8. Plans `0046`, `0047`, `0048`, and `0049` are now complete;
-9. Plan `0050` is now the active bounded execution surface.
+9. Plan `0050` is now complete as a failed bounded semantic attempt;
+10. Plan `0051` is now the active bounded execution surface.
 
 ## Current State
 
@@ -50,19 +51,19 @@ Committed and documented in the isolated worktree:
    - `exact_f1 = 0.0`
    - `count_alignment = 0.0`
    - `structural_usable_rate = 1.0`
-4. The active frontier is therefore semantic extraction recovery on the
-   repaired analytical chunk-003 path under Plan `0050`, not more prompt-path
-   plumbing.
+4. The active frontier is therefore narrower than generic semantic recovery:
+   analytical-section and late-summary spillover on the repaired chunk-003
+   path under Plan `0051`, not more prompt-path plumbing.
 
 ## Recommended Next Step
 
 If work continues:
 
 1. stay on `codex/onto-canon6-integration-planning`;
-2. execute Plan `0050` in order:
-   - freeze the repaired post-parity chunk-003 family
-   - name one semantic miss family
-   - land one bounded semantic prompt revision
+2. execute Plan `0051` in order:
+   - freeze the `0050` old-vs-new chunk-003 family
+   - name one analytical-section spillover family
+   - land one bounded suppression change
    - rerun the one-case chunk-003 diagnostic
 3. keep all worktree runtime commands on `PYTHONPATH=src`;
 4. do not reopen `Case id` or `Case input` parity work unless new evidence

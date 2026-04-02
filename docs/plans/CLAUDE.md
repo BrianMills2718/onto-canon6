@@ -14,7 +14,8 @@ This subtree owns active gaps, acceptance criteria, and verification notes.
 | 0025a | [Entity Resolution Scale-Out](0025a_entity_resolution_scale_out.md) | Deferred (activates after 0025 Phase 4) |
 | 0027 | [Deferred Parity Reprioritization](0027_deferred_parity_reprioritization.md) | Active (Lane 5 execution surface; next-active order now explicit) |
 | 0028 | [Query And Browse Surface](0028_query_browse_surface.md) | Active (first read-only slice landed and proved; wider hardening still open) |
-| 0050 | [24h Post-Parity Semantic Recovery Block](0050_24h_post_parity_semantic_recovery_block.md) | Active (prompt-side parity sequence complete; semantic chunk-003 recovery now active) |
+| 0051 | [24h Analytical Section Suppression Block](0051_24h_analytical_section_suppression_block.md) | Active (first post-parity semantic attempt failed; analytical-section spillover now active) |
+| 0050 | [24h Post-Parity Semantic Recovery Block](0050_24h_post_parity_semantic_recovery_block.md) | Complete (changed chunk-003 family without improving the score gate) |
 | 0049 | [24h Post-Repair Transfer Block](0049_24h_post_repair_transfer_block.md) | Complete (post-repair chunk-003 rerun restored prompt_eval output and moved blocker back to semantics) |
 | 0048 | [24h Prompt-Wrapper Parity Block](0048_24h_prompt_wrapper_parity_block.md) | Complete (prompt_eval `Case input:` wrapper removed from extraction templates) |
 | 0047 | [24h Case-Metadata Parity Block](0047_24h_case_metadata_parity_block.md) | Complete (`Case id:` removed from extraction prompt_eval input by default) |

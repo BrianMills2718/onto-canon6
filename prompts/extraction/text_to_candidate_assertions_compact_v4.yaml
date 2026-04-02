@@ -125,6 +125,11 @@ messages:
         doctrine adjustment are not automatically `express_concern`; treat
         them as governance process context unless the same evidence span
         explicitly states a concern, warning, criticism, or dissatisfaction
+      - coordinated governance-process nouns such as `Congressional oversight
+        and public scrutiny increased` are not separate named speakers and do
+        not become one or more `express_concern` candidates unless the same
+        span explicitly attributes a concrete concern statement to each named
+        speaker
       - conclusion sections, opinion sections, and summary prose usually
         restate overall assessment; do not extract `express_concern` from them
         unless a named institution, review, or person is explicitly presented
@@ -141,6 +146,11 @@ messages:
         impediments, or abstract effectiveness in general analytical prose
         without a clean named subject and capability in the same span, omit
         the candidate instead of anchoring it loosely
+      - retrospective assessment prose such as `was limited`, `was hampered`,
+        or `reducing impact` is usually analytical wrap-up, not a reviewable
+        `limit_capability` event; omit it unless the same evidence span names
+        a concrete limited subject and a directly stated limiting event rather
+        than a broad campaign- or effectiveness-level summary
       - do not inherit the document's main organization, campaign, or topic as
         the `express_concern` speaker or `limit_capability` subject from
         section context alone; the speaker or limited subject must be explicit

@@ -30,13 +30,14 @@ runtime.
 22. `docs/plans/0047_24h_case_metadata_parity_block.md` (completed case-id repair block)
 23. `docs/plans/0048_24h_prompt_wrapper_parity_block.md` (completed wrapper repair block)
 24. `docs/plans/0049_24h_post_repair_transfer_block.md` (completed post-repair chunk-003 rerun block)
-25. `docs/plans/0050_24h_post_parity_semantic_recovery_block.md` (current active execution block)
-26. `docs/plans/0026_schema_stability_gate.md` (completed Lane 3 contract policy)
-27. `docs/plans/0014_extraction_quality_baseline.md` (active Lane 4 promotion gate)
-28. `docs/plans/0027_deferred_parity_reprioritization.md`
-29. `docs/plans/0028_query_browse_surface.md`
-30. `docs/plans/0005_v1_capability_parity_matrix.md`
-31. `docs/plans/0001_successor_roadmap.md`
+25. `docs/plans/0050_24h_post_parity_semantic_recovery_block.md` (completed failed bounded semantic attempt)
+26. `docs/plans/0051_24h_analytical_section_suppression_block.md` (current active execution block)
+27. `docs/plans/0026_schema_stability_gate.md` (completed Lane 3 contract policy)
+28. `docs/plans/0014_extraction_quality_baseline.md` (active Lane 4 promotion gate)
+29. `docs/plans/0027_deferred_parity_reprioritization.md`
+30. `docs/plans/0028_query_browse_surface.md`
+31. `docs/plans/0005_v1_capability_parity_matrix.md`
+32. `docs/plans/0001_successor_roadmap.md`
 
 ## Commands
 
@@ -112,13 +113,14 @@ config/
   remained negative and full-chunk prompt-eval/live parity still diverged on
   both named chunks. Plan 0041 is now complete: it proved the prompt-surface
   difference is stable and bounded, but not the dominant blocker family. The
-  current active bounded block is therefore Plan 0050. Plans `0046` through
+  current active bounded block is therefore Plan 0051. Plans `0046` through
   `0049` are now complete and proved that sync/async API speculation,
   prompt_eval-only `Case id` metadata, and the prompt_eval `Case input:`
   wrapper were all real prompt-path issues but are no longer the active
-  blocker. The repaired chunk-003 prompt_eval rerun now produces a real
-  compact operational-parity output again, but semantic quality remains poor,
-  so the next question is semantic recovery on the repaired analytical path.
+  blocker. Plan `0050` then proved that one bounded semantic revision changed
+  the chunk-003 family without improving the score gate, so the next question
+  is narrower: analytical-section and late-summary suppression on the repaired
+  path.
   The chunk-level transfer evaluation requirement remains active through
   ADR 0023 and Plans 0024/0014 even though there is no standalone Plan 0019
   file.
@@ -289,7 +291,7 @@ happens.
 
 ## Active Execution Block (2026-04-01)
 
-**Plan 0050: 24h Post-Parity Semantic Recovery Block — active until fully closed.**
+**Plan 0051: 24h Analytical Section Suppression Block — active until fully closed.**
 
 Within an active 24h execution block, the default operating mode is continuous
 execution: finish the current phase, verify it, commit it, update the active
@@ -311,7 +313,7 @@ verify it, commit it, log any uncertainty, and continue. Do not wait for
 
 The only valid stop conditions are:
 
-1. all 5 phases in `docs/plans/0050_24h_post_parity_semantic_recovery_block.md`
+1. all 5 phases in `docs/plans/0051_24h_analytical_section_suppression_block.md`
    are complete and committed;
 2. a real blocker that cannot be resolved from repo context or the plan;
 3. a material uncertainty not covered by the pre-made decisions below.

@@ -21,8 +21,8 @@ def test_compare_prompt_surfaces_exposes_user_wrapper_difference() -> None:
     assert len(comparison.live_messages) == 2
     assert len(comparison.prompt_eval_template_messages) == 2
     assert len(comparison.prompt_eval_effective_messages) == 2
-    assert comparison.system_equal is True
-    assert comparison.user_equal is False
+    assert comparison.system_equal is False
+    assert comparison.user_equal is True
     live_user = comparison.live_messages[1]["content"]
     parity_template_user = comparison.prompt_eval_template_messages[1]["content"]
     parity_effective_user = comparison.prompt_eval_effective_messages[1]["content"]
@@ -33,4 +33,5 @@ def test_compare_prompt_surfaces_exposes_user_wrapper_difference() -> None:
     assert "Case input:" not in parity_effective_user
     assert "Case id: case-001" not in parity_effective_user
     assert comparison.prompt_eval_input_content in parity_effective_user
-    assert any("Extract candidate assertions from this source material." in line for line in comparison.user_diff)
+    assert comparison.user_diff == ()
+    assert any("hold_command_role" in line for line in comparison.system_diff)

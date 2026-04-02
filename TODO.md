@@ -3,15 +3,15 @@
 ## Current 24h Execution Block
 
 Source of truth:
-- `docs/plans/0050_24h_post_parity_semantic_recovery_block.md`
+- `docs/plans/0051_24h_analytical_section_suppression_block.md`
 
-### Phase 1 — Freeze The Post-Parity Semantic Contract
-- [ ] Freeze the repaired prompt_eval/live chunk-003 family
-- [ ] Name one explicit semantic miss family
+### Phase 1 — Freeze The New Miss Family
+- [ ] Freeze the `0050` old-vs-new chunk-003 family
+- [ ] Name one explicit analytical-section spillover family
 - [ ] Commit verified phase
 
-### Phase 2 — Land One Bounded Semantic Change
-- [ ] Revise the repaired operational-parity prompt in one bounded semantic way
+### Phase 2 — Land One Bounded Suppression Change
+- [ ] Add one section-heading or retrospective-summary suppression rule
 - [ ] Preserve the case-id and wrapper parity repairs
 - [ ] Commit verified phase
 
@@ -26,7 +26,7 @@ Source of truth:
 - [ ] Commit verified phase
 
 ### Phase 5 — Closeout
-- [ ] Write the decision-grade semantic-recovery note
+- [ ] Write the decision-grade analytical-section suppression note
 - [ ] Refresh docs/status/handoff
 - [ ] Mark execution block complete
 - [ ] Commit verified phase
@@ -115,6 +115,7 @@ Source of truth:
 - [x] Test whether wrapper alignment materially narrows the same-model live-path divergence
 - [x] Localize the remaining post-wrapper extraction-path divergence to one dominant surface
 - [x] Localize and repair the remaining prompt-side parity residual through Plans `0046`-`0049`
+- [x] Run one bounded post-parity semantic recovery attempt and classify it honestly
 - [ ] Recover semantic chunk-003 behavior under the repaired parity surface
 
 ## Longer-Term Queue

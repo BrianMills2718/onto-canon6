@@ -144,12 +144,12 @@ def compare_prompt_surfaces_for_case(
         "prompts/extraction/text_to_candidate_assertions_compact_v4.yaml"
     )
     prompt_eval_template = prompt_eval_prompt_template or config.resolve_repo_path(
-        "prompts/extraction/prompt_eval_text_to_candidate_assertions_compact_operational_parity_v2.yaml"
+        "prompts/extraction/prompt_eval_text_to_candidate_assertions_compact_operational_parity_v3.yaml"
     )
     live_ref = live_prompt_ref or "onto_canon6.extraction.text_to_candidate_assertions_compact_v4@1"
     prompt_eval_ref = (
         prompt_eval_prompt_ref
-        or "onto_canon6.extraction.prompt_eval_text_to_candidate_assertions_compact_operational_parity@2"
+        or "onto_canon6.extraction.prompt_eval_text_to_candidate_assertions_compact_operational_parity@3"
     )
 
     live_messages = tuple(

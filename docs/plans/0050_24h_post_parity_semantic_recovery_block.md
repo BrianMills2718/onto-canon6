@@ -1,12 +1,12 @@
 # 24h Post-Parity Semantic Recovery Block
 
-Status: active
+Status: complete
 Phase status:
-- Phase 1 pending
-- Phase 2 pending
-- Phase 3 pending
-- Phase 4 pending
-- Phase 5 pending
+- Phase 1 completed
+- Phase 2 completed
+- Phase 3 completed
+- Phase 4 completed
+- Phase 5 completed
 
 Last updated: 2026-04-02
 Workstream: recover chunk-003 semantic quality after prompt-side parity repairs
@@ -137,3 +137,11 @@ This block is complete only when:
 1. all five phases above meet their success criteria;
 2. the worktree is clean;
 3. the repo contains committed semantic-recovery artifacts and a decision note.
+
+## Closeout
+
+Plan `0050` is complete as a failed bounded semantic attempt.
+
+It changed the chunk-003 family, but it did not improve the score or restore
+strict-omit behavior. The next narrower blocker is analytical-section and
+late-summary spillover, tracked by Plan `0051`.

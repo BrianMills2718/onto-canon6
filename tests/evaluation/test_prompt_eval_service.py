@@ -921,6 +921,8 @@ def test_run_prompt_experiment_builds_report_and_variant_comparison(
     assert "Return at most 10 candidates." in compact_operational_parity_messages[0]["content"]
     assert "conclusion sections, opinion sections, and summary prose usually" in compact_operational_parity_messages[0]["content"]
     assert "do not inherit the document's main organization, campaign, or topic as" in compact_operational_parity_messages[0]["content"]
+    assert "coordinated governance-process nouns such as `Congressional oversight" in compact_operational_parity_messages[0]["content"]
+    assert "retrospective assessment prose such as `was limited`, `was hampered`" in compact_operational_parity_messages[0]["content"]
     assert "{input}" in compact_operational_parity_messages[-1]["content"]
     assert "Case input:" not in compact_operational_parity_messages[-1]["content"]
     assert "Return exactly one structured response object" in single_response_messages[0]["content"]
