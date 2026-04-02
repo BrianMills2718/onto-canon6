@@ -187,6 +187,14 @@ config/
   truthfully closed. If a new uncertainty appears, log it in the active plan,
   `TODO.md`, and `KNOWLEDGE.md`, then continue on the next bounded task unless
   the uncertainty changes the contract itself.
+- **Default execution mode for substantial autonomous work is an isolated
+  worktree plus explicit merge-back.** When an agent is going to run a
+  multi-phase implementation block, use a dedicated worktree/branch by default
+  so the main checkout stays readable and rollback stays cheap. Keep commits
+  small and verified, then merge the worktree branch back into `main` only
+  after the block is truthfully complete. Only stay in the main checkout by
+  default for tiny edits or when a worktree would create a bigger risk than it
+  removes.
 - **After the current value-proof work, the next-active deferred capability is
   queryability.** Plan 0027 now fixes the deferred-capability order, and Plan
   0028 now has a landed first read-only browse/search surface over promoted
