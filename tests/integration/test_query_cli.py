@@ -39,6 +39,8 @@ def test_cli_query_surface_supports_browse_and_lookup_operations(
         "ent:person:admiral_eric_olson",
         "ent:person:eric_olson",
     ]
+    assert browse_results[0]["attached_external_reference_count"] == 1
+    assert browse_results[0]["unresolved_external_reference_count"] == 1
 
     exit_code = cli_module.main(
         [
@@ -55,6 +57,24 @@ def test_cli_query_surface_supports_browse_and_lookup_operations(
     entity_results = json.loads(_read_stdout(capsys))
     assert entity_results[0]["entity_id"] == "ent:person:admiral_eric_olson"
     assert entity_results[0]["match_reason"] == "alias_exact"
+
+    exit_code = cli_module.main(
+        [
+            "search-entities",
+            "--query",
+            "eric-olson-profile",
+            "--provider",
+            "analyst_registry",
+            "--review-db-path",
+            str(review_db_path),
+            "--output",
+            "json",
+        ]
+    )
+    assert exit_code == 0
+    external_results = json.loads(_read_stdout(capsys))
+    assert external_results[0]["entity_id"] == "ent:person:eric_olson"
+    assert external_results[0]["match_reason"] == "external_id_exact"
 
     exit_code = cli_module.main(
         [
@@ -208,6 +228,12 @@ def _seed_query_cli_state(review_db_path: Path) -> tuple[str, str]:
         external_id="eric-olson-profile",
         attached_by="analyst:identity",
         reference_label="Eric Olson",
+    )
+    identity_service.record_unresolved_external_reference(
+        identity_id=created.identity.identity_id,
+        provider="wikidata",
+        unresolved_note="Need canonical Q-code",
+        attached_by="analyst:identity",
     )
 
     graph_service = CanonicalGraphService(db_path=review_db_path)

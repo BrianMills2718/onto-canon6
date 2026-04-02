@@ -18,7 +18,7 @@ from fastmcp import FastMCP
 
 from .adapters import WhyGameImportService
 from .config import get_config
-from .core import CanonicalGraphService
+from .core import CanonicalGraphService, ExternalReferenceStatus
 from .pipeline import OverlayApplicationService, ReviewService
 from .surfaces import (
     AssertionBrowseRequest,
@@ -260,6 +260,9 @@ def canon6_export_governed_bundle(
 
 def canon6_list_entities(
     entity_type: str | None = None,
+    has_identity: bool | None = None,
+    provider: str | None = None,
+    reference_status: ExternalReferenceStatus | None = None,
     limit: int = 50,
     review_db_path: str | None = None,
 ) -> list[dict[str, Any]]:
@@ -269,7 +272,13 @@ def canon6_list_entities(
     return [
         result.model_dump(mode="json")
         for result in service.list_entities(
-            EntityBrowseRequest(entity_type=entity_type, limit=limit)
+            EntityBrowseRequest(
+                entity_type=entity_type,
+                has_identity=has_identity,
+                provider=provider,
+                reference_status=reference_status,
+                limit=limit,
+            )
         )
     ]
 
@@ -278,6 +287,8 @@ def canon6_list_entities(
 def canon6_search_entities(
     query: str,
     entity_type: str | None = None,
+    provider: str | None = None,
+    reference_status: ExternalReferenceStatus | None = None,
     limit: int = 20,
     review_db_path: str | None = None,
 ) -> list[dict[str, Any]]:
@@ -287,7 +298,13 @@ def canon6_search_entities(
     return [
         result.model_dump(mode="json")
         for result in service.search_entities(
-            EntitySearchRequest(query=query, entity_type=entity_type, limit=limit)
+            EntitySearchRequest(
+                query=query,
+                entity_type=entity_type,
+                provider=provider,
+                reference_status=reference_status,
+                limit=limit,
+            )
         )
     ]
 

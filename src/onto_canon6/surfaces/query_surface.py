@@ -17,6 +17,7 @@ from ..config import get_config
 from ..core import (
     CanonicalGraphPromotionNotFoundError,
     CanonicalGraphService,
+    GraphExternalReferenceRecord,
     IdentityBundleRecord,
     IdentityNotFoundError,
     IdentityService,
@@ -105,7 +106,13 @@ class QuerySurfaceService:
         contexts = self._build_entity_contexts()
         rows: list[EntityBrowseResult] = []
         for context in contexts.values():
-            if request.entity_type is not None and context.entity.entity_type != request.entity_type:
+            if not _entity_matches_filters(
+                context=context,
+                entity_type=request.entity_type,
+                has_identity=request.has_identity,
+                provider=request.provider,
+                reference_status=request.reference_status,
+            ):
                 continue
             linked_assertion_ids = _collect_linked_assertion_ids(context)
             rows.append(
@@ -119,6 +126,16 @@ class QuerySurfaceService:
                     display_label=_choose_display_label(context),
                     entity_type=context.entity.entity_type,
                     linked_assertion_count=len(linked_assertion_ids),
+                    has_identity=context.identity_bundle is not None,
+                    attached_external_reference_count=_count_external_references(
+                        context=context,
+                        reference_status="attached",
+                    ),
+                    unresolved_external_reference_count=_count_external_references(
+                        context=context,
+                        reference_status="unresolved",
+                    ),
+                    external_reference_providers=_external_reference_providers(context),
                 )
             )
         rows.sort(key=lambda row: (row.display_label.casefold(), row.entity_id))
@@ -137,7 +154,13 @@ class QuerySurfaceService:
         contexts = self._build_entity_contexts()
         matches: list[tuple[int, int, int, str, str, EntitySearchResult]] = []
         for context in contexts.values():
-            if request.entity_type and context.entity.entity_type != request.entity_type:
+            if not _entity_matches_filters(
+                context=context,
+                entity_type=request.entity_type,
+                has_identity=None,
+                provider=request.provider,
+                reference_status=request.reference_status,
+            ):
                 continue
             match_reason = _match_entity_query(
                 needle=needle,
@@ -422,8 +445,12 @@ class QuerySurfaceService:
 _MATCH_RANK: dict[EntityMatchReason, int] = {
     "canonical_exact": 0,
     "alias_exact": 1,
-    "prefix": 2,
-    "substring": 3,
+    "external_id_exact": 2,
+    "reference_label_exact": 3,
+    "prefix": 4,
+    "external_prefix": 5,
+    "substring": 6,
+    "external_substring": 7,
 }
 
 
@@ -584,6 +611,8 @@ def _match_entity_query(
     identity_bundle = context.identity_bundle
     canonical_names: set[str] = set()
     alias_names: set[str] = set()
+    external_ids: set[str] = set()
+    reference_labels: set[str] = set()
 
     if identity_bundle is not None:
         canonical_entity_id = _choose_canonical_entity_id(identity_bundle)
@@ -601,6 +630,11 @@ def _match_entity_query(
                 canonical_names.update(member_names)
             else:
                 alias_names.update(member_names)
+        for reference in identity_bundle.external_references:
+            if reference.external_id:
+                external_ids.add(reference.external_id)
+            if reference.reference_label:
+                reference_labels.add(reference.reference_label)
     else:
         canonical_names.update(context.names)
 
@@ -608,11 +642,73 @@ def _match_entity_query(
         return "canonical_exact"
     if _any_exact_match(needle, alias_names):
         return "alias_exact"
+    if _any_exact_match(needle, external_ids):
+        return "external_id_exact"
+    if _any_exact_match(needle, reference_labels):
+        return "reference_label_exact"
     if _any_startswith_match(needle, canonical_names | alias_names):
         return "prefix"
+    if _any_startswith_match(needle, external_ids | reference_labels):
+        return "external_prefix"
     if _any_contains_match(needle, canonical_names | alias_names):
         return "substring"
+    if _any_contains_match(needle, external_ids | reference_labels):
+        return "external_substring"
     return None
+
+
+def _entity_matches_filters(
+    *,
+    context: _EntityContext,
+    entity_type: str | None,
+    has_identity: bool | None,
+    provider: str | None,
+    reference_status: str | None,
+) -> bool:
+    """Return whether one entity context satisfies browse/search filters."""
+
+    if entity_type is not None and context.entity.entity_type != entity_type:
+        return False
+    if has_identity is not None and (context.identity_bundle is not None) != has_identity:
+        return False
+    external_references = _external_references(context)
+    if provider is not None and not any(reference.provider == provider for reference in external_references):
+        return False
+    if reference_status is not None and not any(
+        reference.reference_status == reference_status for reference in external_references
+    ):
+        return False
+    return True
+
+
+
+def _external_references(context: _EntityContext) -> tuple[GraphExternalReferenceRecord, ...]:
+    """Return the external references attached to one entity context."""
+
+    if context.identity_bundle is None:
+        return ()
+    return context.identity_bundle.external_references
+
+
+
+def _count_external_references(*, context: _EntityContext, reference_status: str) -> int:
+    """Count external references on one entity context by status."""
+
+    return len(
+        tuple(
+            reference
+            for reference in _external_references(context)
+            if reference.reference_status == reference_status
+        )
+    )
+
+
+
+def _external_reference_providers(context: _EntityContext) -> tuple[str, ...]:
+    """Return deterministic provider names attached to one entity context."""
+
+    return tuple(sorted({reference.provider for reference in _external_references(context)}))
+
 
 
 def _any_exact_match(needle: str, haystack: Iterable[str]) -> bool:

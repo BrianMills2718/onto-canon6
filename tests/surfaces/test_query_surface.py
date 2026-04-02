@@ -132,6 +132,12 @@ def _seed_query_surface(tmp_path: Path) -> tuple[QuerySurfaceService, str]:
         attached_by="analyst:identity",
         reference_label="Eric Olson",
     )
+    identity_service.record_unresolved_external_reference(
+        identity_id=created.identity.identity_id,
+        provider="wikidata",
+        unresolved_note="Need canonical Q-code",
+        attached_by="analyst:identity",
+    )
     artifact_service = ArtifactLineageService(db_path=review_service.store.db_path)
     artifact = artifact_service.register_artifact(
         artifact_kind="source",
@@ -155,18 +161,23 @@ def _seed_query_surface(tmp_path: Path) -> tuple[QuerySurfaceService, str]:
     ), second_assertion_id
 
 
-def test_search_entities_matches_canonical_and_alias_names(tmp_path: Path) -> None:
-    """Entity search should rank canonical and alias name matches deterministically."""
+def test_search_entities_matches_canonical_alias_and_external_reference_text(tmp_path: Path) -> None:
+    """Entity search should rank canonical, alias, and external-reference matches deterministically."""
 
-    service, second_assertion_id = _seed_query_surface(tmp_path)
+    service, _second_assertion_id = _seed_query_surface(tmp_path)
 
     canonical_results = service.search_entities(EntitySearchRequest(query="Eric Olson"))
     alias_results = service.search_entities(EntitySearchRequest(query="Admiral Eric Olson"))
+    external_id_results = service.search_entities(EntitySearchRequest(query="eric-olson-profile"))
+    reference_label_results = service.search_entities(EntitySearchRequest(query="Eric Olson", provider="analyst_registry"))
 
     assert canonical_results[0].entity_id == "ent:person:eric_olson"
     assert canonical_results[0].match_reason == "canonical_exact"
     assert alias_results[0].entity_id == "ent:person:admiral_eric_olson"
     assert alias_results[0].match_reason == "alias_exact"
+    assert external_id_results[0].entity_id == "ent:person:eric_olson"
+    assert external_id_results[0].match_reason == "external_id_exact"
+    assert reference_label_results[0].entity_id == "ent:person:eric_olson"
 
 
 def test_get_entity_returns_identity_and_linked_assertions(tmp_path: Path) -> None:
@@ -177,7 +188,7 @@ def test_get_entity_returns_identity_and_linked_assertions(tmp_path: Path) -> No
 
     assert detail.identity_bundle is not None
     assert detail.identity_bundle.identity.display_label == "Eric Olson"
-    assert len(detail.identity_bundle.external_references) == 1
+    assert len(detail.identity_bundle.external_references) == 2
     linked_assertion_ids = {result.assertion_id for result in detail.linked_assertions}
     assert second_assertion_id in linked_assertion_ids
     assert len(linked_assertion_ids) == 2
@@ -240,8 +251,8 @@ def test_get_entity_fails_loudly_for_unknown_entity(tmp_path: Path) -> None:
         service.get_entity(GetEntityRequest(entity_id="ent:missing"))
 
 
-def test_list_entities_returns_alias_and_counts_in_browse_order(tmp_path: Path) -> None:
-    """Entity browse should expose alias members with linked-assertion counts."""
+def test_list_entities_returns_alias_counts_and_identity_reference_summary(tmp_path: Path) -> None:
+    """Entity browse should expose alias members plus identity/reference summary state."""
 
     service, _second_assertion_id = _seed_query_surface(tmp_path)
 
@@ -253,6 +264,10 @@ def test_list_entities_returns_alias_and_counts_in_browse_order(tmp_path: Path) 
     ]
     assert results[0].display_label == "Admiral Eric Olson"
     assert results[0].linked_assertion_count == 2
+    assert results[0].has_identity is True
+    assert results[0].attached_external_reference_count == 1
+    assert results[0].unresolved_external_reference_count == 1
+    assert results[0].external_reference_providers == ("analyst_registry", "wikidata")
     assert results[1].display_label == "Eric Olson"
     assert results[1].linked_assertion_count == 2
 
@@ -290,3 +305,23 @@ def test_search_promoted_assertions_filters_by_source_fields(tmp_path: Path) -> 
 
     assert [result.assertion_id for result in source_ref_results] == [second_assertion_id]
     assert len(source_kind_results) == 2
+
+
+def test_list_entities_filters_by_identity_provider_and_reference_status(tmp_path: Path) -> None:
+    """Entity browse should support identity presence and external-reference filters."""
+
+    service, _second_assertion_id = _seed_query_surface(tmp_path)
+
+    identity_results = service.list_entities(EntityBrowseRequest(has_identity=True))
+    provider_results = service.list_entities(EntityBrowseRequest(provider="analyst_registry"))
+    unresolved_results = service.list_entities(EntityBrowseRequest(reference_status="unresolved"))
+
+    assert len(identity_results) == 2
+    assert {result.entity_id for result in provider_results} == {
+        "ent:person:eric_olson",
+        "ent:person:admiral_eric_olson",
+    }
+    assert {result.entity_id for result in unresolved_results} == {
+        "ent:person:eric_olson",
+        "ent:person:admiral_eric_olson",
+    }

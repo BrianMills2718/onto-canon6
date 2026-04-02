@@ -118,6 +118,8 @@ def test_mcp_query_surface_tools_cover_first_read_only_slice(tmp_path: Path) -> 
         "ent:person:admiral_eric_olson",
         "ent:person:eric_olson",
     ]
+    assert listed_entities[0]["attached_external_reference_count"] == 1
+    assert listed_entities[0]["unresolved_external_reference_count"] == 1
 
     entity_results = mcp_server.canon6_search_entities(
         query="Admiral Eric Olson",
@@ -125,6 +127,14 @@ def test_mcp_query_surface_tools_cover_first_read_only_slice(tmp_path: Path) -> 
     )
     assert entity_results[0]["entity_id"] == "ent:person:admiral_eric_olson"
     assert entity_results[0]["match_reason"] == "alias_exact"
+
+    external_results = mcp_server.canon6_search_entities(
+        query="eric-olson-profile",
+        provider="analyst_registry",
+        review_db_path=str(review_db_path),
+    )
+    assert external_results[0]["entity_id"] == "ent:person:eric_olson"
+    assert external_results[0]["match_reason"] == "external_id_exact"
 
     entity_detail = mcp_server.canon6_get_entity(
         entity_id="ent:person:eric_olson",
@@ -208,6 +218,12 @@ def _seed_query_state(review_db_path: Path) -> tuple[str, str]:
         external_id="eric-olson-profile",
         attached_by="analyst:identity",
         reference_label="Eric Olson",
+    )
+    identity_service.record_unresolved_external_reference(
+        identity_id=created.identity.identity_id,
+        provider="wikidata",
+        unresolved_note="Need canonical Q-code",
+        attached_by="analyst:identity",
     )
 
     graph_service = CanonicalGraphService(db_path=review_db_path)
