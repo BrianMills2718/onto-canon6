@@ -66,6 +66,7 @@ evaluation:
     comparison_confidence: 0.95
     max_candidates_per_case: 2
     max_evidence_spans_per_candidate: 1
+    include_case_id_in_input: false
     variants:
     - name: baseline
       prompt_template: prompts/extraction/prompt_eval_text_to_candidate_assertions_baseline.yaml

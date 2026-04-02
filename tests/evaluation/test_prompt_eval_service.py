@@ -22,7 +22,6 @@ from onto_canon6.pipeline import (  # noqa: E402
     ExtractedCandidate,
     ExtractedEntityFiller,
     ExtractedEvidenceSpan,
-    ExtractedFiller,
     ExtractedValueFiller,
     ProfileRef,
     SourceArtifactRef,
@@ -938,6 +937,9 @@ def test_run_prompt_experiment_builds_report_and_variant_comparison(
     observability = captured["observability"]
     assert isinstance(observability, _FakePromptEvalObservabilityConfig)
     assert observability.kwargs["dataset"] == "onto_canon6_extraction_prompt_eval"
+    assert experiment.inputs[0].id == "psyop_001_designation_change"
+    assert "Case id:" not in experiment.inputs[0].content
+    assert "Source kind:" in experiment.inputs[0].content
     assert observability.kwargs["project"] == "onto-canon6"
     provenance = observability.kwargs["provenance"]
     assert isinstance(provenance, dict)

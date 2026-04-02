@@ -304,6 +304,15 @@ class PromptEvalExperimentConfig(BaseModel):
     comparison_confidence: float = Field(gt=0.0, lt=1.0)
     max_candidates_per_case: int = Field(ge=1)
     max_evidence_spans_per_candidate: int = Field(ge=1)
+    include_case_id_in_input: bool = Field(
+        default=False,
+        description=(
+            "Whether extraction prompt_eval inputs should include a `Case id:` "
+            "line in the model prompt. Default false to keep prompt_eval "
+            "closer to the live extraction surface while preserving case ids "
+            "in experiment metadata and observability."
+        ),
+    )
     variants: tuple[PromptEvalVariantConfig, ...] = Field(min_length=2)
 
 

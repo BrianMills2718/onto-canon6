@@ -31,6 +31,6 @@ def test_compare_prompt_surfaces_exposes_user_wrapper_difference() -> None:
     assert "{input}" in parity_template_user
     assert "Case id: case-001" not in parity_template_user
     assert "Case input:" in parity_effective_user
-    assert "Case id: case-001" in parity_effective_user
+    assert "Case id: case-001" not in parity_effective_user
     assert comparison.prompt_eval_input_content in parity_effective_user
     assert any("Case input:" in line for line in comparison.user_diff)

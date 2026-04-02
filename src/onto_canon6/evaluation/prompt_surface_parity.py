@@ -75,6 +75,7 @@ def compare_prompt_surfaces(
     live_prompt_ref: str | None = None,
     prompt_eval_prompt_template: Path | None = None,
     prompt_eval_prompt_ref: str | None = None,
+    include_case_id_in_prompt_eval_input: bool | None = None,
     max_candidates_per_case: int = 10,
     max_evidence_spans_per_candidate: int = 1,
     extraction_goal: str | None = None,
@@ -96,6 +97,7 @@ def compare_prompt_surfaces(
         live_prompt_ref=live_prompt_ref,
         prompt_eval_prompt_template=prompt_eval_prompt_template,
         prompt_eval_prompt_ref=prompt_eval_prompt_ref,
+        include_case_id_in_prompt_eval_input=include_case_id_in_prompt_eval_input,
         max_candidates_per_case=max_candidates_per_case,
         max_evidence_spans_per_candidate=max_evidence_spans_per_candidate,
         extraction_goal=extraction_goal,
@@ -109,6 +111,7 @@ def compare_prompt_surfaces_for_case(
     live_prompt_ref: str | None = None,
     prompt_eval_prompt_template: Path | None = None,
     prompt_eval_prompt_ref: str | None = None,
+    include_case_id_in_prompt_eval_input: bool | None = None,
     max_candidates_per_case: int = 10,
     max_evidence_spans_per_candidate: int = 1,
     extraction_goal: str | None = None,
@@ -118,6 +121,11 @@ def compare_prompt_surfaces_for_case(
     config = get_config()
     llm_client_api = _load_llm_client_api()
     effective_goal = extraction_goal or config.extraction.default_extraction_goal
+    include_case_id = (
+        config.evaluation.prompt_experiment.include_case_id_in_input
+        if include_case_id_in_prompt_eval_input is None
+        else include_case_id_in_prompt_eval_input
+    )
     if not effective_goal:
         raise ValueError("extraction_goal is required")
 
@@ -164,7 +172,7 @@ def compare_prompt_surfaces_for_case(
             source_text=source_text,
         )
     )
-    prompt_eval_input_content = _format_case_input(case)
+    prompt_eval_input_content = _format_case_input(case, include_case_id=include_case_id)
     prompt_eval_template_messages = tuple(
         llm_client_api.render_prompt(
             prompt_eval_template,
