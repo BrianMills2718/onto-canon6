@@ -29,7 +29,7 @@ logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 logger = logging.getLogger(__name__)
 
 
-def run_pipeline(graph_path: Path, output_dir: Path) -> dict:
+def run_pipeline(graph_path: Path, output_dir: Path, strategy: str = "exact") -> dict:
     """Run the full pipeline and return results."""
 
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -102,7 +102,7 @@ def run_pipeline(graph_path: Path, output_dir: Path) -> dict:
 
     resolution_result = auto_resolve_identities(
         db_path=review_db_path,
-        strategy="exact",
+        strategy=strategy,
     )
     logger.info(
         "  Resolution: %d entities scanned → %d groups → %d identities (%d aliases)",
@@ -197,13 +197,19 @@ def main():
         type=Path,
         default=Path("var/full_pipeline_e2e"),
     )
+    parser.add_argument(
+        "--strategy",
+        default="exact",
+        choices=["exact", "fuzzy", "llm"],
+        help="Entity resolution strategy",
+    )
     args = parser.parse_args()
 
     if not args.graph.exists():
         logger.error("Graph file not found: %s", args.graph)
         sys.exit(1)
 
-    run_pipeline(args.graph, args.output_dir)
+    run_pipeline(args.graph, args.output_dir, strategy=args.strategy)
 
 
 if __name__ == "__main__":
