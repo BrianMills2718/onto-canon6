@@ -78,6 +78,7 @@ def import_shared_claims(
                 "status": claim.status,
                 "tags": claim.tags,
             },
+            content_text=claim.statement,
         )
 
         # Evidence spans
@@ -99,6 +100,10 @@ def import_shared_claims(
                     end_char=len(claim.statement),
                 ),
             )
+
+        # Set content_text for evidence span verification — the review
+        # pipeline requires source_artifact.content_text to verify spans
+        content_text = claim.statement if evidence_spans else None
 
         candidate_import = CandidateAssertionImport(
             profile=ProfileRef(
