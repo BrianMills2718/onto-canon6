@@ -61,7 +61,9 @@ class PipelineConfig(BaseModel):
             "Review mode for extracted candidates. "
             "'human': manual accept/reject (default). "
             "'auto': auto-accept all structurally valid candidates and auto-promote. "
-            "'llm': run LLM-judge, accept supported candidates, quarantine unsupported."
+            "'llm': run LLM-judge, accept supported candidates, leave "
+            "partially_supported candidates pending review, and reject "
+            "unsupported candidates."
         ),
     )
 

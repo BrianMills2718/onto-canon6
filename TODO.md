@@ -12,9 +12,9 @@ Source of truth:
 - [ ] Commit verified phase
 
 ### Phase 2 — Align Review Behavior In Code
-- [ ] Accept only `supported` labels in `review_mode: llm`
-- [ ] Leave `partially_supported` labels pending review
-- [ ] Add/update targeted review-mode tests
+- [x] Accept only `supported` labels in `review_mode: llm`
+- [x] Leave `partially_supported` labels pending review
+- [x] Add/update targeted review-mode tests
 - [ ] Commit verified phase
 
 ### Phase 3 — Harden The Judge Prompt

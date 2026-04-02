@@ -805,7 +805,9 @@ class TextExtractionService:
         """Auto-accept and/or auto-promote based on review_mode config.
 
         - ``auto``: accept all valid candidates, promote all accepted.
-        - ``llm``: run LLM-judge, accept supported, reject unsupported, promote accepted.
+        - ``llm``: run LLM-judge, accept only supported, leave
+          partially-supported candidates pending, reject unsupported, and
+          promote accepted.
         """
         from ..core import CanonicalGraphService
 
@@ -831,10 +833,20 @@ class TextExtractionService:
                         self._review_service.review_candidate(
                             candidate_id=cid, decision="rejected", actor_id=f"{submitted_by}:llm_judge",
                         )
-                    except Exception:
-                        pass
+                    except Exception as exc:
+                        logger.warning(
+                            "auto-review rejection failed for %s after unsupported judge label: %s",
+                            cid,
+                            exc,
+                        )
                     continue
-                # supported or partially_supported → accept
+                if label == "partially_supported":
+                    logger.info(
+                        "auto-review left candidate pending after partially_supported judge label: %s",
+                        cid,
+                    )
+                    continue
+                # supported → accept
                 decision: Literal["accepted"] = "accepted"
             else:
                 # auto mode → accept everything valid
