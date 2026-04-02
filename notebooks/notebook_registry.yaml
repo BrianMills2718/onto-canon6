@@ -244,7 +244,7 @@ journeys:
           - "tests/integration/test_notebook_process.py"
         related_docs:
           - "docs/plans/0001_successor_roadmap.md"
-          - "docs/plans/0002_phase8_artifact_lineage_shape.md"
+
           - "docs/adr/0008-start-artifact-lineage-with-a-narrow-three-kind-model-and-candidate-centered-links.md"
         related_evidence:
           - "notebooks/14_artifact_lineage_slice.ipynb"
@@ -270,7 +270,7 @@ journeys:
           - "tests/integration/test_notebook_process.py"
         related_docs:
           - "docs/plans/0001_successor_roadmap.md"
-          - "docs/plans/0003_phase9_epistemic_shape.md"
+
           - "docs/adr/0009-start-epistemic-extension-with-confidence-and-supersession-over-accepted-candidates.md"
         related_evidence:
           - "notebooks/15_epistemic_extension_slice.ipynb"
@@ -295,7 +295,7 @@ journeys:
           - "tests/integration/test_notebook_process.py"
         related_docs:
           - "docs/plans/0001_successor_roadmap.md"
-          - "docs/plans/0004_phase10_governed_bundle_shape.md"
+
           - "docs/adr/0010-choose-cli-driven-governed-bundle-export-as-the-first-product-facing-workflow.md"
         related_evidence:
           - "notebooks/16_governed_bundle_workflow.ipynb"
@@ -323,7 +323,7 @@ journeys:
           - "tests/integration/test_notebook_process.py"
         related_docs:
           - "docs/plans/0001_successor_roadmap.md"
-          - "docs/plans/0006_phase11_graph_promotion_shape.md"
+
           - "docs/adr/0012-start-canonical-graph-recovery-with-explicit-promotion-from-accepted-candidates.md"
         related_evidence:
           - "notebooks/17_canonical_graph_recovery_slice.ipynb"
@@ -351,7 +351,7 @@ journeys:
           - "tests/integration/test_notebook_process.py"
         related_docs:
           - "docs/plans/0001_successor_roadmap.md"
-          - "docs/plans/0007_phase12_identity_shape.md"
+
           - "docs/adr/0013-start-stable-identity-with-promoted-entity-identities-alias-membership-and-explicit-external-reference-state.md"
         related_evidence:
           - "notebooks/18_stable_identity_slice.ipynb"
@@ -381,7 +381,7 @@ journeys:
           - "tests/integration/test_notebook_process.py"
         related_docs:
           - "docs/plans/0001_successor_roadmap.md"
-          - "docs/plans/0008_phase13_semantic_canonicalization_shape.md"
+
           - "docs/adr/0014-replace-the-v1-semantic-stack-with-pack-driven-canonicalization-and-explicit-recanonicalization.md"
         related_evidence:
           - "notebooks/19_semantic_canonicalization_slice.ipynb"
@@ -409,7 +409,7 @@ journeys:
           - "tests/integration/test_notebook_process.py"
         related_docs:
           - "docs/plans/0001_successor_roadmap.md"
-          - "docs/plans/0010_phase15_epistemic_corroboration_shape.md"
+
           - "docs/adr/0016-recover-phase-15-through-extension-local-promoted-assertion-dispositions-and-derived-corroboration.md"
         related_evidence:
           - "notebooks/21_phase15_epistemic_corroboration_slice.ipynb"

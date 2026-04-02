@@ -217,7 +217,6 @@ class ExtractedCandidate(BaseModel):
         description="Predicate identifier only, without serialized role payloads or extra prose.",
     )
     roles: list[ExtractedRoleEntry] = Field(
-        min_length=1,
         description=(
             "Role entries. MUST include at least one role with at least one filler. "
             "Each entry has a role_name and an array of filler objects."

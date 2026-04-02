@@ -485,8 +485,9 @@ def test_extraction_response_accepts_entity_fillers_without_entity_id() -> None:
     )
 
     candidate = response.candidates[0]
-    assert candidate.roles["commander"][0].entity_id is None
-    assert candidate.roles["commander"][0].name == "Admiral Eric Olson"
+    commander_fillers = next(r for r in candidate.roles if r.role_name == "commander").fillers
+    assert commander_fillers[0].entity_id is None
+    assert commander_fillers[0].name == "Admiral Eric Olson"
 
 
 def test_extraction_response_fails_loud_when_candidate_omits_roles() -> None:
@@ -652,8 +653,10 @@ def test_extraction_response_normalizes_live_provider_shape() -> None:
     assert len(response.candidates) == 1
     candidate = response.candidates[0]
     assert candidate.predicate == "oc:hold_command_role"
-    assert candidate.roles["commander"][0].entity_id == "ent:person:admiral_eric_olson"
-    assert candidate.roles["role_title"][0].normalized == "commander"
+    commander_fillers = next(r for r in candidate.roles if r.role_name == "commander").fillers
+    assert commander_fillers[0].entity_id == "ent:person:admiral_eric_olson"
+    role_title_fillers = next(r for r in candidate.roles if r.role_name == "role_title").fillers
+    assert role_title_fillers[0].normalized == "commander"
     assert candidate.evidence_spans[0].text == "Admiral Eric Olson"
 
 
@@ -686,8 +689,10 @@ def test_extraction_response_normalizes_pipe_delimited_predicate_envelope() -> N
     assert len(response.candidates) == 1
     candidate = response.candidates[0]
     assert candidate.predicate == "oc:hold_command_role"
-    assert candidate.roles["commander"][0].entity_id == "ent:person:admiral_eric_olson"
-    assert candidate.roles["role_title"][0].normalized == "commander"
+    commander_fillers = next(r for r in candidate.roles if r.role_name == "commander").fillers
+    assert commander_fillers[0].entity_id == "ent:person:admiral_eric_olson"
+    role_title_fillers = next(r for r in candidate.roles if r.role_name == "role_title").fillers
+    assert role_title_fillers[0].normalized == "commander"
 
 
 # --- Schema enforcement tests ---
@@ -727,7 +732,8 @@ def test_entity_filler_accepts_null_entity_type() -> None:
             ]
         }
     )
-    assert response.candidates[0].roles["subject"][0].entity_type is None
+    subject_fillers = next(r for r in response.candidates[0].roles if r.role_name == "subject").fillers
+    assert subject_fillers[0].entity_type is None
 
 
 def test_entity_filler_rejects_missing_name() -> None:
@@ -851,7 +857,8 @@ def test_filler_value_field_drift_normalized_to_name() -> None:
     )
 
     assert len(response.candidates) == 1
-    filler = response.candidates[0].roles["commander"][0]
+    commander_fillers = next(r for r in response.candidates[0].roles if r.role_name == "commander").fillers
+    filler = commander_fillers[0]
     assert filler.name == "Admiral Eric Olson"
     assert filler.entity_type == "oc:person"
 
@@ -883,4 +890,5 @@ def test_extra_fields_ignored_in_permissive_parsing() -> None:
     )
 
     assert len(response.candidates) == 1
-    assert response.candidates[0].roles["commander"][0].name == "Admiral Eric Olson"
+    commander_fillers = next(r for r in response.candidates[0].roles if r.role_name == "commander").fillers
+    assert commander_fillers[0].name == "Admiral Eric Olson"

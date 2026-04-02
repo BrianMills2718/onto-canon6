@@ -34,8 +34,8 @@ def test_phase14_mcp_tools_are_registered() -> None:
     """The thin MCP server should register the expected small tool set."""
     import asyncio
 
-    tools = asyncio.run(mcp_server.mcp.list_tools())
-    registered = {t.name for t in tools}
+    tools_dict = asyncio.run(mcp_server.mcp.get_tools())
+    registered = set(tools_dict.keys())
     assert EXPECTED_TOOLS.issubset(registered)
     assert len(registered & EXPECTED_TOOLS) == len(EXPECTED_TOOLS)
 
