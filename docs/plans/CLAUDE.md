@@ -14,7 +14,8 @@ This subtree owns active gaps, acceptance criteria, and verification notes.
 | 0025a | [Entity Resolution Scale-Out](0025a_entity_resolution_scale_out.md) | Deferred (activates after 0025 Phase 4) |
 | 0027 | [Deferred Parity Reprioritization](0027_deferred_parity_reprioritization.md) | Active (Lane 5 execution surface; next-active order now explicit) |
 | 0028 | [Query And Browse Surface](0028_query_browse_surface.md) | Active (first read-only slice landed and proved; wider hardening still open) |
-| 0055 | [24h Chunk-017 Contract Cutover And Rebaseline Block](0055_24h_chunk017_contract_cutover_and_rebaseline_block.md) | Active (approved chunk-017 demotion/removal now being cut over and rebaselined) |
+| 0056 | [24h Corrected-Fixture Semantic Recovery Block](0056_24h_corrected_fixture_semantic_recovery_block.md) | Active (cases 001/002/007/008 now define the owned semantic residual family) |
+| 0055 | [24h Chunk-017 Contract Cutover And Rebaseline Block](0055_24h_chunk017_contract_cutover_and_rebaseline_block.md) | Complete (corrected fixture rerun proved the next blocker is the smaller 001/002/007/008 family) |
 | 0054 | [24h Full-Chunk Strict-Omit Contract Audit](0054_24h_full_chunk_strict_omit_contract_audit.md) | Complete (chunk 017 is a mixed-content contract question; user approved removal/demotion) |
 | 0053 | [24h Abstract-Result And Citation Block](0053_24h_abstract_result_and_citation_block.md) | Complete (hard-negative prompt revision failed; full-chunk contract audit activated) |
 | 0052 | [24h Predicate-Locality Gate Block](0052_24h_predicate_locality_gate_block.md) | Complete (family shrank from 6 to 5, but abstract-result and citation spillover remained) |

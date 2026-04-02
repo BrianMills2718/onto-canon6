@@ -3,24 +3,31 @@
 ## Current 24h Execution Block
 
 Source of truth:
-- `docs/plans/0055_24h_chunk017_contract_cutover_and_rebaseline_block.md`
+- `docs/plans/0056_24h_corrected_fixture_semantic_recovery_block.md`
 
-### Phase 1 — Freeze The Approved Contract
-- [x] Create and activate Plan `0055`
-- [x] Refresh authority docs so chunk `017` is no longer waiting on user sign-off
-- [x] Commit verified phase
-
-### Phase 2 — Cut Over The Fixture And Tests
-- [x] Remove chunk `017` from the strict-omit benchmark fixture
-- [x] Bump the fixture revision and update service tests
+### Phase 1 — Freeze The Residual Contract
+- [x] Restate the `0055` decision as the incoming contract
+- [x] Freeze cases `001`, `002`, `007`, and `008` with their current scores
+- [x] Mark regression guards explicitly
 - [ ] Commit verified phase
 
-### Phase 3 — Rebaseline The Corrected Benchmark
-- [ ] Run one bounded prompt-eval rerun on the corrected fixture
-- [ ] Save the rerun artifact and write the blocker note
+### Phase 2 — Localize The Remaining Semantic Failures
+- [ ] Compare expected vs actual outputs for `001`, `002`, `007`, and `008`
+- [ ] Classify each miss and pre-decide one bounded prompt strategy
 - [ ] Commit verified phase
 
-### Phase 4 — Closeout
+### Phase 3 — Land One Bounded Prompt Revision
+- [ ] Update both compact prompt surfaces in lockstep
+- [ ] Extend prompt tests only as needed
+- [ ] Commit verified phase
+
+### Phase 4 — Rerun The Focus Slice And Corrected Fixture
+- [ ] Run the focused rerun over `001`, `002`, `007`, and `008`
+- [ ] Run one corrected-fixture rerun if the focus slice is structurally clean
+- [ ] Commit verified phase
+
+### Phase 5 — Closeout
+- [ ] Write the decision note
 - [ ] Refresh docs/status/handoff/knowledge
 - [ ] Mark execution block complete and state the next blocker explicitly
 - [ ] Commit verified phase
@@ -110,7 +117,7 @@ Source of truth:
 - [x] Localize the remaining post-wrapper extraction-path divergence to one dominant surface
 - [x] Localize and repair the remaining prompt-side parity residual through Plans `0046`-`0049`
 - [x] Run one bounded post-parity semantic recovery attempt and classify it honestly
-- [ ] Recover semantic chunk-003 behavior under the corrected benchmark contract
+- [ ] Recover the corrected-fixture semantic residual family under Plan `0056`
 
 ## Longer-Term Queue
 

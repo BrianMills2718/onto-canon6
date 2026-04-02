@@ -171,6 +171,15 @@ instead of the worktree source tree. Plan 0040 produced invalid intermediate
 certification artifacts until the commands were rerun with `PYTHONPATH=src`.
 Treat this as a hard execution rule for future worktree-based runtime checks.
 
+### 2026-04-02 — codex — best-practice
+Removing the mixed-content full-chunk case
+`psyop_017_full_chunk003_analytical_context_strict_omit` from the strict-omit
+benchmark did not rescue the compact operational-parity lane. On corrected
+fixture `psyop_eval_slice_v6`, the real residual family narrowed to cases
+`001`, `002`, `007`, and `008`, while the local strict-omit controls `005`,
+`006`, and `009` through `016` all held at `1.0`. Treat chunk `017` as a
+contract distortion that is now gone, not as the active semantic blocker.
+
 ### 2026-04-01 — codex — schema-gotcha
 Prompt-eval report `execution_id` is not the same key as
 `experiment_items.run_id` in the observability DB. For transfer-comparison

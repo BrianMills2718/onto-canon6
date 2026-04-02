@@ -2,7 +2,7 @@
 
 ## Session Focus
 
-Plan `0054` closeout and Plan `0055` activation in the isolated worktree
+Plan `0055` closeout and Plan `0056` activation in the isolated worktree
 branch `codex/onto-canon6-integration-planning`.
 
 ## What Landed
@@ -26,7 +26,8 @@ Committed and documented in the isolated worktree:
    invalid family;
 8. Plan `0053` is now complete as a failed hard-negative prompt attempt;
 9. Plan `0054` is now complete.
-10. Plan `0055` is now active.
+10. Plan `0055` is now complete.
+11. Plan `0056` is now active.
 
 ## Current State
 
@@ -40,21 +41,22 @@ Committed and documented in the isolated worktree:
    - latest (`81cffac9c8df`): 6 candidates
    - new spillover: `oc:create_organizational_unit` from the `JPOTF model`
      sentence
-5. The active frontier is now the approved chunk-017 contract cutover and one
-   corrected-fixture benchmark rerun under Plan `0055`.
+5. The active frontier is now a smaller semantic recovery family over
+   corrected-fixture cases `001`, `002`, `007`, and `008` under Plan `0056`.
 
 ## Recommended Next Step
 
 If work continues:
 
 1. stay on `codex/onto-canon6-integration-planning`;
-2. execute Plan `0055` in order:
-   - cut over the approved chunk-017 removal/demotion
-   - rerun the bounded prompt-eval benchmark on the corrected fixture
-   - write the next truthful blocker
+2. execute Plan `0056` in order:
+   - freeze the corrected-fixture residual contract
+   - localize the remaining case `001/002/007/008` failures
+   - land one bounded prompt revision
+   - rerun the focused slice and the corrected fixture
 3. keep all worktree runtime commands on `PYTHONPATH=src`;
-4. do not reopen `Case id`, `Case input`, or more prompt-wording churn in this
-   block.
+4. keep chunk `017` removed from the strict-omit gate and treat `008` through
+   `016` as the negative-control regression set.
 
 # Handoff: onto-canon6 — 2026-04-01
 

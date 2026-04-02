@@ -110,7 +110,19 @@ recommended contract cutover:
 1. remove/demote chunk `017` from the strict-omit gate; and
 2. rely on the cleaner local controls `008` through `016`.
 
-Plan `0055` now owns that fixture cutover plus one corrected-fixture rerun.
+Plan `0055` now completed that fixture cutover plus one corrected-fixture
+rerun. The corrected rerun proved that the benchmark distortion is gone, but
+the compact operational-parity lane still trails `compact` and remains
+non-promotable.
+
+The next owned residual family is now:
+
+1. `psyop_001_designation_change`
+2. `psyop_002_concerns_about_truth_based_shift`
+3. `psyop_007_named_institutional_concern`
+4. `psyop_008_jpotf_establishment_not_org_form`
+
+Plan `0056` now owns that semantic recovery block on the corrected fixture.
 
 ## Current State
 

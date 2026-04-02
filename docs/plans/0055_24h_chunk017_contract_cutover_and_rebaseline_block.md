@@ -1,11 +1,11 @@
 # 24h Chunk-017 Contract Cutover And Rebaseline Block
 
-Status: active
+Status: complete
 Phase status:
 - Phase 1 complete
 - Phase 2 complete
-- Phase 3 pending
-- Phase 4 pending
+- Phase 3 complete
+- Phase 4 complete
 
 Last updated: 2026-04-02
 Workstream: extraction-quality contract cutover after the chunk-017 audit
@@ -143,3 +143,23 @@ This block is complete only when:
 2. the corrected fixture and tests are committed;
 3. the corrected-fixture rerun artifact and blocker note are committed; and
 4. the worktree is clean.
+
+## Outcome
+
+Plan `0055` is complete.
+
+Artifacts:
+
+1. `docs/runs/2026-04-02_chunk017_cutover_prompt_eval_report.json`
+2. `docs/runs/2026-04-02_chunk017_contract_cutover_decision.md`
+
+Result:
+
+1. chunk `017` is removed from the strict-omit gate in fixture `v6`;
+2. the corrected rerun proved the contract distortion is gone; but
+3. the compact operational-parity lane remains non-promotable because the real
+   residual family is now `001`, `002`, `007`, and `008`.
+
+The next active block is:
+
+- `docs/plans/0056_24h_corrected_fixture_semantic_recovery_block.md`

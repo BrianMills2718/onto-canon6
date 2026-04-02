@@ -54,8 +54,9 @@ Current post-cutover program state:
     prompt rules did not close the full chunk-003 residual;
 17. Plan `0054` is now complete and proved the remaining blocker is a
     benchmark-contract question, not another prompt-wording diagnosis block;
-18. the chunk-017 contract decision is no longer pending; Plan `0055` now owns
-    the approved cutover and corrected-fixture rerun under Plan `0014`.
+18. the chunk-017 contract cutover is complete under Plan `0055`;
+19. the next extraction-quality blocker is the corrected-fixture semantic
+    family `001`, `002`, `007`, and `008`, now owned by Plan `0056`.
 
 ## What Is Proven
 

@@ -35,13 +35,14 @@ runtime.
 27. `docs/plans/0052_24h_predicate_locality_gate_block.md` (completed narrowing block)
 28. `docs/plans/0053_24h_abstract_result_and_citation_block.md` (completed failed hard-negative attempt)
 29. `docs/plans/0054_24h_full_chunk_strict_omit_contract_audit.md` (completed audit block)
-30. `docs/plans/0055_24h_chunk017_contract_cutover_and_rebaseline_block.md` (current active execution block)
-31. `docs/plans/0026_schema_stability_gate.md` (completed Lane 3 contract policy)
-32. `docs/plans/0014_extraction_quality_baseline.md` (active Lane 4 promotion gate)
-33. `docs/plans/0027_deferred_parity_reprioritization.md`
-34. `docs/plans/0028_query_browse_surface.md`
-35. `docs/plans/0005_v1_capability_parity_matrix.md`
-36. `docs/plans/0001_successor_roadmap.md`
+30. `docs/plans/0055_24h_chunk017_contract_cutover_and_rebaseline_block.md` (completed cutover block)
+31. `docs/plans/0056_24h_corrected_fixture_semantic_recovery_block.md` (current active execution block)
+32. `docs/plans/0026_schema_stability_gate.md` (completed Lane 3 contract policy)
+33. `docs/plans/0014_extraction_quality_baseline.md` (active Lane 4 promotion gate)
+34. `docs/plans/0027_deferred_parity_reprioritization.md`
+35. `docs/plans/0028_query_browse_surface.md`
+36. `docs/plans/0005_v1_capability_parity_matrix.md`
+37. `docs/plans/0001_successor_roadmap.md`
 
 ## Commands
 
@@ -131,7 +132,9 @@ config/
   family again. Plan `0054` then answered the next question: chunk `017` is a
   mixed-content benchmark-contract problem, not a clean prompt hardening
   target. The user approved the recommended removal/demotion, and Plan `0055`
-  now owns the fixture cutover plus one corrected-fixture rerun.
+  completed the fixture cutover plus one corrected-fixture rerun. That rerun
+  proved the next blocker is the narrower `001` / `002` / `007` / `008`
+  semantic family, now owned by Plan `0056`.
   The chunk-level transfer evaluation requirement remains active through
   ADR 0023 and Plans 0024/0014 even though there is no standalone Plan 0019
   file.
@@ -162,11 +165,11 @@ config/
   not a suggestion: keep executing, keep rerunning, keep committing, and only
   stop when the active block is either complete or explicitly narrowed to a new
   documented blocker.
-- **Current extraction-quality execution rule:** Plan `0054` is done and the
-  chunk-017 contract decision is already made. Plan `0055` must now run
-  straight through fixture cutover, corrected-fixture rerun, and blocker
-  restatement before stopping. Do not pause at "decision recorded" or "plan
-  written" while this block is active.
+- **Current extraction-quality execution rule:** Plan `0055` is complete and
+  the benchmark contract is corrected. Plan `0056` is now the active block and
+  must run straight through residual localization, one bounded prompt revision,
+  focused rerun, corrected-fixture rerun, and blocker restatement before
+  stopping.
 - **Continuous execution rule is hard, not advisory.** When a 24h block is
   active, keep executing until the approved contract is implemented, the
   bounded rerun is recorded, the next blocker is written down, and the block is
@@ -326,16 +329,16 @@ active, the required behavior is: plan the next concrete phase, execute it,
 verify it, commit it, log any uncertainty, and continue. Do not wait for
 "what next?" confirmation mid-block.
 
-The current valid stop condition is no longer the `0054` audit boundary.
+The current valid stop condition is no longer the `0055` cutover boundary.
 
-1. Plan `0054` is complete and committed.
-2. The user approved the chunk-017 contract cutover.
-3. Plan `0055` is now the active block and must run through fixture cutover,
-   corrected-fixture rerun, and blocker restatement before stopping.
+1. Plan `0055` is complete and committed.
+2. The corrected-fixture rerun exists.
+3. Plan `0056` is now the active block and must run through residual
+   localization, one bounded prompt revision, reruns, and blocker restatement
+   before stopping.
 
-Do not silently reopen prompt churn inside Plan `0055`. Implement the approved
-contract, rerun the corrected benchmark, write the next blocker, and only then
-close the block.
+Do not silently widen scope inside Plan `0056`. Work the owned residual family,
+preserve the corrected negative controls, and close the block truthfully.
 
 Pre-made decisions (do not ask about these):
 - Work stays in the isolated `codex/onto-canon6-integration-planning` worktree
