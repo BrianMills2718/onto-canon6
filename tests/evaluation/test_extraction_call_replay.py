@@ -6,6 +6,7 @@ import json
 import sqlite3
 from pathlib import Path
 from types import SimpleNamespace
+from typing import Any
 
 from onto_canon6.evaluation.extraction_call_replay import replay_structured_call_surface
 
@@ -23,7 +24,7 @@ class _FakeResponse:
 
 def test_replay_structured_call_surface_uses_requested_public_api(
     tmp_path: Path,
-    monkeypatch,
+    monkeypatch: Any,
 ) -> None:
     """Replay should dispatch through the chosen sync or async structured facade."""
 
@@ -34,7 +35,7 @@ def test_replay_structured_call_surface_uses_requested_public_api(
         prompt_ref="onto_canon6.extraction.live@1",
         public_api="call_llm_structured",
     )
-    calls: dict[str, dict[str, object]] = {}
+    calls: dict[str, dict[str, Any]] = {}
 
     def fake_call(
         model: str,
@@ -101,6 +102,59 @@ def test_replay_structured_call_surface_uses_requested_public_api(
     assert calls["async"]["kwargs"]["temperature"] == 0.0
 
 
+def test_replay_structured_call_surface_can_remove_metadata_lines(
+    tmp_path: Path,
+    monkeypatch: Any,
+) -> None:
+    """Replay should support bounded line-level prompt mutations for residual diagnosis."""
+
+    db_path = _make_llm_calls_db(tmp_path / "observability.db")
+    _insert_snapshot(
+        db_path,
+        call_id=12,
+        prompt_ref="onto_canon6.extraction.live@1",
+        public_api="acall_llm_structured",
+    )
+    seen_messages: dict[str, Any] = {}
+
+    async def fake_acall(
+        model: str,
+        messages: list[dict[str, str]],
+        *,
+        response_model: type[object],
+        **kwargs: object,
+    ) -> tuple[_FakeResponse, object]:
+        del model, response_model, kwargs
+        seen_messages["messages"] = messages
+        return _FakeResponse({"candidates": []}), SimpleNamespace(resolved_model="async-model")
+
+    import llm_client
+
+    monkeypatch.setattr(llm_client, "acall_llm_structured", fake_acall)
+
+    replay_structured_call_surface(
+        observability_db_path=db_path,
+        call_id=12,
+        public_api="acall_llm_structured",
+        trace_id="replay/async",
+        task="budget_extraction",
+        max_budget=0.25,
+        project="replay-project",
+        remove_line_prefixes=("Case id:",),
+        strip_blank_line_before_prefixes=("Source text:",),
+    )
+
+    messages = seen_messages["messages"]
+    assert isinstance(messages, list)
+    assert len(messages) == 2
+    user_message = messages[1]
+    assert isinstance(user_message, dict)
+    user_content = user_message["content"]
+    assert isinstance(user_content, str)
+    assert "Case id:" not in user_content
+    assert "\n\nSource text:" not in user_content
+
+
 def _make_llm_calls_db(path: Path) -> Path:
     """Create the minimum llm_calls table needed by the replay helper."""
 
@@ -164,7 +218,18 @@ def _insert_snapshot(
             "requested_model": "gemini/gemini-2.5-flash",
             "messages": [
                 {"role": "system", "content": "system prompt"},
-                {"role": "user", "content": "user prompt"},
+                {
+                    "role": "user",
+                    "content": "\n".join(
+                        [
+                            "Case input:",
+                            "Case id: demo_case",
+                            "",
+                            "Source text:",
+                            "user prompt",
+                        ]
+                    ),
+                },
             ],
             "control": {"timeout": 60, "num_retries": 2},
             "kwargs": {"temperature": 0.0},

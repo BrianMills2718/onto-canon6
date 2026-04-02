@@ -29,6 +29,8 @@ def replay_structured_call_surface(
     task: str,
     max_budget: float,
     project: str | None = None,
+    remove_line_prefixes: tuple[str, ...] = (),
+    strip_blank_line_before_prefixes: tuple[str, ...] = (),
 ) -> dict[str, Any]:
     """Replay one captured structured call through the chosen public API."""
 
@@ -42,6 +44,11 @@ def replay_structured_call_surface(
     messages = request.get("messages")
     if not isinstance(messages, list):
         raise ValueError("request.messages must be a list")
+    normalized_messages = _normalize_messages(
+        messages,
+        remove_line_prefixes=remove_line_prefixes,
+        strip_blank_line_before_prefixes=strip_blank_line_before_prefixes,
+    )
     control = _normalize_object(request.get("control"))
     public_kwargs = _normalize_object(request.get("kwargs"))
     call_kwargs: dict[str, Any] = {
@@ -72,7 +79,7 @@ def replay_structured_call_surface(
         if public_api == "call_llm_structured":
             parsed, meta = getattr(llm_client, "call_llm_structured")(
                 requested_model,
-                messages,
+                normalized_messages,
                 response_model=response_model,
                 **call_kwargs,
             )
@@ -80,7 +87,7 @@ def replay_structured_call_surface(
             parsed, meta = asyncio.run(
                 getattr(llm_client, "acall_llm_structured")(
                     requested_model,
-                    messages,
+                    normalized_messages,
                     response_model=response_model,
                     **call_kwargs,
                 )
@@ -105,6 +112,10 @@ def replay_structured_call_surface(
         "requested_model": requested_model,
         "prompt_ref": request.get("prompt_ref"),
         "response_model_fqn": request.get("response_model_fqn"),
+        "prompt_mutations": {
+            "remove_line_prefixes": list(remove_line_prefixes),
+            "strip_blank_line_before_prefixes": list(strip_blank_line_before_prefixes),
+        },
         "call_kwargs": call_kwargs,
         "parsed": parsed_json,
         "resolved_model": getattr(meta, "resolved_model", requested_model),
@@ -161,6 +172,56 @@ def _normalize_object(value: Any) -> dict[str, Any]:
     if isinstance(value, dict):
         return value
     return {}
+
+
+def _normalize_messages(
+    messages: list[Any],
+    *,
+    remove_line_prefixes: tuple[str, ...],
+    strip_blank_line_before_prefixes: tuple[str, ...],
+) -> list[dict[str, Any]]:
+    """Apply bounded prompt-surface mutations to captured chat messages."""
+
+    normalized: list[dict[str, Any]] = []
+    for message in messages:
+        if not isinstance(message, dict):
+            raise ValueError("request.messages items must be objects")
+        copied = dict(message)
+        content = copied.get("content")
+        if isinstance(content, str):
+            copied["content"] = _mutate_message_content(
+                content,
+                remove_line_prefixes=remove_line_prefixes,
+                strip_blank_line_before_prefixes=strip_blank_line_before_prefixes,
+            )
+        normalized.append(copied)
+    return normalized
+
+
+def _mutate_message_content(
+    content: str,
+    *,
+    remove_line_prefixes: tuple[str, ...],
+    strip_blank_line_before_prefixes: tuple[str, ...],
+) -> str:
+    """Apply bounded line-level prompt mutations while preserving other text."""
+
+    lines = content.splitlines()
+    if remove_line_prefixes:
+        lines = [
+            line
+            for line in lines
+            if not any(line.startswith(prefix) for prefix in remove_line_prefixes)
+        ]
+    if strip_blank_line_before_prefixes:
+        stripped: list[str] = []
+        for line in lines:
+            if any(line.startswith(prefix) for prefix in strip_blank_line_before_prefixes):
+                if stripped and stripped[-1] == "":
+                    stripped.pop()
+            stripped.append(line)
+        lines = stripped
+    return "\n".join(lines)
 
 
 def _require_string(value: Any, label: str) -> str:
