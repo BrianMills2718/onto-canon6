@@ -1,12 +1,12 @@
 # 24h Live-Path Divergence Block
 
-Status: active
+Status: complete
 Phase status:
 - Phase 1 completed
-- Phase 2 pending
-- Phase 3 pending
-- Phase 4 pending
-- Phase 5 pending
+- Phase 2 completed
+- Phase 3 completed
+- Phase 4 completed
+- Phase 5 completed
 
 Last updated: 2026-04-01
 Workstream: narrow the post-0042 blocker from generic semantic prompt tuning
@@ -113,6 +113,18 @@ Progress note:
 1. the repo can point to exact path differences instead of inference;
 2. the artifact is committed and reusable.
 
+Progress note:
+
+1. the revised wrapper artifacts now exist:
+   - `docs/runs/2026-04-01_chunk002_prompt_surface_parity_v5.json`
+   - `docs/runs/2026-04-01_chunk003_prompt_surface_parity_v5.json`
+2. the live-path divergence artifacts now exist:
+   - `docs/runs/2026-04-01_chunk003_semantic_transfer_diff_compact5.json`
+   - `docs/runs/2026-04-01_chunk003_transfer_report_compact5.json`
+3. the remaining path difference is no longer inferred:
+   the extractor diverges before review, then review accepts the divergent
+   candidates.
+
 ### Phase 3: Land One Narrow Diagnostic Or Repair Aid
 
 #### Tasks
@@ -125,6 +137,16 @@ Progress note:
 
 1. future divergence diagnosis is not ad hoc;
 2. the aid does not become a second extraction runtime.
+
+Progress note:
+
+1. `scripts/show_project_llm_calls.py` now provides a bounded project-level
+   llm-call summary over observability;
+2. `docs/runs/2026-04-01_chunk003_live_path_calls.md` captures the live
+   chunk-003 call sequence:
+   - one `budget_extraction` call
+   - one `judge_filter` acceptance
+   - four per-candidate `judging` acceptances
 
 ### Phase 4: Classify The Dominant Live-Path Blocker
 
@@ -139,6 +161,13 @@ Progress note:
 1. one dominant blocker family is named explicitly;
 2. the classification is backed by committed artifacts.
 
+Progress note:
+
+1. the dominant blocker is now classified as live extraction-path behavior
+   under the current live render contract;
+2. review/judge permissiveness is secondary and compounds the problem, but the
+   divergence already exists before review.
+
 ### Phase 5: Closeout
 
 #### Tasks
@@ -152,6 +181,13 @@ Progress note:
 
 1. the next block is narrower than `0043`, not broader;
 2. top-level docs truthfully reflect the new blocker family.
+
+Progress note:
+
+1. the decision note now exists:
+   `docs/runs/2026-04-01_live_path_divergence_decision.md`
+2. the next bounded block is now explicit:
+   `docs/plans/0044_24h_wrapper_alignment_block.md`
 
 ## Failure Modes
 
@@ -168,3 +204,14 @@ This block is complete only when:
 1. all five phases above meet their success criteria;
 2. the worktree is clean;
 3. the repo contains committed divergence artifacts and a decision note.
+
+## Closeout
+
+Plan `0043` is complete.
+
+It answered its bounded question honestly:
+
+1. the divergence is not model-family drift;
+2. it is not review-only drift;
+3. the active blocker is live extraction-path behavior under the current
+   render contract, with review/judge permissiveness as a secondary amplifier.

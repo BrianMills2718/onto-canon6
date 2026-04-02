@@ -193,3 +193,18 @@ same selected model (`gemini/gemini-2.5-flash`). For chunk `003`,
 while the live `compact_v5` rerun produced four accepted candidates and zero
 body-level overlap. After this point, treat the blocker as same-model
 live-path divergence, not just "needs another prompt tweak."
+
+### 2026-04-01 — codex — integration-issue
+Plan 0043 localized the same-model chunk-003 divergence further: the raw live
+`budget_extraction` call already emitted four candidates before review, and the
+review path then amplified the problem by labeling all four `supported`
+(`judge_filter` plus four per-candidate `judging` calls). Treat review/judge
+permissiveness as secondary amplification; the primary next experiment is
+wrapper alignment on the live extraction surface.
+
+### 2026-04-01 — codex — integration-issue
+Plan 0044 falsified the wrapper-alignment rescue hypothesis. Aligning the live
+user wrapper closer to prompt-eval reduced the prompt-surface diff, but the
+live chunk-003 rerun still had zero shared bodies with prompt-eval and widened
+from four to six accepted candidates. The next blocker is deeper extraction-path
+behavior, not wrapper wording alone.

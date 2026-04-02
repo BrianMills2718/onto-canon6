@@ -23,13 +23,15 @@ runtime.
 15. `docs/plans/0040_24h_extraction_transfer_certification_block.md` (completed certification decision block)
 16. `docs/plans/0041_24h_full_chunk_transfer_parity_block.md` (completed parity-localization block)
 17. `docs/plans/0042_24h_semantic_transfer_residual_block.md` (completed semantic-residual block)
-18. `docs/plans/0043_24h_live_path_divergence_block.md` (current active execution block)
-19. `docs/plans/0026_schema_stability_gate.md` (completed Lane 3 contract policy)
-20. `docs/plans/0014_extraction_quality_baseline.md` (active Lane 4 promotion gate)
-21. `docs/plans/0027_deferred_parity_reprioritization.md`
-22. `docs/plans/0028_query_browse_surface.md`
-23. `docs/plans/0005_v1_capability_parity_matrix.md`
-24. `docs/plans/0001_successor_roadmap.md`
+18. `docs/plans/0043_24h_live_path_divergence_block.md` (completed live-path divergence block)
+19. `docs/plans/0044_24h_wrapper_alignment_block.md` (completed wrapper-alignment block)
+20. `docs/plans/0045_24h_extraction_path_block.md` (current active execution block)
+21. `docs/plans/0026_schema_stability_gate.md` (completed Lane 3 contract policy)
+22. `docs/plans/0014_extraction_quality_baseline.md` (active Lane 4 promotion gate)
+23. `docs/plans/0027_deferred_parity_reprioritization.md`
+24. `docs/plans/0028_query_browse_surface.md`
+25. `docs/plans/0005_v1_capability_parity_matrix.md`
+26. `docs/plans/0001_successor_roadmap.md`
 
 ## Commands
 
@@ -105,11 +107,11 @@ config/
   remained negative and full-chunk prompt-eval/live parity still diverged on
   both named chunks. Plan 0041 is now complete: it proved the prompt-surface
   difference is stable and bounded, but not the dominant blocker family. The
-  current active bounded block is therefore Plan 0043. Plan 0042 is now
-  complete and proved that one more narrow prompt revision was not enough:
-  prompt-eval stayed strong while the live chunk-003 path still diverged under
-  the same selected model. The current blocker is therefore same-model
-  live-path divergence, not generic semantic prompt tuning.
+  current active bounded block is therefore Plan 0045. Plan 0044 is now
+  complete and proved that wrapper alignment does not materially reduce the
+  chunk-003 divergence. The current question is narrower: what part of the
+  live extraction path still causes that divergence once wrapper alignment is
+  ruled out.
   The chunk-level transfer evaluation requirement remains active through
   ADR 0023 and Plans 0024/0014 even though there is no standalone Plan 0019
   file.
@@ -140,13 +142,13 @@ config/
   not a suggestion: keep executing, keep rerunning, keep committing, and only
   stop when the active block is either complete or explicitly narrowed to a new
   documented blocker.
-- **Current execution rule for Plan 0043:** the next 24h sequence is already
-  pre-decided. Freeze the same-model divergence contract around chunk `003`,
-  compare the live and prompt-eval path surfaces directly, land one narrow
-  diagnostic aid, classify whether the dominant blocker is prompt/render
-  contract, extraction-path behavior, or review/judge acceptance, and close the
-  block with a decision note. Do not pause between those phases for a
-  conversational check-in unless the active docs record a real blocker or
+- **Current execution rule for Plan 0045:** the next 24h sequence is already
+  pre-decided. Freeze the extraction-path contract, compare the live and
+  prompt-eval extraction-service behavior directly, land one bounded
+  extraction-path diagnostic aid, classify whether the dominant remaining
+  blocker is extraction-service behavior or review/judge amplification, and
+  close the block with a decision note. Do not pause between those phases for
+  a conversational check-in unless the active docs record a real blocker or
   uncertainty that changes the plan.
 - **After the current value-proof work, the next-active deferred capability is
   queryability.** Plan 0027 now fixes the deferred-capability order, and Plan
@@ -281,7 +283,7 @@ happens.
 
 ## Active Execution Block (2026-04-01)
 
-**Plan 0043: 24h Live-Path Divergence Block — active until fully closed.**
+**Plan 0045: 24h Extraction-Path Block — active until fully closed.**
 
 Within an active 24h execution block, the default operating mode is continuous
 execution: finish the current phase, verify it, commit it, update the active
@@ -303,7 +305,7 @@ verify it, commit it, log any uncertainty, and continue. Do not wait for
 
 The only valid stop conditions are:
 
-1. all 5 phases in `docs/plans/0043_24h_live_path_divergence_block.md`
+1. all 5 phases in `docs/plans/0045_24h_extraction_path_block.md`
    are complete and committed;
 2. a real blocker that cannot be resolved from repo context or the plan;
 3. a material uncertainty not covered by the pre-made decisions below.
@@ -318,23 +320,22 @@ Pre-made decisions (do not ask about these):
 - Work stays in the isolated `codex/onto-canon6-integration-planning` worktree
 - chunk `002` and chunk `003` remain the canonical transfer chunks
 - the current compact operational-parity lane is the only candidate under test
-- no broad prompt rewrite starts before the same-model path divergence is explicit
+- no broad prompt rewrite starts before extraction-path behavior is localized
 - Commit each verified phase immediately
 
 ## Most Recent Execution Block (2026-04-01)
 
-**Plan 0042: 24h Semantic Transfer Residual Block — complete.**
+**Plan 0044: 24h Wrapper Alignment Block — complete.**
 
-The semantic-residual block now has:
+The wrapper-alignment block now has:
 
-1. a body-level comparison aid plus canonical semantic residual artifacts;
-2. a bounded compact prompt revision (`compact_v5` / parity `@3`);
-3. prompt-eval verification that stayed strong on chunk `002` and chunk `003`;
-4. a live chunk-003 rerun showing total divergence from prompt-eval under the
-   same selected model; and
-5. a decision note proving the next blocker is same-model live-path divergence.
-4. fresh exact and LLM rerun artifacts plus a written decision note in
-   `docs/runs/2026-04-01_entity_resolution_hardening_rerun.md`.
+1. one bounded aligned live prompt candidate (`compact_v6_wrapper_align`);
+2. prompt-surface parity evidence showing the wrapper gap shrank materially;
+3. one live chunk-003 rerun proving the divergence did not narrow;
+4. semantic comparison evidence showing `0` shared bodies with prompt-eval and
+   a widened live-only family; and
+5. a decision note proving the next blocker is deeper extraction-path behavior,
+   not wrapper wording alone.
 
 Decision from the block:
 

@@ -3,35 +3,35 @@
 ## Current 24h Execution Block
 
 Source of truth:
-- `docs/plans/0043_24h_live_path_divergence_block.md`
+- `docs/plans/0045_24h_extraction_path_block.md`
 
-### Phase 1 — Freeze The Divergence Contract
-- [x] Restate the Plan 0042 decision as the incoming contract
-- [x] Freeze the same-model evidence on chunk `003`
+### Phase 1 — Freeze The Extraction-Path Contract
+- [x] Restate the Plan 0044 decision as the incoming contract
+- [x] Freeze the current aligned-wrapper failure artifacts
 - [x] Record chunk `002` as the regression guard only
 - [x] Record the execution caveats (`PYTHONPATH=src`, run-id mapping)
 - [ ] Commit verified phase
 
-### Phase 2 — Compare Path Surfaces Directly
-- [ ] Identify the remaining live-vs-prompt-eval path differences under the revised candidate pair
+### Phase 2 — Compare Extraction-Service Behavior Directly
+- [ ] Identify the remaining path differences after wrapper alignment
 - [ ] Capture those differences in a reproducible artifact
-- [ ] Separate prompt wrapper differences from extraction/review behavior
+- [ ] Separate extraction-path behavior from review amplification
 - [ ] Commit verified phase
 
-### Phase 3 — Land One Narrow Diagnostic Or Repair Aid
-- [ ] Implement the smallest honest aid for replaying the divergence
+### Phase 3 — Land One Narrow Diagnostic Aid
+- [ ] Implement the smallest helper or instrumentation needed to replay or summarize the extraction-path divergence
 - [ ] Add verification for that aid
-- [ ] Keep it bounded to the divergence family
+- [ ] Keep it bounded to extraction-path behavior
 - [ ] Commit verified phase
 
-### Phase 4 — Classify The Dominant Live-Path Blocker
-- [ ] Decide whether the divergence is dominated by prompt/render contract, extraction path behavior, or review/judge acceptance
+### Phase 4 — Classify The Dominant Blocker
+- [ ] Decide whether the remaining blocker is extraction-service behavior or review/judge behavior
 - [ ] Record secondary caveats separately
 - [ ] Commit the classification with artifacts
 - [ ] Commit verified phase
 
 ### Phase 5 — Closeout
-- [ ] Write the decision-grade live-path divergence note
+- [ ] Write the decision-grade extraction-path note
 - [ ] Refresh docs/status/handoff
 - [ ] Mark execution block complete
 - [ ] Commit verified phase
@@ -39,35 +39,35 @@ Source of truth:
 ## Most Recent Completed 24h Execution Block
 
 Source of truth:
-- `docs/plans/0042_24h_semantic_transfer_residual_block.md`
+- `docs/plans/0044_24h_wrapper_alignment_block.md`
 
-### Phase 1 — Freeze The Semantic Residual Contract
-- [x] Restate the Plan 0041 decision as the incoming contract
-- [x] Enumerate the chunk `002` body-level residuals
-- [x] Enumerate the chunk `003` live-only overreach families
+### Phase 1 — Freeze The Wrapper-Alignment Contract
+- [x] Restate the Plan 0043 decision as the incoming contract
+- [x] Freeze the current wrapper-difference artifacts
+- [x] Record chunk `002` as the regression guard only
 - [x] Record the execution caveats (`PYTHONPATH=src`, run-id mapping)
 - [x] Commit verified phase
 
-### Phase 2 — Land A Body-Level Comparison Aid
-- [x] Extend or add the narrowest helper for body-level comparison
-- [x] Add targeted verification for that helper
-- [x] Save semantic residual artifacts for chunks `002` and `003`
+### Phase 2 — Build One Aligned Surface Candidate
+- [x] Define the narrowest live-prompt override that aligns the live user surface toward the prompt-eval wrapper
+- [x] Keep system instructions and model selection fixed
+- [x] Document exactly what changed
 - [x] Commit verified phase
 
-### Phase 3 — Make One Bounded Prompt Revision
-- [x] Update the compact extraction prompt candidate only where the residual justifies it
-- [x] Target analytical narrator overreach and unsupported subject/speaker invention
-- [x] Keep the diff small and traceable
+### Phase 3 — Verify The Aligned Surface
+- [x] Run prompt-surface comparison for the aligned candidate
+- [x] Run one live chunk-003 rerun with the aligned surface
+- [x] Compare against prompt-eval and the prior live run
 - [x] Commit verified phase
 
-### Phase 4 — Verify The Revision
-- [x] Rerun bounded prompt-eval verification on chunks `002` and `003`
-- [x] Run at least one live chunk rerun
-- [x] Decide whether the candidate advanced or stayed promotion-blocking
+### Phase 4 — Classify The Result
+- [x] Decide whether wrapper alignment materially reduced the divergence
+- [x] If not, name the next blocker as extraction-path behavior or review/judge behavior
+- [x] Commit the classification with artifacts
 - [x] Commit verified phase
 
 ### Phase 5 — Closeout
-- [x] Write the decision-grade semantic residual note
+- [x] Write the decision-grade wrapper-alignment note
 - [x] Refresh docs/status/handoff
 - [x] Mark execution block complete
 - [x] Commit verified phase
@@ -116,7 +116,9 @@ Source of truth:
 - [x] Decide whether the current candidate is promotable or still transfer-blocked
 - [x] Narrow the remaining full-chunk prompt-eval/live residual into one dominant blocker family
 - [x] Reduce the remaining semantic transfer residual to one bounded prompt-revision target
-- [ ] Localize the remaining same-model live-path divergence to one dominant surface
+- [x] Localize the remaining same-model live-path divergence to one dominant surface
+- [x] Test whether wrapper alignment materially narrows the same-model live-path divergence
+- [ ] Localize the remaining post-wrapper extraction-path divergence to one dominant surface
 
 ## Longer-Term Queue
 

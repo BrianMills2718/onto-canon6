@@ -36,9 +36,13 @@ Current post-cutover program state:
    stable and bounded, not the dominant blocker family;
 9. Plan `0042` is now complete and proved that one more narrow semantic prompt
    revision was not enough to recover live chunk transfer;
-10. the remaining active program gate is now Lane 4 same-model live-path
-    divergence under Plans `0014` and `0043`, not another entity-resolution
-    rerun block.
+10. Plan `0043` is now complete and proved the remaining same-model divergence
+    begins before review and is then amplified by review/judge acceptance;
+11. Plan `0044` is now complete and proved wrapper alignment did not narrow
+    the chunk-003 divergence;
+12. the remaining active program gate is now Lane 4 extraction-path
+    localization under Plans `0014` and `0045`, not another
+    entity-resolution rerun block.
 
 ## What Is Proven
 

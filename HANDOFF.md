@@ -2,41 +2,36 @@
 
 ## Session Focus
 
-Plan `0042` closeout and Plan `0043` activation in the isolated worktree
+Plan `0044` closeout and Plan `0045` activation in the isolated worktree
 branch `codex/onto-canon6-integration-planning`.
 
 ## What Landed
 
 Committed and documented in the isolated worktree:
 
-1. body-level transfer comparison aid:
-   - `src/onto_canon6/evaluation/transfer_comparison.py`
-   - `tests/evaluation/test_transfer_comparison.py`
-2. canonical semantic residual artifacts:
-   - `docs/runs/2026-04-01_chunk002_semantic_transfer_diff.json`
-   - `docs/runs/2026-04-01_chunk003_semantic_transfer_diff.json`
-3. bounded prompt revision candidate pair:
-   - `prompts/extraction/text_to_candidate_assertions_compact_v5.yaml`
-   - `prompts/extraction/prompt_eval_text_to_candidate_assertions_compact_operational_parity_v3.yaml`
-4. revised verification artifacts:
-   - `docs/runs/2026-04-01_chunk002_full_chunk_prompt_eval_report_v3.json`
-   - `docs/runs/2026-04-01_chunk003_full_chunk_prompt_eval_report_v3.json`
-   - `docs/runs/2026-04-01_chunk003_transfer_report_compact5.json`
-   - `docs/runs/2026-04-01_chunk003_semantic_transfer_diff_compact5.json`
-5. decision-grade semantic residual note:
-   - `docs/runs/2026-04-01_semantic_transfer_residual_decision.md`
-6. Plan `0042` is now complete;
-7. Plan `0043` is now the active bounded execution surface.
+1. wrapper/parity artifacts for the aligned `compact_v6_wrapper_align` live
+   candidate:
+   - `docs/runs/2026-04-01_chunk003_prompt_surface_parity_v6.json`
+2. live-path observability helper:
+   - `scripts/show_project_llm_calls.py`
+3. wrapper-alignment rerun artifacts:
+   - `docs/runs/2026-04-01_chunk003_transfer_report_compact6_wrapper_align.json`
+   - `docs/runs/2026-04-01_chunk003_semantic_transfer_diff_compact6_wrapper_align.json`
+4. decision-grade closeout notes:
+   - `docs/runs/2026-04-01_live_path_divergence_decision.md`
+   - `docs/runs/2026-04-01_wrapper_alignment_decision.md`
+5. Plan `0044` is now complete;
+6. Plan `0045` is now the active bounded execution surface.
 
 ## Current State
 
 1. The compact operational-parity lane is still **not promotable**.
-2. The bounded semantic prompt revision did **not** recover live chunk-003
-   transfer.
-3. Prompt-eval remained strong on chunk `002` and chunk `003`, but the live
-   chunk-003 rerun still produced `4` live-only accepted candidates.
-4. The active frontier is therefore same-model live-path divergence under Plan
-   `0043`, not more generic prompt tuning and not another entity-resolution
+2. Wrapper alignment is now ruled out as the main rescue lever:
+   - the aligned surface reduced the prompt-surface gap;
+   - the live chunk-003 rerun still had `0` shared bodies with prompt-eval;
+   - the live-only family widened from `4` to `6` accepted candidates.
+3. The active frontier is therefore extraction-path localization under Plan
+   `0045`, not more generic prompt tuning and not another entity-resolution
    block.
 
 ## Recommended Next Step
@@ -44,12 +39,12 @@ Committed and documented in the isolated worktree:
 If work continues:
 
 1. stay on `codex/onto-canon6-integration-planning`;
-2. execute Plan `0043` in order:
-   - freeze the same-model divergence contract on chunk `003`
-   - compare live and prompt-eval path surfaces directly
-   - land one narrow diagnostic aid
-   - classify whether the dominant blocker is prompt/render, extraction-path,
-     or review/judge behavior
+2. execute Plan `0045` in order:
+   - freeze the extraction-path contract
+   - compare live and prompt-eval extraction-service behavior directly
+   - land one narrow extraction-path diagnostic aid
+   - decide whether the dominant remaining blocker is extraction-service
+     behavior or review/judge amplification
 3. keep all worktree runtime commands on `PYTHONPATH=src`;
 4. do not reopen entity-resolution heuristics unless the extraction lane stops
    being the active bottleneck.
