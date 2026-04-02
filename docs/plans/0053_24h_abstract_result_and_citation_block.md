@@ -1,12 +1,12 @@
 # 24h Abstract-Result And Citation Block
 
-Status: active
+Status: complete
 Phase status:
-- Phase 1 pending
-- Phase 2 pending
-- Phase 3 pending
-- Phase 4 pending
-- Phase 5 pending
+- Phase 1 complete
+- Phase 2 complete
+- Phase 3 complete
+- Phase 4 complete
+- Phase 5 complete
 
 Last updated: 2026-04-02
 Workstream: suppress abstract-result and citation/report spillover on repaired
@@ -153,3 +153,21 @@ This block is complete only when:
 2. the worktree is clean;
 3. the repo contains committed hard-negative gating artifacts and a decision
    note.
+
+## Outcome
+
+Plan `0053` is complete as a failed prompt-only suppression attempt.
+
+The hard-negative revision did not shrink the compact-operational-parity
+family. It widened again and introduced a new `create_organizational_unit`
+candidate from the `JPOTF model` sentence while leaving the abstract-result
+`limit_capability`, governance-reaction `express_concern`, and citation/report
+`send_report` spillovers in place.
+
+Decision artifact:
+
+- `docs/runs/2026-04-02_abstract_result_and_citation_decision.md`
+
+The next active bounded block is therefore not another prompt tweak. It is a
+benchmark-contract audit:
+`docs/plans/0054_24h_full_chunk_strict_omit_contract_audit.md`.

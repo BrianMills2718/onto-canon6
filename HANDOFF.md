@@ -2,7 +2,7 @@
 
 ## Session Focus
 
-Plan `0052` closeout and Plan `0053` activation in the isolated worktree
+Plan `0053` closeout and Plan `0054` activation in the isolated worktree
 branch `codex/onto-canon6-integration-planning`.
 
 ## What Landed
@@ -24,7 +24,8 @@ Committed and documented in the isolated worktree:
 6. Plan `0051` is now complete as a failed bounded suppression attempt;
 7. Plan `0052` is now complete as a narrowing block with a smaller but still
    invalid family;
-8. Plan `0053` is now the active bounded execution surface.
+8. Plan `0053` is now complete as a failed hard-negative prompt attempt;
+9. Plan `0054` is now complete.
 
 ## Current State
 
@@ -34,32 +35,26 @@ Committed and documented in the isolated worktree:
    - before (`90003aea587c`): 4 candidates
    - after (`b349a4681e04`): 6 candidates
    - latest (`bb8be70d4504`): 5 candidates
-4. The remaining family is narrower and more specific than generic
-   predicate-local spillover:
-   - `limit_capability` still accepts abstract result nouns
-   - governance-reaction `express_concern` still survives
-   - staffing-summary residue shifted into citation/report `send_report`
-5. The active frontier is therefore hard-negative abstract-result and
-   citation/report suppression on the repaired chunk-003 path under Plan
-   `0053`, not more prompt-path plumbing, another section-heading pass, or a
-   generic predicate-local rewrite.
+4. Plan `0053` did not improve that family further. It widened again:
+   - latest (`81cffac9c8df`): 6 candidates
+   - new spillover: `oc:create_organizational_unit` from the `JPOTF model`
+     sentence
+5. The active frontier is therefore no longer just prompt wording. It is now a
+   user contract decision for the full-chunk strict-omit case after Plan
+   `0054`.
 
 ## Recommended Next Step
 
 If work continues:
 
 1. stay on `codex/onto-canon6-integration-planning`;
-2. execute Plan `0053` in order:
-   - freeze the `0052` compact-operational-parity family
-   - name one abstract-result/citation spillover family
-   - land one bounded hard-negative revision
-   - rerun the one-case chunk-003 diagnostic
-   - recover the compact parity response from observability
+2. the next step is one narrow user decision on chunk `017`:
+   - keep it strict omit
+   - remove/demote it in favor of the local strict-omit controls
+   - or convert it to a mixed-allow / accepted-alternatives case
 3. keep all worktree runtime commands on `PYTHONPATH=src`;
-4. use `LLM_CLIENT_TIMEOUT_POLICY=allow` for the one-case rerun in this block;
-5. do not reopen `Case id`, `Case input`, or generic section-heading parity
-   work unless new evidence directly contradicts the prompt-parity repair
-   decision.
+4. do not reopen `Case id`, `Case input`, or more prompt-wording churn unless
+   the contract decision keeps chunk `017` as strict omit.
 
 # Handoff: onto-canon6 — 2026-04-01
 

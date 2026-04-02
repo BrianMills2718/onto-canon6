@@ -101,9 +101,12 @@ speculation, prompt_eval-only `Case id`, and the prompt_eval `Case input`
 wrapper). Plan `0051` then proved that another section-level suppression pass
 was not enough and actually widened the compact-operational-parity spillover
 family. Plan `0052` then proved predicate-local gating can shrink that family,
-but not eliminate it. The remaining blocker is now hard-negative suppression
-for abstract-result and citation/report spillovers on the repaired chunk-003
-path, tracked under Plan `0053`.
+but not eliminate it, and Plan `0053` proved that even stronger hard-negative
+prompt wording still does not close the full chunk residual. Plan `0054` then
+proved the remaining blocker is benchmark-contract truth for the repaired
+chunk-003 strict-omit case, not another prompt tweak. The next move is now a
+user decision on whether chunk `017` should stay strict omit, be removed/
+demoted in favor of the local controls, or become a mixed-allow case.
 
 ## Current State
 

@@ -247,6 +247,15 @@ For future one-case chunk-003 reruns in this worktree, use
 timeout behavior.
 
 ### 2026-04-02 — codex — bug-pattern
+Plan 0053 proved that even hard-negative prompt wording may not be the real
+lever on `psyop_017_full_chunk003_analytical_context_strict_omit`. The model
+kept the abstract-result `limit_capability` family, kept the governance-
+reaction `express_concern`, kept the citation-driven `send_report`, and added a
+new `create_organizational_unit` candidate from the `USSOCOM` / `JPOTF model`
+sentence. Treat the next block as a benchmark-contract audit for the full chunk
+strict-omit case before investing in more prompt churn.
+
+### 2026-04-02 — codex — bug-pattern
 Plan 0046 proved the prompt_eval-only `Case id:` line was materially changing
 chunk-003 extraction behavior. Replaying the captured prompt_eval async call
 without only that line flipped the parsed result from `0` candidates to `5`.

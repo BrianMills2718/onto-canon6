@@ -50,10 +50,12 @@ Current post-cutover program state:
     suppression did not shrink the repaired chunk-003 spillover family;
 15. Plan `0052` is now complete and proved predicate-local gating can shrink
     the spillover family, but not close it;
-16. the remaining active program gate is now hard-negative abstract-result and
-    citation/report suppression on the repaired chunk-003 path under Plans
-    `0014` and `0053`, not another prompt-path, section-heading, or generic
-    predicate-local diagnosis block.
+16. Plan `0053` is now complete and proved that even stronger hard-negative
+    prompt rules did not close the full chunk-003 residual;
+17. Plan `0054` is now complete and proved the remaining blocker is a
+    benchmark-contract question, not another prompt-wording diagnosis block;
+18. the next extraction-quality move now depends on one user contract decision
+    about chunk `017` under Plan `0014`.
 
 ## What Is Proven
 

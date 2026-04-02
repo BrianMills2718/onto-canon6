@@ -3,34 +3,32 @@
 ## Current 24h Execution Block
 
 Source of truth:
-- `docs/plans/0053_24h_abstract_result_and_citation_block.md`
+- `docs/plans/0054_24h_full_chunk_strict_omit_contract_audit.md`
 
-### Phase 1 — Freeze The Post-0052 Residual
-- [ ] Freeze the `0052` compact-operational-parity family
-- [ ] Name one explicit abstract-result/citation spillover family
-- [ ] Commit verified phase
+### Phase 1 — Freeze The Contract Question
+- [x] Freeze the `0053` surviving full-chunk family
+- [x] Enumerate the overlapping local strict-omit cases
+- [x] Commit verified phase
 
-### Phase 2 — Land One Bounded Hard-Negative Revision
-- [ ] Forbid abstract evaluative `limit_capability` fillers
-- [ ] Forbid citation/report-style `send_report` without an explicit delivery act
-- [ ] Preserve the case-id and wrapper parity repairs
-- [ ] Commit verified phase
+### Phase 2 — Compare Full-Chunk Contract To Local Controls
+- [x] Compare chunk `017` to local strict-omit cases `008` through `016`
+- [x] Classify whether chunk `017` is a valid full-chunk negative control, a redundant aggregate, or a mixed-content mismatch
+- [x] Commit verified phase
 
-### Phase 3 — Re-run The Chunk-003 Diagnostic
-- [ ] Run one bounded post-change chunk-003 prompt_eval diagnostic with `LLM_CLIENT_TIMEOUT_POLICY=allow`
-- [ ] Capture the new artifact
-- [ ] Recover the compact-operational-parity response from observability
-- [ ] Commit verified phase
+### Phase 3 — Define The Allowed Next Moves
+- [x] Write the explicit option set if the contract is ambiguous
+- [x] Mark which options need user sign-off
+- [x] Commit verified phase
 
-### Phase 4 — Classify The Result
-- [ ] Decide whether the abstract-result/citation change improved, failed, or shifted the blocker
-- [ ] Record any narrow uncertainty separately
-- [ ] Commit verified phase
+### Phase 4 — Record The Audit Result
+- [x] Write the contract-audit decision note
+- [x] Update the active extraction-quality plan to point at the real blocker
+- [x] Commit verified phase
 
 ### Phase 5 — Closeout
-- [ ] Write the decision-grade abstract-result/citation gating note
-- [ ] Refresh docs/status/handoff
-- [ ] Mark execution block complete
+- [x] Refresh docs/status/handoff
+- [x] Either activate the next implementation block or isolate one user contract decision
+- [x] Mark execution block complete
 - [ ] Commit verified phase
 
 ## Most Recent Completed 24h Execution Block

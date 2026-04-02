@@ -14,7 +14,8 @@ This subtree owns active gaps, acceptance criteria, and verification notes.
 | 0025a | [Entity Resolution Scale-Out](0025a_entity_resolution_scale_out.md) | Deferred (activates after 0025 Phase 4) |
 | 0027 | [Deferred Parity Reprioritization](0027_deferred_parity_reprioritization.md) | Active (Lane 5 execution surface; next-active order now explicit) |
 | 0028 | [Query And Browse Surface](0028_query_browse_surface.md) | Active (first read-only slice landed and proved; wider hardening still open) |
-| 0053 | [24h Abstract-Result And Citation Block](0053_24h_abstract_result_and_citation_block.md) | Active (predicate-local gating narrowed the family, but abstract-result and citation spillover remain) |
+| 0054 | [24h Full-Chunk Strict-Omit Contract Audit](0054_24h_full_chunk_strict_omit_contract_audit.md) | Complete (chunk 017 is a mixed-content contract question; next step requires user sign-off) |
+| 0053 | [24h Abstract-Result And Citation Block](0053_24h_abstract_result_and_citation_block.md) | Complete (hard-negative prompt revision failed; full-chunk contract audit activated) |
 | 0052 | [24h Predicate-Locality Gate Block](0052_24h_predicate_locality_gate_block.md) | Complete (family shrank from 6 to 5, but abstract-result and citation spillover remained) |
 | 0051 | [24h Analytical Section Suppression Block](0051_24h_analytical_section_suppression_block.md) | Complete (section-level suppression worsened the compact-operational-parity spillover family) |
 | 0050 | [24h Post-Parity Semantic Recovery Block](0050_24h_post_parity_semantic_recovery_block.md) | Complete (changed chunk-003 family without improving the score gate) |
@@ -38,7 +39,7 @@ This subtree owns active gaps, acceptance criteria, and verification notes.
 | 0037 | [24h Entity Resolution False-Split Cleanup Block](0037_24h_entity_resolution_false_split_cleanup_block.md) | Complete (Rodriguez and Washington residual families closed; fresh rerun exposed a new blocker family) |
 | 0038 | [24h Entity Resolution Surface Stability Block](0038_24h_entity_resolution_surface_stability_block.md) | Complete (best rerun improved the owned family; next rerun exposed a broader stability problem) |
 | 0039 | [24h Entity Resolution Rerun Stability Block](0039_24h_entity_resolution_rerun_stability_block.md) | Complete (two fresh reruns held the question/safety gate) |
-| 0014 | [Extraction Quality Baseline](0014_extraction_quality_baseline.md) | Active (explicit promotion gate defined; operational transfer proof still open) |
+| 0014 | [Extraction Quality Baseline](0014_extraction_quality_baseline.md) | Active (explicit promotion gate defined; chunk-017 contract decision now blocks the next extraction-quality move) |
 | 0020 | [Vision Gap Closure](0020_vision_gap_closure.md) | Active (tracking) |
 
 ## Completed/Historical
