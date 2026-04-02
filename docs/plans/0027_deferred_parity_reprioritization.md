@@ -2,7 +2,7 @@
 
 Status: active
 
-Last updated: 2026-03-31
+Last updated: 2026-04-02
 Workstream: Lane 5 of the post-cutover program
 
 ## Purpose
@@ -81,20 +81,20 @@ and the replacement path is explicit.
 
 ### next-active
 
-1. **Cross-document entity resolution value proof**
+1. **Concept/entity browsing and search**
+   - parity row: concept/entity browsing and search
+   - owner: [0028_query_browse_surface.md](0028_query_browse_surface.md),
+     [0063_24h_query_browse_widening_block.md](0063_24h_query_browse_widening_block.md),
+     and [0064_24h_identity_external_reference_browse_block.md](0064_24h_identity_external_reference_browse_block.md)
+   - rationale: the first browse surface plus identity/external-reference
+     widening are now landed; the next highest-value follow-on is first-class
+     source-artifact query over the same promoted-state contract.
+2. **Cross-document entity resolution scale-out**
    - parity rows: concept dedup and merge tools; cross-investigation entity
      resolution at scale
-   - owner: [0025_cross_document_entity_resolution.md](0025_cross_document_entity_resolution.md)
-     and [0025a_entity_resolution_scale_out.md](0025a_entity_resolution_scale_out.md)
-   - rationale: this directly improves canonical state quality and is already
-     the strongest active value-multiplier for both DIGIMON and future query
-     surfaces
-2. **Concept/entity browsing and search**
-   - parity row: concept/entity browsing and search
-   - owner: needs a dedicated future execution plan
-   - rationale: `onto-canon6` is now self-contained and has a consumer, but it
-     still lacks a first-class query/browse surface for agents and operators.
-     That limits its value as a governed knowledge base.
+   - owner: [0025a_entity_resolution_scale_out.md](0025a_entity_resolution_scale_out.md)
+   - rationale: the Phase 4 value proof is complete, so the next remaining
+     entity-resolution work is scale-out rather than baseline proof.
 
 ### protected-deferred
 
@@ -102,11 +102,12 @@ and the replacement path is explicit.
    - parity row: canonical concept/belief graph with system beliefs
    - rationale: the narrowed promoted-graph slice is enough for current
      consumers; broader system-belief recovery is not yet consumer-driven
-2. **Stable identity and external references beyond current alias/identity slice**
+2. **Stable identity and external references beyond the landed query widening slice**
    - parity row: stable identity and external references, including Q-code-like
      cross-investigation identity
-   - rationale: current identity slice is usable; broader external-reference
-     work can wait until a real consumer needs it
+   - rationale: the active follow-on now covers browse/query visibility for
+     current identity/external-reference state; broader Q-code-like and
+     cross-investigation identity expansion can still wait for consumer demand
 3. **Direct concept/belief CRUD**
    - parity row: direct concept/belief CRUD
    - rationale: governed review remains the right default until trusted bulk
@@ -152,11 +153,12 @@ None in this pass.
 Assuming Lane 4 remains the active extraction gate, the next deferred-capability
 order is:
 
-1. finish the value-proof stage of [0025_cross_document_entity_resolution.md](0025_cross_document_entity_resolution.md);
-2. execute the browse/search execution plan in [0028_query_browse_surface.md](0028_query_browse_surface.md);
-3. keep richer DIGIMON interchange experimental and consumer-blocked under
+1. choose the next narrowed queryability follow-on under
+   [0028_query_browse_surface.md](0028_query_browse_surface.md), with
+   source-artifact query currently first in line;
+2. keep richer DIGIMON interchange experimental and consumer-blocked under
    DIGIMON Plan 23;
-4. revisit direct CRUD / trusted fast-path ingestion only if a real bulk-source
+3. revisit direct CRUD / trusted fast-path ingestion only if a real bulk-source
    workflow makes governed review the bottleneck.
 
 ## Future Plan Requirements
@@ -192,10 +194,11 @@ This plan is complete enough for Lane 5 when:
 
 ## Open Questions / Uncertainty Tracking
 
-### Q1: Is browse/search really the right next-active capability after entity-resolution proof?
+### Q1: Is first-class source-artifact query still the right next queryability follow-on after `0064`?
 **Status:** Open
-**Why it matters:** If a stronger consumer case appears for bulk ingestion or a
-specific adapter, the next-active order may need to change.
+**Why it matters:** If operators now mostly need cross-entity/source linking via
+artifacts rather than another identity-facing widening, the next queryability
+order should stay as-is; otherwise the queue may need to change.
 
 ### Q2: Does lead/investigation management belong in onto-canon6 or should it be replaced by consumer-side workflows?
 **Status:** Open

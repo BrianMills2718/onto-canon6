@@ -54,8 +54,8 @@ The repo is beyond pure design/bootstrap work. It has:
 Current emphasis is not "recover every capability now." It is "keep the full
 vision visible while making the proved workflow stronger and more usable."
 That now includes a widened read-only browse/query surface over promoted
-knowledge via Plans 0028 / 0029 / 0063, not just export-only downstream
-access.
+knowledge via Plans 0028 / 0029 / 0063 / 0064, including identity- and
+external-reference-aware entity browse, not just export-only downstream access.
 
 ## Canonical Workflow
 
@@ -148,7 +148,9 @@ High-signal reading order:
 - `docs/plans/0028_query_browse_surface.md`
 - `docs/plans/0029_24h_query_surface_execution_block.md`
 - `docs/plans/0063_24h_query_browse_widening_block.md`
+- `docs/plans/0064_24h_identity_external_reference_browse_block.md`
 - `docs/runs/2026-04-02_query_browse_widening_real_proof.md`
+- `docs/runs/2026-04-02_identity_external_reference_browse_real_proof.md`
 - `docs/plans/0025_cross_document_entity_resolution.md`
 - `docs/plans/0005_v1_capability_parity_matrix.md`
 - `docs/plans/0020_vision_gap_closure.md`

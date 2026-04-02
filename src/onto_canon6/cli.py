@@ -903,6 +903,21 @@ def _build_parser() -> argparse.ArgumentParser:
         help="Optional promoted entity_type filter.",
     )
     list_entities_parser.add_argument(
+        "--has-identity",
+        action=argparse.BooleanOptionalAction,
+        default=None,
+        help="Filter to entities with or without stable identity state.",
+    )
+    list_entities_parser.add_argument(
+        "--provider",
+        help="Optional external-reference provider filter.",
+    )
+    list_entities_parser.add_argument(
+        "--reference-status",
+        choices=("attached", "unresolved"),
+        help="Optional external-reference status filter.",
+    )
+    list_entities_parser.add_argument(
         "--limit",
         type=int,
         default=50,
@@ -920,6 +935,15 @@ def _build_parser() -> argparse.ArgumentParser:
     search_entities_parser.add_argument(
         "--entity-type",
         help="Optional promoted entity_type filter.",
+    )
+    search_entities_parser.add_argument(
+        "--provider",
+        help="Optional external-reference provider filter.",
+    )
+    search_entities_parser.add_argument(
+        "--reference-status",
+        choices=("attached", "unresolved"),
+        help="Optional external-reference status filter.",
     )
     search_entities_parser.add_argument(
         "--limit",
@@ -1682,6 +1706,9 @@ def _handle_list_entities(args: argparse.Namespace) -> int:
     result = service.list_entities(
         EntityBrowseRequest(
             entity_type=args.entity_type,
+            has_identity=args.has_identity,
+            provider=args.provider,
+            reference_status=args.reference_status,
             limit=args.limit,
         )
     )
@@ -1698,6 +1725,8 @@ def _handle_search_entities(args: argparse.Namespace) -> int:
         EntitySearchRequest(
             query=args.query,
             entity_type=args.entity_type,
+            provider=args.provider,
+            reference_status=args.reference_status,
             limit=args.limit,
         )
     )

@@ -12,8 +12,9 @@ This subtree owns active gaps, acceptance criteria, and verification notes.
 | 0024 | [Post-Cutover Program](0024_post_cutover_program.md) | Active (Lanes 1-3 done; Lane 4 evidence gate and Lane 5 reprioritization still pending) |
 | 0025 | [Cross-Document Entity Resolution](0025_cross_document_entity_resolution.md) | Complete (Phase 4 value proof and rerun-stability closure achieved; 0025a remains deferred) |
 | 0025a | [Entity Resolution Scale-Out](0025a_entity_resolution_scale_out.md) | Deferred (activates after 0025 Phase 4) |
-| 0027 | [Deferred Parity Reprioritization](0027_deferred_parity_reprioritization.md) | Active (Lane 5 execution surface; next-active order now explicit) |
-| 0028 | [Query And Browse Surface](0028_query_browse_surface.md) | Active (browse widening landed; next narrowed follow-on still open) |
+| 0027 | [Deferred Parity Reprioritization](0027_deferred_parity_reprioritization.md) | Active (Lane 5 execution surface; queryability remains next-active) |
+| 0028 | [Query And Browse Surface](0028_query_browse_surface.md) | Active (browse widening landed; next narrowed follow-on is source-artifact query unless reprioritized) |
+| 0064 | [24h Identity / External-Reference Browse Block](0064_24h_identity_external_reference_browse_block.md) | Complete (identity/external-reference browse and search landed with operational proof) |
 | 0063 | [24h Query Browse Widening Block](0063_24h_query_browse_widening_block.md) | Complete (entity browse, source-centric assertion browse, CLI/MCP widening, real-proof) |
 | 0062 | [24h Default Extraction Cutover Block](0062_24h_default_extraction_cutover_block.md) | Complete (proved compact operational-parity lane is now the repo default) |
 | 0061 | [24h Personnel-Membership Enforcement Block](0061_24h_personnel_membership_enforcement_block.md) | Complete (staffing-summary membership leak closed; chunk 003 now transfers negative without accepted spillover) |

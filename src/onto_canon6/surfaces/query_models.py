@@ -12,11 +12,25 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from ..artifacts import ArtifactLineageEdge, ArtifactRecord, CandidateArtifactLinkRecord
-from ..core import CanonicalGraphPromotionResult, IdentityBundleRecord, PromotedGraphEntityRecord
+from ..core import (
+    CanonicalGraphPromotionResult,
+    ExternalReferenceStatus,
+    IdentityBundleRecord,
+    PromotedGraphEntityRecord,
+)
 from ..extensions.epistemic import PromotedAssertionEpistemicReport, PromotedAssertionEpistemicStatus
 from ..pipeline import CandidateAssertionRecord, EvidenceSpan, SourceArtifactRef
 
-EntityMatchReason = Literal["canonical_exact", "alias_exact", "prefix", "substring"]
+EntityMatchReason = Literal[
+    "canonical_exact",
+    "alias_exact",
+    "external_id_exact",
+    "reference_label_exact",
+    "prefix",
+    "external_prefix",
+    "substring",
+    "external_substring",
+]
 
 
 class EntityBrowseRequest(BaseModel):
@@ -25,6 +39,9 @@ class EntityBrowseRequest(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
     entity_type: str | None = None
+    has_identity: bool | None = None
+    provider: str | None = None
+    reference_status: ExternalReferenceStatus | None = None
     limit: int = Field(default=50, ge=1, le=200)
 
 
@@ -38,15 +55,21 @@ class EntityBrowseResult(BaseModel):
     display_label: str = Field(min_length=1)
     entity_type: str | None = None
     linked_assertion_count: int = Field(ge=0)
+    has_identity: bool
+    attached_external_reference_count: int = Field(ge=0)
+    unresolved_external_reference_count: int = Field(ge=0)
+    external_reference_providers: tuple[str, ...] = ()
 
 
 class EntitySearchRequest(BaseModel):
-    """Search for promoted entities by canonical or alias name."""
+    """Search for promoted entities by canonical, alias, or external-reference text."""
 
     model_config = ConfigDict(extra="forbid", frozen=True)
 
     query: str = Field(min_length=1)
     entity_type: str | None = None
+    provider: str | None = None
+    reference_status: ExternalReferenceStatus | None = None
     limit: int = Field(default=20, ge=1, le=200)
 
 
