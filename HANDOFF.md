@@ -80,47 +80,59 @@ candidates, and 4 missing integration contracts.
 - `BrianMills2718/epistemic-contracts` (private) — all commits pushed
 - `BrianMills2718/grounded-research` (private) — shared_export.py pushed
 
+## What Was Done (2026-04-02 session)
+
+1. **E2E integration test PASS** — real grounded-research EU sanctions handoff
+   (8 claims) → epistemic-contracts → onto-canon6 review pipeline. All stored.
+   Required fixing: `load_handoff_claims()` bridge (handoff.json uses simplified
+   format, not ClaimLedgerEntry), `content_text` on SourceArtifactRef for
+   evidence span verification.
+
+2. **Documentation inconsistencies fixed** — CLAUDE.md execution block updated,
+   STATUS.md date fixed, README.md test count fixed, Plan 0024 marked complete,
+   plans/CLAUDE.md cleaned up.
+
+3. **epistemic-contracts cleaned up** — README.md added, committed egg-info
+   removed from git, .gitignore expanded.
+
+4. **Plan 56 Phase 5 complete** — research_v3 `shared_export.py` created with
+   `load_graph_claims()`. 123 Booz Allen claims with FtM entity IDs preserved.
+   15 FtM→oc: type mappings.
+
+5. **Evidence quality scoring extracted** — `estimate_recency()` and
+   `detect_staleness()` now in epistemic-contracts. 17 new tests (35 total).
+
+6. **Long-term roadmap written** — `docs/ROADMAP.md` with priorities, "what done
+   looks like", dependency map, and authority chain.
+
 ## What Needs Doing Next
 
-### HIGH PRIORITY — Verify before building more
+### HIGH PRIORITY
 
-1. **End-to-end integration test**: Run grounded-research on a real topic →
-   export via shared_export.py → import into onto-canon6 via
-   grounded_research_import.py → verify assertions in promoted graph.
-   The adapters were smoke-tested with manually constructed objects but NOT
-   tested against actual grounded-research Tyler pipeline output.
+1. **Full pipeline E2E test** — research_v3 investigation → grounded-research
+   adjudication → onto-canon6 governance → DIGIMON query. No single test covers
+   the complete chain yet.
 
-2. **Fresh documentation review**: 55 commits over 3 days. Stale references
-   likely. A fresh session should do a systematic pass of:
-   - onto-canon6 CLAUDE.md (execution block is stale)
-   - ECOSYSTEM_STATUS.md (Data bucket description may be stale)
-   - Plan 56 (update Phases 1-4 as complete)
-   - CAPABILITY_BOUNDARIES.md (verify against actual code)
+2. **DIGIMON one-command consumer flow** — The v1 export/import seam works but
+   requires separate CLI invocations from each repo. A single command or script
+   that runs the full consumer path.
 
-3. **epistemic-contracts cleanup**: Needs README.md. The egg-info and __pycache__
-   directories were committed (before .gitignore was added). Clean up.
+3. **Validation profile for shared claims** — Imported claims get
+   `validation_status=invalid` because `general_purpose_open` doesn't recognize
+   `shared:fact_claim` as a predicate. Need a profile or bypass for imported claims.
 
-### MEDIUM PRIORITY — Plan 56 completion
+### MEDIUM PRIORITY
 
-4. **Plan 56 Phase 5**: Wire research_v3 boundary. Create adapter that exports
-   research_v3 Finding/Claim to shared ClaimRecord. Preserve FtM entity IDs
-   as external_ids in EntityReference.
+4. **Concept/entity browsing MCP surface** — CLI done, MCP if agents need it.
+5. **ProbLog to llm_client** — when second consumer needs inference.
+6. **Scale real investigation** — full 111 Booz Allen claims through the pipeline.
 
-5. **Evidence quality scoring as shared utility**: grounded-research's
-   `evidence_utils.py` has recency scoring and staleness detection. Extract
-   to epistemic-contracts as utility functions (not just models).
+### LOWER PRIORITY
 
-### LOWER PRIORITY — Future work
-
-6. **Concept/entity browsing MCP surface**: CLI commands shipped (list-entities,
-   search-entities, get-entity). MCP tools only if agents need more than CLI.
-   The `/query-onto-canon6` skill teaches agents to use CLI.
-
-7. **ProbLog to llm_client**: FRAMEWORK.md says inference should be domain-agnostic
-   infrastructure. Currently onto-canon6-local. Move when a second consumer needs it.
-
-8. **Scale the real investigation pipeline**: 7 claims processed in the Booz Allen
-   test. Full 111 claims would take ~2 hours with gemini-3-flash-preview.
+7. **Cross-investigation conflict detection** — tension detection exists but no
+   cross-investigation policy.
+8. **Non-unity DIGIMON weight validation** — confidence semantics untested on
+   varied-confidence slice.
 
 ## Known Issues
 
@@ -134,8 +146,7 @@ candidates, and 4 missing integration contracts.
 3. **gemini-3-flash-preview slow**: ~30-60s per structured output call.
    Extraction of 25 documents takes ~30 minutes.
 
-4. **epistemic-contracts egg-info committed**: .gitignore was added after first
-   commit. Clean up in next session.
+4. ~~**epistemic-contracts egg-info committed**~~ — RESOLVED (2026-04-02).
 
 5. **Judge filter uses `call_llm_structured`**: Fixed API mismatch (added
    `_JudgeResult` Pydantic model), but the judge adds ~3s per candidate.
@@ -154,6 +165,7 @@ candidates, and 4 missing integration contracts.
 
 ## Previous Handoffs
 
+- 2026-04-02: Doc cleanup, E2E integration test, Plan 56 Phase 5, evidence utils, roadmap
 - 2026-03-31: Strategic review, Plan 0025 Phase 1-3, judge filter fix
 - 2026-03-28: Documentation authority cleanup, DIGIMON boundary review
 - 2026-03-26: Final bootstrap session, 430 tests, review modes wired

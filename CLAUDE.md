@@ -310,6 +310,7 @@ priorities, dependencies, and acceptance criteria.
 
 | Doc | Purpose |
 |-----|---------|
+| `docs/ROADMAP.md` | Forward-looking priorities, "what done looks like" |
 | `docs/plans/CLAUDE.md` | Plan index |
 | `config/config.yaml` | Extraction and prompt configuration |
 | `evaluation/` | Evaluation harness and prompt experiment service |
