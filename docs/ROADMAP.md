@@ -6,7 +6,7 @@ Updated: 2026-04-02
 
 onto-canon6 is a **proven governed-assertion middleware** with:
 
-- 551 tests passing, 0 failures
+- 558 tests passing, 0 failures
 - 100% precision / 100% recall entity resolution (25-doc synthetic corpus)
 - +70% cross-document QA improvement over bare extraction
 - Schema stability gate (9 tests across 4 consumer surfaces)
@@ -82,7 +82,7 @@ onto-canon6 is done when:
 
 ## Key Decisions In Effect
 
-1. **Model**: `gemini/gemini-3-flash-preview` (extraction + resolution)
+1. **Model**: `gemini/gemini-2.5-flash` (runtime default; gemini-3-flash-preview was target but ~30-60s/call in production)
 2. **Config**: `review_mode: llm`, `enable_judge_filter: true`, `require_llm_review: true`
 3. **Resolution**: `default_strategy: exact` with LLM review of all merges
 4. **Shared contracts**: epistemic-contracts library (not llm_client)

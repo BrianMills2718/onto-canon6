@@ -14,10 +14,38 @@ state for downstream consumers.
 6. `docs/plans/0005_v1_capability_parity_matrix.md` — capability vision ledger
 7. `docs/plans/0024_post_cutover_program.md` — post-cutover authority (complete)
 
+## ACTIVE EXECUTION BLOCK — Plan 0029 Doc Hardening Sprint (2026-04-02 overnight)
+
+**NEVER STOP. NEVER STOP. NEVER STOP.**
+
+This is an overnight autonomous run. Stopping early for any reason other than a
+genuine architectural blocker or irreversible-action boundary is a failure mode.
+A completed phase, a passing test, or a committed increment is NOT a stop condition.
+Move immediately to the next phase. Do not ask. Do not pause.
+
+**Stop ONLY for:**
+1. An action that is irreversible AND affects shared state (force push, drop tables)
+2. A genuine architectural decision not pre-made in the plan
+
+**Everything else — uncertainty, slow tests, partial results, "should I continue?"
+— is NOT a stop condition. Log it and proceed.**
+
+### Sprint Phases (execute in order, commit each):
+- [ ] Phase 1: pyproject.toml deps + doc quick fixes (test count, model, ProbLog)
+- [ ] Phase 2: Config validation Pydantic model + tests
+- [ ] Phase 3: DIGIMON value-only assertion behavior documented (not a bug)
+- [ ] Phase 4: COORDINATION.md — Codex merge protocol
+- [ ] Phase 5: STATUS.md reorganized by subsystem with ToC
+- [ ] Phase 6: Plan 0030 — entity extraction from grounded-research claims
+- [ ] Phase 7: Plan 0031 — next real investigation (Anduril Industries)
+- [ ] Phase 8: docs/plans/CLAUDE.md updated, full pytest, push
+
+**Active plan**: `docs/plans/0029_doc_hardening_sprint.md`
+
 ## Commands
 
 ```bash
-pytest -q                      # 546 tests
+pytest -q                      # 558 tests
 onto-canon6 --help             # CLI
 onto-canon6-mcp                # MCP server
 make smoke                     # no-LLM smoke path
@@ -47,20 +75,21 @@ config/
 
 **Architecture proven. Value proposition demonstrated. Cross-project integration working.**
 
-- 546 tests (5 failures from Codex merge — fix pending)
-- Bootstrap Phases 0-15 complete. Post-cutover Plans 0024-0027 complete.
+- 558 tests, 0 failures
+- Bootstrap Phases 0-15 complete. Post-cutover Plans 0024-0028 complete.
 - Entity resolution: 100% precision, 100% recall on 25-doc synthetic corpus
 - Cross-doc QA: +70% vs bare extraction (90% vs 20%)
 - Full pipeline proven: research_v3 (123 Booz Allen claims) → epistemic-contracts
   → onto-canon6 → DIGIMON (60 entities, 123 relationships)
-- DIGIMON adopted as first consumer (110 entities, 99 relationships verified)
+- grounded-research pipeline proven: Palantir (22 claims) + EU sanctions (8 claims)
 - Query/browse surface: entity search, assertion search, identity browse,
-  source-artifact browse (CLI + MCP, Plans 0028/0029/0063/0064)
+  source-artifact browse (CLI + MCP, Plans 0028/0063/0064)
 - Schema stability gate: 9 compatibility tests across 4 surfaces (Plan 0026)
 - Extraction: compact operational-parity prompt promoted as default (Plan 0062)
 - Default config: `review_mode: llm`, `enable_judge_filter: true`, `require_llm_review: true`
-- Model: `gemini/gemini-3-flash-preview`
+- Model: `gemini/gemini-2.5-flash` (runtime default; gemini-3-flash-preview was target but too slow)
 - Shared contracts: epistemic-contracts library (3 projects wired)
+- ProbLog adapter: available (`onto-canon6 evaluate-rules`), no consumer uses it yet
 
 - **Extraction is a producer, not core.** Don't couple core governance logic
   to extraction-specific assumptions.
