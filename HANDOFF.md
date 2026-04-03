@@ -43,9 +43,17 @@
 ## Known Issues
 
 1. **Codex worktree merges overwrite main** — need coordination protocol
-2. **58 skipped DIGIMON relationships** — missing endpoints (entities referenced
-   as fillers but not extracted as standalone entities)
-3. **gemini-3-flash-preview slow** — ~30-60s per structured output call
+   (see COORDINATION.md when written in Plan 0029)
+2. **gemini-3-flash-preview slow** — ~30-60s per structured output call;
+   runtime default changed to gemini-2.5-flash (see ROADMAP.md)
+
+## Resolved (previously "known issues")
+
+- **58 "skipped" DIGIMON relationships** — not a bug. `digimon_export.py:348`
+  intentionally skips assertions with zero entity fillers. Value-only assertions
+  (revenue figures, dates, attribute values) produce no relationship because they
+  have no ARG0/ARG1 entity pair. The "58 skipped" count from Booz Allen reflects
+  this correct filter. No fix needed.
 
 ## Authority Chain
 
