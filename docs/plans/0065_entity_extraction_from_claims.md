@@ -1,4 +1,4 @@
-# Plan 0030 — Entity Extraction from grounded-research Claims
+# Plan 0065 — Entity Extraction from grounded-research Claims
 
 **Created**: 2026-04-02  
 **Status**: planned (not yet active)  
@@ -22,118 +22,117 @@ a claim database, not a knowledge graph.
 already extracts FtM-typed entities with ARG0/ARG1 roles. Entity-rich
 grounded-research runs are the gap.
 
+## Implementation Note: entity_refs Already Exists
+
+**Critical finding (Plan 0032 Phase 3)**: `ClaimRecord` already has an
+`entity_refs: list[EntityReference]` field. The onto-canon6 import adapter
+at `adapters/grounded_research_import.py:56-70` ALREADY handles it:
+
+```python
+elif claim.entity_refs:
+    # Build minimal roles from entity references so promotion can extract entities.
+    role_names = ["subject", "object", "indirect_object", "modifier"]
+    for i, eref in enumerate(claim.entity_refs):
+        rname = role_names[i] if i < len(role_names) else f"arg{i}"
+        roles_dict[rname] = [{"kind": "entity", "entity_id": eref.entity_id,
+                               "entity_type": eref.entity_type, "name": eref.name}]
+```
+
+**Implication**: No new field needed. No schema change to epistemic-contracts.
+grounded-research just needs to **populate `entity_refs`** in the ClaimRecord
+it exports, and the adapter will automatically map them to role fillers.
+
+`entity_refs` vs `entity_annotations` — these are the SAME concept:
+- `entity_refs` = the existing `ClaimRecord` field for structured entity references
+- `entity_annotations` = the name used in the original plan doc (now superseded)
+
+The correct term going forward is `entity_refs` (it's the actual field name).
+
 ## Two Options
 
 ### Option A: NER Post-Processing in onto-canon6 Import Adapter
 
 Add a step in `adapters/grounded_research_import.py` that runs NER over the
-claim `statement` text, identifies entity mentions, and synthesizes
-ARG0/ARG1 role fillers before creating the candidate assertion.
+claim `statement` text, synthesizes `entity_refs` before creating the assertion.
 
-**Pros:**
-- No changes to grounded-research or epistemic-contracts
-- onto-canon6 controls entity extraction quality
+**Pros:** No changes to grounded-research or epistemic-contracts  
+**Cons:** Requires LLM call per claim at import time; entity types are guessed;
+adds cost and latency to a deterministic adapter
 
-**Cons:**
-- NER over free-text claim statements is noisy — claims like "Palantir holds an
-  Enterprise Agreement with the U.S. Army" would need to produce
-  `ARG0: Palantir, ARG1: U.S. Army` — requires LLM call per claim
-- Adds LLM cost and latency to the import adapter
-- Entity types are guessed, not grounded in grounded-research's actual evidence
-- Entity resolution will have to fix names derived from LLM NER
+### Option B: grounded-research Populates entity_refs (Recommended)
 
-### Option B: grounded-research Emits Entity-Role Annotations (Recommended)
+grounded-research adds an entity extraction stage (Stage 5b or post-Stage 5)
+that extracts subject/object entities from each claim and populates
+`entity_refs` in the ClaimRecord before export.
 
-grounded-research adds an entity annotation stage (Stage 5b or post-Stage 5)
-that annotates each claim with structured entity pairs:
-
-```json
-{
-  "claim_id": "CL-001",
-  "statement": "Palantir holds an Enterprise Agreement with the U.S. Army",
-  "entity_annotations": [
-    {"role": "subject", "name": "Palantir Technologies Inc.", "entity_type": "organization"},
-    {"role": "object", "name": "U.S. Army", "entity_type": "government_org"}
-  ]
-}
+```python
+# grounded-research sets this on each ClaimRecord:
+claim.entity_refs = [
+    EntityReference(entity_id="E-001", name="Palantir Technologies Inc.",
+                    entity_type="organization"),
+    EntityReference(entity_id="E-002", name="U.S. Army",
+                    entity_type="government_org"),
+]
 ```
 
-These annotations are included in the handoff.json (extending `ClaimLedgerEntry`)
-and surfaced in `ClaimRecord` via a new optional field `entity_annotations`.
-
-The `import_shared_claims()` adapter in onto-canon6 maps annotations to
-typed role fillers: subject→ARG0, object→ARG1.
+The onto-canon6 import adapter **already reads this field** — no onto-canon6
+changes needed once grounded-research populates it.
 
 **Pros:**
-- Entity annotations are grounded in grounded-research's adjudication context
-- grounded-research models see the evidence when annotating — better quality
-- onto-canon6 import stays thin (no LLM calls)
-- entity_annotations is optional — existing handoffs without it still work
+- Entity refs grounded in evidence context (grounded-research has the evidence)
+- onto-canon6 import stays thin and deterministic (no LLM calls)
+- Backward compatible — `entity_refs` defaults to empty list
+- No schema changes needed anywhere
 
-**Cons:**
-- Requires changes in 3 places: grounded-research stage, epistemic-contracts
-  `ClaimRecord`, onto-canon6 import adapter
-- grounded-research must be updated before this produces results
+**Cons:** grounded-research must implement the entity extraction stage first
 
 ## Decision
 
-**Recommended: Option B.**
+**Option B — grounded-research populates entity_refs (existing field).**
 
-Rationale:
-1. Quality — grounded-research models have evidence context that onto-canon6 lacks
-2. Separation of concerns — import adapter stays deterministic
-3. Backward compatibility — optional field, existing handoffs unaffected
-4. Matches the existing pattern — research_v3 already does this at the source
+**Scope**: Changes needed in ONE place only (not three):
+1. grounded-research: add entity extraction stage → populate `entity_refs`
+2. epistemic-contracts: NO CHANGE (field already exists)
+3. onto-canon6: NO CHANGE (adapter already handles entity_refs)
 
-## Implementation Scope
+## Implementation Scope (Revised — One Repo Only)
 
-### grounded-research (owned by grounded-research team/session)
+### grounded-research only
 
-- Add `entity_annotations: list[EntityAnnotation] | None = None` to
-  `ClaimLedgerEntry` model
-- Add Stage 5b LLM prompt: given claim statement + evidence, extract
-  subject/object entity pairs with entity type
-- Run Stage 5b after Stage 5 (adjudication), before handoff export
-- Include annotations in `stage_5_verification_result.updated_claim_ledger[]`
+- Add entity extraction stage (Stage 5b) after adjudication
+- LLM prompt: given claim statement + evidence context, extract subject and
+  object entities with name and entity_type
+- Populate `entity_refs: list[EntityReference]` on each ClaimRecord before export
+- `EntityReference(entity_id, name, entity_type)` is already in epistemic-contracts
+- The `shared_export.py` `_load_handoff_stage_based()` passes entity data through
 
-### epistemic-contracts (shared library)
+### epistemic-contracts — NO CHANGE NEEDED
 
-- Add `entity_annotations: list[EntityAnnotation] | None = None` to `ClaimRecord`
-- Define `EntityAnnotation(role: str, name: str, entity_type: str)` dataclass
+`ClaimRecord.entity_refs: list[EntityReference]` already exists.
 
-### onto-canon6 (this repo)
+### onto-canon6 — NO CHANGE NEEDED
 
-- Update `adapters/grounded_research_import.py::import_shared_claims()`:
-  if `claim.entity_annotations` is not None:
-    - create typed role fillers from subject/object annotations
-    - map entity_type strings to onto-canon6 CURIE types (org→`oc:Organization` etc.)
-  else:
-    - import as role-free `shared:fact_claim` (current behavior — backward compatible)
-- Update `load_handoff_claims()` tests in grounded-research to use fixtures with annotations
+`adapters/grounded_research_import.py:56-70` already handles `entity_refs` → role fillers.
 
 ## Acceptance Criteria
 
-1. Palantir handoff.json with entity annotations → `make pipeline-gr` produces
+1. Palantir handoff.json with entity_refs populated → `make pipeline-gr` produces
    `>0` DIGIMON entities and `>0` DIGIMON relationships
-2. EU sanctions handoff.json (no annotations) still imports correctly as role-free claims
+2. EU sanctions handoff.json (no entity_refs) still imports as role-free claims
 3. No regression on existing 562 onto-canon6 tests
-4. grounded-research: 2 new tests for annotated claims round-trip
+4. grounded-research: 2 new tests for entity_refs round-trip
 
 ## Sequencing
 
-This plan is **not yet active**. It activates when:
-- Either: a fresh grounded-research session is started to add entity annotation
-- Or: the team decides Option A (import-side NER) is preferable
-
-Current priority: Plan 0031 (next real investigation) using the research_v3 path,
-which already produces entity-rich output.
+**Not yet active.** Activates when a grounded-research session adds Stage 5b
+entity extraction. Current priority: Plan 0066 (Anduril investigation) using
+the research_v3 path, which already produces entity-rich output via FtM entities.
 
 ## Failure Modes
 
-- LLM entity extraction produces wrong entity types → entity resolution must
-  normalize; document in KNOWLEDGE.md
-- subject/object model doesn't cover all claim structures (e.g., unary claims
-  "Palantir is profitable") → annotations field is None for unary claims, falls
-  back to role-free import
-- epistemic-contracts schema change breaks existing consumers → add field as
-  optional with `None` default to maintain backward compatibility
+- LLM entity extraction produces wrong entity types → entity resolution normalizes;
+  document in KNOWLEDGE.md
+- Unary claims ("Palantir is profitable") → leave entity_refs empty; falls back
+  to role-free import automatically
+- entity_refs populated but entity_type strings don't map to oc: types → import
+  adapter uses the string as-is; entity resolution will normalize later
