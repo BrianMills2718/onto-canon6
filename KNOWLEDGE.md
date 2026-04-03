@@ -405,3 +405,13 @@ token field name differences.
 this is how the Makefile calls it (via $(PYTHON) -m pytest). The bare `pytest`
 command does not add the project root to sys.path, so cross-test imports fail.
 Always invoke via `make test` or `python -m pytest` in this project.
+
+### 2026-04-02 — codex — integration-issue
+`make pipeline-rv3-memo` is now mechanically sound on a real `research_v3`
+memo artifact: the Palantir memo produced `61` shared claims, all `61` were
+submitted, accepted, and promoted, and the results were written under
+`var/pipeline_memo_run/`. But the path still produced `0` canonical entities
+and `0` DIGIMON rows. Shared-claim transport alone is not enough for consumer
+value; the upstream artifact must carry structured entity/role information
+(for example `entity_refs`) or the pipeline must add a downstream extraction
+stage before DIGIMON export.

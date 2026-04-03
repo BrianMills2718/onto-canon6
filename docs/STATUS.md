@@ -18,7 +18,10 @@ and where the repo still has real operational risk.
 
 Current post-cutover program state:
 
-1. Lane 2 consumer adoption is satisfied for the current thin DIGIMON v1 seam;
+1. Lane 2 consumer adoption is only partially satisfied: the graph-backed
+   DIGIMON seam is proven, but the memo-backed `research_v3` shared-claim path
+   still needs richer entity/role structure (`61` Palantir findings -> `61`
+   promoted assertions -> `0` canonical entities -> `0` DIGIMON rows);
 2. Lane 3 schema stability is closed through
    `docs/plans/0026_schema_stability_gate.md`;
 3. Lane 4 now has an explicit promotion policy in
@@ -77,7 +80,9 @@ Current post-cutover program state:
     assertion browse on the real Booz Allen promoted DB; and
 28. Plan `0064` is now complete and proved identity/external-reference-aware
     browse and search on a copy of that real promoted DB with explicitly seeded
-    identity/external-reference rows.
+    identity/external-reference rows; and
+29. Plan `0067` is now active and focused on end-goal convergence: repo truth,
+    memo-path reproducibility, and closing the remaining consumer-value gap.
 
 ## What Is Proven
 

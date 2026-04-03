@@ -46,10 +46,14 @@ The producer side is intentionally replaceable:
 
 The repo is beyond pure design/bootstrap work. It has:
 
-1. a maintained local test surface (551 tests, 0 failures);
-2. two real non-fixture runs (PSYOP Stage 1 and Shield AI WhyGame);
+1. a maintained local test surface (562 collected tests; full suite passing);
+2. multiple non-fixture proofs across text, WhyGame, and cross-project
+   consumer paths;
 3. a proved E2E text -> review -> promotion path;
-4. proved downstream artifact exports and consumer-facing adapter slices.
+4. graph-backed downstream artifact exports and consumer-facing adapter slices;
+5. a memo-backed shared-claim proof that is mechanically correct but still
+   semantically thin (`61` Palantir findings -> `61` promoted assertions ->
+   `0` canonical entities / `0` DIGIMON rows).
 
 Current emphasis is not "recover every capability now." It is "keep the full
 vision visible while making the proved workflow stronger and more usable."
@@ -82,6 +86,9 @@ The highest-signal local proof artifacts today are:
   second-pack composability proof
 - `var/real_runs/2026-03-18_research_agent_shield_ai_whygame/`
   first real adapter-facing WhyGame proof
+- `var/pipeline_memo_run/`
+  real `research_v3` memo -> shared claims -> review/promotion proof
+  (`61` claims promoted; `0` entities / `0` relationships exported)
 
 These are more important than the broader historical run debris under `var/`.
 

@@ -18,7 +18,10 @@ state for downstream consumers.
 
 **═══════════════════════════════════════════════════**
 **  NEVER STOP. NEVER STOP. NEVER STOP.             **
-**  Stopping early IS the failure mode.              **
+**  STOPPING EARLY IS THE FAILURE MODE.              **
+**  PLAN COMPLETE IS NOT A STOP CONDITION.           **
+**  ONE GREEN TEST IS NOT A STOP CONDITION.          **
+**  ONE COMMIT IS NOT A STOP CONDITION.              **
 **═══════════════════════════════════════════════════**
 
 Autonomous runs execute all phases of the active plan continuously without
@@ -54,15 +57,14 @@ is met.
 | Plan acceptance criterion is ambiguous | Use metric proxies defined in plan doc. Document interpretation. |
 | research_v3 completely fails to run | Use Booz Allen fallback graph.yaml (always available at `~/projects/research_v3/output/20260315_190332_.../graph.yaml`) |
 
-**Active plan**: `docs/plans/0032_overnight_sprint.md`
+**Active plan**: `docs/plans/0067_24h_end_goal_convergence_block.md`
 
 **Current sprint phases:**
-- [x] Phase 1: Rename plans 0030/0031 → 0065/0066 (collision fix)
-- [x] Phase 2: Test count 562, config strategy=exact, KNOWLEDGE.md LLM status
-- [x] Phase 3: Plan 0065 entity_refs clarification
-- [x] Phase 4: CLAUDE.md decision tree (this section)
-- [x] Phase 5: Pipeline re-verified (Booz Allen fallback; Anduril blocked by Gemini 429)
-- [x] Phase 6: Docs updated, 562 tests confirmed, pushed
+- [ ] Phase 0: Authority activation (`CLAUDE.md`, plan index, TODO, progress anchor)
+- [ ] Phase 1: Truth and reproducibility hardening
+- [ ] Phase 2: Shared-contract memo export from `research_v3`
+- [ ] Phase 3: Memo-driven pipeline convergence
+- [ ] Phase 4: Real proof and closeout
 
 ## Commands
 
@@ -95,7 +97,7 @@ config/
 
 ## Current State (2026-04-02)
 
-**Architecture proven. Value proposition demonstrated. Cross-project integration working.**
+**Architecture proven. End-goal convergence now depends on consumer-path adoption and reproducibility, not more internal proof loops.**
 
 - 562 tests, 0 failures
 - Bootstrap Phases 0-15 complete. Post-cutover Plans 0024-0028 complete.
@@ -108,7 +110,7 @@ config/
   source-artifact browse (CLI + MCP, Plans 0028/0063/0064)
 - Schema stability gate: 9 compatibility tests across 4 surfaces (Plan 0026)
 - Extraction: compact operational-parity prompt promoted as default (Plan 0062)
-- Default config: `review_mode: llm`, `enable_judge_filter: true`, `require_llm_review: true`
+- Default config: `review_mode: llm`, `enable_judge_filter: true`
 - Model: `gemini/gemini-2.5-flash` (runtime default; gemini-3-flash-preview was target but too slow)
 - Shared contracts: epistemic-contracts library (3 projects wired)
 - ProbLog adapter: available (`onto-canon6 evaluate-rules`), no consumer uses it yet

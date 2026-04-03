@@ -6,17 +6,22 @@ Updated: 2026-04-02
 
 onto-canon6 is a **proven governed-assertion middleware** with:
 
-- 562 tests passing, 0 failures
+- 562 collected tests and the full suite passing locally
 - 100% precision / 100% recall entity resolution (25-doc synthetic corpus)
 - +70% cross-document QA improvement over bare extraction
 - Schema stability gate (9 tests across 4 consumer surfaces)
-- Full pipeline: research_v3 → epistemic-contracts → onto-canon6 → DIGIMON
-  (123 claims → 60 entities + 123 relationships)
+- Graph-backed full pipeline proofs on real artifacts:
+  - Booz Allen: 123 claims -> 60 entities + 123 relationships
+  - Anduril: 22 claims -> 17 entities + 22 relationships
+- Memo-backed shared-claim proof on a real artifact:
+  - Palantir memo: 61 claims -> 61 promoted assertions -> 0 entities + 0 relationships
 - Query/browse surface: entity, assertion, identity, source-artifact browse
 - Compact operational-parity extraction prompt promoted as default
-- Cross-project integration via epistemic-contracts (3 projects wired)
+- Cross-project integration via shared contracts (graph + handoff proven; memo export now wired)
 
-All internal plans (0024-0027) are complete. 35 execution blocks done.
+Historical plans `0024`-`0066` are closed. Plan `0067` is the active
+end-goal convergence block for memo-path truth, reproducibility, and consumer
+value closure.
 
 ## What "Done" Looks Like
 
@@ -35,13 +40,13 @@ onto-canon6 is done when:
 
 | Item | Status | What's Left |
 |------|--------|-------------|
-| Full pipeline E2E | **DONE** | 123 Booz Allen claims through complete chain |
+| Full pipeline E2E | **PARTIAL** | Graph-backed proof is done (Booz Allen, Anduril). Memo-backed path now runs through `make pipeline-rv3-memo`, but the Palantir memo still yields `0` entities / `0` relationships because claims arrive as free text without reusable role/entity structure. |
 | grounded-research → onto-canon6 E2E | **DONE** | 8 EU sanctions claims stored |
-| research_v3 → shared contracts | **DONE** | 123 claims exported with FtM IDs |
+| research_v3 → shared contracts | **DONE** | `load_graph_claims()` and `load_memo_claims()` both export `ClaimRecord`s. Remaining gap is semantic richness, not transport. |
 | Evidence quality utils | **DONE** | estimate_recency + detect_staleness extracted |
 | LLM resolution on real corpus | **DONE** | 1 merge found (Booz Allen name variant). Confidence weight fix landed. |
 | Source-artifact query | **DONE** | list-sources, search-sources, get-source (CLI + MCP) |
-| One-command consumer flow | **DONE** | make pipeline INPUT=graph.yaml |
+| One-command consumer flow | **PARTIAL** | `make pipeline INPUT=graph.yaml`, `make pipeline-gr INPUT=handoff.json`, and `make pipeline-rv3-memo INPUT=memo.yaml` all exist. Memo-driven DIGIMON value is still unresolved. |
 | grounded-research pipeline | **DONE** | make pipeline-gr INPUT=handoff.json |
 | Anduril investigation (new domain) | **DONE** | 22 claims, 17 entities (Lattice, Altius, Barracuda, Ghost, Roadrunner, Brian Schimpf, Trae Stephens + contracts), 22 rels. Defense tech domain proven. |
 
@@ -76,7 +81,7 @@ onto-canon6 is done when:
 | From | To | Contract | Status |
 |------|-----|----------|--------|
 | grounded-research | epistemic-contracts | `load_handoff_claims()` → `ClaimRecord` | Proven |
-| research_v3 | epistemic-contracts | `load_graph_claims()` → `ClaimRecord` | Proven |
+| research_v3 | epistemic-contracts | `load_graph_claims()` / `load_memo_claims()` → `ClaimRecord` | Graph proven; memo proven mechanically |
 | epistemic-contracts | onto-canon6 | `import_shared_claims()` → `CandidateAssertionImport` | Proven |
 | onto-canon6 | DIGIMON | `export-digimon` → `entities.jsonl` / `relationships.jsonl` | Proven |
 | onto-canon6 | Foundation IR | `foundation_assertion_export.py` | Proven |
@@ -84,8 +89,8 @@ onto-canon6 is done when:
 ## Key Decisions In Effect
 
 1. **Model**: `gemini/gemini-2.5-flash` (runtime default; gemini-3-flash-preview was target but ~30-60s/call in production)
-2. **Config**: `review_mode: llm`, `enable_judge_filter: true`, `require_llm_review: true`
-3. **Resolution**: `default_strategy: exact` with LLM review of all merges
+2. **Config**: `review_mode: llm`, `enable_judge_filter: true` (`require_llm_review` is not a real config field)
+3. **Resolution**: `default_strategy: exact`; LLM merge review stays non-default until the recall gate passes
 4. **Shared contracts**: epistemic-contracts library (not llm_client)
 5. **ProbLog**: stays in onto-canon6 until second consumer
 6. **DIGIMON**: first consumer, thin v1 seam (flat JSONL export/import)

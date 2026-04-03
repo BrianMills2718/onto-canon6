@@ -29,23 +29,14 @@ OUTPUT ?= json
 .PHONY: test test-quick check dev-setup verify-setup smoke
 
 test:  ## Run full test suite
-	@$(PYTHON) -m pytest tests/ -v \
-		--ignore=tests/integration/test_notebook_process.py \
-		--ignore=tests/adapters/test_digimon_export.py \
-		--ignore=tests/integration/test_cli_flow.py
+	@$(PYTHON) -m pytest -q
 
 test-quick:  ## Run tests (no traceback)
-	@$(PYTHON) -m pytest tests/ -q --tb=no \
-		--ignore=tests/integration/test_notebook_process.py \
-		--ignore=tests/adapters/test_digimon_export.py \
-		--ignore=tests/integration/test_cli_flow.py
+	@$(PYTHON) -m pytest -q --tb=no
 
 check:  ## Run tests + type check + source lint
 	@echo "Running tests..."
-	@$(PYTHON) -m pytest tests/ -q --tb=short \
-		--ignore=tests/integration/test_notebook_process.py \
-		--ignore=tests/adapters/test_digimon_export.py \
-		--ignore=tests/integration/test_cli_flow.py
+	@$(PYTHON) -m pytest -q --tb=short
 	@echo ""
 	@echo "Running mypy..."
 	@$(PYTHON) -m mypy src
@@ -246,6 +237,12 @@ ifndef INPUT
 	$(error INPUT is required: make pipeline INPUT=path/to/graph.yaml)
 endif
 	@$(PYTHON) scripts/full_pipeline_e2e.py --graph $(INPUT) --output-dir var/pipeline_run --strategy $(or $(STRATEGY),exact)
+
+pipeline-rv3-memo:  ## Full pipeline: research_v3 memo.yaml → shared claims → onto-canon6 → DIGIMON export
+ifndef INPUT
+	$(error INPUT is required: make pipeline-rv3-memo INPUT=path/to/memo.yaml)
+endif
+	@$(PYTHON) scripts/full_pipeline_e2e.py --memo $(INPUT) --output-dir var/pipeline_memo_run --strategy $(or $(STRATEGY),exact)
 
 pipeline-gr:  ## Full pipeline: grounded-research handoff.json → onto-canon6 → DIGIMON export
 ifndef INPUT

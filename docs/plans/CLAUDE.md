@@ -8,6 +8,7 @@ This subtree owns active gaps, acceptance criteria, and verification notes.
 
 | # | Plan | Status |
 |---|------|--------|
+| 0067 | [24h End-Goal Convergence Block](0067_24h_end_goal_convergence_block.md) | Active |
 | 0065 | [Entity Extraction from Claims](0065_entity_extraction_from_claims.md) | Planned (activates when grounded-research adds Stage 5b entity extraction) |
 | 0020 | [Vision Gap Closure](0020_vision_gap_closure.md) | Deferred (Gaps 1-9 complete; Gap 10 blocked on OpenClaw runtime) |
 | 0025a | [Entity Resolution Scale-Out](0025a_entity_resolution_scale_out.md) | Deferred (activates when corpus exceeds 500 docs) |
