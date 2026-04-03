@@ -82,7 +82,25 @@ Current post-cutover program state:
 ## What Is Proven
 
 `onto-canon6` currently proves a narrow review-and-governance slice built on a
-typed ontology runtime:
+typed ontology runtime.
+
+**Quick navigation:**
+- [Ontology Runtime & Validation](#group-ontology) — items 1-12
+- [Text-Grounded Import](#group-import) — items 13-15
+- [Extraction & Evaluation](#group-extraction) — items 16-22
+- [CLI Surface & Notebooks](#group-cli) — items 23-28
+- [Multi-Pack Proof](#group-packs) — items 29-30
+- [Artifact Lineage](#group-lineage) — items 31-34
+- [Epistemic Extension](#group-epistemic) — items 35-38
+- [Governed Bundle Export](#group-bundle) — items 39-42
+- [Canonical Graph](#group-graph) — items 43-47
+- [Stable Identity](#group-identity) — items 48-54
+- [Semantic Canonicalization](#group-semantic) — items 55-58
+- [MCP & WhyGame Adapter](#group-mcp) — items 59-63
+- [Promoted-Assertion Epistemic](#group-promoted-epistemic) — items 64-68
+- [Post-Bootstrap: Extraction Quality & Cross-Project Pipeline](#group-post-bootstrap) — items 69-90
+
+### Ontology Runtime & Validation {#group-ontology}
 
 1. typed ontology policy contracts;
 2. deterministic `open|closed|mixed` unknown-item handling;
@@ -96,10 +114,14 @@ typed ontology runtime:
 10. a typed report surface for filtered candidate and proposal views;
 11. explicit overlay application records with deterministic idempotent writeback;
 12. overlay-aware validation after accepted predicate additions are applied;
+### Text-Grounded Import {#group-import}
+
 13. typed text-grounded candidate-import contracts;
 14. persisted optional source text, optional claim text, and first-class
     evidence spans on candidate assertions;
 15. deterministic evidence-span verification before persistence;
+### Extraction & Evaluation {#group-extraction}
+
 16. one `llm_client`-backed raw-text extraction service that uses a prompt
     asset plus structured output to produce candidate assertions;
 17. deterministic end-to-end extraction into the existing review workflow
@@ -112,6 +134,8 @@ typed ontology runtime:
     calls;
 22. shared experiment run, item, and aggregate logging for the live benchmark
     path;
+### CLI Surface & Notebooks {#group-cli}
+
 23. a thin operational CLI over extraction, review, proposal, and overlay
     actions;
 24. JSON-first CLI output suitable for scripting and notebook inspection;
@@ -121,10 +145,14 @@ typed ontology runtime:
 27. a machine-readable notebook registry that keeps phase contracts outside the
     notebook;
 28. a local notebook-process validator plus notebook execution proof;
+### Multi-Pack Proof {#group-packs}
+
 29. one local second-pack proof with `dodaf_minimal` strict and mixed profiles
     over the same pack vocabulary;
 30. proof that the second pack uses the same runtime, review, overlay, and CLI
     surfaces without core branching;
+### Artifact Lineage {#group-lineage}
+
 31. one bounded artifact subsystem with typed `source`, `derived_dataset`, and
     `analysis_result` records;
 32. candidate-centered artifact support links plus recursive lineage edges over
@@ -132,6 +160,8 @@ typed ontology runtime:
 33. one typed lineage report surface that exposes direct links and ancestor
     artifacts without hidden metadata blobs;
 34. live notebook proof for the narrow Phase 8 artifact-lineage slice;
+### Epistemic Extension (Phase 9) {#group-epistemic}
+
 35. one extension-local epistemic subsystem with typed confidence and
     supersession records over accepted candidate assertions;
 36. one typed epistemic report surface that derives current candidate status
@@ -139,6 +169,8 @@ typed ontology runtime:
 37. loud failures when epistemic state is attempted on candidates that are not
     accepted;
 38. live notebook proof for the narrow Phase 9 epistemic-extension slice;
+### Governed Bundle Export {#group-bundle}
+
 39. one typed governed-bundle export surface that composes accepted candidate
     assertions, linked governance state, candidate provenance, artifact
     lineage, and extension-local epistemic state;
@@ -148,6 +180,8 @@ typed ontology runtime:
     workflow;
 42. one canonical journey notebook that now ends in a real governed export
     artifact rather than a provisional workflow plan;
+### Canonical Graph {#group-graph}
+
 43. one narrow canonical-graph subsystem with durable promoted assertion,
     promoted entity, and promoted role-filler tables;
 44. explicit promotion from accepted candidates into deterministic durable
@@ -160,6 +194,8 @@ typed ontology runtime:
 47. one live notebook proof for the first canonical-graph recovery slice;
 48. one canonical journey notebook phase that now continues from governed
     bundle export into explicit graph promotion;
+### Stable Identity {#group-identity}
+
 49. one bounded stable-identity subsystem with explicit local identity rows,
     identity memberships, and external-reference records over promoted
     entities;
@@ -171,6 +207,8 @@ typed ontology runtime:
 53. one live notebook proof for the first stable-identity slice;
 54. one canonical journey notebook phase that now continues from graph
     promotion into stable identity creation and external-reference state;
+### Semantic Canonicalization {#group-semantic}
+
 55. one bounded semantic canonicalization subsystem that explicitly replaces
     the v1 hard semantic stack with pack-driven predicate and role
     canonicalization over promoted assertions;
@@ -181,6 +219,8 @@ typed ontology runtime:
 58. one live notebook proof for the first semantic canonicalization slice, and
     a canonical journey notebook phase that now continues from stable identity
     into explicit semantic repair;
+### MCP Server & WhyGame Adapter {#group-mcp}
+
 59. one thin FastMCP server over the proved successor services rather than a
     second workflow runtime;
 60. one explicit successor-local WhyGame relationship adapter that imports
@@ -191,6 +231,8 @@ typed ontology runtime:
     keep imported provenance visible through governed bundles;
 63. integration proof that the MCP surface can import WhyGame facts, review
     candidates, promote candidates, and export a governed bundle;
+### Promoted-Assertion Epistemic (Phase 15) {#group-promoted-epistemic}
+
 64. one broadened extension-local promoted-assertion epistemic slice with
     explicit `active`, `weakened`, and `retracted` disposition events;
 65. derived promoted-assertion `superseded` state that still stays grounded in
@@ -287,7 +329,7 @@ Planning companion:
 70. json_schema response_format with field-level descriptions as a prompting
     surface (18.8% → 87.8% resolution via schema + prompt alone);
 
-## Post-Bootstrap Extraction Quality Work (2026-03-24)
+### Post-Bootstrap: Extraction Quality & Cross-Project Pipeline {#group-post-bootstrap}
 
 71. discriminated union filler types enforce entity_type and name at JSON
     Schema decode time — LLMs cannot produce null entity_type on entity
@@ -479,45 +521,31 @@ The authoritative parity ledger for the broader successor now lives in
    semantic adapters and richer pack metadata are still not implemented.
 11. Phase 15 recovered promoted-assertion corroboration/tension and broader
    disposition state, but temporal/inference are still explicitly deferred.
-12. First-pass extraction quality is below baseline: 37.5% acceptance rate
-   on Stage 1 corpus, with distinct failure modes (alias self-references,
-   wrong predicate choices, unattributed opinion claims). Active plan:
-   `docs/plans/0014_extraction_quality_baseline.md`.
+12. ~~First-pass extraction quality is below baseline~~ RESOLVED (Plan 0014
+   complete, 2026-04-02). Compact operational-parity prompt is now default;
+   two real-chunk verifications complete (mean_score=0.63916).
 
 ## Immediate Next Step
 
-The current roadmap is now proved through Phase 15.
+Updated 2026-04-02 (session 2). All bootstrap phases and post-cutover plans
+0024–0028 are complete. Extraction quality baseline (Plan 0014) is proven.
 
-The first real non-fixture workflow run has now been completed over local PSYOP
-research outputs. See:
+**Current priorities (see HANDOFF.md for session state):**
 
-1. `docs/plans/0011_first_real_run_psyop_stage1.md`
-2. `docs/runs/2026-03-18_psyop_stage1_run_summary.md`
-3. `docs/runs/2026-03-18_psyop_stage1_friction_log.md`
+1. **Entity extraction from grounded-research claims** (Plan 0030 — planned):
+   grounded-research `shared:fact_claim` assertions are role-free → 0 DIGIMON
+   entities. Next step: grounded-research adds entity annotation stage so the
+   handoff carries subject/object entity pairs that onto-canon6 can map to role fillers.
 
-A second real cross-project consumer run has also been completed over local
-`research-agent` Shield AI relationship output. See:
+2. **Next real investigation** (Plan 0031 — planned): run the full pipeline on
+   a fresh OSINT question in a new domain (Anduril Industries defense contracts)
+   end-to-end, producing DIGIMON-queryable entity graph output.
 
-1. `docs/plans/0012_research_agent_shield_ai_whygame_run.md`
-2. `docs/runs/2026-03-18_research_agent_shield_ai_whygame_run_summary.md`
-3. `docs/runs/2026-03-18_research_agent_shield_ai_whygame_friction_log.md`
+3. **Entity resolution at scale** (Plan 0025a — deferred until corpus >500 docs).
 
-The immediate next step is the **extraction quality baseline** work described
-in `docs/plans/0014_extraction_quality_baseline.md`. This is driven by
-Stage 1 friction log entries 5 and 7:
-
-1. prompt hardening for observed error patterns (alias self-references,
-   predicate disambiguation, entity type boundaries);
-2. typed-but-unidentified entity fillers at the extraction boundary so the
-   model can express “I know this is a person but I can't name them”;
-3. profile-level policy for whether unidentified entity fillers pass
-   validation — strict profiles reject them, permissive profiles let them
-   through to review;
-4. prompt rendering of the active unidentified-filler policy.
-
-The target is >50% acceptance rate on the Stage 1 corpus, not perfection.
-The review workflow exists precisely because first-pass extraction will
-never be perfect.
+Historical first real runs (now archived):
+- `docs/plans/0011_first_real_run_psyop_stage1.md`
+- `docs/plans/0012_research_agent_shield_ai_whygame_run.md`
 
 Broader roadmap rules remain:
 
