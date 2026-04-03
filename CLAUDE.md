@@ -57,10 +57,10 @@ is met.
 **Active plan**: `docs/plans/0032_overnight_sprint.md`
 
 **Current sprint phases:**
-- [ ] Phase 1: Rename plans 0030/0031 → 0065/0066 (collision fix)
-- [ ] Phase 2: Test count 562, config strategy=exact, KNOWLEDGE.md LLM status
-- [ ] Phase 3: Plan 0065 entity_refs clarification
-- [ ] Phase 4: CLAUDE.md decision tree (this section)
+- [x] Phase 1: Rename plans 0030/0031 → 0065/0066 (collision fix)
+- [x] Phase 2: Test count 562, config strategy=exact, KNOWLEDGE.md LLM status
+- [x] Phase 3: Plan 0065 entity_refs clarification
+- [x] Phase 4: CLAUDE.md decision tree (this section)
 - [ ] Phase 5: Run Anduril investigation (Plan 0066) + verify
 - [ ] Phase 6: Post-investigation docs + push all
 
