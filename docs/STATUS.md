@@ -356,7 +356,7 @@ Planning companion:
 
 ## What Is Not Proven Yet
 
-Updated 2026-04-02.
+Updated 2026-04-02 (session 2).
 
 Resolved since last update:
 - Extraction quality: compact default promoted (Plan 0062), empty-roles fixed
@@ -372,6 +372,15 @@ Resolved since last update:
 - DIGIMON weight: non-unity confidence flows through (6 distinct weights)
 - Cross-investigation conflict policy: ADR 0024 adopted (flag-only in v1)
 - Role-free assertion promotion: claims without entity_refs now promote
+
+Additional resolved (session 2):
+- Extraction quality baseline PROVEN: two real-chunk verifications complete,
+  mean_score=0.63916 on psyop_eval_slice_v3 (Plan 0014 COMPLETE)
+- Query/browse surface COMPLETE: 8 CLI + MCP commands, source-artifact
+  browse/search/get landed (Plans 0028/0063/0064 all complete)
+- Grounded-research pipeline: `make pipeline-gr INPUT=handoff.json` extends
+  cross-project pipeline to grounded-research handoff.json input
+- Active plans reduced to 1: only Plan 0020 remains (Gap 10 deferred/OpenClaw)
 
 Still missing:
 
