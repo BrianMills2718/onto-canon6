@@ -379,14 +379,14 @@ file list first — numbers 0029-0064 are all occupied by 24h execution blocks.
 Next free numbers: 0065+.
 
 ### 2026-04-02 — claude-code — integration-issue
-Gemini API rate limit (429 RESOURCE_EXHAUSTED) hit during Plan 0066 Anduril
-investigation attempt. research_v3 investigation for Anduril Industries failed
-at goal decomposition stage. Two retry attempts with 60s gap both failed.
-Fallback: Booz Allen Hamilton graph.yaml used for pipeline proof instead.
+Gemini API daily quota exhausted during Plan 0066 Anduril investigation.
+Both gemini-2.5-flash AND gemini-2.5-flash-lite returned 429 RESOURCE_EXHAUSTED
+simultaneously — confirming this is account-level daily quota, not per-model.
+4 attempts total failed (2x flash, 1x flash-lite, 1x bare retry).
+Fallback: Booz Allen Hamilton graph.yaml used for pipeline proof.
 Pipeline verified: 123 claims → 60 entities + 123 relationships (STRATEGY=exact).
-STRATEGY=llm also failed at the LLM review step due to same rate limit.
-Action: Retry Anduril investigation when Gemini quota resets. Plan 0066 remains
-open — pipeline mechanics proven but domain investigation not yet complete.
+Action: Retry Anduril investigation next day when Gemini quota resets (~midnight Pacific).
+Plan 0066 remains open — pipeline mechanics proven, domain investigation pending.
 
 ### 2026-04-02 — claude-code — best-practice
 `pytest` (bare) fails with ModuleNotFoundError for tests that do
