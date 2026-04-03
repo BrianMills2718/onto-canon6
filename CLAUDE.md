@@ -124,6 +124,24 @@ config/
 - Shared contracts: epistemic-contracts library (3 projects wired)
 - ProbLog adapter: available (`onto-canon6 evaluate-rules`), no consumer uses it yet
 
+## Documented Open Uncertainty (2026-04-03)
+
+This is intentionally unresolved. Do not treat it as decided unless a later
+plan closes it with proof.
+
+- **Runtime promotion is still open.** `research_v3/config_loop_claude_runtime.yaml`
+  is now a proved option for contract-style investigations, but it is not yet
+  promoted as the default runtime for that class of work.
+- **Stop behavior is still open.** Fresh contract investigations can now
+  produce downstream-usable memo and graph structure before loop confidence is
+  high enough to stop. It is not yet decided whether the loop should stop once
+  graph value is already present, or continue until the current confidence gate
+  is met.
+- **Temporary operating rule.** Treat the Claude runtime as a verified option,
+  not a global default. Treat proof-grade memo checkpoints as valid downstream
+  consumer artifacts when they already satisfy graph acceptance, but do not
+  describe them as completed final-report runs.
+
 - **Extraction is a producer, not core.** Don't couple core governance logic
   to extraction-specific assumptions.
 - **Resolution strategies are consumer-chosen.** onto-canon6 provides

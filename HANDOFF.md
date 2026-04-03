@@ -109,6 +109,16 @@ The remaining gap is not "can a fresh memo work?" It is:
   memo proof, even though the observed checkpoint cost remained low
 - that tradeoff is now real evidence, not speculation
 
+### Runtime promotion vs. stop-policy decision is intentionally open
+- it is not yet decided whether `config_loop_claude_runtime.yaml` should be
+  promoted beyond proof use for contract-style investigations
+- it is also not yet decided whether contract-style runs should stop once they
+  already have enough memo/entity structure for downstream graph use, even if
+  reflect confidence remains below the normal stop threshold
+- temporary rule: treat the Claude profile as a proved option, not the default;
+  treat proof-grade memo checkpoints as acceptable downstream consumer inputs,
+  but do not describe them as completed final-report runs
+
 ### FARA live tests remain external-network sensitive
 - the final `research_v3` suite passed only after broadening the FARA skip
   policy from just upstream `5xx` to the full `httpx.RequestError` family
