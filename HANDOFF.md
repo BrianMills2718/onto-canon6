@@ -1,33 +1,33 @@
-# Handoff: onto-canon6 — 2026-04-02
+# Handoff: onto-canon6 — 2026-04-02 (session 2)
 
 ## Current State
 
 - **558 tests, 0 failures**
 - Tier 1: **all DONE**
-- Tier 2: materially advanced (conflict policy ADR, role-free promotion, weight fix)
-- Active plans: 0014 (extraction quality), 0020 (vision gaps), 0028 (queryability)
+- Tier 2: **all DONE** (conflict policy ADR, role-free promotion, weight fix, extraction quality baseline, diverse domain)
+- Active plans: none (0025a deferred — activates at 500+ docs)
 - No active 24h execution block
 - DIGIMON consumer verified: 60 nodes + 26 edges from Booz Allen pipeline
-- Adapter tests in grounded-research (8) and research_v3 (11) repos
+- Adapter tests in grounded-research (10) and research_v3 (11) repos
 
-## Recent Work (2026-04-02)
+## Recent Work (2026-04-02, session 2)
 
-- CLAUDE.md rewritten (502 → ~155 lines)
-- Source-artifact browse/query (list/search/get, CLI + MCP)
-- One-command pipeline: `make pipeline INPUT=graph.yaml`
-- DIGIMON weight fix: confidence flows through (6 distinct weights)
-- Role-free assertion promotion
-- Cross-investigation conflict policy (ADR 0024)
-- 7 integration tests for cross-project pipeline
-- 58 intermediate run records archived
-- STATUS.md "What Is Not Proven" updated
-- DIGIMON consumer import verified on real data
-- Adapter tests added to grounded-research (8) and research_v3 (11)
+- Plan 0014 closed: extraction quality baseline proven (chunk_001 + chunk_002, mean_score=0.64)
+- Plan 0028 closed: query/browse surface complete (8 CLI + MCP commands)
+- Plan 0020 deferred: Gaps 1-9 complete; Gap 10 blocked on OpenClaw runtime
+- grounded-research pipeline added: `make pipeline-gr INPUT=handoff.json`
+- `load_handoff_claims()` extended: handles both Tyler V1 and stage-based formats
+- Stage-based confidence: `min(evidence_label_weight, status_weight)` — contested capped
+- Palantir investigation pipeline validated: 22 claims, stage-based format, cross-domain
+- 2 new grounded-research tests for stage-based format (10 total, all pass)
+- KNOWLEDGE.md: PSYOP analytical prose behavior documented
+- ROADMAP.md Tier 2 updated: all items DONE
 
 ## What's Next
 
-1. **Run a new investigation end-to-end** — fresh grounded-research run through
-   the complete pipeline (not reusing existing outputs)
+1. **Entity extraction from claim statements** — grounded-research claims produce 0
+   DIGIMON entities because `shared:fact_claim` is role-free; adding NER over
+   claim text would enable entity-role pairs from that pipeline
 2. **Broader domain corpora** — run pipeline on non-lobbying/non-sanctions data
 3. **Entity resolution scale-out** (Plan 0025a) — when corpus exceeds 500 docs
 4. **ProbLog to llm_client** — when second consumer needs inference
