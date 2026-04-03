@@ -360,3 +360,20 @@ For grounded-research → onto-canon6 pipeline: use
 `make pipeline-gr INPUT=path/to/handoff.json`. The `full_pipeline_e2e.py`
 script now accepts `--handoff` flag as alternative to `--graph` (research_v3).
 Source is autodetected by flag; source_label in results shows filename.
+
+### 2026-04-02 — claude-code — schema-gotcha
+Entity resolution `default_strategy` was set to `llm` in config.yaml but LLM
+strategy has NOT passed the promotion gate. KNOWLEDGE.md entries from 2026-04-01
+document that the hardened LLM reached 1.00 precision and 0 false merges but
+benchmark recall fell to 0.308 — below the promotion gate. The config was
+corrected to `default_strategy: exact` (Plan 0032 Phase 2). Do not change it
+back to `llm` until Plan 0025 Phase 5 (LLM recall recovery) is complete and
+the promotion gate is explicitly passed.
+
+### 2026-04-02 — claude-code — schema-gotcha
+Plan numbering: Plans 0029, 0030, 0031 in the docs/plans/ directory each had
+TWO files (old 24h execution blocks + new sprint/planning docs). The new
+planning docs were renamed to 0065 (entity extraction) and 0066 (next
+investigation) in Plan 0032 Phase 1. When creating new plans, check existing
+file list first — numbers 0029-0064 are all occupied by 24h execution blocks.
+Next free numbers: 0065+.

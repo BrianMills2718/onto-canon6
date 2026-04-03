@@ -90,7 +90,10 @@ evaluation:
       max_candidates_per_case: 2
       max_evidence_spans_per_candidate: 1
 resolution:
-  default_strategy: llm
+  # exact is the proven safe floor (1.00 precision). LLM reached 1.00 precision
+  # but failed the recall gate (0.308 vs required threshold). Reactivate llm
+  # when Plan 0025 Phase 5 promotion gate is satisfied.
+  default_strategy: exact
   model_override: gemini/gemini-2.5-flash
   max_budget_usd: 0.50
   prompt_template: prompts/resolution/cluster_entities.yaml

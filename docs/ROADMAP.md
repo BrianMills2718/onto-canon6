@@ -6,7 +6,7 @@ Updated: 2026-04-02
 
 onto-canon6 is a **proven governed-assertion middleware** with:
 
-- 558 tests passing, 0 failures
+- 562 tests passing, 0 failures
 - 100% precision / 100% recall entity resolution (25-doc synthetic corpus)
 - +70% cross-document QA improvement over bare extraction
 - Schema stability gate (9 tests across 4 consumer surfaces)

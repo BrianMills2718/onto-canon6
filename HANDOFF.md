@@ -2,7 +2,7 @@
 
 ## Current State
 
-- **558 tests, 0 failures**
+- **562 tests, 0 failures**
 - Tier 1: **all DONE**
 - Tier 2: **all DONE** (conflict policy ADR, role-free promotion, weight fix, extraction quality baseline, diverse domain)
 - Active plans: none (0025a deferred — activates at 500+ docs)

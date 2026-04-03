@@ -97,7 +97,7 @@ config/
 
 **Architecture proven. Value proposition demonstrated. Cross-project integration working.**
 
-- 558 tests, 0 failures
+- 562 tests, 0 failures
 - Bootstrap Phases 0-15 complete. Post-cutover Plans 0024-0028 complete.
 - Entity resolution: 100% precision, 100% recall on 25-doc synthetic corpus
 - Cross-doc QA: +70% vs bare extraction (90% vs 20%)
