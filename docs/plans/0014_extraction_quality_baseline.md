@@ -1,6 +1,6 @@
 # Extraction Quality Baseline
 
-Status: active
+Status: complete (2026-04-02)
 
 Last updated: 2026-04-02
 Workstream: post-bootstrap extraction R&D (ADR-0022)
@@ -613,3 +613,30 @@ Build in this order:
 2. weakening extraction grounding to paper over document-level inference gaps;
 3. adding new ontology/runtime features before the current extraction-quality
    questions are resolved.
+
+### Phase C Second Real-Chunk Verification (2026-04-02)
+
+Second bounded real-chunk verification run on
+`01_stage1_query2__chunk_001.md` (mixed introductory prose + organizational
+table, Stage 1 query 2 of the PSYOP corpus):
+
+1. 2 valid candidates extracted — both `oc:belongs_to_organization`;
+2. 2 of 2 accepted — verdict **positive**;
+3. 0 structural errors, 0 hard validation failures;
+4. Analytical prose sections (USSOCOM role, command structure narrative)
+   correctly produced no extractable candidates — this is expected semantic
+   behavior, not structural breakage.
+
+Combined with the Phase B chunk_002 result (8/9 accepted), the plan's
+acceptance criterion 3 is now satisfied: two explicit chunks with reviewable
+output and no recurring structural breakage.
+
+Separately, the `limit_capability` predicate family correctly policy-rejects
+on purely evaluative prose (chunk_010 / chunk_003), which confirms criterion
+4: remaining misses are semantic/domain (evaluative prose is out-of-scope),
+not schema or grounding failures.
+
+**All four acceptance criteria are now met. Plan 0014 is complete.**
+
+Extraction improvement beyond this baseline (compact family advancement,
+chunk_003 semantic recovery) continues under successor plans (0059–0064 series).
