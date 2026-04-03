@@ -425,3 +425,13 @@ and `0` DIGIMON rows. Shared-claim transport alone is not enough for consumer
 value; the upstream artifact must carry structured entity/role information
 (for example `entity_refs`) or the pipeline must add a downstream extraction
 stage before DIGIMON export.
+
+### 2026-04-03 — codex — best-practice
+A fresh live `research_v3` memo can now produce graph value without repair
+when the loop runs under `config_loop_claude_runtime.yaml`. The proof-worthy
+artifact was the stable round-4 checkpoint snapshot
+`memo.proof_0069_round4.yaml`, which already contained `34` persisted entities
+and yielded `34` DIGIMON entities plus `30` DIGIMON relationships downstream.
+For contract-style investigations, the live checkpoint may become consumer-useful
+before reflect confidence is high enough to stop, so document clearly when a
+proof uses a checkpoint snapshot instead of a completed final report.

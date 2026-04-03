@@ -60,14 +60,15 @@ is met.
 | research_v3 completely fails to run | Use Booz Allen fallback graph.yaml (always available at `~/projects/research_v3/output/20260315_190332_.../graph.yaml`) |
 
 **Active plan**: none currently open. Most recently completed:
-`docs/plans/0068_24h_memo_semantic_lift_block.md`
+`docs/plans/0069_24h_non_gemini_fresh_memo_proof.md`
 
 **Current sprint phases:**
 - [x] Phase 0: Authority activation (`CLAUDE.md`, plan index, TODO, progress anchor)
-- [x] Phase 1: research_v3 final memo entity persistence
-- [x] Phase 2: Shared-contract memo entity export
-- [x] Phase 3: onto-canon6 graph proof
-- [x] Phase 4: Truth surfaces and closeout
+- [x] Phase 1: research_v3 fresh-run config override support
+- [x] Phase 2: Claude runtime profile and verification
+- [x] Phase 3: fresh live memo proof
+- [x] Phase 4: onto-canon6 pipeline proof
+- [x] Phase 5: Truth surfaces and closeout
 
 ## Commands
 
@@ -98,9 +99,9 @@ docs/adr/         # 26 ADRs
 config/
 ```
 
-## Current State (2026-04-02)
+## Current State (2026-04-03)
 
-**Architecture proven. The first memo-path consumer-value proof is now closed; the next gap is fresh-loop hardening and richer consumer semantics, not more internal bootstrap work.**
+**Architecture proven. A fresh live non-Gemini memo checkpoint now produces graph value without repair; the next gap is deciding runtime promotion, tightening loop stop behavior, and deciding whether thin shared-assertion semantics are sufficient.**
 
 - 562 tests, 0 failures
 - Bootstrap Phases 0-15 complete. Post-cutover Plans 0024-0028 complete.
@@ -110,6 +111,9 @@ config/
   → onto-canon6 → DIGIMON (60 entities, 123 relationships)
 - Memo path proven: real Palantir memo (61 findings) → shared contracts →
   onto-canon6 → DIGIMON (40 entities, 61 relationships)
+- Fresh live memo checkpoint proven: Palantir round-4 Claude checkpoint
+  (34 findings) → shared contracts → onto-canon6 → DIGIMON
+  (34 entities, 30 relationships)
 - grounded-research pipeline proven: Palantir (22 claims) + EU sanctions (8 claims)
 - Query/browse surface: entity search, assertion search, identity browse,
   source-artifact browse (CLI + MCP, Plans 0028/0063/0064)

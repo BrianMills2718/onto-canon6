@@ -1,6 +1,6 @@
 # onto-canon6 Roadmap
 
-Updated: 2026-04-02
+Updated: 2026-04-03
 
 ## Where We Are
 
@@ -15,12 +15,15 @@ onto-canon6 is a **proven governed-assertion middleware** with:
   - Anduril: 22 claims -> 17 entities + 22 relationships
 - Memo-backed shared-claim proof on a real artifact:
   - Palantir memo: 61 claims -> 61 promoted assertions -> 40 entities + 61 relationships
+- Fresh live memo-backed checkpoint proof under Claude runtime:
+  - Palantir round-4 checkpoint: 34 claims -> 34 promoted assertions -> 34 entities + 30 relationships
 - Query/browse surface: entity, assertion, identity, source-artifact browse
 - Compact operational-parity extraction prompt promoted as default
 - Cross-project integration via shared contracts (graph + handoff proven; memo path now graph-producing)
 
-Historical plans `0024`-`0068` are closed. The next unresolved work is not
-transport but stronger consumer semantics and fresh-loop operational proof.
+Historical plans `0024`-`0069` are closed. The next unresolved work is not
+transport but stronger consumer semantics, loop stop behavior, and runtime
+promotion decisions.
 
 ## What "Done" Looks Like
 
@@ -39,13 +42,13 @@ onto-canon6 is done when:
 
 | Item | Status | What's Left |
 |------|--------|-------------|
-| Full pipeline E2E | **PARTIAL** | Graph-backed proof is done (Booz Allen, Anduril). Memo-backed proof now yields `40` entities + `61` relationships on the real Palantir memo after the final-entity persistence/backfill lift. Remaining gap: rerun a fresh live investigation under the default runtime and decide whether generic `shared:assertion` edges are sufficient. |
+| Full pipeline E2E | **PARTIAL** | Graph-backed proof is done (Booz Allen, Anduril). Memo-backed proof now yields `40` entities + `61` relationships on the repaired Palantir memo and `34` entities + `30` relationships on a fresh live Claude-backed round-4 checkpoint without repair. Remaining gap: decide whether to promote the Claude runtime profile, tune loop stop behavior for contract-style questions, and decide whether generic `shared:assertion` edges are sufficient. |
 | grounded-research → onto-canon6 E2E | **DONE** | 8 EU sanctions claims stored |
 | research_v3 → shared contracts | **DONE** | `load_graph_claims()` and `load_memo_claims()` both export `ClaimRecord`s, and the memo path now carries `entity_refs` that produce graph objects downstream. Remaining gap is richer relation semantics, not transport. |
 | Evidence quality utils | **DONE** | estimate_recency + detect_staleness extracted |
 | LLM resolution on real corpus | **DONE** | 1 merge found (Booz Allen name variant). Confidence weight fix landed. |
 | Source-artifact query | **DONE** | list-sources, search-sources, get-source (CLI + MCP) |
-| One-command consumer flow | **PARTIAL** | `make pipeline INPUT=graph.yaml`, `make pipeline-gr INPUT=handoff.json`, and `make pipeline-rv3-memo INPUT=memo.yaml` all exist. Memo-driven DIGIMON value is now proven (`40` entities + `61` relationships), but the fresh-live default-runtime proof still needs to be rerun. |
+| One-command consumer flow | **PARTIAL** | `make pipeline INPUT=graph.yaml`, `make pipeline-gr INPUT=handoff.json`, and `make pipeline-rv3-memo INPUT=memo.yaml` all exist. Memo-driven DIGIMON value is now proven on both repaired and fresh-live artifacts. Remaining gap: the fresh live proof currently uses a Claude runtime profile and a stable round-4 checkpoint snapshot because the loop continued under low confidence. |
 | grounded-research pipeline | **DONE** | make pipeline-gr INPUT=handoff.json |
 | Anduril investigation (new domain) | **DONE** | 22 claims, 17 entities (Lattice, Altius, Barracuda, Ghost, Roadrunner, Brian Schimpf, Trae Stephens + contracts), 22 rels. Defense tech domain proven. |
 

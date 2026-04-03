@@ -1,6 +1,6 @@
 # onto-canon6 Status
 
-Updated: 2026-04-02
+Updated: 2026-04-03
 
 ## Current Program
 
@@ -20,11 +20,15 @@ Current post-cutover program state:
 
 1. Lane 2 consumer adoption is still only partially satisfied: the graph-backed
    DIGIMON seam is proven and the memo-backed `research_v3` shared-claim path
-   now also produces graph structure on a real artifact (`61` Palantir
-   findings -> `61` promoted assertions -> `40` canonical entities -> `61`
-   DIGIMON rows), but the memo path remains semantically thinner than the
-   graph-native import route because its exported edges are still generic
-   `shared:assertion` relationships;
+   now also produces graph structure on real artifacts through both the
+   repaired Palantir memo (`61` findings -> `61` promoted assertions -> `40`
+   canonical entities -> `61` DIGIMON rows) and a fresh live Claude-backed
+   checkpoint snapshot (`34` findings -> `34` promoted assertions -> `34`
+   canonical entities -> `30` DIGIMON rows), but the memo path remains
+   semantically thinner than the graph-native import route because its
+   exported edges are still generic `shared:assertion` relationships and the
+   fresh proof currently relies on a stable checkpoint snapshot rather than a
+   completed final report;
 2. Lane 3 schema stability is closed through
    `docs/plans/0026_schema_stability_gate.md`;
 3. Lane 4 now has an explicit promotion policy in
@@ -88,7 +92,11 @@ Current post-cutover program state:
     reproducibility, and truth-surface gap; and
 30. Plan `0068` is now complete and closed the first memo-path semantic-value
     gap by making the real Palantir memo produce promoted graph entities plus
-    DIGIMON rows through the shared-contract path.
+    DIGIMON rows through the shared-contract path; and
+31. Plan `0069` is now complete and proved that a fresh live Palantir memo
+    checkpoint under a non-Gemini runtime can also produce promoted graph
+    entities plus DIGIMON rows without post-hoc enrichment, while exposing a
+    residual stop-behavior/runtime tradeoff.
 
 ## What Is Proven
 
