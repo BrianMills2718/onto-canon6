@@ -59,15 +59,16 @@ is met.
 | Plan acceptance criterion is ambiguous | Use metric proxies defined in plan doc. Document interpretation. |
 | research_v3 completely fails to run | Use Booz Allen fallback graph.yaml (always available at `~/projects/research_v3/output/20260315_190332_.../graph.yaml`) |
 
-**Active plan**: `docs/plans/0070_24h_graph_value_stop_gate.md`
+**Active plan**: none currently open. Most recently completed:
+`docs/plans/0070_24h_graph_value_stop_gate.md`
 
 **Current sprint phases:**
 - [x] Phase 0: Authority activation (`CLAUDE.md`, plan index, TODO, progress anchor)
-- [ ] Phase 1: graph-value contract definition
-- [ ] Phase 2: research_v3 implementation and tests
-- [ ] Phase 3: verification
-- [ ] Phase 4: fresh live proof
-- [ ] Phase 5: runtime decision and truth surfaces
+- [x] Phase 1: graph-value contract definition
+- [x] Phase 2: research_v3 implementation and tests
+- [x] Phase 3: verification
+- [x] Phase 4: fresh live proof
+- [x] Phase 5: runtime decision and truth surfaces
 
 ## Commands
 
@@ -92,7 +93,7 @@ src/onto_canon6/
   domain_packs/   # pack-specific code
   surfaces/       # query, report, export surfaces
 tests/
-docs/plans/       # 52 plan files (see docs/plans/CLAUDE.md for index)
+docs/plans/       # 59 plan files (see docs/plans/CLAUDE.md for index)
 docs/runs/        # 57 run records
 docs/adr/         # 26 ADRs
 config/
@@ -100,7 +101,7 @@ config/
 
 ## Current State (2026-04-03)
 
-**Architecture proven. A fresh live non-Gemini memo checkpoint now produces graph value without repair; the next gap is deciding runtime promotion, tightening loop stop behavior, and deciding whether thin shared-assertion semantics are sufficient.**
+**Architecture proven. Fresh live contract-style memos now stop naturally on graph readiness under the promoted Claude contract profile and produce final graph value without repair. The next gap is deciding whether thin shared-assertion semantics are sufficient.**
 
 - 562 tests, 0 failures
 - Bootstrap Phases 0-15 complete. Post-cutover Plans 0024-0028 complete.
@@ -113,6 +114,9 @@ config/
 - Fresh live memo checkpoint proven: Palantir round-4 Claude checkpoint
   (34 findings) → shared contracts → onto-canon6 → DIGIMON
   (34 entities, 30 relationships)
+- Fresh live final memo proven: Palantir Claude contract-profile run
+  (23 findings, 28 entities, graph-value stop at round 3) → shared contracts
+  → onto-canon6 → DIGIMON (28 entities, 23 relationships)
 - grounded-research pipeline proven: Palantir (22 claims) + EU sanctions (8 claims)
 - Query/browse surface: entity search, assertion search, identity browse,
   source-artifact browse (CLI + MCP, Plans 0028/0063/0064)
@@ -123,23 +127,20 @@ config/
 - Shared contracts: epistemic-contracts library (3 projects wired)
 - ProbLog adapter: available (`onto-canon6 evaluate-rules`), no consumer uses it yet
 
-## Documented Open Uncertainty (2026-04-03)
+## Contract Runtime Policy (2026-04-03)
 
-This is intentionally unresolved. Do not treat it as decided unless a later
-plan closes it with proof.
+Plan `0070` closed the runtime/stop-policy uncertainty for contract-style
+investigations.
 
-- **Runtime promotion is still open.** `research_v3/config_loop_claude_runtime.yaml`
-  is now a proved option for contract-style investigations, but it is not yet
-  promoted as the default runtime for that class of work.
-- **Stop behavior is still open.** Fresh contract investigations can now
-  produce downstream-usable memo and graph structure before loop confidence is
-  high enough to stop. It is not yet decided whether the loop should stop once
-  graph value is already present, or continue until the current confidence gate
-  is met.
-- **Temporary operating rule.** Treat the Claude runtime as a verified option,
-  not a global default. Treat proof-grade memo checkpoints as valid downstream
-  consumer artifacts when they already satisfy graph acceptance, but do not
-  describe them as completed final-report runs.
+- **Promoted profile.** `research_v3/config_loop_claude_runtime.yaml` is the
+  promoted runtime profile for contract-style investigations.
+- **Stop policy.** Contract-profile runs may stop on explicit graph readiness
+  even when reflect confidence remains below the generic deep-research stop
+  threshold.
+- **Default behavior unchanged.** The repo-default loop remains depth-biased;
+  graph-value stopping is enabled by profile, not globally.
+- **Residual concern.** The memo transport is still semantically thin because
+  downstream relationships remain generic `shared:assertion` edges.
 
 - **Extraction is a producer, not core.** Don't couple core governance logic
   to extraction-specific assumptions.

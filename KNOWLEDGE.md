@@ -435,3 +435,12 @@ and yielded `34` DIGIMON entities plus `30` DIGIMON relationships downstream.
 For contract-style investigations, the live checkpoint may become consumer-useful
 before reflect confidence is high enough to stop, so document clearly when a
 proof uses a checkpoint snapshot instead of a completed final report.
+
+### 2026-04-03 — codex — best-practice
+Plan `0070` closed the contract-runtime question for the `research_v3` memo
+path. The promoted profile is `config_loop_claude_runtime.yaml`, and the key
+policy is graph-value stopping, not confidence-only stopping. The fresh final
+Palantir run stopped naturally at round `3` with `23` promoted assertions,
+`28` canonical entities, and `23` DIGIMON relationships downstream. Treat
+checkpoint snapshots as historical proof artifacts now, not the preferred
+contract-investigation operating mode.

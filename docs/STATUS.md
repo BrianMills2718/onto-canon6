@@ -22,13 +22,13 @@ Current post-cutover program state:
    DIGIMON seam is proven and the memo-backed `research_v3` shared-claim path
    now also produces graph structure on real artifacts through both the
    repaired Palantir memo (`61` findings -> `61` promoted assertions -> `40`
-   canonical entities -> `61` DIGIMON rows) and a fresh live Claude-backed
+   canonical entities -> `61` DIGIMON rows), a fresh live Claude-backed
    checkpoint snapshot (`34` findings -> `34` promoted assertions -> `34`
-   canonical entities -> `30` DIGIMON rows), but the memo path remains
-   semantically thinner than the graph-native import route because its
-   exported edges are still generic `shared:assertion` relationships and the
-   fresh proof currently relies on a stable checkpoint snapshot rather than a
-   completed final report;
+   canonical entities -> `30` DIGIMON rows), and a fresh final
+   Claude-backed contract-profile run (`23` findings -> `23` promoted
+   assertions -> `28` canonical entities -> `23` DIGIMON rows). The memo path
+   still remains semantically thinner than the graph-native import route
+   because its exported edges are generic `shared:assertion` relationships;
 2. Lane 3 schema stability is closed through
    `docs/plans/0026_schema_stability_gate.md`;
 3. Lane 4 now has an explicit promotion policy in
@@ -96,7 +96,11 @@ Current post-cutover program state:
 31. Plan `0069` is now complete and proved that a fresh live Palantir memo
     checkpoint under a non-Gemini runtime can also produce promoted graph
     entities plus DIGIMON rows without post-hoc enrichment, while exposing a
-    residual stop-behavior/runtime tradeoff.
+    residual stop-behavior/runtime tradeoff; and
+32. Plan `0070` is now complete and closed that residual tradeoff by proving
+    that the promoted Claude contract profile stops naturally on graph
+    readiness and still produces final memo/report artifacts plus downstream
+    graph value.
 
 ## What Is Proven
 

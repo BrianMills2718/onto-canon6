@@ -1,6 +1,6 @@
 # 24h Graph-Value Stop Gate
 
-Status: active
+Status: complete
 
 Last updated: 2026-04-03
 Workstream: contract-investigation stop policy and runtime-promotion decision
@@ -142,3 +142,38 @@ This block is complete when:
 4. a fresh live Palantir run stops naturally and produces final artifacts;
 5. the final memo still produces a non-empty downstream graph; and
 6. the runtime-promotion decision is documented as closed with evidence.
+
+## Outcome
+
+Closed on 2026-04-03.
+
+Verification outcome:
+
+1. targeted `research_v3` tests covering graph metrics and stop behavior
+   passed:
+   `40 passed`
+2. full `research_v3` suite passed:
+   `251 passed, 3 skipped, 1 warning`
+3. relevant `onto-canon6` memo-import and cross-project integration tests
+   passed:
+   `7 passed`
+4. a fresh live Palantir run under `config_loop_claude_runtime.yaml`
+   completed with final artifacts:
+   `3` rounds, `23` findings, `28` persisted entities, cost `$0.14`
+5. the loop stopped on the graph-value gate at round `3` even though reflect
+   still returned `continue` at `32%` confidence
+6. `make pipeline-rv3-memo` on the final memo produced:
+   `23` promoted assertions, `28` canonical entities, and `23` DIGIMON
+   relationships
+
+Decision closed:
+
+- `config_loop_claude_runtime.yaml` is now the promoted runtime profile for
+  contract-style investigations
+- graph-value stopping is the accepted stop policy for that profile
+- the repo-default loop remains unchanged outside that profile
+
+Residual concern:
+
+- the memo transport still yields generic `shared:assertion` relationships
+  rather than graph-native relation typing

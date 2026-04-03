@@ -53,10 +53,11 @@ The repo is beyond pure design/bootstrap work. It has:
 4. graph-backed downstream artifact exports and consumer-facing adapter slices;
 5. memo-backed shared-claim proofs that now produce graph state on real
    artifacts: repaired Palantir memo (`61` findings -> `40` canonical
-   entities / `61` DIGIMON rows) and fresh live Palantir checkpoint (`34`
-   findings -> `34` canonical entities / `30` DIGIMON rows), while still
-   using generic `shared:assertion` edges instead of graph-native relation
-   semantics.
+   entities / `61` DIGIMON rows), fresh live Palantir checkpoint (`34`
+   findings -> `34` canonical entities / `30` DIGIMON rows), and fresh final
+   Palantir contract-profile run (`23` findings -> `28` canonical entities /
+   `23` DIGIMON rows), while still using generic `shared:assertion` edges
+   instead of graph-native relation semantics.
 
 Current emphasis is not "recover every capability now." It is "keep the full
 vision visible while making the proved workflow stronger and more usable."
@@ -91,8 +92,8 @@ The highest-signal local proof artifacts today are:
   first real adapter-facing WhyGame proof
 - `var/pipeline_memo_run/`
   real `research_v3` memo -> shared claims -> review/promotion proof
-  (latest fresh-live proof snapshot: `34` claims promoted; `34` entities /
-  `30` relationships exported)
+  (latest final contract-profile proof: `23` claims promoted; `28` entities /
+  `23` relationships exported)
 
 These are more important than the broader historical run debris under `var/`.
 

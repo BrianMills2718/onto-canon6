@@ -6,10 +6,10 @@ This subtree owns active gaps, acceptance criteria, and verification notes.
 
 ## Active Plans
 
-Plan `0070` is active as of 2026-04-03. It closes the next operational gap
-after Plan `0069`: add a graph-value stop gate for contract-style
-investigations, prove it on a fresh live Palantir run, and resolve whether the
-Claude profile is now promoted for that work.
+No active execution block is currently open. Plan `0070` closed on
+2026-04-03 after a fresh live Palantir contract-profile run stopped naturally
+at round 3 and produced `28` DIGIMON entities plus `23` DIGIMON
+relationships through the shared-contract path.
 
 ## Planned / Deferred
 
@@ -23,6 +23,7 @@ Claude profile is now promoted for that work.
 
 | # | Plan | Completed |
 |---|------|-----------|
+| 0070 | Graph-Value Stop Gate | 2026-04-03 |
 | 0069 | Non-Gemini Fresh Memo Proof | 2026-04-03 |
 | 0068 | Memo Semantic Lift Block | 2026-04-02 |
 | 0067 | Memo Path Convergence And Truth Surfaces | 2026-04-02 |
