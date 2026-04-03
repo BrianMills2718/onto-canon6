@@ -59,16 +59,15 @@ is met.
 | Plan acceptance criterion is ambiguous | Use metric proxies defined in plan doc. Document interpretation. |
 | research_v3 completely fails to run | Use Booz Allen fallback graph.yaml (always available at `~/projects/research_v3/output/20260315_190332_.../graph.yaml`) |
 
-**Active plan**: none currently open. Most recently completed:
-`docs/plans/0069_24h_non_gemini_fresh_memo_proof.md`
+**Active plan**: `docs/plans/0070_24h_graph_value_stop_gate.md`
 
 **Current sprint phases:**
 - [x] Phase 0: Authority activation (`CLAUDE.md`, plan index, TODO, progress anchor)
-- [x] Phase 1: research_v3 fresh-run config override support
-- [x] Phase 2: Claude runtime profile and verification
-- [x] Phase 3: fresh live memo proof
-- [x] Phase 4: onto-canon6 pipeline proof
-- [x] Phase 5: Truth surfaces and closeout
+- [ ] Phase 1: graph-value contract definition
+- [ ] Phase 2: research_v3 implementation and tests
+- [ ] Phase 3: verification
+- [ ] Phase 4: fresh live proof
+- [ ] Phase 5: runtime decision and truth surfaces
 
 ## Commands
 

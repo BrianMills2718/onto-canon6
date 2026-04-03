@@ -6,9 +6,10 @@ This subtree owns active gaps, acceptance criteria, and verification notes.
 
 ## Active Plans
 
-No active execution block is currently open. Plan `0069` closed on
-2026-04-03 after the fresh live Palantir checkpoint produced `34` DIGIMON
-entities and `30` DIGIMON relationships through the shared-contract path.
+Plan `0070` is active as of 2026-04-03. It closes the next operational gap
+after Plan `0069`: add a graph-value stop gate for contract-style
+investigations, prove it on a fresh live Palantir run, and resolve whether the
+Claude profile is now promoted for that work.
 
 ## Planned / Deferred
 

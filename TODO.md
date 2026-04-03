@@ -9,10 +9,10 @@ Most recently completed block:
 
 ## Current Priorities
 
-1. Decide whether `config_loop_claude_runtime.yaml` should stay a proof-only
-   profile or become the promoted runtime for contract-style investigations
-2. Tighten loop stop behavior so proof-worthy contract investigations do not
-   keep extending after graph value is already present
+1. Execute Plan `0070`: add and prove a graph-value stop gate for
+   contract-style investigations
+2. Close the runtime-promotion decision for `config_loop_claude_runtime.yaml`
+   using a fresh live proof under the new stop policy
 3. Decide whether the memo path should stay on thin `shared:assertion` edges
    or grow richer graph-native relation semantics
 
