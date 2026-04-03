@@ -342,3 +342,21 @@ wrong target if `var/review_state.sqlite3` is empty. The proved real browse
 verification for Plan `0063` used the full-pipeline artifact DB at
 `var/full_pipeline_e2e/pipeline_review.sqlite3`, which contains 123 promoted
 Booz Allen claims.
+
+### 2026-04-02 — claude-code — best-practice
+Analytical/evaluative prose in the PSYOP corpus (effectiveness, limitations,
+conclusions) correctly produces either zero candidates or only
+`oc:limit_capability` candidates (policy-excluded by Plan 0060). This is
+expected semantic behavior, not structural breakage. The extraction system is
+working correctly: evaluative text is out of scope for factual claim
+extraction. For Plan 0014's "analytical/prose-heavy chunk" requirement,
+chunk_001 (intro + org table) satisfies it — the prose frames the context
+while the embedded organizational data produces accepted `belongs_to_organization`
+candidates. Pure evaluative prose (chunk_003/chunk_010) does not extract
+into any accepted predicate family.
+
+### 2026-04-02 — claude-code — best-practice
+For grounded-research → onto-canon6 pipeline: use
+`make pipeline-gr INPUT=path/to/handoff.json`. The `full_pipeline_e2e.py`
+script now accepts `--handoff` flag as alternative to `--graph` (research_v3).
+Source is autodetected by flag; source_label in results shows filename.
