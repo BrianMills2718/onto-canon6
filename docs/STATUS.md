@@ -532,14 +532,14 @@ Updated 2026-04-02 (session 2). All bootstrap phases and post-cutover plans
 
 **Current priorities (see HANDOFF.md for session state):**
 
-1. **Entity extraction from grounded-research claims** (Plan 0030 — planned):
+1. **Entity extraction from grounded-research claims** (Plan 0065 — planned):
    grounded-research `shared:fact_claim` assertions are role-free → 0 DIGIMON
-   entities. Next step: grounded-research adds entity annotation stage so the
-   handoff carries subject/object entity pairs that onto-canon6 can map to role fillers.
+   entities. Next step: grounded-research populates `entity_refs` in the handoff
+   so onto-canon6 import adapter maps them to ARG0/ARG1 role fillers.
 
-2. **Next real investigation** (Plan 0031 — planned): run the full pipeline on
-   a fresh OSINT question in a new domain (Anduril Industries defense contracts)
-   end-to-end, producing DIGIMON-queryable entity graph output.
+2. **Next real investigation** (Plan 0066 — executing in Plan 0032): run the
+   full pipeline on a fresh OSINT question in a new domain (Anduril Industries
+   defense contracts) end-to-end, producing DIGIMON-queryable entity graph output.
 
 3. **Entity resolution at scale** (Plan 0025a — deferred until corpus >500 docs).
 

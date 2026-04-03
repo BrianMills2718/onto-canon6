@@ -16,27 +16,58 @@ state for downstream consumers.
 
 ## Continuous Execution Policy
 
-**NEVER STOP. NEVER STOP. NEVER STOP.**
+**═══════════════════════════════════════════════════**
+**  NEVER STOP. NEVER STOP. NEVER STOP.             **
+**  Stopping early IS the failure mode.              **
+**═══════════════════════════════════════════════════**
 
-Autonomous runs execute all phases continuously. Stopping early for any reason
-other than a genuine architectural blocker or irreversible-action boundary is a
-failure mode. A completed phase, a passing test, or a committed increment is NOT
-a stop condition.
+Autonomous runs execute all phases of the active plan continuously without
+pausing for confirmation. The agent is expected to move from phase to phase
+the moment a phase is verified and committed. Not asking "should I continue?"
+is correct behavior — the answer is always yes unless a hard stop condition
+is met.
 
-**Stop ONLY for:**
-1. An action that is irreversible AND affects shared state (force push, drop tables)
-2. A genuine architectural decision not pre-made in the active plan
+**Hard stop conditions (the ONLY valid reasons to stop):**
+1. An irreversible action affecting shared state that was NOT explicitly
+   pre-made in the active plan (force push to main, DROP TABLE in production)
+2. A genuine architectural decision not covered by the active plan, where
+   proceeding either direction would require undoing work later
 
-**Everything else is NOT a stop condition. Log it and proceed.**
+**Everything below is NOT a stop condition — log it and keep moving:**
+- A metric falls 1 short of the acceptance gate → document shortfall, proceed
+- An LLM call times out → wait 300s, try gemini/gemini-2.5-flash-lite fallback
+- A test is flapping → retry once; if still failing, log in KNOWLEDGE.md and skip
+- "Should I continue?" → yes, always
+- The work is large or multi-commit → that is expected; continue
+- research_v3 retrieval returns fewer sources than expected → proceed with what's there
+- An unexpected file exists → investigate before deleting, then proceed
+- A plan produces partial results → commit what's verified, continue
 
-To start a new execution sprint: write the plan to `docs/plans/`, update this
-block with the phase list, then execute. See `docs/plans/0029_doc_hardening_sprint.md`
-as the template.
+**Decision tree for common ambiguous cases:**
+
+| Situation | Action |
+|-----------|--------|
+| Investigation produces N-1 claims (just under threshold) | Document in KNOWLEDGE.md, proceed. Thresholds are quality guides, not binary blockers. |
+| LLM model slow/timeout | Wait 300s. Switch to `gemini/gemini-2.5-flash-lite`. Log switch. |
+| research_v3 run produces <5 sources | Still run pipeline. Log "thin retrieval". |
+| Test fails that wasn't failing before | If caused by current changes: fix first. If pre-existing: log, skip, continue. |
+| Plan acceptance criterion is ambiguous | Use metric proxies defined in plan doc. Document interpretation. |
+| research_v3 completely fails to run | Use Booz Allen fallback graph.yaml (always available at `~/projects/research_v3/output/20260315_190332_.../graph.yaml`) |
+
+**Active plan**: `docs/plans/0032_overnight_sprint.md`
+
+**Current sprint phases:**
+- [ ] Phase 1: Rename plans 0030/0031 → 0065/0066 (collision fix)
+- [ ] Phase 2: Test count 562, config strategy=exact, KNOWLEDGE.md LLM status
+- [ ] Phase 3: Plan 0065 entity_refs clarification
+- [ ] Phase 4: CLAUDE.md decision tree (this section)
+- [ ] Phase 5: Run Anduril investigation (Plan 0066) + verify
+- [ ] Phase 6: Post-investigation docs + push all
 
 ## Commands
 
 ```bash
-pytest -q                      # 558 tests
+pytest -q                      # 562 tests
 onto-canon6 --help             # CLI
 onto-canon6-mcp                # MCP server
 make smoke                     # no-LLM smoke path
