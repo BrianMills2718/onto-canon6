@@ -6,9 +6,14 @@ This subtree owns active gaps, acceptance criteria, and verification notes.
 
 ## Active Plans
 
+No active execution block is currently open. Plan `0068` closed on
+2026-04-02 after the real Palantir memo produced `40` DIGIMON entities and
+`61` DIGIMON relationships through the shared-contract path.
+
+## Planned / Deferred
+
 | # | Plan | Status |
 |---|------|--------|
-| 0067 | [24h End-Goal Convergence Block](0067_24h_end_goal_convergence_block.md) | Active |
 | 0065 | [Entity Extraction from Claims](0065_entity_extraction_from_claims.md) | Planned (activates when grounded-research adds Stage 5b entity extraction) |
 | 0020 | [Vision Gap Closure](0020_vision_gap_closure.md) | Deferred (Gaps 1-9 complete; Gap 10 blocked on OpenClaw runtime) |
 | 0025a | [Entity Resolution Scale-Out](0025a_entity_resolution_scale_out.md) | Deferred (activates when corpus exceeds 500 docs) |
@@ -17,6 +22,8 @@ This subtree owns active gaps, acceptance criteria, and verification notes.
 
 | # | Plan | Completed |
 |---|------|-----------|
+| 0068 | Memo Semantic Lift Block | 2026-04-02 |
+| 0067 | Memo Path Convergence And Truth Surfaces | 2026-04-02 |
 | 0066 | Anduril Investigation — defense tech domain proven | 2026-04-02 |
 | 0032 | Overnight Sprint (collision fix + docs + pipeline re-verify) | 2026-04-02 |
 | 0029 | Doc Hardening Sprint | 2026-04-02 |

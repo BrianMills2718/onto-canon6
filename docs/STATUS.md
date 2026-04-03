@@ -18,10 +18,13 @@ and where the repo still has real operational risk.
 
 Current post-cutover program state:
 
-1. Lane 2 consumer adoption is only partially satisfied: the graph-backed
-   DIGIMON seam is proven, but the memo-backed `research_v3` shared-claim path
-   still needs richer entity/role structure (`61` Palantir findings -> `61`
-   promoted assertions -> `0` canonical entities -> `0` DIGIMON rows);
+1. Lane 2 consumer adoption is still only partially satisfied: the graph-backed
+   DIGIMON seam is proven and the memo-backed `research_v3` shared-claim path
+   now also produces graph structure on a real artifact (`61` Palantir
+   findings -> `61` promoted assertions -> `40` canonical entities -> `61`
+   DIGIMON rows), but the memo path remains semantically thinner than the
+   graph-native import route because its exported edges are still generic
+   `shared:assertion` relationships;
 2. Lane 3 schema stability is closed through
    `docs/plans/0026_schema_stability_gate.md`;
 3. Lane 4 now has an explicit promotion policy in
@@ -81,8 +84,11 @@ Current post-cutover program state:
 28. Plan `0064` is now complete and proved identity/external-reference-aware
     browse and search on a copy of that real promoted DB with explicitly seeded
     identity/external-reference rows; and
-29. Plan `0067` is now active and focused on end-goal convergence: repo truth,
-    memo-path reproducibility, and closing the remaining consumer-value gap.
+29. Plan `0067` is complete and closed the memo-path transport,
+    reproducibility, and truth-surface gap; and
+30. Plan `0068` is now complete and closed the first memo-path semantic-value
+    gap by making the real Palantir memo produce promoted graph entities plus
+    DIGIMON rows through the shared-contract path.
 
 ## What Is Proven
 

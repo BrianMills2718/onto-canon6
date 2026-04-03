@@ -22,6 +22,8 @@ state for downstream consumers.
 **  PLAN COMPLETE IS NOT A STOP CONDITION.           **
 **  ONE GREEN TEST IS NOT A STOP CONDITION.          **
 **  ONE COMMIT IS NOT A STOP CONDITION.              **
+**  THIS BLOCK IS NOT DONE UNTIL A REAL MEMO         **
+**  PRODUCES REAL GRAPH STRUCTURE.                   **
 **═══════════════════════════════════════════════════**
 
 Autonomous runs execute all phases of the active plan continuously without
@@ -57,14 +59,15 @@ is met.
 | Plan acceptance criterion is ambiguous | Use metric proxies defined in plan doc. Document interpretation. |
 | research_v3 completely fails to run | Use Booz Allen fallback graph.yaml (always available at `~/projects/research_v3/output/20260315_190332_.../graph.yaml`) |
 
-**Active plan**: `docs/plans/0067_24h_end_goal_convergence_block.md`
+**Active plan**: none currently open. Most recently completed:
+`docs/plans/0068_24h_memo_semantic_lift_block.md`
 
 **Current sprint phases:**
-- [ ] Phase 0: Authority activation (`CLAUDE.md`, plan index, TODO, progress anchor)
-- [ ] Phase 1: Truth and reproducibility hardening
-- [ ] Phase 2: Shared-contract memo export from `research_v3`
-- [ ] Phase 3: Memo-driven pipeline convergence
-- [ ] Phase 4: Real proof and closeout
+- [x] Phase 0: Authority activation (`CLAUDE.md`, plan index, TODO, progress anchor)
+- [x] Phase 1: research_v3 final memo entity persistence
+- [x] Phase 2: Shared-contract memo entity export
+- [x] Phase 3: onto-canon6 graph proof
+- [x] Phase 4: Truth surfaces and closeout
 
 ## Commands
 
@@ -97,7 +100,7 @@ config/
 
 ## Current State (2026-04-02)
 
-**Architecture proven. End-goal convergence now depends on consumer-path adoption and reproducibility, not more internal proof loops.**
+**Architecture proven. The first memo-path consumer-value proof is now closed; the next gap is fresh-loop hardening and richer consumer semantics, not more internal bootstrap work.**
 
 - 562 tests, 0 failures
 - Bootstrap Phases 0-15 complete. Post-cutover Plans 0024-0028 complete.
@@ -105,6 +108,8 @@ config/
 - Cross-doc QA: +70% vs bare extraction (90% vs 20%)
 - Full pipeline proven: research_v3 (123 Booz Allen claims) → epistemic-contracts
   → onto-canon6 → DIGIMON (60 entities, 123 relationships)
+- Memo path proven: real Palantir memo (61 findings) → shared contracts →
+  onto-canon6 → DIGIMON (40 entities, 61 relationships)
 - grounded-research pipeline proven: Palantir (22 claims) + EU sanctions (8 claims)
 - Query/browse surface: entity search, assertion search, identity browse,
   source-artifact browse (CLI + MCP, Plans 0028/0063/0064)

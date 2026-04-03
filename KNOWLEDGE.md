@@ -219,6 +219,16 @@ review path then amplified the problem by labeling all four `supported`
 permissiveness as secondary amplification; the primary next experiment is
 wrapper alignment on the live extraction surface.
 
+### 2026-04-02 — codex — best-practice
+The `research_v3` memo path now produces real graph value in `onto-canon6`,
+but only when completed memos persist resolved entities and
+`shared_export.load_memo_claims()` converts them into finding-level
+`entity_refs`. On the real Palantir memo, that changed the downstream outcome
+from `61` promoted assertions plus `0` graph objects to `61` promoted
+assertions plus `40` entities and `61` DIGIMON relationships. For older memo
+artifacts, run `research_v3/loop.py --enrich-entities <memo>` before
+`make pipeline-rv3-memo`.
+
 ### 2026-04-01 — codex — integration-issue
 Plan 0044 falsified the wrapper-alignment rescue hypothesis. Aligning the live
 user wrapper closer to prompt-eval reduced the prompt-surface diff, but the
