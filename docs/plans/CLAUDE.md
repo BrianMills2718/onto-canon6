@@ -8,7 +8,7 @@ This subtree owns active gaps, acceptance criteria, and verification notes.
 
 | # | Plan | Status |
 |---|------|--------|
-| 0020 | [Vision Gap Closure](0020_vision_gap_closure.md) | Active (tracking — Gaps 1-9 closed, Gap 10 partial) |
+| 0020 | [Vision Gap Closure](0020_vision_gap_closure.md) | Deferred (Gaps 1-9 complete; Gap 10 blocked on OpenClaw runtime) |
 | 0025a | [Entity Resolution Scale-Out](0025a_entity_resolution_scale_out.md) | Deferred (activates when corpus exceeds 500 docs) |
 
 ## Completed Plans (recent)

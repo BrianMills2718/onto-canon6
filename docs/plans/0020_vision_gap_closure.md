@@ -1,6 +1,6 @@
 # Vision Gap Closure
 
-Status: active
+Status: deferred (Gap 10 blocked on OpenClaw runtime; Gaps 1-9 complete)
 
 Last updated: 2026-03-31
 Workstream: post-bootstrap capability completion
