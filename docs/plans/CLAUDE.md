@@ -8,6 +8,8 @@ This subtree owns active gaps, acceptance criteria, and verification notes.
 
 | # | Plan | Status |
 |---|------|--------|
+| 0030 | [Entity Extraction from Claims](0030_entity_extraction_from_claims.md) | Planned (activates when grounded-research entity annotation stage is added) |
+| 0031 | [Next Real Investigation — Anduril](0031_next_real_investigation.md) | Planned (ready to execute) |
 | 0020 | [Vision Gap Closure](0020_vision_gap_closure.md) | Deferred (Gaps 1-9 complete; Gap 10 blocked on OpenClaw runtime) |
 | 0025a | [Entity Resolution Scale-Out](0025a_entity_resolution_scale_out.md) | Deferred (activates when corpus exceeds 500 docs) |
 
@@ -15,6 +17,7 @@ This subtree owns active gaps, acceptance criteria, and verification notes.
 
 | # | Plan | Completed |
 |---|------|-----------|
+| 0029 | Doc Hardening Sprint | 2026-04-02 |
 | 0028 | Query And Browse Surface | 2026-04-02 |
 | 0014 | Extraction Quality Baseline | 2026-04-02 |
 | 0064 | Identity/External-Reference Browse | 2026-04-02 |

@@ -14,33 +14,24 @@ state for downstream consumers.
 6. `docs/plans/0005_v1_capability_parity_matrix.md` — capability vision ledger
 7. `docs/plans/0024_post_cutover_program.md` — post-cutover authority (complete)
 
-## ACTIVE EXECUTION BLOCK — Plan 0029 Doc Hardening Sprint (2026-04-02 overnight)
+## Continuous Execution Policy
 
 **NEVER STOP. NEVER STOP. NEVER STOP.**
 
-This is an overnight autonomous run. Stopping early for any reason other than a
-genuine architectural blocker or irreversible-action boundary is a failure mode.
-A completed phase, a passing test, or a committed increment is NOT a stop condition.
-Move immediately to the next phase. Do not ask. Do not pause.
+Autonomous runs execute all phases continuously. Stopping early for any reason
+other than a genuine architectural blocker or irreversible-action boundary is a
+failure mode. A completed phase, a passing test, or a committed increment is NOT
+a stop condition.
 
 **Stop ONLY for:**
 1. An action that is irreversible AND affects shared state (force push, drop tables)
-2. A genuine architectural decision not pre-made in the plan
+2. A genuine architectural decision not pre-made in the active plan
 
-**Everything else — uncertainty, slow tests, partial results, "should I continue?"
-— is NOT a stop condition. Log it and proceed.**
+**Everything else is NOT a stop condition. Log it and proceed.**
 
-### Sprint Phases (execute in order, commit each):
-- [ ] Phase 1: pyproject.toml deps + doc quick fixes (test count, model, ProbLog)
-- [ ] Phase 2: Config validation Pydantic model + tests
-- [ ] Phase 3: DIGIMON value-only assertion behavior documented (not a bug)
-- [ ] Phase 4: COORDINATION.md — Codex merge protocol
-- [ ] Phase 5: STATUS.md reorganized by subsystem with ToC
-- [ ] Phase 6: Plan 0030 — entity extraction from grounded-research claims
-- [ ] Phase 7: Plan 0031 — next real investigation (Anduril Industries)
-- [ ] Phase 8: docs/plans/CLAUDE.md updated, full pytest, push
-
-**Active plan**: `docs/plans/0029_doc_hardening_sprint.md`
+To start a new execution sprint: write the plan to `docs/plans/`, update this
+block with the phase list, then execute. See `docs/plans/0029_doc_hardening_sprint.md`
+as the template.
 
 ## Commands
 
