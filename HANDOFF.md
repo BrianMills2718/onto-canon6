@@ -1,14 +1,26 @@
-# Handoff: onto-canon6 — 2026-04-02 (session 2)
+# Handoff: onto-canon6 — 2026-04-02 (session 3)
 
 ## Current State
 
 - **562 tests, 0 failures**
 - Tier 1: **all DONE**
 - Tier 2: **all DONE** (conflict policy ADR, role-free promotion, weight fix, extraction quality baseline, diverse domain)
-- Active plans: none (0025a deferred — activates at 500+ docs)
-- No active 24h execution block
-- DIGIMON consumer verified: 60 nodes + 26 edges from Booz Allen pipeline
+- Active plans: Plan 0066 BLOCKED on Gemini rate limit (pipeline proven, Anduril investigation pending)
+- Deferred: 0025a (500+ docs), 0065 (entity extraction — activates when grounded-research adds Stage 5b)
+- DIGIMON consumer verified: 60 entities + 123 relationships (Booz Allen pipeline, STRATEGY=exact)
 - Adapter tests in grounded-research (10) and research_v3 (11) repos
+
+## Recent Work (2026-04-02, session 3 — Plan 0032 overnight sprint)
+
+- Plan 0032 Phases 1-6 executed:
+  - Phase 1: Renamed collision plans 0030/0031 → 0065/0066
+  - Phase 2: Test counts corrected 558→562, config.yaml strategy=exact (LLM failed recall gate)
+  - Phase 3: Plan 0065 clarified — entity_refs field already exists, adapter already handles it; 1-repo scope (not 3)
+  - Phase 4: CLAUDE.md execution policy decision tree with 6 concrete cases
+  - Phase 5: Pipeline re-verified with Booz Allen fallback (123→60→123); Anduril blocked by Gemini 429
+  - Phase 6: Docs updated, 562 tests confirmed, push pending
+- KNOWLEDGE.md: 4 new entries (rate limit, pytest invocation, strategy config, plan numbering)
+- COORDINATION.md: multi-agent merge protocol created
 
 ## Recent Work (2026-04-02, session 2)
 
@@ -25,12 +37,18 @@
 
 ## What's Next
 
-1. **Entity extraction from claim statements** — grounded-research claims produce 0
-   DIGIMON entities because `shared:fact_claim` is role-free; adding NER over
-   claim text would enable entity-role pairs from that pipeline
-2. **Broader domain corpora** — run pipeline on non-lobbying/non-sanctions data
-3. **Entity resolution scale-out** (Plan 0025a) — when corpus exceeds 500 docs
-4. **ProbLog to llm_client** — when second consumer needs inference
+1. **Anduril investigation** (Plan 0066) — retry when Gemini quota resets. Run:
+   ```bash
+   cd ~/projects/research_v3
+   python run.py "What are Anduril Industries' major U.S. government contracts, key personnel, and primary products as of 2024-2025?" --config config_test.yaml --output ~/projects/research_v3/output/anduril_20260402
+   ```
+   Then: `make pipeline INPUT=<graph.yaml> STRATEGY=exact`
+2. **Entity extraction from claim statements** (Plan 0065) — grounded-research
+   needs Stage 5b to populate `entity_refs` in ClaimRecord; onto-canon6 adapter
+   already handles entity_refs → role fillers (no onto-canon6 changes needed)
+3. **Broader domain corpora** — run pipeline on non-lobbying/non-sanctions data
+4. **Entity resolution scale-out** (Plan 0025a) — when corpus exceeds 500 docs
+5. **ProbLog to llm_client** — when second consumer needs inference
 
 ## What's NOT Next (deferred with rationale)
 

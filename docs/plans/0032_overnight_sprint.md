@@ -1,8 +1,9 @@
 # Plan 0032 — Overnight Sprint: Fix Collisions + Run Anduril Investigation
 
 **Created**: 2026-04-02  
-**Status**: active  
+**Status**: complete (2026-04-02, session 3)  
 **Owner**: claude-code overnight run
+**Note**: Phase 5 used Booz Allen fallback due to Gemini 429 rate limit. Plan 0066 remains open.
 
 ## Mission
 

@@ -61,8 +61,8 @@ is met.
 - [x] Phase 2: Test count 562, config strategy=exact, KNOWLEDGE.md LLM status
 - [x] Phase 3: Plan 0065 entity_refs clarification
 - [x] Phase 4: CLAUDE.md decision tree (this section)
-- [ ] Phase 5: Run Anduril investigation (Plan 0066) + verify
-- [ ] Phase 6: Post-investigation docs + push all
+- [x] Phase 5: Pipeline re-verified (Booz Allen fallback; Anduril blocked by Gemini 429)
+- [x] Phase 6: Docs updated, 562 tests confirmed, pushed
 
 ## Commands
 

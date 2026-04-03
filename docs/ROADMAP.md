@@ -43,6 +43,7 @@ onto-canon6 is done when:
 | Source-artifact query | **DONE** | list-sources, search-sources, get-source (CLI + MCP) |
 | One-command consumer flow | **DONE** | make pipeline INPUT=graph.yaml |
 | grounded-research pipeline | **DONE** | make pipeline-gr INPUT=handoff.json |
+| Anduril investigation (new domain) | **BLOCKED** | Gemini 429 rate limit; pipeline mechanics proven (60 entities, 123 rels via Booz Allen fallback); retry when quota resets |
 
 ### Tier 2: Scale & Quality
 

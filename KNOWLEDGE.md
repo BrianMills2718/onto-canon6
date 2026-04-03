@@ -377,3 +377,20 @@ planning docs were renamed to 0065 (entity extraction) and 0066 (next
 investigation) in Plan 0032 Phase 1. When creating new plans, check existing
 file list first — numbers 0029-0064 are all occupied by 24h execution blocks.
 Next free numbers: 0065+.
+
+### 2026-04-02 — claude-code — integration-issue
+Gemini API rate limit (429 RESOURCE_EXHAUSTED) hit during Plan 0066 Anduril
+investigation attempt. research_v3 investigation for Anduril Industries failed
+at goal decomposition stage. Two retry attempts with 60s gap both failed.
+Fallback: Booz Allen Hamilton graph.yaml used for pipeline proof instead.
+Pipeline verified: 123 claims → 60 entities + 123 relationships (STRATEGY=exact).
+STRATEGY=llm also failed at the LLM review step due to same rate limit.
+Action: Retry Anduril investigation when Gemini quota resets. Plan 0066 remains
+open — pipeline mechanics proven but domain investigation not yet complete.
+
+### 2026-04-02 — claude-code — best-practice
+`pytest` (bare) fails with ModuleNotFoundError for tests that do
+`from tests.compatibility_helpers import ...`. Use `python -m pytest` instead —
+this is how the Makefile calls it (via $(PYTHON) -m pytest). The bare `pytest`
+command does not add the project root to sys.path, so cross-test imports fail.
+Always invoke via `make test` or `python -m pytest` in this project.

@@ -1,8 +1,8 @@
 # Plan 0031 — Next Real Investigation: Anduril Industries
 
 **Created**: 2026-04-02  
-**Status**: planned (ready to execute)  
-**Priority**: Top-1 next step per HANDOFF.md
+**Status**: blocked — Gemini API 429 rate limit (2026-04-02 session 3)  
+**Priority**: Top-1 next step — retry when Gemini quota resets
 
 ## Mission
 
@@ -69,6 +69,14 @@ This is a concrete test of the LLM resolution strategy (`strategy=llm`).
 - Key people: Palmer Luckey (founder), Brian Schimpf (CEO), Trae Stephens (chairman)
 - Key orgs: DoD, DARPA, SOCOM, DIU, DHS
 
+## Execution History
+
+| Attempt | Date | Result | Notes |
+|---------|------|--------|-------|
+| 1 | 2026-04-02 | FAILED — 429 rate limit | Goal decomposition stage hit RESOURCE_EXHAUSTED |
+| 2 | 2026-04-02 | FAILED — 429 rate limit | 60s retry, same error |
+| Fallback | 2026-04-02 | Booz Allen fallback used | Pipeline proven: 123→60 entities+123 rels |
+
 ## Failure Modes
 
 | Failure | Diagnosis | Action |
@@ -77,6 +85,7 @@ This is a concrete test of the LLM resolution strategy (`strategy=llm`).
 | 0 DIGIMON entities | entity types not mapped | Check FtM→oc: mapping in import adapter |
 | 0 identity merges | names not close enough | Run with `strategy=fuzzy` as comparison |
 | Pipeline error | Check var/anduril_pipeline/ logs | Standard debug protocol |
+| Gemini 429 | Rate limit exhausted | Wait for quota reset; try gemini-2.5-flash-lite |
 
 ## What This Proves
 
