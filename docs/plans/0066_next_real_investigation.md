@@ -1,8 +1,8 @@
 # Plan 0031 — Next Real Investigation: Anduril Industries
 
 **Created**: 2026-04-02  
-**Status**: partially complete (2026-04-02, session 3) — 5/7 criteria met  
-**Priority**: Rerun with deeper config (max_total_gaps=10+) for full claim count
+**Status**: complete (2026-04-02, session 3) — all 7 criteria met on deep run  
+**Priority**: closed
 
 ## Mission
 
@@ -79,24 +79,28 @@ This is a concrete test of the LLM resolution strategy (`strategy=llm`).
 | 4 | 2026-04-02 | **PARTIAL SUCCESS** | OpenAI gpt-4o-mini via OpenRouter; 15 claims, 18 entities, 15 rels |
 | Fallback | 2026-04-02 | Booz Allen data | Pipeline mechanics proven: 123→60 entities+123 rels |
 
-## Results (Attempt 4 — Partial)
+## Results
 
-- claims: 15 (≥20 required — below threshold, test config depth limit)
-- candidates promoted: 15 (≥20 required — below threshold)
-- DIGIMON entities: 18 ✓ (≥10 required)
-- DIGIMON relationships: 15 ✓ (≥5 required)
-- identity groups: 18 ✓ (≥1 required)
-- report generated: ✓ (report.md with real contract data)
+### Attempt 4 — Shallow (15 claims)
+- claims: 15 (below ≥20 threshold)
+- DIGIMON entities: 18, relationships: 15
+
+### Attempt 5 — Deep run (22 claims) — FINAL
+- claims: 22 ✓ (≥20)
+- promoted: 22 ✓ (≥20)
+- DIGIMON entities: 17 ✓ (≥10)
+- DIGIMON relationships: 22 ✓ (≥5)
+- identity groups: 17 ✓ (≥1)
+- report: ✓ (report.md with real USAspending contract values)
 - regressions: 0 ✓ (562 tests pass)
 
-**Entities extracted**: Anduril Industries, Palmer Luckey, Trae Stephens, Michael Galvin,
-U.S. Special Operations Command, U.S. Customs and Border Protection, ROADRUNNER ($249M),
-ANVIL, QUASAR PACKAGES, SUSTAINMENT TOWERS ($50M), EFS-ROADRUNNER HARDWARE ($62M),
-HOME ALONE contract ($20M), plus AST contracts 2020-2023.
+**Entities**: Anduril Industries Inc., Brian Schimpf (CEO), Trae Stephens (co-founder),
+Lattice Software, Altius (loitering munition), Barracuda, Sentry Towers, Roadrunner,
+Anvil, Ghost, ROADRUNNER+ANVIL+QUASAR contract ($249M SOCOM), EFS-Roadrunner Hardware
+($62M), Sustaining Towers DO16 ($50M), Altius 600M-V production contract, plus more.
 
-**Shortfall**: claims=15 < 20 due to `max_total_gaps=5` + `saturation_threshold=2` in
-test config. Not a pipeline bug — a config depth setting. Use `max_total_gaps=15,
-saturation_threshold=3` for a full run.
+**Config used**: `max_total_gaps=15, saturation_threshold=3, openai/gpt-4o-mini via OpenRouter`
+(Gemini quota exhausted; gpt-4o-mini is deprecated — use deepseek/deepseek-chat next time)
 
 ## Failure Modes
 

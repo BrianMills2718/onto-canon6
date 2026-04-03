@@ -43,7 +43,7 @@ onto-canon6 is done when:
 | Source-artifact query | **DONE** | list-sources, search-sources, get-source (CLI + MCP) |
 | One-command consumer flow | **DONE** | make pipeline INPUT=graph.yaml |
 | grounded-research pipeline | **DONE** | make pipeline-gr INPUT=handoff.json |
-| Anduril investigation (new domain) | **PARTIAL** | 15 claims, 18 entities (Palmer Luckey, SOCOM, ROADRUNNER $249M, etc.), 15 rels. Below ≥20 claim threshold — test config depth limit, not pipeline bug. Full run pending. |
+| Anduril investigation (new domain) | **DONE** | 22 claims, 17 entities (Lattice, Altius, Barracuda, Ghost, Roadrunner, Brian Schimpf, Trae Stephens + contracts), 22 rels. Defense tech domain proven. |
 
 ### Tier 2: Scale & Quality
 
