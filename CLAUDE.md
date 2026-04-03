@@ -114,6 +114,8 @@ config/
 - **Commit early and often.** Every verified increment gets its own commit.
 - **Parity matrix is the vision ledger.** Deferred ≠ abandoned.
 - **No casual repo drift.** New changes must justify against the ADR set.
+- **Multi-agent coordination**: See `COORDINATION.md` before starting multi-file
+  changes. Pull before edit. Rebase worktrees before merging.
 
 ## Workflow
 
