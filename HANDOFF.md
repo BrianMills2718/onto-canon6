@@ -37,12 +37,16 @@
 
 ## What's Next
 
-1. **Anduril investigation** (Plan 0066) — retry when Gemini quota resets. Run:
-   ```bash
-   cd ~/projects/research_v3
-   python run.py "What are Anduril Industries' major U.S. government contracts, key personnel, and primary products as of 2024-2025?" --config config_test.yaml --output ~/projects/research_v3/output/anduril_20260402
+1. **Anduril deep run** (Plan 0066) — shallow run complete (15 claims, 18 entities). For full
+   claim count (≥20), rerun with deeper config:
+   ```yaml
+   # In /tmp/config_openai.yaml: max_total_gaps: 15, saturation_threshold: 3
    ```
-   Then: `make pipeline INPUT=<graph.yaml> STRATEGY=exact`
+   ```bash
+   cd ~/projects/research_v3 && source ~/.secrets/api_keys.env
+   python run.py "Anduril Industries..." --config /tmp/config_openai.yaml --output ~/projects/research_v3/output/anduril_deep
+   make pipeline INPUT=<graph.yaml> STRATEGY=exact
+   ```
 2. **Entity extraction from claim statements** (Plan 0065) — grounded-research
    needs Stage 5b to populate `entity_refs` in ClaimRecord; onto-canon6 adapter
    already handles entity_refs → role fillers (no onto-canon6 changes needed)

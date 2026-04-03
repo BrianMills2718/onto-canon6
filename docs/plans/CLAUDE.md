@@ -8,7 +8,7 @@ This subtree owns active gaps, acceptance criteria, and verification notes.
 
 | # | Plan | Status |
 |---|------|--------|
-| 0066 | [Next Real Investigation — Anduril](0066_next_real_investigation.md) | Blocked — Gemini 429 rate limit; retry when quota resets |
+| 0066 | [Next Real Investigation — Anduril](0066_next_real_investigation.md) | Partial — 5/7 criteria met; 15 claims (need ≥20); rerun with deeper config |
 | 0065 | [Entity Extraction from Claims](0065_entity_extraction_from_claims.md) | Planned (activates when grounded-research entity annotation stage is added) |
 | 0020 | [Vision Gap Closure](0020_vision_gap_closure.md) | Deferred (Gaps 1-9 complete; Gap 10 blocked on OpenClaw runtime) |
 | 0025a | [Entity Resolution Scale-Out](0025a_entity_resolution_scale_out.md) | Deferred (activates when corpus exceeds 500 docs) |

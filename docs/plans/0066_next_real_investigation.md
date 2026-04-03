@@ -1,8 +1,8 @@
 # Plan 0031 — Next Real Investigation: Anduril Industries
 
 **Created**: 2026-04-02  
-**Status**: blocked — Gemini API 429 rate limit (2026-04-02 session 3)  
-**Priority**: Top-1 next step — retry when Gemini quota resets
+**Status**: partially complete (2026-04-02, session 3) — 5/7 criteria met  
+**Priority**: Rerun with deeper config (max_total_gaps=10+) for full claim count
 
 ## Mission
 
@@ -73,9 +73,30 @@ This is a concrete test of the LLM resolution strategy (`strategy=llm`).
 
 | Attempt | Date | Result | Notes |
 |---------|------|--------|-------|
-| 1 | 2026-04-02 | FAILED — 429 rate limit | Goal decomposition stage hit RESOURCE_EXHAUSTED |
-| 2 | 2026-04-02 | FAILED — 429 rate limit | 60s retry, same error |
-| Fallback | 2026-04-02 | Booz Allen fallback used | Pipeline proven: 123→60 entities+123 rels |
+| 1 | 2026-04-02 | FAILED — 429 rate limit | Goal decomposition stage hit RESOURCE_EXHAUSTED (Gemini) |
+| 2 | 2026-04-02 | FAILED — 429 rate limit | 60s retry, same error (Gemini) |
+| 3 | 2026-04-02 | FAILED — flash-lite 429 | Account-level quota exhausted |
+| 4 | 2026-04-02 | **PARTIAL SUCCESS** | OpenAI gpt-4o-mini via OpenRouter; 15 claims, 18 entities, 15 rels |
+| Fallback | 2026-04-02 | Booz Allen data | Pipeline mechanics proven: 123→60 entities+123 rels |
+
+## Results (Attempt 4 — Partial)
+
+- claims: 15 (≥20 required — below threshold, test config depth limit)
+- candidates promoted: 15 (≥20 required — below threshold)
+- DIGIMON entities: 18 ✓ (≥10 required)
+- DIGIMON relationships: 15 ✓ (≥5 required)
+- identity groups: 18 ✓ (≥1 required)
+- report generated: ✓ (report.md with real contract data)
+- regressions: 0 ✓ (562 tests pass)
+
+**Entities extracted**: Anduril Industries, Palmer Luckey, Trae Stephens, Michael Galvin,
+U.S. Special Operations Command, U.S. Customs and Border Protection, ROADRUNNER ($249M),
+ANVIL, QUASAR PACKAGES, SUSTAINMENT TOWERS ($50M), EFS-ROADRUNNER HARDWARE ($62M),
+HOME ALONE contract ($20M), plus AST contracts 2020-2023.
+
+**Shortfall**: claims=15 < 20 due to `max_total_gaps=5` + `saturation_threshold=2` in
+test config. Not a pipeline bug — a config depth setting. Use `max_total_gaps=15,
+saturation_threshold=3` for a full run.
 
 ## Failure Modes
 

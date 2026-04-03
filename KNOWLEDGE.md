@@ -388,6 +388,17 @@ Pipeline verified: 123 claims → 60 entities + 123 relationships (STRATEGY=exac
 Action: Retry Anduril investigation next day when Gemini quota resets (~midnight Pacific).
 Plan 0066 remains open — pipeline mechanics proven, domain investigation pending.
 
+### 2026-04-02 — claude-code — integration-issue
+Anduril investigation (Plan 0066) ran successfully with OpenAI gpt-4o-mini via
+OpenRouter after Gemini quota exhaustion. 15 claims extracted, 18 entities,
+15 relationships. Claims below ≥20 threshold due to test config (max_total_gaps=5,
+saturation_threshold=2) limiting depth. Entities are Anduril-specific: Palmer Luckey,
+Trae Stephens, Michael Galvin, ROADRUNNER ($249M), ANVIL, SUSTAINMENT TOWERS ($50M),
+SOCOM, CBP. Pipeline generalization to defense tech domain proven.
+Required fix: research_v3/research_v3/llm_utils.py line 211 — usage["prompt_tokens"]
+→ usage.get("prompt_tokens", usage.get("input_tokens", 0)) to handle OpenRouter
+token field name differences.
+
 ### 2026-04-02 — claude-code — best-practice
 `pytest` (bare) fails with ModuleNotFoundError for tests that do
 `from tests.compatibility_helpers import ...`. Use `python -m pytest` instead —
