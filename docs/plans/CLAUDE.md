@@ -10,13 +10,13 @@ This subtree owns active gaps, acceptance criteria, and verification notes.
 |---|------|--------|
 | 0014 | [Extraction Quality Baseline](0014_extraction_quality_baseline.md) | Active (promotion gate defined; compact default promoted via Plan 0062) |
 | 0020 | [Vision Gap Closure](0020_vision_gap_closure.md) | Active (tracking — Gaps 1-9 closed, Gap 10 partial) |
-| 0028 | [Query And Browse Surface](0028_query_browse_surface.md) | Active (browse widening landed; source-artifact query next) |
 | 0025a | [Entity Resolution Scale-Out](0025a_entity_resolution_scale_out.md) | Deferred (activates when corpus exceeds 500 docs) |
 
 ## Completed Plans (recent)
 
 | # | Plan | Completed |
 |---|------|-----------|
+| 0028 | Query And Browse Surface | 2026-04-02 |
 | 0064 | Identity/External-Reference Browse | 2026-04-02 |
 | 0063 | Query Browse Widening | 2026-04-02 |
 | 0062 | Default Extraction Cutover | 2026-04-02 |

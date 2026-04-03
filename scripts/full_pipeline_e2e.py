@@ -1,7 +1,7 @@
-"""Full pipeline E2E: research_v3 → onto-canon6 → DIGIMON export.
+"""Full pipeline E2E: research_v3 or grounded-research → onto-canon6 → DIGIMON export.
 
 Runs the complete chain on real data:
-1. Load research_v3 graph.yaml → shared ClaimRecords
+1. Load shared ClaimRecords (from research_v3 graph.yaml OR grounded-research handoff.json)
 2. Import into onto-canon6 review pipeline
 3. Accept all candidates (auto-accept for bulk import)
 4. Promote accepted candidates to graph
@@ -9,10 +9,15 @@ Runs the complete chain on real data:
 6. Export to DIGIMON format
 7. Verify results
 
-Usage:
+Usage (research_v3):
     python scripts/full_pipeline_e2e.py \
-        --graph ~/projects/research_v3/output/20260315_190332_investigate_booz_allen_hamilton_lobbying/graph.yaml \
+        --graph ~/projects/research_v3/output/.../graph.yaml \
         --output-dir var/full_pipeline_e2e
+
+Usage (grounded-research):
+    python scripts/full_pipeline_e2e.py \
+        --handoff ~/projects/grounded-research/output/palantir/handoff.json \
+        --output-dir var/full_pipeline_gr
 """
 
 from __future__ import annotations
@@ -24,13 +29,24 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path.home() / "projects" / "research_v3"))
+sys.path.insert(0, str(Path.home() / "projects" / "grounded-research" / "src"))
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 logger = logging.getLogger(__name__)
 
 
-def run_pipeline(graph_path: Path, output_dir: Path, strategy: str = "exact") -> dict:
-    """Run the full pipeline and return results."""
+def run_pipeline(
+    output_dir: Path,
+    strategy: str = "exact",
+    graph_path: Path | None = None,
+    handoff_path: Path | None = None,
+) -> dict:
+    """Run the full pipeline and return results.
+
+    Exactly one of graph_path (research_v3) or handoff_path (grounded-research) must be provided.
+    """
+    if not graph_path and not handoff_path:
+        raise ValueError("Exactly one of graph_path or handoff_path must be provided")
 
     output_dir.mkdir(parents=True, exist_ok=True)
     review_db_path = output_dir / "pipeline_review.sqlite3"
@@ -39,11 +55,17 @@ def run_pipeline(graph_path: Path, output_dir: Path, strategy: str = "exact") ->
     if review_db_path.exists():
         review_db_path.unlink()
 
-    # Step 1: Load research_v3 graph → shared ClaimRecords
-    logger.info("Step 1: Loading research_v3 graph.yaml")
-    from shared_export import load_graph_claims
-
-    shared_claims = load_graph_claims(graph_path)
+    # Step 1: Load shared ClaimRecords from source
+    if graph_path:
+        logger.info("Step 1: Loading research_v3 graph.yaml from %s", graph_path)
+        from shared_export import load_graph_claims  # type: ignore[import]
+        shared_claims = load_graph_claims(graph_path)
+        source_label = graph_path.name
+    else:
+        logger.info("Step 1: Loading grounded-research handoff.json from %s", handoff_path)
+        from grounded_research.shared_export import load_handoff_claims
+        shared_claims = load_handoff_claims(handoff_path)  # type: ignore[arg-type]
+        source_label = handoff_path.name  # type: ignore[union-attr]
     logger.info("  Loaded %d shared ClaimRecords", len(shared_claims))
 
     # Step 2: Import into onto-canon6
@@ -141,7 +163,7 @@ def run_pipeline(graph_path: Path, output_dir: Path, strategy: str = "exact") ->
 
     # Build results
     results = {
-        "graph_path": str(graph_path),
+        "source": str(graph_path or handoff_path),
         "shared_claims": len(shared_claims),
         "candidates_submitted": len(submitted_ids),
         "candidates_accepted": accepted_count,
@@ -164,7 +186,7 @@ def run_pipeline(graph_path: Path, output_dir: Path, strategy: str = "exact") ->
     print("\n" + "=" * 60)
     print("FULL PIPELINE E2E RESULTS")
     print("=" * 60)
-    print(f"Source: {graph_path.name}")
+    print(f"Source: {source_label}")
     print(f"Claims loaded:        {results['shared_claims']}")
     print(f"Candidates submitted: {results['candidates_submitted']}")
     print(f"Candidates accepted:  {results['candidates_accepted']}")
@@ -186,12 +208,12 @@ def run_pipeline(graph_path: Path, output_dir: Path, strategy: str = "exact") ->
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Full pipeline E2E: research_v3 → DIGIMON")
-    parser.add_argument(
-        "--graph",
-        type=Path,
-        default=Path.home() / "projects" / "research_v3" / "output" / "20260315_190332_investigate_booz_allen_hamilton_lobbying" / "graph.yaml",
+    parser = argparse.ArgumentParser(
+        description="Full pipeline E2E: research_v3 or grounded-research → onto-canon6 → DIGIMON"
     )
+    source_group = parser.add_mutually_exclusive_group()
+    source_group.add_argument("--graph", type=Path, help="research_v3 graph.yaml path")
+    source_group.add_argument("--handoff", type=Path, help="grounded-research handoff.json path")
     parser.add_argument(
         "--output-dir",
         type=Path,
@@ -205,11 +227,30 @@ def main():
     )
     args = parser.parse_args()
 
-    if not args.graph.exists():
+    if not args.graph and not args.handoff:
+        # Default to Booz Allen for backwards compatibility
+        args.graph = (
+            Path.home()
+            / "projects"
+            / "research_v3"
+            / "output"
+            / "20260315_190332_investigate_booz_allen_hamilton_lobbying"
+            / "graph.yaml"
+        )
+
+    if args.graph and not args.graph.exists():
         logger.error("Graph file not found: %s", args.graph)
         sys.exit(1)
+    if args.handoff and not args.handoff.exists():
+        logger.error("Handoff file not found: %s", args.handoff)
+        sys.exit(1)
 
-    run_pipeline(args.graph, args.output_dir, strategy=args.strategy)
+    run_pipeline(
+        output_dir=args.output_dir,
+        strategy=args.strategy,
+        graph_path=args.graph,
+        handoff_path=args.handoff,
+    )
 
 
 if __name__ == "__main__":

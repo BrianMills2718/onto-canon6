@@ -1,6 +1,6 @@
 # Query And Browse Surface
 
-Status: active (identity/external-reference browse widening landed)
+Status: complete (2026-04-02)
 
 Last updated: 2026-04-02
 Workstream: next-active deferred parity capability after Lane 5 ordering

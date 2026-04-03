@@ -246,3 +246,9 @@ ifndef INPUT
 	$(error INPUT is required: make pipeline INPUT=path/to/graph.yaml)
 endif
 	@$(PYTHON) scripts/full_pipeline_e2e.py --graph $(INPUT) --output-dir var/pipeline_run --strategy $(or $(STRATEGY),exact)
+
+pipeline-gr:  ## Full pipeline: grounded-research handoff.json → onto-canon6 → DIGIMON export
+ifndef INPUT
+	$(error INPUT is required: make pipeline-gr INPUT=path/to/handoff.json)
+endif
+	@$(PYTHON) scripts/full_pipeline_e2e.py --handoff $(INPUT) --output-dir var/pipeline_gr_run --strategy $(or $(STRATEGY),exact)
