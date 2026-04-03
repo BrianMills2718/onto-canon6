@@ -42,12 +42,13 @@ onto-canon6 is done when:
 | LLM resolution on real corpus | **DONE** | 1 merge found (Booz Allen name variant). Confidence weight fix landed. |
 | Source-artifact query | **DONE** | list-sources, search-sources, get-source (CLI + MCP) |
 | One-command consumer flow | **DONE** | make pipeline INPUT=graph.yaml |
+| grounded-research pipeline | **DONE** | make pipeline-gr INPUT=handoff.json |
 
 ### Tier 2: Scale & Quality
 
 | Item | Plan | Status |
 |------|------|--------|
-| Diverse domain extraction | 0014 | Compact default promoted; ongoing |
+| Diverse domain extraction | 0014 | **DONE** — extraction quality baseline proven (2 real-chunk verifications, mean_score=0.63916) |
 | Entity resolution 500+ docs | 0025a | Deferred — tiered pipeline design exists |
 | Cross-investigation conflict | ADR 0024 | **DONE** — flag-only policy adopted, 871 tensions verified |
 | DIGIMON weight validation | 0020 Gap 5 | **DONE** — 6 distinct weights (0.1-1.0) verified |
