@@ -107,6 +107,7 @@ class ReviewStore:
         provenance: CandidateProvenance,
         claim_text: str | None,
         evidence_spans: tuple[EvidenceSpan, ...],
+        trace_id: str | None = None,
     ) -> str:
         """Insert one candidate assertion and return its identifier."""
 
@@ -131,8 +132,9 @@ class ReviewStore:
                 source_metadata_json,
                 source_text,
                 claim_text,
-                submitted_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                submitted_at,
+                trace_id
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 candidate_id,
@@ -152,6 +154,7 @@ class ReviewStore:
                 provenance.content_text,
                 claim_text,
                 submitted_at,
+                trace_id,
             ),
         )
         for span_index, span in enumerate(evidence_spans):
@@ -912,6 +915,14 @@ class ReviewStore:
                 """
             )
             logger.info("review store migrated candidate_assertions add_column=claim_text")
+        if "trace_id" not in existing:
+            conn.execute(
+                """
+                ALTER TABLE candidate_assertions
+                ADD COLUMN trace_id TEXT
+                """
+            )
+            logger.info("review store migrated candidate_assertions add_column=trace_id")
 
         if "candidate_status" in existing:
             conn.execute(
@@ -996,6 +1007,8 @@ class ReviewStore:
                 ),
                 created_at=str(row["candidate_reviewed_at"]),
             )
+        # trace_id column was added in a migration; may be absent on old rows
+        trace_id_val = row["trace_id"] if "trace_id" in row.keys() else None
         return CandidateAssertionRecord(
             candidate_id=candidate_id,
             profile=ProfileRef(
@@ -1027,6 +1040,7 @@ class ReviewStore:
             evidence_spans=evidence_spans,
             submitted_at=str(row["submitted_at"]),
             review=review,
+            trace_id=str(trace_id_val) if trace_id_val is not None else None,
         )
 
     def _hydrate_proposal(

@@ -143,6 +143,10 @@ class CandidateAssertionImport(BaseModel):
     - the candidate payload is still ontology-shaped machine-readable data;
     - the source artifact remains primary;
     - evidence spans and optional claim text travel with the candidate.
+
+    ``trace_id`` links the import to the llm_client observability log for
+    cost and latency attribution. Importers that generate a session trace_id
+    should pass it here so provenance is queryable end-to-end.
     """
 
     model_config = ConfigDict(extra="forbid", frozen=True)
@@ -153,6 +157,7 @@ class CandidateAssertionImport(BaseModel):
     source_artifact: SourceArtifactRef
     evidence_spans: tuple[EvidenceSpan, ...] = ()
     claim_text: str | None = None
+    trace_id: str | None = None
 
 
 class PersistedValidationSnapshot(BaseModel):
@@ -277,6 +282,7 @@ class CandidateAssertionRecord(BaseModel):
     evidence_spans: tuple[EvidenceSpan, ...] = ()
     submitted_at: str = Field(min_length=1)
     review: CandidateReviewRecord | None = None
+    trace_id: str | None = None
 
 
 class CandidateSubmissionResult(BaseModel):

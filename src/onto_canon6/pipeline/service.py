@@ -202,6 +202,7 @@ class ReviewService:
                 provenance=provenance,
                 claim_text=candidate_import.claim_text,
                 evidence_spans=evidence_spans,
+                trace_id=candidate_import.trace_id,
             )
 
             proposal_ids: list[str] = []

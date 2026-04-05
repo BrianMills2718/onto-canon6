@@ -13,6 +13,7 @@ from __future__ import annotations
 import logging
 from pathlib import Path
 from typing import Any, cast
+import uuid
 
 import yaml
 
@@ -246,6 +247,7 @@ def import_research_v3_memo(
     profile_id: str = "research_v3_integration",
     profile_version: str = "0.1.0",
     submitted_by: str = "adapter:research_v3_memo",
+    import_trace_id: str | None = None,
 ) -> list[CandidateAssertionImport]:
     """Import findings from a research_v3 loop memo.yaml.
 
@@ -262,6 +264,10 @@ def import_research_v3_memo(
 
     if limit is not None:
         findings = findings[:limit]
+
+    # Generate a session-level trace_id for this import run so all candidates
+    # from the same memo import share a common trace for observability queries.
+    session_trace_id = import_trace_id or f"r3_memo_import.{uuid.uuid4().hex[:12]}"
 
     imports: list[CandidateAssertionImport] = []
 
@@ -320,6 +326,7 @@ def import_research_v3_memo(
             source_artifact=source_artifact,
             evidence_spans=(),
             claim_text=claim,
+            trace_id=session_trace_id,
         ))
 
     logger.info(

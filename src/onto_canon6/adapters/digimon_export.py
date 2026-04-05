@@ -43,6 +43,11 @@ class DigimonEntityRecord:
     Maps onto-canon6 ``PromotedGraphEntityRecord`` to the flat structure that
     Digimon's ``EntityRecord`` (``Core/Schema/SlotTypes.py``) expects when
     loaded from JSONL.
+
+    Provenance fields (``source_candidate_id``, ``source_kind``,
+    ``source_urls``) link each entity back to the onto-canon6 candidate
+    assertion that first introduced it, enabling downstream consumers to
+    answer "where did this entity come from?" without re-querying onto-canon6.
     """
 
     entity_name: str
@@ -50,6 +55,9 @@ class DigimonEntityRecord:
     entity_type: str = ""
     description: str = ""
     rank: int = 0
+    source_candidate_id: str = ""
+    source_kind: str = ""
+    source_urls: str = ""  # JSON array string
 
 
 @dataclasses.dataclass(frozen=True)
@@ -59,6 +67,10 @@ class DigimonRelationshipRecord:
     Maps onto-canon6 promoted assertions (with entity role fillers) to the
     flat structure that Digimon's ``RelationshipRecord`` expects when loaded
     from JSONL.
+
+    Provenance fields (``source_candidate_id``, ``source_kind``,
+    ``source_urls``) link each relationship back to its originating candidate
+    assertion so consumers can trace claims to their primary sources.
     """
 
     src_id: str
@@ -68,6 +80,9 @@ class DigimonRelationshipRecord:
     weight: float = 1.0
     keywords: str = ""
     source_id: str = ""
+    source_candidate_id: str = ""
+    source_kind: str = ""
+    source_urls: str = ""  # JSON array string
 
 
 @dataclasses.dataclass(frozen=True)
@@ -109,11 +124,13 @@ def export_for_digimon(
         filler_map = _build_filler_map(conn, store, assertions)
         epistemic_confidence = _load_epistemic_confidence(conn)
         payload_confidence = _load_payload_confidence(conn)
+        candidate_provenance = _load_candidate_provenance(conn)
 
-    digimon_entities = _convert_entities(all_entities, entity_name_map)
+    digimon_entities = _convert_entities(all_entities, entity_name_map, candidate_provenance)
     digimon_relationships = _convert_relationships(
         assertions, filler_map, entity_name_map, epistemic_confidence,
         payload_confidence=payload_confidence,
+        candidate_provenance=candidate_provenance,
     )
 
     bundle = DigimonExportBundle(
@@ -262,15 +279,18 @@ def _build_filler_map(
 def _convert_entities(
     entities: Sequence[PromotedGraphEntityRecord],
     name_map: dict[str, str],
+    candidate_provenance: dict[str, dict[str, str]] | None = None,
 ) -> list[DigimonEntityRecord]:
     """Convert onto-canon6 entities to Digimon entity records.
 
     Uses the ``name_map`` to resolve human-readable names from entity_ids.
     Falls back to the entity_id itself if no name was found in any assertion.
+    Populates provenance fields from ``candidate_provenance`` when available.
     """
     result: list[DigimonEntityRecord] = []
     for entity in entities:
         human_name = name_map.get(entity.entity_id, entity.entity_id)
+        prov = (candidate_provenance or {}).get(entity.first_candidate_id, {})
         result.append(
             DigimonEntityRecord(
                 entity_name=human_name,
@@ -278,6 +298,9 @@ def _convert_entities(
                 entity_type=entity.entity_type or "",
                 description="",
                 rank=0,
+                source_candidate_id=entity.first_candidate_id,
+                source_kind=prov.get("source_kind", ""),
+                source_urls=prov.get("source_urls", "[]"),
             )
         )
     return result
@@ -294,6 +317,39 @@ def _load_epistemic_confidence(conn: sqlite3.Connection) -> dict[str, float]:
             "FROM epistemic_confidence_assessments"
         ).fetchall()
         return {str(row["candidate_id"]): float(row["confidence_score"]) for row in rows}
+    except Exception:
+        return {}
+
+
+def _load_candidate_provenance(conn: sqlite3.Connection) -> dict[str, dict[str, str]]:
+    """Load source_kind and source_urls keyed by candidate_id.
+
+    Returns a dict mapping candidate_id to a dict with ``source_kind`` and
+    ``source_urls`` (JSON array string extracted from ``source_metadata_json``).
+    Used to populate provenance fields on Digimon records without requiring
+    callers to re-query onto-canon6.
+    """
+    import json as _json
+
+    try:
+        rows = conn.execute(
+            "SELECT candidate_id, source_kind, source_metadata_json FROM candidate_assertions"
+        ).fetchall()
+        result: dict[str, dict[str, str]] = {}
+        for row in rows:
+            candidate_id = str(row["candidate_id"])
+            source_kind = str(row["source_kind"])
+            try:
+                meta = _json.loads(row["source_metadata_json"] or "{}")
+                urls = meta.get("source_urls", [])
+                source_urls_str = _json.dumps(urls, ensure_ascii=False)
+            except Exception:
+                source_urls_str = "[]"
+            result[candidate_id] = {
+                "source_kind": source_kind,
+                "source_urls": source_urls_str,
+            }
+        return result
     except Exception:
         return {}
 
@@ -327,6 +383,7 @@ def _convert_relationships(
     name_map: dict[str, str],
     epistemic_confidence: dict[str, float] | None = None,
     payload_confidence: dict[str, float] | None = None,
+    candidate_provenance: dict[str, dict[str, str]] | None = None,
 ) -> list[DigimonRelationshipRecord]:
     """Convert promoted assertions to Digimon relationship records.
 
@@ -384,6 +441,7 @@ def _convert_relationships(
         else:
             weight = 1.0
 
+        prov = (candidate_provenance or {}).get(assertion.source_candidate_id, {})
         result.append(
             DigimonRelationshipRecord(
                 src_id=src_name,
@@ -393,6 +451,9 @@ def _convert_relationships(
                 weight=weight,
                 keywords="",
                 source_id=assertion.assertion_id,
+                source_candidate_id=assertion.source_candidate_id,
+                source_kind=prov.get("source_kind", ""),
+                source_urls=prov.get("source_urls", "[]"),
             )
         )
     return result

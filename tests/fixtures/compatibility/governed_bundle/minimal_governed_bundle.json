@@ -91,6 +91,7 @@
         },
         "review_status": "accepted",
         "submitted_at": "<TIMESTAMP>",
+        "trace_id": null,
         "validation": {
           "hard_errors": [],
           "soft_violations": [
