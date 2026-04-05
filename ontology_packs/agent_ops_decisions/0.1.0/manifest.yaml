@@ -1,0 +1,21 @@
+pack:
+  id: agent_ops_decisions
+  version: "0.1.0"
+  name: "Agent Operations Decisions Vocabulary"
+  description: "Extension pack for agent_ops_minimal. Adds Urgency, Importance, AutomationLevel, and RecommendationType vocabulary for prioritising and routing DecisionRecord and Recommendation entities in the dashboard."
+
+extends:
+  - id: agent_ops_minimal
+    version: "0.1.0"
+
+build:
+  compiler_version: "0.1.0"
+  built_at: "2026-04-04T00:00:00Z"
+  source_inputs:
+    - system: "local_authoring"
+      version: "0.1.0"
+      path: "ontology_packs/agent_ops_decisions/0.1.0"
+
+content:
+  entity_types: entity_types.jsonl
+  value_types: value_types.jsonl

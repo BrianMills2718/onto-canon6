@@ -1,0 +1,18 @@
+{"type_id":"agent_ops:Urgency","preferred_label":"Urgency","category":"entity","status":"active","description":"How time-sensitive is acting on this decision? Does delay block other work?"}
+{"type_id":"agent_ops:UrgencyHigh","preferred_label":"High Urgency","category":"entity","status":"active","description":"Must act within 24h — blocks other work or has a hard deadline."}
+{"type_id":"agent_ops:UrgencyMedium","preferred_label":"Medium Urgency","category":"entity","status":"active","description":"Should act within the current sprint — soft deadline, no immediate blocker."}
+{"type_id":"agent_ops:UrgencyLow","preferred_label":"Low Urgency","category":"entity","status":"active","description":"Can defer to a future sprint without consequence."}
+{"type_id":"agent_ops:Importance","preferred_label":"Importance","category":"entity","status":"active","description":"How significant is the consequence of choosing wrong? Is the decision reversible?"}
+{"type_id":"agent_ops:ImportanceCritical","preferred_label":"Critical Importance","category":"entity","status":"active","description":"Wrong choice causes irreversible harm or major rework across multiple projects."}
+{"type_id":"agent_ops:ImportanceHigh","preferred_label":"High Importance","category":"entity","status":"active","description":"Wrong choice causes significant rework in one project but is recoverable."}
+{"type_id":"agent_ops:ImportanceMedium","preferred_label":"Medium Importance","category":"entity","status":"active","description":"Wrong choice causes minor rework or can be corrected without large cost."}
+{"type_id":"agent_ops:ImportanceLow","preferred_label":"Low Importance","category":"entity","status":"active","description":"Easily reversed; minimal downstream effect either way."}
+{"type_id":"agent_ops:AutomationLevel","preferred_label":"Automation Level","category":"entity","status":"active","description":"What level of human involvement is required to act on this decision?"}
+{"type_id":"agent_ops:AutomationFull","preferred_label":"Full Automation","category":"entity","status":"active","description":"Agent can execute without any human confirmation. No notification required."}
+{"type_id":"agent_ops:AutomationWithNotification","preferred_label":"Automation With Notification","category":"entity","status":"active","description":"Agent can execute but must notify the operator after the fact."}
+{"type_id":"agent_ops:AutomationRequiresApproval","preferred_label":"Requires Approval","category":"entity","status":"active","description":"Agent must halt and wait for explicit operator approval before proceeding."}
+{"type_id":"agent_ops:RecommendationType","preferred_label":"Recommendation Type","category":"entity","status":"active","description":"What kind of action is being recommended?"}
+{"type_id":"agent_ops:RecommendationImplement","preferred_label":"Implement","category":"entity","status":"active","description":"Build the described capability or fix now."}
+{"type_id":"agent_ops:RecommendationReview","preferred_label":"Review","category":"entity","status":"active","description":"Inspect the described item and form a decision before acting."}
+{"type_id":"agent_ops:RecommendationDefer","preferred_label":"Defer","category":"entity","status":"active","description":"Intentionally postpone — add to backlog with rationale."}
+{"type_id":"agent_ops:RecommendationBlock","preferred_label":"Block","category":"entity","status":"active","description":"Active blocker: halt dependent work until this is resolved."}
