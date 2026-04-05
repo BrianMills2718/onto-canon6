@@ -13,6 +13,7 @@ state for downstream consumers.
 5. `HANDOFF.md` — session handoff and immediate priorities
 6. `docs/plans/0005_v1_capability_parity_matrix.md` — capability vision ledger
 7. `docs/plans/0024_post_cutover_program.md` — post-cutover authority (complete)
+8. `docs/assertion_semantics_evaluation.md` — shared-assertion semantics decision
 
 ## Continuous Execution Policy
 
@@ -139,8 +140,11 @@ investigations.
   threshold.
 - **Default behavior unchanged.** The repo-default loop remains depth-biased;
   graph-value stopping is enabled by profile, not globally.
-- **Residual concern.** The memo transport is still semantically thin because
-  downstream relationships remain generic `shared:assertion` edges.
+- **Residual concern — evaluated.** The memo transport is semantically thin
+  (generic `shared:assertion` edges). Evaluated in
+  `docs/assertion_semantics_evaluation.md`: sufficient for the current phase;
+  Option A (import-side predicate inference) is the accepted enrichment path,
+  gated on first consumer that needs typed edges.
 
 - **Extraction is a producer, not core.** Don't couple core governance logic
   to extraction-specific assumptions.

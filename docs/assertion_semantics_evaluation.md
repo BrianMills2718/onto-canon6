@@ -157,6 +157,93 @@ position rather than re-deriving the analysis.
 
 ---
 
+## Integration Points for Shared Assertions
+
+The shared-assertion semantic seam touches five concrete locations in the
+onto-canon6 codebase. Each is an integration point where richer semantics could
+be introduced. The table below maps each point to its role in the pipeline and
+the enrichment opportunity it presents.
+
+### Point 1 — Import Adapter Predicate Fallback
+
+**File:** `src/onto_canon6/adapters/grounded_research_import.py`
+**Mechanism:** When `claim.predicate` is `None`, the adapter sets
+`payload["predicate"] = f"shared:{claim.claim_type}"`.
+**Enrichment opportunity:** Insert an optional predicate-inference call *before*
+the fallback. If inference succeeds, set `payload["predicate"]` to the inferred
+value; otherwise fall through to the existing `shared:{claim_type}` default.
+This is the recommended Option A insertion point.
+
+### Point 2 — Ontology Pack Predicate Vocabulary
+
+**File:** `ontology_packs/shared_import/0.1.0/predicate_types.jsonl`
+**Mechanism:** Declares the six known predicate IDs (`shared:fact_claim`,
+`shared:relationship_claim`, `shared:financial_claim`, `shared:temporal_claim`,
+`shared:finding`, `shared:assertion`).
+**Enrichment opportunity:** Extend the vocabulary with domain-specific predicates
+(e.g., `oc:awarded_contract`, `oc:board_appointment`, `oc:employed_by`) so that
+inferred predicates from Point 1 land in a controlled vocabulary rather than
+producing free-form strings. This vocabulary extension must precede any
+enrichment implementation (see Decision item 3).
+
+### Point 3 — Epistemic Tension Detection
+
+**File:** `src/onto_canon6/extensions/epistemic/service.py`
+(method `_build_tension_record`)
+**Mechanism:** Tension pairs are only created between assertions sharing the same
+predicate. With all memo claims as `shared:assertion`, every pair of claims on
+the same entity pair is eligible for tension, inflating spurious detections.
+**Enrichment opportunity:** Richer predicates from Point 1 would naturally reduce
+tension noise because claims about different relationship types would no longer
+share a predicate. No changes needed in the tension engine itself — it already
+filters by predicate equality.
+
+### Point 4 — DIGIMON Export Adapter
+
+**File:** `src/onto_canon6/adapters/digimon_export.py`
+(method `_convert_relationships`)
+**Mechanism:** Sets `relation_name=assertion.predicate` verbatim on every
+exported `DigimonRelationshipRecord`.
+**Enrichment opportunity:** None needed here directly — the export is already
+faithful to whatever predicate is stored. Once Point 1 produces richer
+predicates, DIGIMON edges automatically carry the enriched labels without export
+changes.
+
+### Point 5 — Import Profile Configuration
+
+**File:** `profiles/shared_import_permissive/0.1.0/manifest.yaml`
+**Mechanism:** The permissive profile uses `mode: open` and
+`proposal_policy: reject`, accepting any claim without requiring known
+predicates.
+**Enrichment opportunity:** When the predicate vocabulary (Point 2) is extended,
+a stricter profile variant could be introduced that validates inferred predicates
+against the pack vocabulary. The permissive profile should remain the default for
+backward compatibility.
+
+### Point 6 — research_v3 Claim-Type Mapping (Cross-Repo)
+
+**File:** `src/onto_canon6/adapters/research_v3_import.py`
+(function `_map_claim_type_to_predicate`)
+**Mechanism:** Maps graph-backed research_v3 claim types to `rv3:`-prefixed
+predicates (`rv3:asserts_fact`, `rv3:asserts_relationship`, etc.). This mapping
+is *not* used for memo-backed claims because they arrive via
+`grounded_research_import.py`, not `research_v3_import.py`.
+**Enrichment opportunity:** If Option B (source-side enrichment) were chosen,
+the analogous mapping logic would need to be added in
+`research_v3/shared_export.py`. For Option A, this file requires no changes.
+
+### Comparison: Graph-Backed vs Memo-Backed Predicate Paths
+
+| Aspect | Graph-backed (graph.yaml) | Memo-backed (memo.yaml) |
+|--------|--------------------------|------------------------|
+| Import adapter | `research_v3_import.py` | `grounded_research_import.py` |
+| Source claim_type | Explicit (`relationship_claim`, etc.) | Always `"assertion"` |
+| Predicate mapping | `_map_claim_type_to_predicate()` → `rv3:*` | Fallback → `shared:assertion` |
+| DIGIMON edge labels | Richer (`shared:relationship_claim`, etc.) | Undifferentiated (`shared:assertion`) |
+| Tension detection | Lower noise (distinct predicates) | Higher noise (same predicate for all) |
+
+---
+
 ## Summary
 
 | Dimension | Current State |
