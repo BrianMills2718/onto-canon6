@@ -93,6 +93,7 @@ def import_shared_claims(
                 "source_system": claim.source_system,
                 "status": claim.status,
                 "tags": claim.tags,
+                "source_urls": list(getattr(claim, "source_urls", [])),
             },
             content_text=claim.statement,
         )

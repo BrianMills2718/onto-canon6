@@ -172,6 +172,14 @@ investigations.
 - **Multi-agent coordination**: See `COORDINATION.md` before starting multi-file
   changes. Pull before edit. Rebase worktrees before merging.
 
+## Principles
+
+- Fail loud — no silent fallbacks; surface extraction failures with full context
+- Observability first — all LLM calls tracked via llm_client with `task=`, `trace_id=`, `max_budget=`
+- Typed boundaries — every cross-project surface uses Pydantic models with `@boundary` decorator
+- Schema-first — structured output contracts are the contract, not the prompt
+- Autonomy is the default — execute end-to-end without stopping at "plan written" or "one test passed"
+
 ## Workflow
 
 - All significant work follows plans in `docs/plans/`
