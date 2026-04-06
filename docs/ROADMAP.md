@@ -78,6 +78,8 @@ operational maintenance mode. New work activates only at concrete consumer trigg
 | DIGIMON import (bidirectional) | When a consumer requests it |
 | Multi-consumer query federation | When a second consumer appears |
 | Entity resolution 500+ docs | When corpus exceeds current scale |
+| Degree distribution as graph health metric | When corpus reaches 200+ nodes — measure power-law fit; flat/random distribution signals extraction is producing isolated clusters rather than a hub-and-spoke graph |
+| Scale-free construction heuristic | When degree distribution metric shows non-power-law shape — extraction policy change: prefer attaching new claims to existing high-degree entities (preferential attachment) over creating new isolated nodes |
 
 ### Abandoned
 
