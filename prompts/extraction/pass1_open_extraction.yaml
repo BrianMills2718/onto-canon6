@@ -1,5 +1,5 @@
 name: onto_canon6_pass1_open_extraction
-version: "2.0"
+version: "2.2"
 description: >
   Pass 1 of progressive disclosure extraction. Extracts n-ary event frames
   from source text, assigning coarse SUMO types to each participant and
@@ -42,6 +42,19 @@ messages:
         category or universal rule, or "instance" if about a specific event or situation.
       - Partial results are fine — we prefer incomplete coverage over hallucinated events.
       - Do not invent entities or events not supported by the text.
+      - **Entity names must be canonical proper nouns or named artifacts.**
+        - Anaphors and generic role words are NOT valid entity names: never
+          use "the group", "the organization", "the actors", "the attackers",
+          "the conspirators", "the target", "they", "it", "this", or similar
+          vague references. Resolve them to the specific named entity they
+          refer to (e.g. "APT42", "IRGC-IO"), or omit that participant if
+          you cannot resolve the referent with confidence.
+        - Strip bare articles: write "BlackSmith toolkit" not
+          "The BlackSmith toolkit"; "IRGC" not "The IRGC".
+        - Descriptive noun phrases are NOT entities: do not extract things like
+          "the infection chain", "a phishing campaign", "a Windows shortcut
+          file", "an information operation", "a structured escalation" —
+          these describe events or methods, not named participants.
 
   - role: user
     content: |
