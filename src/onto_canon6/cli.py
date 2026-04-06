@@ -2025,7 +2025,9 @@ def _handle_export_digimon(args: argparse.Namespace) -> int:
     """Export promoted graph in Digimon-compatible JSONL format."""
 
     from .adapters.digimon_export import export_for_digimon, write_digimon_jsonl
+    from .evaluation.predicate_canon import PredicateCanon
 
+    config = get_config()
     graph_service = _build_graph_service(args)
     review_service = _build_review_service(args)
     bundle = export_for_digimon(
@@ -2033,6 +2035,26 @@ def _handle_export_digimon(args: argparse.Namespace) -> int:
         review_service=review_service,
     )
     entities_path, relationships_path = write_digimon_jsonl(bundle, args.output_dir)
+
+    # Write role_labels.json alongside entities/relationships so the browser
+    # backend can resolve ARG0/ARG1 → named semantic labels (Operator, Theme…).
+    # This is derived entirely from sumo_plus.db and is static across runs.
+    sumo_db_path = config.resolve_repo_path(config.evaluation.sumo_db_path)
+    role_labels_path = Path(args.output_dir) / "role_labels.json"
+    try:
+        canon = PredicateCanon(sumo_db_path)
+        role_labels: dict[str, dict[str, str]] = {}
+        for row in canon._conn.execute(
+            "SELECT DISTINCT event_sense_id FROM role_slots"
+        ).fetchall():
+            pred_id = row[0]
+            slots = canon.get_role_slots(pred_id)
+            role_labels[pred_id] = {s.arg_position: s.named_label for s in slots}
+        role_labels_path.write_text(json.dumps(role_labels), encoding="utf-8")
+        print(f"Exported {len(role_labels)} predicate role mappings → {role_labels_path}")
+    except Exception as exc:  # noqa: BLE001
+        print(f"Warning: could not write role_labels.json: {exc}", file=sys.stderr)
+
     print(
         f"Exported {len(bundle.entities)} entities → {entities_path}\n"
         f"Exported {len(bundle.relationships)} relationships → {relationships_path}"
