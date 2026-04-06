@@ -109,9 +109,10 @@ def _mapped_assertion(
 ) -> Pass2MappedAssertion:
     """Build a Pass2MappedAssertion with sensible defaults."""
     if mapped_roles is None:
+        # abandon_leave_behind: ARG0=Agent, ARG1=Theme — use named labels
         mapped_roles = {
-            "ARG0": event.participants[0].entity.name,
-            "ARG1": event.participants[1].entity.name if len(event.participants) > 1 else "",
+            "Agent": event.participants[0].entity.name,
+            "Theme": event.participants[1].entity.name if len(event.participants) > 1 else "",
         }
     return Pass2MappedAssertion(
         event=event,
@@ -307,7 +308,7 @@ async def test_no_constraint_path(
     assertion = _mapped_assertion(triple)
     p2 = _pass2_result([assertion])
 
-    # The LLM should be called for ARG1 (entity_b = "the plan", type Process,
+    # The LLM should be called for Theme (entity_b = "the plan", type Process,
     # constraint Entity -> no_constraint path).
     llm_response = json.dumps({"refined_type": "Process"})
     api = _make_fake_api(llm_response, llm_cost=0.001)

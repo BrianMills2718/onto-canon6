@@ -487,14 +487,15 @@ def test_render_candidates_for_prompt(canon: PredicateCanon) -> None:
 
 
 def test_build_single_sense_assertion(canon: PredicateCanon) -> None:
-    """Single-sense builder should map Agent->ARG0, Theme->ARG1 via proto-role affinity."""
+    """Single-sense builder should map Agent->named_label, Theme->named_label via proto-role affinity."""
     matches = canon.lookup_by_lemma("abate")
     assert len(matches) == 1
     triple = _event("abate", "the storm", "its strength")
     assertion = _build_single_sense_assertion(triple, matches[0])
     assert assertion.predicate_id == "abate_decrease_strength"
-    assert assertion.mapped_roles.get("ARG0") == "the storm"
-    assert assertion.mapped_roles.get("ARG1") == "its strength"
+    # abate_decrease_strength: ARG0=Agent, ARG1=Item — mapped_roles uses named labels
+    assert assertion.mapped_roles.get("Agent") == "the storm"
+    assert assertion.mapped_roles.get("Item") == "its strength"
     assert assertion.disambiguation_method == "single_sense"
 
 

@@ -570,24 +570,26 @@ def _assign_participant_to_slot(
     role_slots: list[Any],
     already_assigned: set[str],
 ) -> str | None:
-    """Find the best arg_position for a participant given their proto_role.
+    """Find the best named_label for a participant given their proto_role.
 
     First tries to match by named_label family, then falls back to the first
-    unassigned slot in position order.
+    unassigned slot in position order.  Returns the slot's named_label (e.g.
+    "Operator", "Theme") — never an ARG position — so mapped_roles stores
+    human-readable role names directly.
     """
     family = _PROTO_ROLE_LABEL_FAMILIES.get(proto_role, frozenset())
 
     # First pass: find slot whose named_label matches the proto_role family
     for slot in role_slots:
-        if slot.arg_position in already_assigned:
+        if slot.named_label in already_assigned:
             continue
         if slot.named_label in family or slot.named_label == proto_role:
-            return slot.arg_position
+            return slot.named_label
 
     # Second pass: take the first unassigned slot
     for slot in role_slots:
-        if slot.arg_position not in already_assigned:
-            return slot.arg_position
+        if slot.named_label not in already_assigned:
+            return slot.named_label
 
     return None  # all slots filled
 
@@ -598,20 +600,21 @@ def _build_single_sense_assertion(
 ) -> Pass2MappedAssertion:
     """Build a Pass2MappedAssertion using proto-role affinity for slot assignment.
 
-    Maps participants to predicate arg positions by matching proto_role
-    against the predicate's named_label families.  Falls back to positional
-    assignment when no family match is found.
+    Maps participants to predicate named_labels (e.g. "Operator", "Theme") by
+    matching proto_role against the predicate's named_label families.  Falls
+    back to positional assignment when no family match is found.  mapped_roles
+    stores {named_label: entity_name} — never ARG positions.
     """
     role_mapping: dict[str, str] = {}
     assigned: set[str] = set()
 
     for participant in event.participants:
-        arg_pos = _assign_participant_to_slot(
+        role_label = _assign_participant_to_slot(
             participant.proto_role, match.role_slots, assigned
         )
-        if arg_pos is not None:
-            role_mapping[arg_pos] = participant.entity.name
-            assigned.add(arg_pos)
+        if role_label is not None:
+            role_mapping[role_label] = participant.entity.name
+            assigned.add(role_label)
 
     return Pass2MappedAssertion(
         event=event,
@@ -1168,14 +1171,10 @@ async def run_pass3(
     typed_assertions: list[Pass3TypedAssertion] = []
 
     for assertion in pass2_result.mapped:
+        # mapped_roles stores {named_label: entity_name} — no ARG translation needed.
         role_constraints = predicate_canon.get_role_constraints(
             assertion.predicate_id,
         )
-        role_slots = predicate_canon.get_role_slots(assertion.predicate_id)
-        # Build a lookup from arg_position to named_label.
-        arg_to_label: dict[str, str] = {
-            s.arg_position: s.named_label for s in role_slots
-        }
 
         entity_refinements: list[EntityRefinement] = []
 
@@ -1184,7 +1183,7 @@ async def run_pass3(
             p.entity.name: p.entity for p in assertion.event.participants
         }
 
-        for arg_pos, entity_name in assertion.mapped_roles.items():
+        for role_label, entity_name in assertion.mapped_roles.items():
             # Find the entity's coarse type from the event participants.
             entity = entity_by_name.get(entity_name)
             if entity:
@@ -1200,8 +1199,7 @@ async def run_pass3(
                 entity_refinements.append(refinement_cache[cache_key])
                 continue
 
-            role_constraint = role_constraints.get(arg_pos)
-            role_label = arg_to_label.get(arg_pos, arg_pos)
+            role_constraint = role_constraints.get(role_label)
 
             refinement, cost = await _refine_entity(
                 entity_name=entity_name,

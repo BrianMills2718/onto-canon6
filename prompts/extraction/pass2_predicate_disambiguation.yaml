@@ -1,5 +1,5 @@
 name: onto_canon6_pass2_predicate_disambiguation
-version: "1.0"
+version: "2.0"
 description: >
   Pass 2 predicate disambiguation for the progressive disclosure extraction
   pipeline.  Given a relationship triple and a list of candidate predicate
@@ -22,18 +22,21 @@ messages:
       {
         "predicate_id": "the_chosen_predicate_id",
         "role_mapping": {
-          "ARG0": "entity name that fills this role",
-          "ARG1": "entity name that fills this role",
-          "ARG2": "entity name for additional roles"
+          "Agent": "entity name that fills this role",
+          "Theme": "entity name that fills this role",
+          "Recipient": "entity name for additional roles"
         }
       }
+
+      Use the named_label from the role slots as keys (e.g. "Operator", "Theme",
+      "Recipient") — never ARG0/ARG1/ARG2. The named labels are shown in
+      parentheses next to each role slot in the candidate list below.
 
       **Guidance:**
       - Pick the predicate sense whose description best matches the
         event as used in the source text.
-      - Map participants to roles based on their proto_role, role labels, and type constraints.
-        The Agent participant typically fills ARG0; the Theme typically fills ARG1.
-        Additional participants (Recipient, Instrument, etc.) fill ARG2 and beyond.
+      - Map participants to roles using the named_label that best matches their
+        proto_role and the role's type constraints.
       - Only map roles for which you have a corresponding participant. Do not
         invent fillers for roles that have no participant in the event.
       - If none of the candidates fit well, pick the closest reasonable match
@@ -58,6 +61,6 @@ messages:
          Process type: {{ candidate.process_type }}
          Roles:
          {% for slot in candidate.role_slots %}
-         - {{ slot.arg_position }} ({{ slot.named_label }}{% if slot.type_constraint %}, type: {{ slot.type_constraint }}{% endif %}{% if slot.required %}, required{% endif %})
+         - {{ slot.named_label }}{% if slot.type_constraint %} (type: {{ slot.type_constraint }}){% endif %}{% if slot.required %} [required]{% endif %}
          {% endfor %}
       {% endfor %}

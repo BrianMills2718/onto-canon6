@@ -259,15 +259,16 @@ def _build_typed_payload(
 
     The payload uses the canonical graph's ``predicate`` + ``roles`` format
     so candidates can be promoted without a separate normalization step.
-    The ``roles`` dict maps predicate argument positions (ARG0, ARG1, etc.)
-    to entity fillers.  Additional provenance fields travel alongside.
+    The ``roles`` dict maps semantic role names (e.g. "Operator", "Theme")
+    to entity fillers — never ARG positions.  Additional provenance fields
+    travel alongside.
     """
     event = mapped.event
     # Build roles from the mapped role assignments using the entity type lookup.
     roles: dict[str, list[dict[str, JsonValue]]] = {}
-    for arg_pos, entity_name in mapped.mapped_roles.items():
+    for role_label, entity_name in mapped.mapped_roles.items():
         etype = entity_type_by_name.get(entity_name, "Entity")
-        roles[arg_pos] = [_entity_filler(entity_name, etype)]
+        roles[role_label] = [_entity_filler(entity_name, etype)]
 
     # Ensure at least source_entity and target_entity roles exist
     if not roles and event.participants:

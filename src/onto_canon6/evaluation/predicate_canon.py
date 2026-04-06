@@ -193,19 +193,19 @@ class PredicateCanon:
         return int(row["cnt"]) if row else 0
 
     def get_role_constraints(self, predicate_id: str) -> dict[str, str]:
-        """Return ``{arg_position: type_constraint}`` for *predicate_id*.
+        """Return ``{named_label: type_constraint}`` for *predicate_id*.
 
         Only includes slots that have a non-null type constraint.
         Returns an empty dict when the predicate has no constrained slots
         or does not exist.
         """
         cursor = self._conn.execute(
-            "SELECT arg_position, type_constraint FROM role_slots "
+            "SELECT named_label, type_constraint FROM role_slots "
             "WHERE event_sense_id = ? AND type_constraint IS NOT NULL "
             "ORDER BY arg_position",
             (predicate_id,),
         )
-        return {row["arg_position"]: row["type_constraint"] for row in cursor.fetchall()}
+        return {row["named_label"]: row["type_constraint"] for row in cursor.fetchall()}
 
     def get_role_slots(self, predicate_id: str) -> list[RoleSlotInfo]:
         """Return full role-slot info for *predicate_id*.

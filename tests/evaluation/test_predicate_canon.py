@@ -61,12 +61,12 @@ def test_is_single_sense_abandon(canon: PredicateCanon) -> None:
 
 
 def test_get_role_constraints_abandon_leave_behind(canon: PredicateCanon) -> None:
-    """Role constraints for abandon_leave_behind match expected types."""
+    """Role constraints for abandon_leave_behind are keyed by named_label."""
     constraints = canon.get_role_constraints("abandon_leave_behind")
     assert constraints == {
-        "ARG0": "AutonomousAgent",
-        "ARG1": "Entity",
-        "ARG2": "Object",
+        "Agent": "AutonomousAgent",
+        "Theme": "Entity",
+        "Location": "Object",
     }
 
 
