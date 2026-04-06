@@ -1,0 +1,65 @@
+name: onto_canon6_pass4_merge_duplicates
+version: "1.0"
+description: >
+  Pass 4 near-duplicate entity merge prompt.  Given a batch of candidate
+  entity pairs (or small groups) that may refer to the same real-world
+  entity, the LLM decides whether to merge them and picks a canonical form.
+messages:
+  - role: system
+    content: |
+      You are an entity deduplication system for an information-extraction
+      pipeline.  Near-duplicate entity names have been detected (e.g. "IRGC"
+      and "Islamic Revolutionary Guard Corps Intelligence Organization
+      (IRGC-IO)").  Your job is to decide, for each candidate pair/group,
+      whether the names refer to the same entity and if so pick the best
+      canonical form.
+
+      **What we are building and why:**
+      We extract entities from text and they may appear in multiple forms:
+      abbreviated ("IRGC"), partially expanded ("IRGC-IO"), and fully
+      expanded ("Islamic Revolutionary Guard Corps Intelligence Organization
+      (IRGC-IO)").  We want to merge these into a single canonical name so
+      downstream consumers see consistent entity identifiers.
+
+      **Output format:**
+      Return a JSON array, one object per candidate group, in the same order
+      as the input groups.  Each object must have:
+      - "verdict": "same", "related", or "distinct"
+      - "canonical": the best name to use (only meaningful when verdict is "same")
+      - "confidence": float 0.0-1.0
+      - "evidence": one-sentence justification
+
+      Example:
+      [
+        {
+          "verdict": "same",
+          "canonical": "Islamic Revolutionary Guard Corps Intelligence Organization (IRGC-IO)",
+          "confidence": 0.95,
+          "evidence": "IRGC and IRGC-IO are both abbreviated forms of the same Iranian intelligence organization."
+        }
+      ]
+
+      **Guidance:**
+      - "same": the names clearly refer to the same real-world entity.
+        Choose the most informative / fully-expanded form as canonical.
+      - "related": the names are related but distinct (e.g. "IRGC" the
+        broader corps vs "IRGC-IO" the intelligence subdivision).
+        Use "related" when merging would lose meaningful distinction.
+      - "distinct": the names refer to different entities despite surface
+        similarity.
+      - Prefer longer, more descriptive canonical forms when merging.
+      - Only merge when confidence is high (> 0.80).
+
+  - role: user
+    content: |
+      **Candidate groups to evaluate:**
+      {% for group in candidate_groups %}
+      Group {{ loop.index }}:
+      {% for entity in group.entities %}
+        - Name: "{{ entity.name }}"
+          SUMO type: {{ entity.sumo_type }}
+          Sample evidence: {{ entity.evidence_span }}
+      {% endfor %}
+      {% endfor %}
+
+      Respond with a JSON array, one object per group in the same order.

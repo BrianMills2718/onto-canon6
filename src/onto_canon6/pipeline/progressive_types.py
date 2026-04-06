@@ -4,13 +4,17 @@ These Pydantic models define the contract for each extraction pass in
 the multi-pass progressive disclosure pipeline (Plan 0018).  Pass 1
 produces coarse-grained entity/relationship event frames seeded by ~50
 top-level SUMO types.  Later passes (Pass 2, Pass 3) will refine
-predicates and entity types using narrowed subtree information.
+predicates and entity types using narrowed subtree information.  Pass 4
+normalizes entity names: resolving anaphors, dropping descriptive phrases,
+and merging near-duplicates to canonical forms.
 
 All models use ``frozen=True`` and ``extra="forbid"`` so downstream
 consumers can trust the schema boundary.
 """
 
 from __future__ import annotations
+
+from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -44,6 +48,10 @@ class Pass1Participant(BaseModel):
     plays in the event (Agent, Theme, Recipient, etc.).  This maps
     naturally to PropBank and FrameNet argument structures which are
     fundamentally n-ary.
+
+    The ``resolution_status`` and ``resolved_from`` fields are populated
+    by Pass 4 normalization.  Before Pass 4 runs they default to
+    ``"canonical"`` and ``None`` respectively.
     """
 
     model_config = ConfigDict(extra="forbid", frozen=True)
@@ -64,6 +72,20 @@ class Pass1Participant(BaseModel):
         ),
     )
     entity: Pass1Entity
+    resolution_status: Literal["canonical", "resolved", "dropped", "uncertain"] = Field(
+        default="canonical",
+        description=(
+            "Pass 4 normalization outcome for this participant. "
+            "'canonical' = already a proper name, no change needed. "
+            "'resolved' = was an anaphor/alias, resolved to a canonical name. "
+            "'dropped' = descriptive phrase or unresolvable anaphor, removed from event. "
+            "'uncertain' = budget exhausted, kept as-is."
+        ),
+    )
+    resolved_from: str | None = Field(
+        default=None,
+        description="Original entity name before Pass 4 resolution, or None if not resolved.",
+    )
 
 
 class Pass1Event(BaseModel):
@@ -323,12 +345,100 @@ class Pass3Result(BaseModel):
     )
 
 
-class ProgressiveExtractionReport(BaseModel):
-    """Full report from a progressive extraction run (all three passes).
+class AnaphorResolution(BaseModel):
+    """Resolution decision for one anaphor or descriptive-phrase entity.
 
-    Aggregates the Pass 1, Pass 2, and Pass 3 results together with
-    total cost, provenance metadata, and summary statistics for the
-    entire pipeline run.  Produced by :func:`run_progressive_extraction`.
+    Produced by Pass 4 for every entity name flagged as an anaphor or
+    non-entity descriptive phrase.  ``resolved_to`` is ``None`` when
+    the entity should be dropped outright (no referent can be determined).
+    """
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    original_name: str = Field(
+        description="Entity name as it appeared in the Pass 1 output.",
+    )
+    resolved_to: str | None = Field(
+        description=(
+            "Canonical entity name this anaphor resolves to, or None to drop. "
+            "Must be an exact match to a canonical name in the run."
+        ),
+    )
+    confidence: float = Field(
+        ge=0.0,
+        le=1.0,
+        description="LLM self-assessed confidence in the resolution decision (0-1).",
+    )
+    evidence: str = Field(
+        description="One-sentence justification for the resolution decision.",
+    )
+
+
+class MergeDecision(BaseModel):
+    """Decision to merge near-duplicate entity names into one canonical form.
+
+    Produced by Pass 4 when two or more entity names refer to the same
+    real-world entity.  All ``aliases`` are rewritten to ``canonical_name``
+    in the event stream.
+    """
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    canonical_name: str = Field(
+        description="The authoritative name to use for this entity going forward.",
+    )
+    aliases: list[str] = Field(
+        description="All names that should be rewritten to canonical_name.",
+    )
+    confidence: float = Field(
+        ge=0.0,
+        le=1.0,
+        description="LLM self-assessed confidence that these names refer to the same entity (0-1).",
+    )
+    evidence: str = Field(
+        description="One-sentence justification for the merge decision.",
+    )
+
+
+class Pass4NormalizationResult(BaseModel):
+    """Complete result of Pass 4 entity normalization.
+
+    Contains all anaphor resolutions, merge decisions, the consolidated
+    normalization map (used to rewrite events), and provenance metadata.
+    """
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    anaphor_resolutions: list[AnaphorResolution] = Field(
+        description="Resolution decisions for flagged anaphors and descriptive phrases.",
+    )
+    merge_decisions: list[MergeDecision] = Field(
+        description="Merge decisions for near-duplicate entity name pairs.",
+    )
+    normalization_map: dict[str, str | None] = Field(
+        description=(
+            "Consolidated name → canonical mapping. "
+            "None value means drop the participant. "
+            "Keys not present in this map are kept unchanged."
+        ),
+    )
+    cost_usd: float = Field(
+        ge=0.0,
+        description="Total LLM cost in USD for all Pass 4 resolution calls.",
+    )
+    model: str = Field(
+        min_length=1,
+        description="The LLM model used for normalization calls.",
+    )
+
+
+class ProgressiveExtractionReport(BaseModel):
+    """Full report from a progressive extraction run (all four passes).
+
+    Aggregates the Pass 1, Pass 2, Pass 3, and optional Pass 4 results
+    together with total cost, provenance metadata, and summary statistics
+    for the entire pipeline run.  Produced by
+    :func:`run_progressive_extraction`.
     """
 
     model_config = ConfigDict(extra="forbid", frozen=True)
@@ -336,9 +446,16 @@ class ProgressiveExtractionReport(BaseModel):
     pass1: Pass1Result
     pass2: Pass2Result
     pass3: Pass3Result
+    pass4: Pass4NormalizationResult | None = Field(
+        default=None,
+        description=(
+            "Pass 4 entity normalization result, or None if Pass 4 was not run "
+            "(e.g. budget exhausted before normalization)."
+        ),
+    )
     total_cost: float = Field(
         ge=0.0,
-        description="Aggregate cost in USD across all three passes.",
+        description="Aggregate cost in USD across all passes (1-4).",
     )
     trace_id: str = Field(
         min_length=1,

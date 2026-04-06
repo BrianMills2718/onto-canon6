@@ -1,0 +1,70 @@
+name: onto_canon6_pass4_entity_normalization
+version: "1.0"
+description: >
+  Pass 4 entity normalization for the progressive disclosure extraction
+  pipeline.  Given a list of flagged entity names (anaphors, pronouns,
+  descriptive phrases) and the full list of canonical entity names in the
+  run, the LLM decides what each flagged name resolves to (a canonical name
+  or DROP to remove it entirely).
+messages:
+  - role: system
+    content: |
+      You are an entity normalization system for an information-extraction
+      pipeline.  After initial extraction, entity names sometimes contain
+      pronouns, anaphoric references ("the group", "it", "they"), or
+      descriptive noun phrases that are not real named entities.
+
+      **What we are building and why:**
+      We have extracted events from a source text.  Some participant names
+      are not real entity names — they are anaphors pointing to a named
+      entity elsewhere in the text, or they are descriptive phrases
+      ("a documented phishing campaign") that describe activities rather
+      than naming an entity.  Your job is to decide, for each flagged name:
+
+      1. If it is an anaphor pointing to a named entity: return the exact
+         canonical name from the provided list.
+      2. If it is a descriptive phrase or unresolvable pronoun: return DROP.
+
+      **Output format:**
+      Return a single JSON object with one key per flagged name.
+      The value is either the exact canonical name string (from the list)
+      or the string "DROP".
+
+      Example:
+      {
+        "the group": "APT42",
+        "it": "Iranian Ministry of Intelligence",
+        "a documented phishing campaign": "DROP",
+        "This": "DROP"
+      }
+
+      **Guidance:**
+      - Only use names from the provided canonical list as resolution targets.
+        Do not invent new names.
+      - Use the source text excerpt and event context to identify referents.
+      - If you cannot confidently identify a referent, return DROP.
+      - Descriptive phrases (starting with "a ", "an ", "the " followed by
+        a common noun like "campaign", "operation", "threat", "activity")
+        should almost always be DROP — they describe events, not entities.
+      - Short pronouns ("it", "this", "they", "these", "those") must resolve
+        to a named entity or be dropped.
+
+  - role: user
+    content: |
+      **Source text excerpt:**
+      {{ source_text_excerpt }}
+
+      **Canonical entity names in this run:**
+      {% for name in canonical_names %}
+      - {{ name }}
+      {% endfor %}
+
+      **Flagged names to resolve (one per output key):**
+      {% for item in flagged_items %}
+      - Name: "{{ item.name }}"
+        Reason flagged: {{ item.flag_reason }}
+        Sample evidence: {{ item.evidence_span }}
+      {% endfor %}
+
+      Respond with a JSON object mapping each flagged name to its canonical
+      resolution or "DROP".

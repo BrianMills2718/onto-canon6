@@ -44,7 +44,9 @@ from onto_canon6.evaluation.predicate_canon import PredicateCanon, PredicateMatc
 from onto_canon6.evaluation.sumo_hierarchy import SUMOHierarchy
 
 from .progressive_types import (
+    AnaphorResolution,
     EntityRefinement,
+    MergeDecision,
     Pass1Entity,
     Pass1Event,
     Pass1Participant,
@@ -53,6 +55,7 @@ from .progressive_types import (
     Pass2Result,
     Pass3Result,
     Pass3TypedAssertion,
+    Pass4NormalizationResult,
     ProgressiveExtractionReport,
 )
 
@@ -1288,6 +1291,754 @@ def run_pass3_sync(
 
 
 # ---------------------------------------------------------------------------
+# Pass 4: Entity Normalization
+# ---------------------------------------------------------------------------
+
+_PASS4_ANAPHOR_PROMPT = "prompts/extraction/pass4_entity_normalization.yaml"
+_PASS4_MERGE_PROMPT = "prompts/extraction/pass4_merge_duplicates.yaml"
+
+# Pronouns that are always anaphors — never real entity names.
+_PRONOUNS: frozenset[str] = frozenset(
+    {
+        "it", "its", "itself",
+        "they", "them", "their", "themselves",
+        "this", "these", "those",
+        "he", "him", "his", "himself",
+        "she", "her", "hers", "herself",
+        "we", "us", "our", "ourselves",
+    }
+)
+
+# Generic nouns that, when following an article, mark a descriptive phrase
+# rather than a named entity.
+_GENERIC_NOUNS: frozenset[str] = frozenset(
+    {
+        "group", "groups", "actor", "actors", "attacker", "attackers",
+        "target", "targets", "device", "devices", "system", "systems",
+        "entity", "entities", "organization", "organizations",
+        "campaign", "campaigns", "operation", "operations", "activity",
+        "activities", "threat", "threats", "initiative", "initiatives",
+        "effort", "efforts", "approach", "approaches", "strategy",
+        "strategies", "convergence", "dimension", "format", "method",
+        "mechanism", "vector", "technique", "infrastructure",
+        "assessment", "report", "source", "sources",
+    }
+)
+
+# SUMO type families that represent real-world agents/organizations.
+# Near-duplicates are only merged within the same family.
+_AGENT_TYPE_FAMILIES: frozenset[str] = frozenset(
+    {
+        "Agent", "CognitiveAgent", "SentientAgent",
+        "Organization", "GovernmentOrganization", "Corporation",
+        "MilitaryOrganization", "PoliticalOrganization",
+        "EducationalOrganization", "Person", "Human",
+    }
+)
+
+# SUMO type families that represent processes/events — never merge with agents.
+_PROCESS_TYPE_FAMILIES: frozenset[str] = frozenset(
+    {
+        "Process", "IntentionalProcess", "PhysicalProcess",
+        "SocialProcess", "CommunicationAct", "Transfer",
+        "Motion", "Proposition", "Attribute", "Relation",
+    }
+)
+
+
+def _is_anaphor(name: str) -> tuple[bool, str]:
+    """Return (is_anaphor, reason) for an entity name.
+
+    Checks for:
+    1. Bare pronouns ("it", "they", "this", etc.)
+    2. Article + generic noun: "the group", "the actors", "a campaign"
+    3. Long descriptive phrases (> 50 chars) with no capitalized proper noun
+       after the first word.
+    4. Possessive anaphor prefix: "the group's ...", "their ..."
+    """
+    stripped = name.strip()
+    lower = stripped.lower()
+
+    # 1. Bare pronouns
+    if lower in _PRONOUNS:
+        return True, f"pronoun: '{name}'"
+
+    # 2. Possessive anaphor prefix: "their X", "the group's X"
+    possessive_prefixes = ("their ", "its ")
+    for prefix in possessive_prefixes:
+        if lower.startswith(prefix):
+            return True, f"possessive anaphor prefix: '{name}'"
+    if lower.startswith("the ") and "'s" in lower:
+        # "the group's operations" etc.
+        return True, f"possessive anaphor: '{name}'"
+
+    # 3. Article + generic noun pattern: article followed by any phrase that ends
+    #    with (or is) a generic noun, or whose first word is a generic noun.
+    for article in ("the ", "a ", "an "):
+        if lower.startswith(article):
+            remainder = lower[len(article):]
+            words = remainder.split()
+            if not words:
+                continue
+            # Check first word (singular/plural)
+            first_word = words[0].rstrip("s")
+            if first_word in _GENERIC_NOUNS or words[0] in _GENERIC_NOUNS:
+                return True, f"article + generic noun: '{name}'"
+            # Check last word (the head noun in a noun phrase typically comes last)
+            last_word = words[-1].rstrip("s")
+            if last_word in _GENERIC_NOUNS or words[-1] in _GENERIC_NOUNS:
+                return True, f"article + generic noun phrase: '{name}'"
+            # Check the exact remainder as a single generic noun
+            if remainder.rstrip() in _GENERIC_NOUNS:
+                return True, f"article + generic noun: '{name}'"
+
+    # 4. Long descriptive phrase: > 50 chars, starts with article/lowercase,
+    #    and no capitalized proper noun after the first word.
+    if len(stripped) > 50:
+        words = stripped.split()
+        # First word starts lowercase or is an article
+        first_lower = words[0][0].islower() if words else False
+        starts_with_article = words[0].lower() in ("a", "an", "the") if words else False
+        if first_lower or starts_with_article:
+            # Check if any word after the first is capitalized (proper noun signal)
+            has_proper_noun = any(
+                w[0].isupper() and len(w) > 2 and not w.isupper()
+                for w in words[1:]
+            )
+            if not has_proper_noun:
+                return True, f"long descriptive phrase ({len(stripped)} chars): '{name[:60]}...'"
+
+    return False, ""
+
+
+def _are_types_compatible(type_a: str, type_b: str) -> bool:
+    """Return True if two SUMO types could belong to the same entity.
+
+    Rejects pairs where one type is in the agent family and the other is
+    in the process/attribute family — those are never the same entity.
+    """
+    a_is_agent = any(type_a.startswith(t) or type_a == t for t in _AGENT_TYPE_FAMILIES)
+    b_is_agent = any(type_b.startswith(t) or type_b == t for t in _AGENT_TYPE_FAMILIES)
+    a_is_process = any(type_a.startswith(t) or type_a == t for t in _PROCESS_TYPE_FAMILIES)
+    b_is_process = any(type_b.startswith(t) or type_b == t for t in _PROCESS_TYPE_FAMILIES)
+
+    # Reject agent-vs-process cross-matches
+    if (a_is_agent and b_is_process) or (b_is_agent and a_is_process):
+        return False
+    return True
+
+
+def _edit_distance(a: str, b: str) -> int:
+    """Compute Levenshtein edit distance between two strings."""
+    if a == b:
+        return 0
+    m, n = len(a), len(b)
+    if m == 0:
+        return n
+    if n == 0:
+        return m
+    # Use two-row DP to keep memory O(n)
+    prev = list(range(n + 1))
+    curr = [0] * (n + 1)
+    for i in range(1, m + 1):
+        curr[0] = i
+        for j in range(1, n + 1):
+            cost = 0 if a[i - 1] == b[j - 1] else 1
+            curr[j] = min(prev[j] + 1, curr[j - 1] + 1, prev[j - 1] + cost)
+        prev, curr = curr, prev
+    return prev[n]
+
+
+def _normalize_for_comparison(name: str) -> str:
+    """Lowercase and strip a name for near-duplicate comparison."""
+    return name.lower().strip().rstrip(".")
+
+
+def _extract_acronym(name: str) -> str:
+    """Return the first-letter acronym of a multi-word name."""
+    words = name.split()
+    if len(words) < 2:
+        return ""
+    return "".join(w[0].upper() for w in words if w and w[0].isalpha())
+
+
+def detect_near_duplicate_pairs(
+    entity_infos: list[dict[str, str]],
+) -> list[tuple[dict[str, str], dict[str, str]]]:
+    """Detect candidate near-duplicate pairs among entity infos.
+
+    Each entity info dict has keys: ``name``, ``sumo_type``, ``evidence_span``.
+
+    Pair detection criteria (Tier 1 — no embeddings):
+    1. Substring: one normalized name is a substring of another.
+    2. Acronym match: acronym of one name equals the other (normalized).
+    3. Edit distance ≤ 2 on normalized forms.
+
+    Pairs where SUMO types are incompatible (agent vs process) are rejected
+    before being returned.
+
+    Returns a list of (entity_a_info, entity_b_info) pairs.
+    """
+    pairs: list[tuple[dict[str, str], dict[str, str]]] = []
+    seen: set[tuple[int, int]] = set()
+
+    for i, info_a in enumerate(entity_infos):
+        norm_a = _normalize_for_comparison(info_a["name"])
+        acronym_a = _extract_acronym(info_a["name"])
+
+        for j, info_b in enumerate(entity_infos):
+            if j <= i:
+                continue
+            if (i, j) in seen:
+                continue
+
+            norm_b = _normalize_for_comparison(info_b["name"])
+            acronym_b = _extract_acronym(info_b["name"])
+
+            # Check type compatibility first
+            if not _are_types_compatible(info_a["sumo_type"], info_b["sumo_type"]):
+                continue
+
+            is_candidate = False
+            # 1. Substring test — only when shorter string is substantial AND
+            # at least 60% the length of the longer string.  This prevents
+            # short tokens like "APT42" or "Israel" from matching long compound
+            # phrases that merely *contain* them ("APT35 and APT42",
+            # "Israel and the United States").
+            if norm_a and norm_b and (norm_a in norm_b or norm_b in norm_a):
+                shorter = norm_a if len(norm_a) <= len(norm_b) else norm_b
+                longer = norm_b if len(norm_a) <= len(norm_b) else norm_a
+                if len(shorter) >= 3 and len(shorter) / len(longer) >= 0.50:
+                    is_candidate = True
+            # 2. Acronym match
+            elif acronym_a and (acronym_a == norm_b.upper() or acronym_a == info_b["name"]):
+                is_candidate = True
+            elif acronym_b and (acronym_b == norm_a.upper() or acronym_b == info_a["name"]):
+                is_candidate = True
+            # 3. Edit distance ≤ 1 — catches plural/singular and single-char
+            # variants but rejects different-entity short-string collisions
+            # (APT42 vs APT35, FBI vs FTP, Iran vs IRGC all have distance 2).
+            elif len(norm_a) <= 30 and len(norm_b) <= 30 and _edit_distance(norm_a, norm_b) <= 1:
+                is_candidate = True
+
+            if is_candidate:
+                pairs.append((info_a, info_b))
+                seen.add((i, j))
+
+    return pairs
+
+
+def _collect_entity_infos(
+    pass3_result: Pass3Result,
+) -> list[dict[str, str]]:
+    """Collect unique entity name/type/evidence tuples from Pass 3 results.
+
+    Returns a list of dicts with keys: ``name``, ``sumo_type``, ``evidence_span``.
+    Deduplication is by name (first occurrence wins).
+    """
+    seen: set[str] = set()
+    infos: list[dict[str, str]] = []
+    for typed_assertion in pass3_result.typed_assertions:
+        event = typed_assertion.assertion.event
+        evidence = event.evidence_span
+        for participant in event.participants:
+            name = participant.entity.name
+            if name in seen:
+                continue
+            seen.add(name)
+            # Use refined type from entity_refinements if available
+            refined_type = participant.entity.coarse_type
+            for ref in typed_assertion.entity_refinements:
+                if ref.entity_name == name:
+                    refined_type = ref.refined_type
+                    break
+            infos.append(
+                {
+                    "name": name,
+                    "sumo_type": refined_type,
+                    "evidence_span": evidence[:200],
+                }
+            )
+    return infos
+
+
+def _parse_anaphor_response(
+    raw_content: str,
+    flagged_names: list[str],
+    canonical_names: list[str],
+    model: str,
+    total_cost: float,
+) -> tuple[list[AnaphorResolution], dict[str, str | None]]:
+    """Parse the LLM anaphor resolution response.
+
+    Returns ``(resolutions, partial_map)`` where ``partial_map`` maps each
+    flagged name to its canonical resolution (or None to drop).
+
+    Falls back gracefully: names not present in the response keep their
+    original value (treated as uncertain).
+    """
+    content = _strip_markdown_fences(raw_content)
+    partial_map: dict[str, str | None] = {}
+    resolutions: list[AnaphorResolution] = []
+
+    try:
+        data = json.loads(content)
+    except json.JSONDecodeError:
+        logger.error("Pass 4 anaphor response is not valid JSON: %.200s", content)
+        return resolutions, partial_map
+
+    if not isinstance(data, dict):
+        logger.error("Pass 4 anaphor response is not a JSON object")
+        return resolutions, partial_map
+
+    canonical_set = set(canonical_names)
+
+    for name in flagged_names:
+        value = data.get(name)
+        if value is None:
+            # LLM did not include this name — leave uncertain
+            continue
+
+        if not isinstance(value, str):
+            logger.warning("Pass 4 anaphor response: value for '%s' is not a string", name)
+            continue
+
+        value = value.strip()
+        if value == "DROP":
+            resolutions.append(
+                AnaphorResolution(
+                    original_name=name,
+                    resolved_to=None,
+                    confidence=0.8,
+                    evidence="Flagged as descriptive phrase or unresolvable anaphor.",
+                )
+            )
+            partial_map[name] = None
+        elif value in canonical_set:
+            resolutions.append(
+                AnaphorResolution(
+                    original_name=name,
+                    resolved_to=value,
+                    confidence=0.8,
+                    evidence=f"Resolved anaphor '{name}' to canonical entity '{value}'.",
+                )
+            )
+            partial_map[name] = value
+        else:
+            logger.warning(
+                "Pass 4 anaphor resolution: '%s' resolved to '%s' which is not in canonical list",
+                name,
+                value,
+            )
+            # Accept it anyway — LLM may have picked a close variant
+            resolutions.append(
+                AnaphorResolution(
+                    original_name=name,
+                    resolved_to=value,
+                    confidence=0.5,
+                    evidence=f"Resolved to '{value}' (not in canonical list — check manually).",
+                )
+            )
+            partial_map[name] = value
+
+    return resolutions, partial_map
+
+
+def _parse_merge_response(
+    raw_content: str,
+    candidate_groups: list[list[dict[str, str]]],
+) -> list[MergeDecision]:
+    """Parse the LLM merge response and return MergeDecision objects.
+
+    Only returns decisions with verdict == "same" and confidence >= 0.80.
+    """
+    content = _strip_markdown_fences(raw_content)
+    decisions: list[MergeDecision] = []
+
+    try:
+        data = json.loads(content)
+    except json.JSONDecodeError:
+        logger.error("Pass 4 merge response is not valid JSON: %.200s", content)
+        return decisions
+
+    if not isinstance(data, list):
+        logger.error("Pass 4 merge response is not a JSON array")
+        return decisions
+
+    for i, item in enumerate(data):
+        if i >= len(candidate_groups):
+            break
+        if not isinstance(item, dict):
+            continue
+        verdict = item.get("verdict", "")
+        confidence = float(item.get("confidence", 0.0))
+        canonical = item.get("canonical", "")
+        evidence = item.get("evidence", "")
+
+        if verdict == "same" and confidence >= 0.80 and isinstance(canonical, str) and canonical:
+            group = candidate_groups[i]
+            aliases = [e["name"] for e in group if e["name"] != canonical]
+            if aliases:
+                decisions.append(
+                    MergeDecision(
+                        canonical_name=canonical,
+                        aliases=aliases,
+                        confidence=confidence,
+                        evidence=evidence if isinstance(evidence, str) else "",
+                    )
+                )
+
+    return decisions
+
+
+def _build_normalization_map(
+    anaphor_resolutions: list[AnaphorResolution],
+    merge_decisions: list[MergeDecision],
+    flagged_names: set[str],
+) -> dict[str, str | None]:
+    """Build the consolidated normalization map from resolutions and merges.
+
+    Priority: anaphor resolutions take precedence over merge decisions.
+    The map covers:
+    - Resolved anaphors: name → canonical (or None to drop)
+    - Merge aliases: alias → canonical_name
+    - Flagged names not resolved: not included (kept as-is)
+    """
+    norm_map: dict[str, str | None] = {}
+
+    # Apply merge decisions first (lower priority)
+    for decision in merge_decisions:
+        for alias in decision.aliases:
+            norm_map[alias] = decision.canonical_name
+
+    # Apply anaphor resolutions (higher priority — overwrite merges)
+    for resolution in anaphor_resolutions:
+        norm_map[resolution.original_name] = resolution.resolved_to
+
+    return norm_map
+
+
+def _apply_normalization_to_event(
+    event: Pass1Event,
+    norm_map: dict[str, str | None],
+) -> Pass1Event | None:
+    """Apply the normalization map to a single Pass1Event.
+
+    Rewrites participant entity names using the map.  Participants whose
+    name maps to None are removed.  Returns None if the event has no
+    participants left after normalization.
+    """
+    new_participants: list[Pass1Participant] = []
+    for participant in event.participants:
+        original_name = participant.entity.name
+        if original_name not in norm_map:
+            # Not in map — keep unchanged
+            new_participants.append(participant)
+            continue
+
+        target = norm_map[original_name]
+        if target is None:
+            # Drop this participant
+            continue
+
+        if target == original_name:
+            # No change needed
+            new_participants.append(participant)
+            continue
+
+        # Rewrite entity name
+        new_entity = Pass1Entity(
+            name=target,
+            coarse_type=participant.entity.coarse_type,
+            context=participant.entity.context,
+        )
+        new_participant = Pass1Participant(
+            proto_role=participant.proto_role,
+            entity=new_entity,
+            resolution_status="resolved",
+            resolved_from=original_name,
+        )
+        new_participants.append(new_participant)
+
+    if not new_participants:
+        return None  # drop empty event
+
+    return Pass1Event(
+        relationship_verb=event.relationship_verb,
+        participants=new_participants,
+        evidence_span=event.evidence_span,
+        confidence=event.confidence,
+        claim_level=event.claim_level,
+    )
+
+
+def _apply_normalization_to_pass3(
+    pass3_result: Pass3Result,
+    norm_map: dict[str, str | None],
+) -> Pass3Result:
+    """Rewrite all events in a Pass3Result using the normalization map.
+
+    Updates Pass3TypedAssertion.assertion.event for every typed assertion.
+    Assertions whose events become empty (all participants dropped) are
+    removed from the result.
+    """
+    if not norm_map:
+        return pass3_result
+
+    new_typed_assertions: list[Pass3TypedAssertion] = []
+
+    for typed_assertion in pass3_result.typed_assertions:
+        assertion = typed_assertion.assertion
+        old_event = assertion.event
+
+        new_event = _apply_normalization_to_event(old_event, norm_map)
+        if new_event is None:
+            logger.info(
+                "Pass 4: dropping assertion (predicate=%s) — all participants removed",
+                assertion.predicate_id,
+            )
+            continue
+
+        # Rebuild the assertion with the normalized event
+        new_assertion = Pass2MappedAssertion(
+            event=new_event,
+            predicate_id=assertion.predicate_id,
+            propbank_sense_id=assertion.propbank_sense_id,
+            process_type=assertion.process_type,
+            mapped_roles={
+                role: norm_map.get(entity_name, entity_name) or entity_name
+                for role, entity_name in assertion.mapped_roles.items()
+            },
+            disambiguation_method=assertion.disambiguation_method,
+            mapping_confidence=assertion.mapping_confidence,
+        )
+        new_typed_assertions.append(
+            Pass3TypedAssertion(
+                assertion=new_assertion,
+                entity_refinements=typed_assertion.entity_refinements,
+            )
+        )
+
+    # Rebuild Pass3Result with updated typed_assertions
+    return Pass3Result(
+        typed_assertions=new_typed_assertions,
+        source_pass2=pass3_result.source_pass2,
+        model=pass3_result.model,
+        cost=pass3_result.cost,
+        trace_id=pass3_result.trace_id,
+        leaf_early_exit_count=pass3_result.leaf_early_exit_count,
+        subtree_pick_count=pass3_result.subtree_pick_count,
+        no_constraint_count=pass3_result.no_constraint_count,
+    )
+
+
+async def run_pass4_normalization(
+    pass3_result: Pass3Result,
+    *,
+    model: str | None = None,
+    task: str = "progressive_extraction",
+    trace_id: str,
+    max_budget: float = 0.045,
+    _llm_api: _LLMClientAPI | None = None,
+) -> tuple[Pass4NormalizationResult, Pass3Result]:
+    """Run Pass 4: entity normalization (anaphor resolution + near-duplicate merging).
+
+    Detects and resolves three categories of problematic entity names:
+    1. Anaphors and pronouns ("the group", "it", "they") → resolve to named entity or drop.
+    2. Descriptive noun phrases (not real entities) → drop.
+    3. Near-duplicates ("IRGC" / "IRGC-IO") → merge to canonical form.
+
+    All detection is rule-based.  LLM is called only for resolution decisions.
+    If budget is exhausted, remaining flagged names are marked "uncertain" and
+    kept as-is.
+
+    Parameters
+    ----------
+    pass3_result:
+        The Pass 3 typed assertion result to normalize.
+    model:
+        LLM model identifier.  Defaults to ``gemini/gemini-2.5-flash-lite``.
+    task:
+        Task tag for ``llm_client`` observability.
+    trace_id:
+        Trace ID for ``llm_client`` observability.
+    max_budget:
+        Maximum spend in USD for all Pass 4 LLM calls.  When exhausted,
+        remaining items are kept as-is (marked "uncertain").
+    _llm_api:
+        Override for the llm_client API handle (testing only).
+
+    Returns
+    -------
+    Tuple of (Pass4NormalizationResult, normalized_Pass3Result).
+    """
+    api = _llm_api or _load_llm_client_api()
+    effective_model = model or _DEFAULT_MODEL
+    total_cost = 0.0
+
+    # Collect entity infos from Pass 3
+    entity_infos = _collect_entity_infos(pass3_result)
+
+    # Step 1: Detect anaphors / descriptive phrases
+    flagged: list[dict[str, str]] = []
+    canonical_names: list[str] = []
+    for info in entity_infos:
+        is_anaphoric, reason = _is_anaphor(info["name"])
+        if is_anaphoric:
+            flagged.append({
+                "name": info["name"],
+                "flag_reason": reason,
+                "evidence_span": info["evidence_span"],
+            })
+        else:
+            canonical_names.append(info["name"])
+
+    # Step 2: Detect near-duplicate pairs (only among canonical names)
+    canonical_infos = [info for info in entity_infos if info["name"] in canonical_names]
+    dup_pairs = detect_near_duplicate_pairs(canonical_infos)
+
+    logger.info(
+        "Pass 4: %d flagged anaphors/phrases, %d near-duplicate pairs "
+        "(trace_id=%s)",
+        len(flagged),
+        len(dup_pairs),
+        trace_id,
+    )
+
+    anaphor_resolutions: list[AnaphorResolution] = []
+    merge_decisions: list[MergeDecision] = []
+    flagged_names_set: set[str] = {item["name"] for item in flagged}
+
+    # Step 3: LLM anaphor resolution (single batched call)
+    if flagged and total_cost < max_budget:
+        # Build a short source text excerpt from evidence spans
+        evidence_spans = [item["evidence_span"] for item in flagged if item["evidence_span"]]
+        source_excerpt = " ... ".join(evidence_spans[:5])[:500]
+
+        template_vars: dict[str, Any] = {
+            "source_text_excerpt": source_excerpt or "(no excerpt available)",
+            "canonical_names": canonical_names,
+            "flagged_items": flagged,
+        }
+        messages = api.render_prompt(_PASS4_ANAPHOR_PROMPT, **template_vars)
+
+        try:
+            result = await api.acall_llm(
+                effective_model,
+                messages,
+                task=task,
+                trace_id=trace_id,
+                max_budget=max_budget - total_cost,
+            )
+            call_cost: float = result.cost or 0.0
+            total_cost += call_cost
+            raw_content: str = result.content or ""
+
+            resolutions, _ = _parse_anaphor_response(
+                raw_content,
+                [item["name"] for item in flagged],
+                canonical_names,
+                effective_model,
+                total_cost,
+            )
+            anaphor_resolutions.extend(resolutions)
+
+        except Exception:
+            logger.error(
+                "Pass 4 anaphor resolution LLM call failed (trace_id=%s)",
+                trace_id,
+                exc_info=True,
+            )
+
+    # Step 4: LLM near-duplicate merging (batch in groups of up to 10 pairs)
+    _MERGE_BATCH_SIZE = 10
+    pair_batches: list[list[list[dict[str, str]]]] = []
+    batch: list[list[dict[str, str]]] = []
+    for pair in dup_pairs:
+        if total_cost >= max_budget:
+            logger.info(
+                "Pass 4: budget exhausted before merge step (cost=$%.4f, budget=$%.4f)",
+                total_cost,
+                max_budget,
+            )
+            break
+        batch.append(list(pair))
+        if len(batch) >= _MERGE_BATCH_SIZE:
+            pair_batches.append(batch)
+            batch = []
+    if batch:
+        pair_batches.append(batch)
+
+    for batch_groups in pair_batches:
+        if total_cost >= max_budget:
+            break
+        template_vars_merge: dict[str, Any] = {
+            "candidate_groups": [
+                {
+                    "entities": [
+                        {
+                            "name": e["name"],
+                            "sumo_type": e["sumo_type"],
+                            "evidence_span": e["evidence_span"][:150],
+                        }
+                        for e in group
+                    ]
+                }
+                for group in batch_groups
+            ],
+        }
+        messages_merge = api.render_prompt(_PASS4_MERGE_PROMPT, **template_vars_merge)
+
+        try:
+            merge_result = await api.acall_llm(
+                effective_model,
+                messages_merge,
+                task=task,
+                trace_id=trace_id,
+                max_budget=max_budget - total_cost,
+            )
+            merge_cost: float = merge_result.cost or 0.0
+            total_cost += merge_cost
+            merge_content: str = merge_result.content or ""
+
+            batch_decisions = _parse_merge_response(merge_content, batch_groups)
+            merge_decisions.extend(batch_decisions)
+
+        except Exception:
+            logger.error(
+                "Pass 4 merge LLM call failed (trace_id=%s)",
+                trace_id,
+                exc_info=True,
+            )
+
+    # Step 5: Build consolidated normalization map
+    norm_map = _build_normalization_map(anaphor_resolutions, merge_decisions, flagged_names_set)
+
+    logger.info(
+        "Pass 4 complete: %d anaphor resolutions, %d merge decisions, "
+        "%d normalization entries (trace_id=%s, cost=$%.4f)",
+        len(anaphor_resolutions),
+        len(merge_decisions),
+        len(norm_map),
+        trace_id,
+        total_cost,
+    )
+
+    pass4_result = Pass4NormalizationResult(
+        anaphor_resolutions=anaphor_resolutions,
+        merge_decisions=merge_decisions,
+        normalization_map=norm_map,
+        cost_usd=total_cost,
+        model=effective_model,
+    )
+
+    # Step 6: Apply normalization map to Pass 3 result
+    normalized_pass3 = _apply_normalization_to_pass3(pass3_result, norm_map)
+
+    return pass4_result, normalized_pass3
+
+
+# ---------------------------------------------------------------------------
 # Pipeline Orchestrator (Slice E)
 # ---------------------------------------------------------------------------
 
@@ -1447,10 +2198,11 @@ async def run_progressive_extraction(
     effective_trace_id = trace_id or f"prog_{_uuid.uuid4().hex[:12]}"
     effective_model = model or _DEFAULT_MODEL
 
-    # Budget allocation: 40% pass 1, 30% pass 2, 30% pass 3.
-    budget_pass1 = max_budget * 0.4
-    budget_pass2 = max_budget * 0.3
-    budget_pass3 = max_budget * 0.3
+    # Budget allocation: 34% pass 1, 25.5% pass 2, 25.5% pass 3, 15% pass 4.
+    budget_pass1 = max_budget * 0.34
+    budget_pass2 = max_budget * 0.255
+    budget_pass3 = max_budget * 0.255
+    budget_pass4 = max_budget * 0.15
 
     # --- Pass 1 (chunked) ---
     chunks = _chunk_text(text, target_chars=chunk_target_chars)
@@ -1540,8 +2292,32 @@ async def run_progressive_extraction(
                     f"Pass 3 failed (trace_id={effective_trace_id}): {exc}"
                 ) from exc
 
+    # --- Pass 4: Entity Normalization ---
+    # Use a separate trace_id suffix so llm_client's per-trace budget counter
+    # starts at $0 for Pass 4.  Passes 1-3 already spent their budgets on the
+    # main trace; re-using the same trace_id would immediately trigger the
+    # budget guard even though Pass 4 has its own allocation.
+    pass4_trace_id = effective_trace_id + "_pass4"
+    pass4_result: Pass4NormalizationResult | None = None
+    try:
+        pass4_result, pass3_result = await run_pass4_normalization(
+            pass3_result,
+            model=effective_model,
+            task=task,
+            trace_id=pass4_trace_id,
+            max_budget=budget_pass4,
+            _llm_api=_llm_api,
+        )
+    except Exception:
+        logger.error(
+            "Pass 4 normalization failed (trace_id=%s) — continuing without normalization",
+            effective_trace_id,
+            exc_info=True,
+        )
+
     # --- Aggregate ---
-    total_cost = pass1_result.cost + pass2_result.cost + pass3_result.cost
+    pass4_cost = pass4_result.cost_usd if pass4_result is not None else 0.0
+    total_cost = pass1_result.cost + pass2_result.cost + pass3_result.cost + pass4_cost
 
     # Count unique entities refined in Pass 3 (from the dedup cache perspective,
     # each typed assertion has a list of entity refinements).
@@ -1554,6 +2330,7 @@ async def run_progressive_extraction(
         pass1=pass1_result,
         pass2=pass2_result,
         pass3=pass3_result,
+        pass4=pass4_result,
         total_cost=total_cost,
         trace_id=effective_trace_id,
         model=effective_model,
