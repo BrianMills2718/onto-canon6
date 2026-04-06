@@ -6,10 +6,8 @@ This subtree owns active gaps, acceptance criteria, and verification notes.
 
 ## Active Plans
 
-No active execution block is currently open. Plan `0070` closed on
-2026-04-03 after a fresh live Palantir contract-profile run stopped naturally
-at round 3 and produced `28` DIGIMON entities plus `23` DIGIMON
-relationships through the shared-contract path.
+No active plan. Plan `0071` completed 2026-04-05.
+All ROADMAP Tier 1 goals are met. onto-canon6 is in maintenance mode.
 
 ## Planned / Deferred
 
@@ -23,6 +21,7 @@ relationships through the shared-contract path.
 
 | # | Plan | Completed |
 |---|------|-----------|
+| 0071 | Consumer Value Validation Block | 2026-04-05 |
 | 0070 | Graph-Value Stop Gate | 2026-04-03 |
 | 0069 | Non-Gemini Fresh Memo Proof | 2026-04-03 |
 | 0068 | Memo Semantic Lift Block | 2026-04-02 |

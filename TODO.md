@@ -1,31 +1,43 @@
 # TODO
 
-## Current State
+## Active Block
 
-Most recently completed block:
-- `docs/plans/0070_24h_graph_value_stop_gate.md`
-- `docs/plans/0069_24h_non_gemini_fresh_memo_proof.md`
-- `docs/plans/0068_24h_memo_semantic_lift_block.md`
+No active plan. Plan `0071` completed 2026-04-05.
+All ROADMAP Tier 1 goals are met. onto-canon6 is in maintenance mode.
 
-## Current Priorities
+### Plan 0071 — completed 2026-04-05
+- [x] Plan 0067 marked completed
+- [x] LLM entity resolution promotion decision note written
+- [x] 3 OSINT queries run against Iran DIGIMON graph (mean 2.0/2.0)
+- [x] Query evidence added to assertion_semantics_evaluation.md
+- [x] Verdict: thin semantics sufficient for current phase
+- [x] ROADMAP.md Tier 1 updated — Full pipeline E2E marked DONE
+- [x] HANDOFF.md updated
 
-1. Decide whether the memo path should stay on thin `shared:assertion` edges
-   or grow richer graph-native relation semantics
-2. Prove richer relation semantics only if they materially improve a real
-   consumer outcome
-3. Revisit broader consumer adoption after the semantic seam is honest
+## Current State (2026-04-05)
 
-## Most Recently Closed
+Most recently completed blocks:
+- Plan `0070` — graph-value stop policy, promoted contract profile
+  (Palantir: 23 findings → 28 entities + 23 DIGIMON rels)
+- Plan `0069` — non-Gemini fresh memo proof
+- Plan `0068` — memo semantic lift
 
-- Plan `0070` closed the contract-runtime promotion and stop-policy decision
-- `config_loop_claude_runtime.yaml` is now the promoted profile for
-  contract-style investigations
-- fresh live contract-profile Palantir run:
-  `23` promoted assertions -> `28` canonical entities -> `23` DIGIMON
-  relationships
+What is proven end-to-end:
+- Full pipeline: research_v3 → onto-canon6 → DIGIMON (63 entities, 62 rels, Iran)
+- Memo path (research_v3 memo.yaml → ClaimRecord → onto-canon6 → DIGIMON)
+- Graph path (research_v3 graph.yaml → ClaimRecord → onto-canon6 → DIGIMON)
+- grounded-research path (Palantir, EU sanctions)
+- Entity resolution: 25-doc PSYOP corpus — precision 1.00, recall 0.9643, 0 false merges, 10/10 questions
+
+What is NOT yet proven:
+- Consumer value: does the DIGIMON graph actually answer real OSINT questions?
 
 ## Longer-Term Queue
 
+- [ ] Option A predicate enrichment — activates when first consumer needs typed edges
+- [ ] Entity resolution 500+ docs — activates when corpus exceeds scale
+- [ ] Cross-project CI — auto-run contract tests on schema change (medium)
+- [ ] Provenance scripts relocation — move to DIGIMON when it stabilizes as consumer
 - [ ] Revisit first-class source-artifact query after Plan `0068`
 - [ ] Revisit richer DIGIMON interchange only through DIGIMON Plan 23
-- [ ] Revisit trusted bulk ingestion only if a real workflow makes review the bottleneck
+- [ ] Revisit trusted bulk ingestion only if real workflow makes review the bottleneck

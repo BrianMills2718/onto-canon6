@@ -1,8 +1,12 @@
 # 24h End-Goal Convergence Block
 
-Status: active
+Status: completed
 
-Last updated: 2026-04-02
+Last updated: 2026-04-05
+Outcome: All exit criteria met. research_v3 memo path feeds onto-canon6 through
+shared ClaimRecord contracts. Proven on Palantir memo (61 findings → 40 entities,
+61 relationships). make pipeline-rv3-memo target exists and works. Plan 0070
+subsequently proved the graph-value stop gate on a fresh live run.
 Workstream: move from internal proof to consumer-led end-goal execution
 
 ## Mission

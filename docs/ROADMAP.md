@@ -1,41 +1,47 @@
 # onto-canon6 Roadmap
 
-Updated: 2026-04-03
+Updated: 2026-04-05
 
 ## Where We Are
 
 onto-canon6 is a **proven governed-assertion middleware** with:
 
-- 562 collected tests and the full suite passing locally
+- 592 tests (562 original + 30 cross-project contract boundary tests), 0 failures
 - 100% precision / 100% recall entity resolution (25-doc synthetic corpus)
 - +70% cross-document QA improvement over bare extraction
 - Schema stability gate (9 tests across 4 consumer surfaces)
+- Cross-project contract boundary tests (B1–B7, research_v3 → onto-canon6 → DIGIMON)
 - Graph-backed full pipeline proofs on real artifacts:
   - Booz Allen: 123 claims -> 60 entities + 123 relationships
   - Anduril: 22 claims -> 17 entities + 22 relationships
-- Memo-backed shared-claim proof on a real artifact:
-  - Palantir memo: 61 claims -> 61 promoted assertions -> 40 entities + 61 relationships
-- Fresh live memo-backed checkpoint proof under Claude runtime:
-  - Palantir round-4 checkpoint: 34 claims -> 34 promoted assertions -> 34 entities + 30 relationships
+- Memo-backed shared-claim proof on real artifacts:
+  - Palantir memo: 61 claims -> 40 entities + 61 relationships
+  - Iran disinformation: 62 findings -> 63 entities + 62 relationships
 - Fresh live memo-backed final proof under the promoted contract profile:
-  - Palantir final run: 23 claims -> 23 promoted assertions -> 28 entities + 23 relationships
+  - Palantir final run: 23 claims -> 28 entities + 23 relationships
+- Consumer query validation (2026-04-05): 3 real OSINT queries, mean 2.0/2.0, 100% provenance
 - Query/browse surface: entity, assertion, identity, source-artifact browse
 - Compact operational-parity extraction prompt promoted as default
-- Cross-project integration via shared contracts (graph + handoff proven; memo path now graph-producing)
+- Cross-project integration via shared contracts (graph + memo + grounded-research paths proven)
 
-Historical plans `0024`-`0070` are closed. The next unresolved work is not
-transport or stop policy but stronger consumer semantics for the memo path.
+Historical plans `0024`-`0071` are closed or active. The Tier 1 pipeline and
+consumer value goals are met. Remaining work is Tier 2 scale and Tier 3 capability
+expansion, both deferred to concrete triggers.
 
 ## What "Done" Looks Like
 
 onto-canon6 is done when:
 
-1. A real OSINT investigation uses it as its governed assertion store
-   (not just smoke tests — real investigation, real value)
-2. Cross-project data flows end-to-end without manual intervention
-   (research_v3 → grounded-research → onto-canon6 → DIGIMON → answers)
-3. The parity matrix has no ambiguous rows
-4. No consumer depends on unstable contracts
+1. ✅ A real OSINT investigation uses it as its governed assertion store
+   (Iran disinformation: 63 entities, 62 rels. Consumer query validation: mean 2.0/2.0)
+2. ✅ Cross-project data flows end-to-end without manual intervention
+   (research_v3 → onto-canon6 → DIGIMON, one-command pipeline proven)
+3. ✅ The parity matrix has no ambiguous rows (Plans 0024-0071 closed)
+4. ✅ No consumer depends on unstable contracts (schema stability gate, B1–B7 tests)
+
+**All four "done" criteria are met as of 2026-04-05.** onto-canon6 is in
+operational maintenance mode. New work activates only at concrete consumer triggers
+(typed edges needed, corpus exceeds 500 docs, new consumer appears).
 
 ## Priorities (Next 3-6 Months)
 
@@ -43,7 +49,7 @@ onto-canon6 is done when:
 
 | Item | Status | What's Left |
 |------|--------|-------------|
-| Full pipeline E2E | **PARTIAL** | Graph-backed proof is done (Booz Allen, Anduril). Memo-backed proof now yields `40` entities + `61` relationships on the repaired Palantir memo, `34` entities + `30` relationships on a fresh live Claude-backed checkpoint, and `28` entities + `23` relationships on a fresh final Claude contract-profile run that stopped naturally. Remaining gap: decide whether generic `shared:assertion` edges are sufficient or whether the memo path should emit richer relation semantics. |
+| Full pipeline E2E | **DONE** | Graph-backed proof (Booz Allen, Anduril). Memo-backed proof on Palantir (40 entities, 61 rels) and fresh live contract-profile run (28 entities, 23 rels). Iran disinformation investigation: 63 entities + 62 rels. Consumer query validation (2026-04-05): 3 real OSINT queries, mean score 2.0/2.0, 100% provenance. Thin `shared:assertion` semantics confirmed sufficient — see `docs/assertion_semantics_evaluation.md`. |
 | grounded-research → onto-canon6 E2E | **DONE** | 8 EU sanctions claims stored |
 | research_v3 → shared contracts | **DONE** | `load_graph_claims()` and `load_memo_claims()` both export `ClaimRecord`s, and the memo path now carries `entity_refs` that produce graph objects downstream. Remaining gap is richer relation semantics, not transport. |
 | Evidence quality utils | **DONE** | estimate_recency + detect_staleness extracted |

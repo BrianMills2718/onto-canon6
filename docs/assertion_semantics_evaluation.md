@@ -244,6 +244,32 @@ the analogous mapping logic would need to be added in
 
 ---
 
+## Query Validation Evidence (2026-04-05)
+
+Three real OSINT queries were run against the Iran DIGIMON graph (63 entities,
+62 relationships, sourced from an Iran disinformation investigation via the
+research_v3 → onto-canon6 → DIGIMON pipeline). Full run record:
+`docs/runs/2026-04-05_consumer_query_validation.md`.
+
+| Query | Score (0-2) | Entities matched | Rels | Provenance |
+|-------|------------|-----------------|------|------------|
+| IRGC influence operations | 2 | 7 keyword + 15 PPR | 37 | 100% |
+| Iran social media disinformation | 2 | 5 keyword + 15 PPR | 37 | 100% |
+| APT42 cyber operations | 2 | 4 keyword + 15 PPR | 38 | 100% |
+| **Mean** | **2.0** | — | — | — |
+
+All three queries returned relevant entities with sourced relationship
+descriptions. The lack of typed predicates did not prevent useful answers —
+analysts receive entity context, substantive relationship text, and primary
+sources in each result.
+
+**Query validation verdict: thin semantics are sufficient for the current phase.**
+
+The "consumer is blocked" threshold was not met. Option A remains the correct
+enrichment path but the trigger condition has not been reached.
+
+---
+
 ## Summary
 
 | Dimension | Current State |
@@ -256,4 +282,5 @@ the analogous mapping logic would need to be added in
 | Relationship-specific queries | ❌ Not possible on memo-derived subgraph |
 | Tension detection quality | ⚠️ Spurious tensions possible across claim types |
 | Pack-level predicate validators | ❌ Blocked for memo claims |
+| Consumer query value (Iran graph) | ✅ Mean score 2.0/2.0 on 3 real OSINT queries |
 | Recommended action | Defer enrichment; implement Option A when first query-type consumer appears |
