@@ -23,27 +23,30 @@ messages:
         "predicate_id": "the_chosen_predicate_id",
         "role_mapping": {
           "ARG0": "entity name that fills this role",
-          "ARG1": "entity name that fills this role"
+          "ARG1": "entity name that fills this role",
+          "ARG2": "entity name for additional roles"
         }
       }
 
       **Guidance:**
       - Pick the predicate sense whose description best matches the
-        relationship as used in the source text.
-      - Map entities to roles based on the role labels and type constraints.
-        The entity that *performs* the action typically fills ARG0 (Agent);
-        the entity *affected* typically fills ARG1 (Patient/Theme).
-      - Only map roles for which you have a corresponding entity. Do not
-        invent fillers for roles that have no entity in the triple.
+        event as used in the source text.
+      - Map participants to roles based on their proto_role, role labels, and type constraints.
+        The Agent participant typically fills ARG0; the Theme typically fills ARG1.
+        Additional participants (Recipient, Instrument, etc.) fill ARG2 and beyond.
+      - Only map roles for which you have a corresponding participant. Do not
+        invent fillers for roles that have no participant in the event.
       - If none of the candidates fit well, pick the closest reasonable match
         rather than refusing.
 
   - role: user
     content: |
-      **Relationship to disambiguate:**
+      **Event to disambiguate:**
       - Verb/action: {{ relationship_verb }}
-      - Entity A: {{ entity_a }}
-      - Entity B: {{ entity_b }}
+      - Participants:
+      {% for p in participants %}
+        - {{ p.proto_role }}: {{ p.entity_name }} ({{ p.entity_type }})
+      {% endfor %}
       {% if evidence_span %}
       - Evidence: "{{ evidence_span }}"
       {% endif %}

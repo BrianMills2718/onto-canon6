@@ -46,8 +46,9 @@ from onto_canon6.evaluation.sumo_hierarchy import SUMOHierarchy
 from .progressive_types import (
     EntityRefinement,
     Pass1Entity,
+    Pass1Event,
+    Pass1Participant,
     Pass1Result,
-    Pass1Triple,
     Pass2MappedAssertion,
     Pass2Result,
     Pass3Result,
@@ -106,8 +107,8 @@ _PASS1_PROMPT_TEMPLATE = "prompts/extraction/pass1_open_extraction.yaml"
 _DEFAULT_MODEL = "gemini/gemini-2.5-flash-lite"
 
 
-class _RawEntity(BaseModel):
-    """Permissive entity shape returned by the LLM.
+class _RawParticipant(BaseModel):
+    """Permissive participant shape returned by the LLM.
 
     Allows missing or empty fields so partial extraction results are not
     discarded at the parse boundary.
@@ -115,23 +116,23 @@ class _RawEntity(BaseModel):
 
     model_config = ConfigDict(extra="ignore")
 
+    proto_role: str = "Unspecified"
     name: str = ""
     coarse_type: str = ""
     context: str = ""
 
 
-class _RawTriple(BaseModel):
-    """Permissive triple shape returned by the LLM.
+class _RawEvent(BaseModel):
+    """Permissive event frame shape returned by the LLM.
 
     Uses ``extra="ignore"`` so unexpected keys do not crash parsing.
-    Missing entities are represented as empty ``_RawEntity`` instances.
+    Missing participants are represented as empty lists.
     """
 
     model_config = ConfigDict(extra="ignore")
 
-    entity_a: _RawEntity = Field(default_factory=_RawEntity)
-    entity_b: _RawEntity = Field(default_factory=_RawEntity)
     relationship_verb: str = ""
+    participants: list[_RawParticipant] = Field(default_factory=list)
     evidence_span: str = ""
     confidence: float = 0.5
     claim_level: str = "instance"
@@ -146,48 +147,56 @@ class _RawPass1Response(BaseModel):
 
     model_config = ConfigDict(extra="ignore")
 
-    triples: list[_RawTriple] = Field(default_factory=list)
+    events: list[_RawEvent] = Field(default_factory=list)
 
 
 # -- json_schema response format for Pass 1 ----------------------------------
 # Schema field descriptions are a prompting surface: they constrain LLM output
 # at decode time.  Design prompt and schema together.
 
-class _SchemaEntity(BaseModel):
-    """Entity schema for json_schema response_format."""
+class _SchemaParticipant(BaseModel):
+    """Participant schema for json_schema response_format."""
 
-    name: str = Field(description="Canonical name of the entity as it appears in the text.")
+    proto_role: str = Field(
+        description=(
+            "Semantic role. Must be one of: Agent, Theme, Recipient, "
+            "Instrument, Location, Source, Experiencer, Cause, Attribute, Unspecified."
+        ),
+    )
+    name: str = Field(description="Entity name as it appears in the text.")
     coarse_type: str = Field(description="Best SUMO type from the provided type list.")
     context: str = Field(description="One-sentence description of this entity from the text.")
 
 
-class _SchemaTriple(BaseModel):
-    """Triple schema for json_schema response_format."""
+class _SchemaEvent(BaseModel):
+    """Event frame schema for json_schema response_format."""
 
-    entity_a: _SchemaEntity
-    entity_b: _SchemaEntity
     relationship_verb: str = Field(
         description=(
-            "Bare verb infinitive describing the relationship "
-            "(e.g. 'deploy', 'invest', 'compete', 'develop', 'award', 'integrate'). "
-            "Not past tense, not with prepositions attached, not a noun. "
+            "Bare verb infinitive describing the action "
+            "(e.g. 'deploy', 'invest', 'compete', 'develop', 'target', 'fund'). "
+            "Not past tense, not with prepositions, not a noun phrase. "
             "Will be matched against a predicate database by lemma."
         ),
     )
-    evidence_span: str = Field(description="Short excerpt from the source text supporting this relationship.")
-    confidence: float = Field(description="How clearly the text supports this relationship, 0.0 to 1.0.")
-    claim_level: str = Field(
+    participants: list[_SchemaParticipant] = Field(
         description=(
-            "Whether this triple is about a specific instance/event "
-            "('instance') or a general type/category ('type')."
+            "All participants in this event with their semantic roles. "
+            "Include Agent and Theme at minimum; add Recipient, Instrument, "
+            "Location etc. when clearly present in the text."
         ),
+    )
+    evidence_span: str = Field(description="Short excerpt from the source text supporting this event.")
+    confidence: float = Field(description="How clearly the text supports this event, 0.0 to 1.0.")
+    claim_level: str = Field(
+        description="'instance' for specific events, 'type' for general patterns.",
     )
 
 
 class _SchemaPass1Response(BaseModel):
     """Top-level response schema for Pass 1 structured output."""
 
-    triples: list[_SchemaTriple]
+    events: list[_SchemaEvent]
 
 
 def _pass1_response_format() -> dict[str, Any]:
@@ -221,58 +230,69 @@ def _render_type_list() -> str:
     return "\n".join(f"- {t}" for t in TOP_LEVEL_TYPES)
 
 
-def _coerce_triple(raw: _RawTriple) -> Pass1Triple | None:
-    """Convert a permissive raw triple into a strict Pass1Triple.
+def _coerce_event(raw: _RawEvent) -> Pass1Event | None:
+    """Convert a permissive raw event into a strict Pass1Event.
 
-    Returns ``None`` when the triple is too incomplete to be useful
-    (e.g. missing entity names or relationship verb).
+    Returns None when the event is too incomplete (no verb or no valid participants).
+    Requires at least one participant with a non-empty name.
     """
-    if not raw.entity_a.name.strip() or not raw.entity_b.name.strip():
-        return None
     if not raw.relationship_verb.strip():
+        return None
+
+    participants: list[Pass1Participant] = []
+    for rp in raw.participants:
+        if not rp.name.strip():
+            continue  # skip participants with no name
+        try:
+            participant = Pass1Participant(
+                proto_role=rp.proto_role.strip() if rp.proto_role.strip() else "Unspecified",
+                entity=Pass1Entity(
+                    name=rp.name.strip(),
+                    coarse_type=rp.coarse_type.strip() or "Entity",
+                    context=rp.context.strip(),
+                ),
+            )
+            participants.append(participant)
+        except ValidationError:
+            logger.warning("Failed to coerce participant: %s", rp, exc_info=True)
+            continue
+
+    if not participants:
         return None
 
     confidence = max(0.0, min(1.0, raw.confidence))
     try:
-        return Pass1Triple(
-            entity_a=Pass1Entity(
-                name=raw.entity_a.name.strip(),
-                coarse_type=raw.entity_a.coarse_type.strip() or "Entity",
-                context=raw.entity_a.context.strip(),
-            ),
-            entity_b=Pass1Entity(
-                name=raw.entity_b.name.strip(),
-                coarse_type=raw.entity_b.coarse_type.strip() or "Entity",
-                context=raw.entity_b.context.strip(),
-            ),
+        return Pass1Event(
             relationship_verb=raw.relationship_verb.strip(),
+            participants=participants,
             evidence_span=raw.evidence_span.strip(),
             confidence=confidence,
             claim_level=raw.claim_level if raw.claim_level in ("type", "instance") else "instance",
         )
     except ValidationError:
-        logger.warning("Failed to validate triple: %s", raw, exc_info=True)
+        logger.warning("Failed to validate event: %s", raw, exc_info=True)
         return None
 
 
-def _deduplicate_entities(triples: list[Pass1Triple]) -> list[Pass1Entity]:
-    """Collect a deduplicated entity list from extracted triples.
+def _deduplicate_entities(events: list[Pass1Event]) -> list[Pass1Entity]:
+    """Collect a deduplicated entity list from extracted events.
 
     Deduplication is by (name, coarse_type). When the same entity name
     appears with different coarse types, both entries are kept since they
     represent genuinely different classifications.
     """
     seen: dict[tuple[str, str], Pass1Entity] = {}
-    for triple in triples:
-        for entity in (triple.entity_a, triple.entity_b):
+    for event in events:
+        for participant in event.participants:
+            entity = participant.entity
             key = (entity.name, entity.coarse_type)
             if key not in seen:
                 seen[key] = entity
     return list(seen.values())
 
 
-def _parse_llm_response(raw_content: str) -> list[Pass1Triple]:
-    """Parse the LLM's raw text response into a list of Pass1Triple.
+def _parse_llm_response(raw_content: str) -> list[Pass1Event]:
+    """Parse the LLM's raw text response into a list of Pass1Event.
 
     Attempts structured JSON parsing first.  On failure, logs the error
     and returns an empty list rather than crashing.
@@ -305,13 +325,13 @@ def _parse_llm_response(raw_content: str) -> list[Pass1Triple]:
         logger.error("Pass 1 LLM response failed schema validation", exc_info=True)
         return []
 
-    triples: list[Pass1Triple] = []
-    for raw_triple in raw_response.triples:
-        coerced = _coerce_triple(raw_triple)
+    events: list[Pass1Event] = []
+    for raw_event in raw_response.events:
+        coerced = _coerce_event(raw_event)
         if coerced is not None:
-            triples.append(coerced)
+            events.append(coerced)
 
-    return triples
+    return events
 
 
 # ---------------------------------------------------------------------------
@@ -401,7 +421,7 @@ async def run_pass1(
             exc_info=True,
         )
         return Pass1Result(
-            triples=[],
+            events=[],
             entities=[],
             source_text_hash=source_hash,
             model=effective_model,
@@ -410,19 +430,19 @@ async def run_pass1(
         )
 
     # Parse and validate
-    triples = _parse_llm_response(raw_content)
-    entities = _deduplicate_entities(triples)
+    events = _parse_llm_response(raw_content)
+    entities = _deduplicate_entities(events)
 
     logger.info(
-        "Pass 1 extracted %d triples, %d unique entities (trace_id=%s, cost=$%.4f)",
-        len(triples),
+        "Pass 1 extracted %d events, %d unique entities (trace_id=%s, cost=$%.4f)",
+        len(events),
         len(entities),
         trace_id,
         cost,
     )
 
     return Pass1Result(
-        triples=triples,
+        events=events,
         entities=entities,
         source_text_hash=source_hash,
         model=effective_model,
@@ -530,25 +550,71 @@ def _render_candidates_for_prompt(
     return result
 
 
+# Maps proto-roles to the named_label values used in PropBank/SUMO role slots.
+_PROTO_ROLE_LABEL_FAMILIES: dict[str, frozenset[str]] = {
+    "Agent": frozenset({"Agent", "Operator", "Causer", "Perpetrator", "Actor", "Speaker", "Experiencer", "Gatherer"}),
+    "Theme": frozenset({"Theme", "Patient", "Target", "Victim", "Phenomenon", "System", "Item", "Crop", "Total"}),
+    "Recipient": frozenset({"Recipient", "Beneficiary", "Destination", "Goal"}),
+    "Instrument": frozenset({"Instrument"}),
+    "Location": frozenset({"Location", "Place"}),
+    "Source": frozenset({"Source", "Origin"}),
+    "Experiencer": frozenset({"Experiencer", "Perceiver"}),
+    "Cause": frozenset({"Cause", "Reason"}),
+    "Attribute": frozenset({"Attribute", "Property", "Manner", "Purpose", "Part"}),
+    "Unspecified": frozenset(),
+}
+
+
+def _assign_participant_to_slot(
+    proto_role: str,
+    role_slots: list[Any],
+    already_assigned: set[str],
+) -> str | None:
+    """Find the best arg_position for a participant given their proto_role.
+
+    First tries to match by named_label family, then falls back to the first
+    unassigned slot in position order.
+    """
+    family = _PROTO_ROLE_LABEL_FAMILIES.get(proto_role, frozenset())
+
+    # First pass: find slot whose named_label matches the proto_role family
+    for slot in role_slots:
+        if slot.arg_position in already_assigned:
+            continue
+        if slot.named_label in family or slot.named_label == proto_role:
+            return slot.arg_position
+
+    # Second pass: take the first unassigned slot
+    for slot in role_slots:
+        if slot.arg_position not in already_assigned:
+            return slot.arg_position
+
+    return None  # all slots filled
+
+
 def _build_single_sense_assertion(
-    triple: Pass1Triple,
+    event: Pass1Event,
     match: PredicateMatch,
 ) -> Pass2MappedAssertion:
-    """Build a Pass2MappedAssertion for a single-sense deterministic mapping.
+    """Build a Pass2MappedAssertion using proto-role affinity for slot assignment.
 
-    Uses the default heuristic: ARG0 -> entity_a (the agent/performer),
-    ARG1 -> entity_b (the patient/theme).  Only maps roles that exist in the
-    predicate's role schema.
+    Maps participants to predicate arg positions by matching proto_role
+    against the predicate's named_label families.  Falls back to positional
+    assignment when no family match is found.
     """
     role_mapping: dict[str, str] = {}
-    arg_positions = {s.arg_position for s in match.role_slots}
-    if "ARG0" in arg_positions:
-        role_mapping["ARG0"] = triple.entity_a.name
-    if "ARG1" in arg_positions:
-        role_mapping["ARG1"] = triple.entity_b.name
+    assigned: set[str] = set()
+
+    for participant in event.participants:
+        arg_pos = _assign_participant_to_slot(
+            participant.proto_role, match.role_slots, assigned
+        )
+        if arg_pos is not None:
+            role_mapping[arg_pos] = participant.entity.name
+            assigned.add(arg_pos)
 
     return Pass2MappedAssertion(
-        triple=triple,
+        event=event,
         predicate_id=match.predicate_id,
         propbank_sense_id=match.propbank_sense_id or "",
         process_type=match.process_type or "",
@@ -574,7 +640,7 @@ def _strip_markdown_fences(content: str) -> str:
 def _parse_disambiguation_response(
     raw_content: str,
     candidates: list[PredicateMatch],
-    triple: Pass1Triple,
+    event: Pass1Event,
 ) -> Pass2MappedAssertion | None:
     """Parse the LLM disambiguation response into a Pass2MappedAssertion.
 
@@ -624,7 +690,7 @@ def _parse_disambiguation_response(
                 mapped_roles[k] = v
 
     return Pass2MappedAssertion(
-        triple=triple,
+        event=event,
         predicate_id=chosen.predicate_id,
         propbank_sense_id=chosen.propbank_sense_id or "",
         process_type=chosen.process_type or "",
@@ -700,29 +766,29 @@ async def run_pass2(
     effective_model = model or _DEFAULT_MODEL
 
     mapped: list[Pass2MappedAssertion] = []
-    unresolved: list[Pass1Triple] = []
+    unresolved: list[Pass1Event] = []
     total_cost = 0.0
     single_sense_count = 0
     llm_disambiguated_count = 0
     unresolved_count = 0
 
-    for triple in pass1_result.triples:
-        matches = _lookup_lemma(triple.relationship_verb, predicate_canon)
+    for event in pass1_result.events:
+        matches = _lookup_lemma(event.relationship_verb, predicate_canon)
 
         if not matches:
             # No predicate found — store permissively as unresolved
             logger.info(
                 "Pass 2 unresolved: verb '%s' has no predicate match (trace_id=%s)",
-                triple.relationship_verb,
+                event.relationship_verb,
                 trace_id,
             )
-            unresolved.append(triple)
+            unresolved.append(event)
             unresolved_count += 1
             continue
 
         if len(matches) == 1:
             # Single sense — deterministic mapping, no LLM call
-            assertion = _build_single_sense_assertion(triple, matches[0])
+            assertion = _build_single_sense_assertion(event, matches[0])
             mapped.append(assertion)
             single_sense_count += 1
             continue
@@ -730,10 +796,16 @@ async def run_pass2(
         # Multiple senses — LLM disambiguation required
         candidate_dicts = _render_candidates_for_prompt(matches)
         template_vars: dict[str, Any] = {
-            "relationship_verb": triple.relationship_verb,
-            "entity_a": triple.entity_a.name,
-            "entity_b": triple.entity_b.name,
-            "evidence_span": triple.evidence_span,
+            "relationship_verb": event.relationship_verb,
+            "participants": [
+                {
+                    "proto_role": p.proto_role,
+                    "entity_name": p.entity.name,
+                    "entity_type": p.entity.coarse_type,
+                }
+                for p in event.participants
+            ],
+            "evidence_span": event.evidence_span,
             "candidates": candidate_dicts,
         }
         messages = api.render_prompt(_PASS2_PROMPT_TEMPLATE, **template_vars)
@@ -753,21 +825,21 @@ async def run_pass2(
         except Exception:
             logger.error(
                 "Pass 2 LLM disambiguation failed for verb '%s' (trace_id=%s)",
-                triple.relationship_verb,
+                event.relationship_verb,
                 trace_id,
                 exc_info=True,
             )
-            unresolved.append(triple)
+            unresolved.append(event)
             unresolved_count += 1
             continue
 
-        disambiguated = _parse_disambiguation_response(raw_content, matches, triple)
+        disambiguated = _parse_disambiguation_response(raw_content, matches, event)
         if disambiguated is None:
             logger.warning(
                 "Pass 2 disambiguation parse failed for verb '%s', marking unresolved",
-                triple.relationship_verb,
+                event.relationship_verb,
             )
-            unresolved.append(triple)
+            unresolved.append(event)
             unresolved_count += 1
             continue
 
@@ -1107,19 +1179,19 @@ async def run_pass3(
 
         entity_refinements: list[EntityRefinement] = []
 
-        for arg_pos, entity_name in assertion.mapped_roles.items():
-            # Find the entity's coarse type from the triple.
-            entity_a = assertion.triple.entity_a
-            entity_b = assertion.triple.entity_b
+        # Build a lookup from entity name to Pass1Entity using all participants.
+        entity_by_name = {
+            p.entity.name: p.entity for p in assertion.event.participants
+        }
 
-            if entity_name == entity_a.name:
-                coarse_type = entity_a.coarse_type
-                entity_context = entity_a.context
-            elif entity_name == entity_b.name:
-                coarse_type = entity_b.coarse_type
-                entity_context = entity_b.context
+        for arg_pos, entity_name in assertion.mapped_roles.items():
+            # Find the entity's coarse type from the event participants.
+            entity = entity_by_name.get(entity_name)
+            if entity:
+                coarse_type = entity.coarse_type
+                entity_context = entity.context
             else:
-                # Entity name not in the triple — use "Entity" as fallback.
+                # Entity name not among participants — use "Entity" as fallback.
                 coarse_type = "Entity"
                 entity_context = ""
 
@@ -1287,10 +1359,10 @@ def _chunk_text(
 def _merge_pass1_results(results: list[Pass1Result]) -> Pass1Result:
     """Merge Pass 1 results from multiple text chunks.
 
-    Concatenates triples, deduplicates entities by ``(name, coarse_type)``,
+    Concatenates events, deduplicates entities by ``(name, coarse_type)``,
     combines hashes and costs.
     """
-    all_triples: list[Pass1Triple] = []
+    all_events: list[Pass1Event] = []
     seen_entities: dict[tuple[str, str], Pass1Entity] = {}
     total_cost = 0.0
     hashes: list[str] = []
@@ -1298,7 +1370,7 @@ def _merge_pass1_results(results: list[Pass1Result]) -> Pass1Result:
     trace_id = results[0].trace_id if results else "unknown"
 
     for result in results:
-        all_triples.extend(result.triples)
+        all_events.extend(result.events)
         for entity in result.entities:
             key = (entity.name, entity.coarse_type)
             if key not in seen_entities:
@@ -1309,7 +1381,7 @@ def _merge_pass1_results(results: list[Pass1Result]) -> Pass1Result:
     combined_hash = hashlib.sha256("|".join(hashes).encode()).hexdigest()[:16]
 
     return Pass1Result(
-        triples=all_triples,
+        events=all_events,
         entities=list(seen_entities.values()),
         source_text_hash=combined_hash,
         model=model,
@@ -1425,7 +1497,7 @@ async def run_progressive_extraction(
         pass1_result = _merge_pass1_results(chunk_results)
         # Restore base trace_id on the merged result.
         pass1_result = Pass1Result(
-            triples=pass1_result.triples,
+            events=pass1_result.events,
             entities=pass1_result.entities,
             source_text_hash=pass1_result.source_text_hash,
             model=pass1_result.model,
@@ -1487,7 +1559,7 @@ async def run_progressive_extraction(
         total_cost=total_cost,
         trace_id=effective_trace_id,
         model=effective_model,
-        triples_extracted=len(pass1_result.triples),
+        triples_extracted=len(pass1_result.events),
         predicates_mapped=len(pass2_result.mapped),
         predicates_unresolved=len(pass2_result.unresolved),
         entities_refined=len(refined_entities),

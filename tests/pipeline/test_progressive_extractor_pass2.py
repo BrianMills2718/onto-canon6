@@ -28,8 +28,9 @@ from onto_canon6.pipeline.progressive_extractor import (
 )
 from onto_canon6.pipeline.progressive_types import (
     Pass1Entity,
+    Pass1Event,
+    Pass1Participant,
     Pass1Result,
-    Pass1Triple,
     Pass2MappedAssertion,
     Pass2Result,
 )
@@ -56,26 +57,28 @@ def _entity(name: str, coarse_type: str = "Entity") -> Pass1Entity:
     return Pass1Entity(name=name, coarse_type=coarse_type)
 
 
-def _triple(
+def _event(
     verb: str,
     entity_a_name: str = "CIA",
     entity_b_name: str = "agents",
     evidence: str = "",
-) -> Pass1Triple:
-    """Build a Pass1Triple with sensible defaults."""
-    return Pass1Triple(
-        entity_a=_entity(entity_a_name, "Organization"),
-        entity_b=_entity(entity_b_name, "Human"),
+) -> Pass1Event:
+    """Build a Pass1Event with sensible defaults (Agent + Theme)."""
+    return Pass1Event(
         relationship_verb=verb,
+        participants=[
+            Pass1Participant(proto_role="Agent", entity=_entity(entity_a_name, "Organization")),
+            Pass1Participant(proto_role="Theme", entity=_entity(entity_b_name, "Human")),
+        ],
         evidence_span=evidence,
         confidence=0.8,
     )
 
 
-def _pass1_result(triples: list[Pass1Triple]) -> Pass1Result:
-    """Build a Pass1Result wrapping the given triples."""
+def _pass1_result(events: list[Pass1Event]) -> Pass1Result:
+    """Build a Pass1Result wrapping the given events."""
     return Pass1Result(
-        triples=triples,
+        events=events,
         entities=[],
         source_text_hash="sha256:test",
         model="gemini/gemini-2.5-flash-lite",
@@ -128,7 +131,7 @@ def _make_fake_api(
 async def test_single_sense_early_exit(canon: PredicateCanon) -> None:
     """A single-sense lemma ('abate') should map deterministically with no LLM call."""
     api = _make_fake_api()
-    p1 = _pass1_result([_triple("abate", "the storm", "its strength")])
+    p1 = _pass1_result([_event("abate", "the storm", "its strength")])
 
     result = await run_pass2(
         p1,
@@ -143,6 +146,7 @@ async def test_single_sense_early_exit(canon: PredicateCanon) -> None:
     assert result.mapped[0].propbank_sense_id == "abate-01"
     assert result.mapped[0].process_type == "Decreasing"
     assert result.mapped[0].disambiguation_method == "single_sense"
+    assert result.mapped[0].event.relationship_verb == "abate"
     assert result.single_sense_count == 1
     assert result.llm_disambiguated_count == 0
     # No LLM call should have been made
@@ -165,7 +169,7 @@ async def test_multi_sense_disambiguation(canon: PredicateCanon) -> None:
     )
     api = _make_fake_api(llm_response, llm_cost=0.002)
     p1 = _pass1_result(
-        [_triple("abandon", "CIA", "agents", evidence="The CIA abandoned its agents")]
+        [_event("abandon", "CIA", "agents", evidence="The CIA abandoned its agents")]
     )
 
     result = await run_pass2(
@@ -192,7 +196,7 @@ async def test_multi_sense_disambiguation(canon: PredicateCanon) -> None:
 async def test_unresolved_lemma(canon: PredicateCanon) -> None:
     """A verb with no predicate match should go to the unresolved list."""
     api = _make_fake_api()
-    p1 = _pass1_result([_triple("zzz_nonexistent")])
+    p1 = _pass1_result([_event("zzz_nonexistent")])
 
     result = await run_pass2(
         p1,
@@ -225,9 +229,9 @@ async def test_mixed_batch(canon: PredicateCanon) -> None:
     api = _make_fake_api(llm_response, llm_cost=0.002)
     p1 = _pass1_result(
         [
-            _triple("abate", "the storm", "its strength"),  # single-sense
-            _triple("abandon", "CIA", "agents"),  # multi-sense
-            _triple("zzz_nonexistent"),  # unresolved
+            _event("abate", "the storm", "its strength"),  # single-sense
+            _event("abandon", "CIA", "agents"),  # multi-sense
+            _event("zzz_nonexistent"),  # unresolved
         ]
     )
 
@@ -261,7 +265,7 @@ async def test_role_mapping_from_llm(canon: PredicateCanon) -> None:
     )
     api = _make_fake_api(llm_response)
     p1 = _pass1_result(
-        [_triple("abandon", "CIA", "agents", evidence="CIA abandoned its agents")]
+        [_event("abandon", "CIA", "agents", evidence="CIA abandoned its agents")]
     )
 
     result = await run_pass2(
@@ -288,7 +292,7 @@ async def test_llm_parse_failure_goes_to_unresolved(canon: PredicateCanon) -> No
     """Garbage LLM output during disambiguation should send the triple to unresolved."""
     api = _make_fake_api("This is not JSON at all!!!", llm_cost=0.001)
     p1 = _pass1_result(
-        [_triple("abandon", "CIA", "agents")]
+        [_event("abandon", "CIA", "agents")]
     )
 
     result = await run_pass2(
@@ -321,8 +325,8 @@ async def test_cost_tracking(canon: PredicateCanon) -> None:
     api = _make_fake_api(llm_response, llm_cost=0.003)
     p1 = _pass1_result(
         [
-            _triple("abate", "the storm", "its strength"),  # free
-            _triple("abandon", "CIA", "agents"),  # costs 0.003
+            _event("abate", "the storm", "its strength"),  # free
+            _event("abandon", "CIA", "agents"),  # costs 0.003
         ]
     )
 
@@ -347,7 +351,7 @@ async def test_cost_tracking(canon: PredicateCanon) -> None:
 async def test_provenance_references_input(canon: PredicateCanon) -> None:
     """source_pass1 should reference the exact input Pass1Result."""
     api = _make_fake_api()
-    p1 = _pass1_result([_triple("abate")])
+    p1 = _pass1_result([_event("abate")])
 
     result = await run_pass2(
         p1,
@@ -420,11 +424,15 @@ def test_prompt_renders_with_candidates() -> None:
         },
     ]
 
+    participants = [
+        {"proto_role": "Agent", "entity_name": "CIA", "entity_type": "Organization"},
+        {"proto_role": "Theme", "entity_name": "agents", "entity_type": "Human"},
+    ]
+
     messages = llm_client.render_prompt(
         "prompts/extraction/pass2_predicate_disambiguation.yaml",
         relationship_verb="abandon",
-        entity_a="CIA",
-        entity_b="agents",
+        participants=participants,
         evidence_span="The CIA abandoned its agents",
         candidates=candidates,
     )
@@ -479,10 +487,10 @@ def test_render_candidates_for_prompt(canon: PredicateCanon) -> None:
 
 
 def test_build_single_sense_assertion(canon: PredicateCanon) -> None:
-    """Single-sense builder should map ARG0->entity_a, ARG1->entity_b."""
+    """Single-sense builder should map Agent->ARG0, Theme->ARG1 via proto-role affinity."""
     matches = canon.lookup_by_lemma("abate")
     assert len(matches) == 1
-    triple = _triple("abate", "the storm", "its strength")
+    triple = _event("abate", "the storm", "its strength")
     assertion = _build_single_sense_assertion(triple, matches[0])
     assert assertion.predicate_id == "abate_decrease_strength"
     assert assertion.mapped_roles.get("ARG0") == "the storm"
@@ -493,7 +501,7 @@ def test_build_single_sense_assertion(canon: PredicateCanon) -> None:
 def test_parse_disambiguation_response_valid(canon: PredicateCanon) -> None:
     """Valid disambiguation JSON should parse into a Pass2MappedAssertion."""
     matches = canon.lookup_by_lemma("abandon")
-    triple = _triple("abandon", "CIA", "agents")
+    triple = _event("abandon", "CIA", "agents")
     raw = json.dumps(
         {
             "predicate_id": "abandon_leave_behind",
@@ -509,14 +517,14 @@ def test_parse_disambiguation_response_valid(canon: PredicateCanon) -> None:
 def test_parse_disambiguation_response_garbage(canon: PredicateCanon) -> None:
     """Garbage input should return None, not crash."""
     matches = canon.lookup_by_lemma("abandon")
-    triple = _triple("abandon")
+    triple = _event("abandon")
     assert _parse_disambiguation_response("not json", matches, triple) is None
 
 
 def test_parse_disambiguation_response_unknown_predicate(canon: PredicateCanon) -> None:
     """A predicate_id not in the candidates should return None."""
     matches = canon.lookup_by_lemma("abandon")
-    triple = _triple("abandon")
+    triple = _event("abandon")
     raw = json.dumps(
         {
             "predicate_id": "totally_unknown_predicate",

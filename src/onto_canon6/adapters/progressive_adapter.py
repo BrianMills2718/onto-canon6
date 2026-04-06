@@ -37,7 +37,7 @@ from ..pipeline.models import (
 )
 from ..pipeline.progressive_types import (
     EntityRefinement,
-    Pass1Triple,
+    Pass1Event,
     Pass2MappedAssertion,
     Pass3TypedAssertion,
     ProgressiveExtractionReport,
@@ -99,9 +99,9 @@ def convert_to_candidate_imports(
         )
         imports.append(candidate_import)
 
-    for unresolved_triple in report.pass2.unresolved:
-        candidate_import = _unresolved_triple_to_import(
-            triple=unresolved_triple,
+    for unresolved_event in report.pass2.unresolved:
+        candidate_import = _unresolved_event_to_import(
+            event=unresolved_event,
             profile=profile,
             source_artifact=source_artifact,
             submitted_by=effective_submitted_by,
@@ -172,27 +172,25 @@ def _typed_assertion_to_import(
     claim gloss.
     """
     mapped = typed_assertion.assertion
-    triple = mapped.triple
+    event = mapped.event
     refinements = typed_assertion.entity_refinements
 
-    subject_type = _resolve_entity_type(
-        entity_name=triple.entity_a.name,
-        coarse_type=triple.entity_a.coarse_type,
-        refinements=refinements,
-    )
-    object_type = _resolve_entity_type(
-        entity_name=triple.entity_b.name,
-        coarse_type=triple.entity_b.coarse_type,
-        refinements=refinements,
-    )
+    # Build a type lookup from entity name to resolved type for all participants.
+    entity_type_by_name: dict[str, str] = {
+        p.entity.name: _resolve_entity_type(
+            entity_name=p.entity.name,
+            coarse_type=p.entity.coarse_type,
+            refinements=refinements,
+        )
+        for p in event.participants
+    }
 
     payload = _build_typed_payload(
         mapped=mapped,
-        subject_type=subject_type,
-        object_type=object_type,
+        entity_type_by_name=entity_type_by_name,
     )
     evidence_spans = _find_evidence_spans(
-        evidence_text=triple.evidence_span,
+        evidence_text=event.evidence_span,
         source_text=source_text,
     )
     claim_text = _build_claim_text_from_mapped(mapped)
@@ -207,26 +205,26 @@ def _typed_assertion_to_import(
     )
 
 
-def _unresolved_triple_to_import(
+def _unresolved_event_to_import(
     *,
-    triple: Pass1Triple,
+    event: Pass1Event,
     profile: ProfileRef,
     source_artifact: SourceArtifactRef,
     submitted_by: str,
     source_text: str,
 ) -> CandidateAssertionImport:
-    """Convert one unresolved Pass1Triple into a CandidateAssertionImport.
+    """Convert one unresolved Pass1Event into a CandidateAssertionImport.
 
-    These triples had no predicate match in Pass 2.  They are still submitted as
+    These events had no predicate match in Pass 2.  They are still submitted as
     candidates with ``predicate="unresolved"`` so they remain visible for review
     rather than being silently dropped.
     """
-    payload = _build_unresolved_payload(triple)
+    payload = _build_unresolved_payload(event)
     evidence_spans = _find_evidence_spans(
-        evidence_text=triple.evidence_span,
+        evidence_text=event.evidence_span,
         source_text=source_text,
     )
-    claim_text = _build_claim_text_from_triple(triple)
+    claim_text = _build_claim_text_from_event(event)
 
     return CandidateAssertionImport(
         profile=profile,
@@ -255,8 +253,7 @@ def _entity_filler(
 def _build_typed_payload(
     *,
     mapped: Pass2MappedAssertion,
-    subject_type: str,
-    object_type: str,
+    entity_type_by_name: dict[str, str],
 ) -> dict[str, JsonValue]:
     """Build the role-based payload dict for a typed assertion.
 
@@ -265,29 +262,28 @@ def _build_typed_payload(
     The ``roles`` dict maps predicate argument positions (ARG0, ARG1, etc.)
     to entity fillers.  Additional provenance fields travel alongside.
     """
-    triple = mapped.triple
-    # Build roles from the mapped role assignments (ARG0 → entity_a, etc.)
+    event = mapped.event
+    # Build roles from the mapped role assignments using the entity type lookup.
     roles: dict[str, list[dict[str, JsonValue]]] = {}
     for arg_pos, entity_name in mapped.mapped_roles.items():
-        # Determine which entity this maps to and its type
-        if entity_name == triple.entity_a.name:
-            etype = subject_type
-        elif entity_name == triple.entity_b.name:
-            etype = object_type
-        else:
-            etype = subject_type  # fallback
+        etype = entity_type_by_name.get(entity_name, "Entity")
         roles[arg_pos] = [_entity_filler(entity_name, etype)]
 
     # Ensure at least source_entity and target_entity roles exist
-    if not roles:
-        roles["source_entity"] = [_entity_filler(triple.entity_a.name, subject_type)]
-        roles["target_entity"] = [_entity_filler(triple.entity_b.name, object_type)]
+    if not roles and event.participants:
+        first = event.participants[0]
+        first_type = entity_type_by_name.get(first.entity.name, first.entity.coarse_type)
+        roles["source_entity"] = [_entity_filler(first.entity.name, first_type)]
+        if len(event.participants) > 1:
+            second = event.participants[1]
+            second_type = entity_type_by_name.get(second.entity.name, second.entity.coarse_type)
+            roles["target_entity"] = [_entity_filler(second.entity.name, second_type)]
 
     result: dict[str, JsonValue] = {
         "predicate": mapped.predicate_id,
         "predicate_sense": mapped.propbank_sense_id,
         "process_type": mapped.process_type,
-        "confidence": triple.confidence,
+        "confidence": event.confidence,
         "disambiguation_method": mapped.disambiguation_method,
         "pass_provenance": "pass3",
     }
@@ -297,31 +293,40 @@ def _build_typed_payload(
     return result
 
 
-def _build_unresolved_payload(triple: Pass1Triple) -> dict[str, JsonValue]:
-    """Build the role-based payload dict for an unresolved triple.
+def _build_unresolved_payload(event: Pass1Event) -> dict[str, JsonValue]:
+    """Build the role-based payload dict for an unresolved event.
 
     Uses ``predicate="unresolved"`` and ``pass_provenance="pass1"`` to make
     the lack of predicate mapping explicit in the candidate record.  Still
     includes ``roles`` so the candidate is promotable if later resolved.
+    Roles are keyed by proto_role (lowercased).
     """
+    roles: dict[str, list[dict[str, JsonValue]]] = {}
+    for p in event.participants:
+        role_key = p.proto_role.lower()
+        roles.setdefault(role_key, []).append(
+            _entity_filler(p.entity.name, p.entity.coarse_type)
+        )
+    roles["relationship_verb"] = [{
+        "kind": "value",
+        "value": event.relationship_verb,
+        "value_kind": "string",
+    }]
+
+    # Provide legacy source_entity/target_entity keys for consumers that rely on them.
+    if event.participants and "source_entity" not in roles:
+        first = event.participants[0]
+        roles["source_entity"] = [_entity_filler(first.entity.name, first.entity.coarse_type)]
+    if len(event.participants) > 1 and "target_entity" not in roles:
+        second = event.participants[1]
+        roles["target_entity"] = [_entity_filler(second.entity.name, second.entity.coarse_type)]
+
     return {
         "predicate": "unresolved",
-        "roles": {
-            "source_entity": [_entity_filler(
-                triple.entity_a.name, triple.entity_a.coarse_type,
-            )],
-            "target_entity": [_entity_filler(
-                triple.entity_b.name, triple.entity_b.coarse_type,
-            )],
-            "relationship_verb": [{
-                "kind": "value",
-                "value": triple.relationship_verb,
-                "value_kind": "string",
-            }],
-        },
+        "roles": cast(JsonValue, roles),
         "predicate_sense": "",
         "process_type": "",
-        "confidence": triple.confidence,
+        "confidence": event.confidence,
         "disambiguation_method": "unresolved",
         "pass_provenance": "pass1",
     }
@@ -372,18 +377,30 @@ def _find_evidence_spans(
 def _build_claim_text_from_mapped(mapped: Pass2MappedAssertion) -> str:
     """Generate a human-readable claim gloss from a mapped assertion.
 
-    Format: ``<subject> [<predicate_sense>] <object>``
+    Format: ``<agent> [<predicate_sense>] <theme>``
+    Falls back to first two participant names when agent/theme not labeled.
     """
-    triple = mapped.triple
-    return f"{triple.entity_a.name} [{mapped.propbank_sense_id}] {triple.entity_b.name}"
+    event = mapped.event
+    agent = next((p for p in event.participants if p.proto_role == "Agent"), None)
+    theme = next((p for p in event.participants if p.proto_role == "Theme"), None)
+    if agent and theme:
+        return f"{agent.entity.name} [{mapped.propbank_sense_id}] {theme.entity.name}"
+    names = [p.entity.name for p in event.participants[:2]]
+    return f"{' '.join(names)} [{mapped.propbank_sense_id}]"
 
 
-def _build_claim_text_from_triple(triple: Pass1Triple) -> str:
-    """Generate a human-readable claim gloss from an unresolved triple.
+def _build_claim_text_from_event(event: Pass1Event) -> str:
+    """Generate a human-readable claim gloss from an unresolved event.
 
-    Format: ``<entity_a> <relationship_verb> <entity_b>``
+    Format: ``<agent> <relationship_verb> <theme>``
+    Falls back to first two participant names when agent/theme not labeled.
     """
-    return f"{triple.entity_a.name} {triple.relationship_verb} {triple.entity_b.name}"
+    agent = next((p for p in event.participants if p.proto_role == "Agent"), None)
+    theme = next((p for p in event.participants if p.proto_role == "Theme"), None)
+    if agent and theme:
+        return f"{agent.entity.name} {event.relationship_verb} {theme.entity.name}"
+    names = [p.entity.name for p in event.participants[:2]]
+    return f"{' '.join(names)} [{event.relationship_verb}]"
 
 
 __all__ = [

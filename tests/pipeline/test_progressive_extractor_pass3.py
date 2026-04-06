@@ -28,8 +28,9 @@ from onto_canon6.pipeline.progressive_extractor import (
 from onto_canon6.pipeline.progressive_types import (
     EntityRefinement,
     Pass1Entity,
+    Pass1Event,
+    Pass1Participant,
     Pass1Result,
-    Pass1Triple,
     Pass2MappedAssertion,
     Pass2Result,
     Pass3Result,
@@ -66,28 +67,30 @@ def _entity(name: str, coarse_type: str = "Entity", context: str = "") -> Pass1E
     return Pass1Entity(name=name, coarse_type=coarse_type, context=context)
 
 
-def _triple(
+def _event(
     verb: str,
     entity_a_name: str = "CIA",
     entity_a_type: str = "Organization",
     entity_b_name: str = "agents",
     entity_b_type: str = "Human",
     evidence: str = "",
-) -> Pass1Triple:
-    """Build a Pass1Triple with configurable entity types."""
-    return Pass1Triple(
-        entity_a=_entity(entity_a_name, entity_a_type),
-        entity_b=_entity(entity_b_name, entity_b_type),
+) -> Pass1Event:
+    """Build a Pass1Event with configurable entity types (Agent + Theme)."""
+    return Pass1Event(
         relationship_verb=verb,
+        participants=[
+            Pass1Participant(proto_role="Agent", entity=_entity(entity_a_name, entity_a_type)),
+            Pass1Participant(proto_role="Theme", entity=_entity(entity_b_name, entity_b_type)),
+        ],
         evidence_span=evidence,
         confidence=0.8,
     )
 
 
-def _pass1_result(triples: list[Pass1Triple]) -> Pass1Result:
-    """Build a Pass1Result wrapping the given triples."""
+def _pass1_result(events: list[Pass1Event]) -> Pass1Result:
+    """Build a Pass1Result wrapping the given events."""
     return Pass1Result(
-        triples=triples,
+        events=events,
         entities=[],
         source_text_hash="sha256:test",
         model="gemini/gemini-2.5-flash-lite",
@@ -97,7 +100,7 @@ def _pass1_result(triples: list[Pass1Triple]) -> Pass1Result:
 
 
 def _mapped_assertion(
-    triple: Pass1Triple,
+    event: Pass1Event,
     predicate_id: str = "abandon_leave_behind",
     propbank_sense_id: str = "abandon-01",
     process_type: str = "Leaving",
@@ -107,15 +110,15 @@ def _mapped_assertion(
     """Build a Pass2MappedAssertion with sensible defaults."""
     if mapped_roles is None:
         mapped_roles = {
-            "ARG0": triple.entity_a.name,
-            "ARG1": triple.entity_b.name,
+            "ARG0": event.participants[0].entity.name,
+            "ARG1": event.participants[1].entity.name if len(event.participants) > 1 else "",
         }
     return Pass2MappedAssertion(
-        triple=triple,
+        event=event,
         predicate_id=predicate_id,
         propbank_sense_id=propbank_sense_id,
         process_type=process_type,
-        mapped_roles=mapped_roles,
+        mapped_roles={k: v for k, v in mapped_roles.items() if v},
         disambiguation_method=disambiguation_method,
         mapping_confidence=0.9,
     )
@@ -123,12 +126,12 @@ def _mapped_assertion(
 
 def _pass2_result(
     mapped: list[Pass2MappedAssertion],
-    triples: list[Pass1Triple] | None = None,
+    events: list[Pass1Event] | None = None,
 ) -> Pass2Result:
     """Build a Pass2Result wrapping the given mapped assertions."""
-    if triples is None:
-        triples = [m.triple for m in mapped]
-    p1 = _pass1_result(triples)
+    if events is None:
+        events = [m.event for m in mapped]
+    p1 = _pass1_result(events)
     return Pass2Result(
         mapped=mapped,
         unresolved=[],
@@ -193,7 +196,7 @@ async def test_leaf_early_exit(
     leaf_type = _find_leaf_type(hierarchy)
     assert leaf_type is not None, "Could not find a leaf type in SUMO hierarchy"
 
-    triple = _triple("abandon", "Delta Force", leaf_type, "the compound", "Object")
+    triple = _event("abandon", "Delta Force", leaf_type, "the compound", "Object")
     assertion = _mapped_assertion(triple)
     p2 = _pass2_result([assertion])
 
@@ -244,7 +247,7 @@ async def test_subtree_narrowing(
 ) -> None:
     """Entity with coarse 'Organization' and role constraint 'MilitaryOrganization' should narrow."""
     # Use a triple where entity_a has type Organization.
-    triple = _triple(
+    triple = _event(
         "abandon",
         entity_a_name="NATO",
         entity_a_type="Organization",
@@ -293,7 +296,7 @@ async def test_no_constraint_path(
 ) -> None:
     """Role with type_constraint 'Entity' should use full coarse-type subtree."""
     # abandon_leave_behind has ARG1 constrained to 'Entity' (trivial).
-    triple = _triple(
+    triple = _event(
         "abandon",
         entity_a_name="CIA",
         entity_a_type="Organization",
@@ -335,7 +338,7 @@ async def test_llm_picks_valid_refined_type(
     hierarchy: SUMOHierarchy, canon: PredicateCanon,
 ) -> None:
     """Mock LLM returns a valid type from the narrowed list -> EntityRefinement created."""
-    triple = _triple(
+    triple = _event(
         "abandon",
         entity_a_name="special forces",
         entity_a_type="Organization",
@@ -382,7 +385,7 @@ async def test_llm_picks_invalid_type_falls_back(
     hierarchy: SUMOHierarchy, canon: PredicateCanon,
 ) -> None:
     """LLM returns a type not in the candidate list -> falls back to coarse_type."""
-    triple = _triple(
+    triple = _event(
         "abandon",
         entity_a_name="Army",
         entity_a_type="Organization",
@@ -422,14 +425,14 @@ async def test_entity_deduplication(
     hierarchy: SUMOHierarchy, canon: PredicateCanon,
 ) -> None:
     """Same entity in two assertions -> only one LLM refinement call."""
-    triple1 = _triple(
+    triple1 = _event(
         "abandon",
         entity_a_name="CIA",
         entity_a_type="Organization",
         entity_b_name="the plan",
         entity_b_type="Process",
     )
-    triple2 = _triple(
+    triple2 = _event(
         "abandon",
         entity_a_name="CIA",
         entity_a_type="Organization",
@@ -504,14 +507,14 @@ async def test_multiple_assertions(
     hierarchy: SUMOHierarchy, canon: PredicateCanon,
 ) -> None:
     """Pass2Result with multiple assertions -> all processed."""
-    triple1 = _triple(
+    triple1 = _event(
         "abandon",
         entity_a_name="CIA",
         entity_a_type="Organization",
         entity_b_name="agents",
         entity_b_type="Human",
     )
-    triple2 = _triple(
+    triple2 = _event(
         "abandon",
         entity_a_name="NATO",
         entity_a_type="Organization",
@@ -583,7 +586,7 @@ async def test_cost_tracking(
     leaf_type = _find_leaf_type(hierarchy)
     assert leaf_type is not None
 
-    triple = _triple(
+    triple = _event(
         "abandon",
         entity_a_name="Delta Force",
         entity_a_type=leaf_type,  # leaf -> no cost
@@ -620,7 +623,7 @@ async def test_provenance_references_input(
     hierarchy: SUMOHierarchy, canon: PredicateCanon,
 ) -> None:
     """source_pass2 should reference the exact input Pass2Result."""
-    triple = _triple("abandon")
+    triple = _event("abandon")
     assertion = _mapped_assertion(triple)
     p2 = _pass2_result([assertion])
 

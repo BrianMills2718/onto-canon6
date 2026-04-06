@@ -2,7 +2,7 @@
 
 These Pydantic models define the contract for each extraction pass in
 the multi-pass progressive disclosure pipeline (Plan 0018).  Pass 1
-produces coarse-grained entity/relationship triples seeded by ~50
+produces coarse-grained entity/relationship event frames seeded by ~50
 top-level SUMO types.  Later passes (Pass 2, Pass 3) will refine
 predicates and entity types using narrowed subtree information.
 
@@ -37,26 +37,61 @@ class Pass1Entity(BaseModel):
     )
 
 
-class Pass1Triple(BaseModel):
-    """A relationship triple extracted in Pass 1.
+class Pass1Participant(BaseModel):
+    """One participant in a Pass 1 event with their semantic proto-role.
 
-    Links two entities via a raw relationship verb with an optional
-    evidence span from the source text.  The ``confidence`` field is
-    the LLM's self-assessed confidence and should be treated as
-    advisory, not authoritative.
+    Each participant carries an entity and the semantic role that entity
+    plays in the event (Agent, Theme, Recipient, etc.).  This maps
+    naturally to PropBank and FrameNet argument structures which are
+    fundamentally n-ary.
     """
 
     model_config = ConfigDict(extra="forbid", frozen=True)
 
-    entity_a: Pass1Entity
-    entity_b: Pass1Entity
+    proto_role: str = Field(
+        description=(
+            "Semantic role of this participant. One of: "
+            "Agent (performs the action willfully), "
+            "Theme (undergoes or is affected by the action), "
+            "Recipient (receives or benefits from the action), "
+            "Instrument (tool or means used), "
+            "Location (where the action happens), "
+            "Source (origin of movement or information), "
+            "Experiencer (perceives or feels something), "
+            "Cause (non-volitional cause or reason), "
+            "Attribute (property being described), "
+            "Unspecified (role not clearly categorized)."
+        ),
+    )
+    entity: Pass1Entity
+
+
+class Pass1Event(BaseModel):
+    """An n-ary event frame extracted in Pass 1 with all participants.
+
+    Unlike binary triples, an event frame captures all participants of a
+    single action — agent, theme, recipient, instrument, etc. — in one
+    structured record.  This maps naturally to PropBank and FrameNet frames
+    which are fundamentally n-ary structures.
+    """
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
     relationship_verb: str = Field(
         min_length=1,
-        description="Raw verb or action phrase describing the relationship.",
+        description="Bare verb infinitive describing the core action (e.g. 'deploy', 'invest').",
+    )
+    participants: list[Pass1Participant] = Field(
+        default_factory=list,
+        description=(
+            "All participants in this event with their semantic roles. "
+            "Most events have 2–4 participants. Include all that are clearly "
+            "supported by the text."
+        ),
     )
     evidence_span: str = Field(
         default="",
-        description="Source text excerpt supporting this triple.",
+        description="Short excerpt from the source text supporting this event.",
     )
     confidence: float = Field(
         default=0.5,
@@ -67,8 +102,8 @@ class Pass1Triple(BaseModel):
     claim_level: str = Field(
         default="instance",
         description=(
-            "Whether this triple is about a specific instance/event "
-            "or about a general type/category. 'type' or 'instance'."
+            "Whether this event is about a specific instance/event "
+            "or a general type/category. 'type' or 'instance'."
         ),
     )
 
@@ -76,14 +111,14 @@ class Pass1Triple(BaseModel):
 class Pass1Result(BaseModel):
     """Complete result of a Pass 1 extraction run.
 
-    Contains the extracted triples, a deduplicated entity list, and
+    Contains the extracted events, a deduplicated entity list, and
     provenance metadata (source text hash, model, cost, trace ID) for
     downstream traceability.
     """
 
     model_config = ConfigDict(extra="forbid", frozen=True)
 
-    triples: list[Pass1Triple]
+    events: list[Pass1Event]
     entities: list[Pass1Entity]
     source_text_hash: str = Field(
         min_length=1,
@@ -105,9 +140,9 @@ class Pass1Result(BaseModel):
 
 
 class Pass2MappedAssertion(BaseModel):
-    """A triple with its predicate mapping from Pass 2.
+    """An event with its predicate mapping from Pass 2.
 
-    Links a Pass 1 triple to a specific predicate sense from the Predicate
+    Links a Pass 1 event to a specific predicate sense from the Predicate
     Canon, including the PropBank sense ID, SUMO process type, role mappings,
     and how the mapping was determined (single-sense early exit vs. LLM
     disambiguation).
@@ -115,7 +150,7 @@ class Pass2MappedAssertion(BaseModel):
 
     model_config = ConfigDict(extra="forbid", frozen=True)
 
-    triple: Pass1Triple
+    event: Pass1Event
     predicate_id: str = Field(
         min_length=1,
         description="Predicate Canon name, e.g. 'abandon_leave_behind'.",
@@ -146,7 +181,7 @@ class Pass2MappedAssertion(BaseModel):
 class Pass2Result(BaseModel):
     """Complete result of Pass 2 predicate mapping.
 
-    Contains successfully mapped assertions, unresolved triples (no predicate
+    Contains successfully mapped assertions, unresolved events (no predicate
     found), provenance back to the Pass 1 result, and counts for each
     disambiguation path (single-sense early exit, LLM disambiguation,
     unresolved).
@@ -155,10 +190,10 @@ class Pass2Result(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
     mapped: list[Pass2MappedAssertion] = Field(
-        description="Triples successfully mapped to predicates.",
+        description="Events successfully mapped to predicates.",
     )
-    unresolved: list[Pass1Triple] = Field(
-        description="Triples with no predicate match (stored permissively).",
+    unresolved: list[Pass1Event] = Field(
+        description="Events with no predicate match (stored permissively).",
     )
     source_pass1: Pass1Result = Field(
         description="The Pass 1 result this mapping was derived from.",

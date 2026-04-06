@@ -24,7 +24,12 @@ from onto_canon6.pipeline.progressive_extractor import (
     _render_type_list,
     run_pass1,
 )
-from onto_canon6.pipeline.progressive_types import Pass1Entity, Pass1Result, Pass1Triple
+from onto_canon6.pipeline.progressive_types import (
+    Pass1Entity,
+    Pass1Event,
+    Pass1Participant,
+    Pass1Result,
+)
 
 
 # ---------------------------------------------------------------------------
@@ -43,34 +48,42 @@ def _make_valid_llm_json() -> str:
     """Return a well-formed Pass 1 JSON response."""
     return json.dumps(
         {
-            "triples": [
+            "events": [
                 {
-                    "entity_a": {
-                        "name": "Shield AI",
-                        "coarse_type": "Corporation",
-                        "context": "Defense technology company",
-                    },
-                    "entity_b": {
-                        "name": "Hivemind",
-                        "coarse_type": "Abstract",
-                        "context": "Autonomous pilot software",
-                    },
-                    "relationship_verb": "developed",
+                    "participants": [
+                        {
+                            "proto_role": "Agent",
+                            "name": "Shield AI",
+                            "coarse_type": "Corporation",
+                            "context": "Defense technology company",
+                        },
+                        {
+                            "proto_role": "Theme",
+                            "name": "Hivemind",
+                            "coarse_type": "Abstract",
+                            "context": "Autonomous pilot software",
+                        },
+                    ],
+                    "relationship_verb": "develop",
                     "evidence_span": "Shield AI developed the Hivemind autonomous pilot software",
                     "confidence": 0.9,
                 },
                 {
-                    "entity_a": {
-                        "name": "USSOCOM",
-                        "coarse_type": "MilitaryOrganization",
-                        "context": "United States Special Operations Command",
-                    },
-                    "entity_b": {
-                        "name": "V-BAT",
-                        "coarse_type": "MilitaryAircraft",
-                        "context": "Autonomous VTOL drone",
-                    },
-                    "relationship_verb": "deployed",
+                    "participants": [
+                        {
+                            "proto_role": "Agent",
+                            "name": "USSOCOM",
+                            "coarse_type": "MilitaryOrganization",
+                            "context": "United States Special Operations Command",
+                        },
+                        {
+                            "proto_role": "Theme",
+                            "name": "V-BAT",
+                            "coarse_type": "MilitaryAircraft",
+                            "context": "Autonomous VTOL drone",
+                        },
+                    ],
+                    "relationship_verb": "deploy",
                     "evidence_span": "V-BAT drone was deployed by USSOCOM",
                     "confidence": 0.85,
                 },
@@ -133,11 +146,13 @@ def test_prompt_renders_with_text_and_type_list() -> None:
     assert len(messages) == 2
     assert messages[0]["role"] == "system"
     assert messages[1]["role"] == "user"
-    # The user message should contain the type list and text
+    # The user message should contain the type list, role descriptions, and text
     assert "Entity" in messages[1]["content"]
     assert "Corporation" in messages[1]["content"]
     assert "Some test text about entities." in messages[1]["content"]
     assert "10" in messages[1]["content"]
+    assert "Agent" in messages[1]["content"]
+    assert "Theme" in messages[1]["content"]
 
 
 # ---------------------------------------------------------------------------
@@ -157,11 +172,11 @@ async def test_successful_extraction() -> None:
     )
 
     assert isinstance(result, Pass1Result)
-    assert len(result.triples) == 2
-    assert result.triples[0].entity_a.name == "Shield AI"
-    assert result.triples[0].entity_a.coarse_type == "Corporation"
-    assert result.triples[0].relationship_verb == "developed"
-    assert result.triples[1].entity_b.name == "V-BAT"
+    assert len(result.events) == 2
+    assert result.events[0].participants[0].entity.name == "Shield AI"
+    assert result.events[0].participants[0].entity.coarse_type == "Corporation"
+    assert result.events[0].relationship_verb == "develop"
+    assert result.events[1].participants[1].entity.name == "V-BAT"
     assert result.cost == 0.002
     assert result.trace_id == "test/pass1/success"
 
@@ -173,20 +188,23 @@ async def test_successful_extraction() -> None:
 
 @pytest.mark.asyncio
 async def test_partial_extraction_skips_incomplete_triples() -> None:
-    """Triples missing entity_b should be dropped, not crash."""
+    """Events with no valid participants should be dropped, not crash."""
     partial_json = json.dumps(
         {
-            "triples": [
+            "events": [
                 {
-                    "entity_a": {"name": "Shield AI", "coarse_type": "Corporation"},
-                    "entity_b": {"name": "", "coarse_type": ""},
+                    "participants": [
+                        {"proto_role": "Agent", "name": "", "coarse_type": ""},
+                    ],
                     "relationship_verb": "does something",
                     "confidence": 0.5,
                 },
                 {
-                    "entity_a": {"name": "USSOCOM", "coarse_type": "MilitaryOrganization"},
-                    "entity_b": {"name": "V-BAT", "coarse_type": "MilitaryAircraft"},
-                    "relationship_verb": "deployed",
+                    "participants": [
+                        {"proto_role": "Agent", "name": "USSOCOM", "coarse_type": "MilitaryOrganization"},
+                        {"proto_role": "Theme", "name": "V-BAT", "coarse_type": "MilitaryAircraft"},
+                    ],
+                    "relationship_verb": "deploy",
                     "confidence": 0.8,
                 },
             ]
@@ -196,9 +214,9 @@ async def test_partial_extraction_skips_incomplete_triples() -> None:
 
     result = await run_pass1(SAMPLE_TEXT, trace_id="test/pass1/partial", _llm_api=api)
 
-    # Only the complete triple survives
-    assert len(result.triples) == 1
-    assert result.triples[0].entity_a.name == "USSOCOM"
+    # Only the event with valid participants survives
+    assert len(result.events) == 1
+    assert result.events[0].participants[0].entity.name == "USSOCOM"
 
 
 # ---------------------------------------------------------------------------
@@ -208,12 +226,12 @@ async def test_partial_extraction_skips_incomplete_triples() -> None:
 
 @pytest.mark.asyncio
 async def test_empty_extraction() -> None:
-    """LLM returning no triples should produce a Pass1Result with empty lists."""
-    api = _make_fake_api(json.dumps({"triples": []}))
+    """LLM returning no events should produce a Pass1Result with empty lists."""
+    api = _make_fake_api(json.dumps({"events": []}))
 
     result = await run_pass1(SAMPLE_TEXT, trace_id="test/pass1/empty", _llm_api=api)
 
-    assert result.triples == []
+    assert result.events == []
     assert result.entities == []
     assert result.source_text_hash.startswith("sha256:")
 
@@ -230,7 +248,7 @@ async def test_parse_failure_returns_empty_result() -> None:
 
     result = await run_pass1(SAMPLE_TEXT, trace_id="test/pass1/garbage", _llm_api=api)
 
-    assert result.triples == []
+    assert result.events == []
     assert result.entities == []
     # Cost should still be captured
     assert result.cost == 0.001
@@ -242,25 +260,29 @@ async def test_parse_failure_returns_empty_result() -> None:
 
 
 def test_entity_deduplication() -> None:
-    """Same entity appearing in multiple triples should be deduplicated."""
+    """Same entity appearing in multiple events should be deduplicated."""
     shield_ai = Pass1Entity(name="Shield AI", coarse_type="Corporation", context="")
     hivemind = Pass1Entity(name="Hivemind", coarse_type="Abstract", context="")
     vbat = Pass1Entity(name="V-BAT", coarse_type="MilitaryAircraft", context="")
 
-    triples = [
-        Pass1Triple(
-            entity_a=shield_ai,
-            entity_b=hivemind,
-            relationship_verb="developed",
+    events = [
+        Pass1Event(
+            relationship_verb="develop",
+            participants=[
+                Pass1Participant(proto_role="Agent", entity=shield_ai),
+                Pass1Participant(proto_role="Theme", entity=hivemind),
+            ],
         ),
-        Pass1Triple(
-            entity_a=shield_ai,
-            entity_b=vbat,
-            relationship_verb="integrated",
+        Pass1Event(
+            relationship_verb="integrate",
+            participants=[
+                Pass1Participant(proto_role="Agent", entity=shield_ai),
+                Pass1Participant(proto_role="Theme", entity=vbat),
+            ],
         ),
     ]
 
-    entities = _deduplicate_entities(triples)
+    entities = _deduplicate_entities(events)
     entity_names = [e.name for e in entities]
     assert len(entities) == 3
     assert entity_names.count("Shield AI") == 1
@@ -272,12 +294,24 @@ def test_dedup_preserves_different_types_for_same_name() -> None:
     entity_obj = Pass1Entity(name="Apple", coarse_type="Object", context="a fruit")
     other = Pass1Entity(name="Orange", coarse_type="Object", context="")
 
-    triples = [
-        Pass1Triple(entity_a=entity_org, entity_b=other, relationship_verb="sells"),
-        Pass1Triple(entity_a=entity_obj, entity_b=other, relationship_verb="resembles"),
+    events = [
+        Pass1Event(
+            relationship_verb="sell",
+            participants=[
+                Pass1Participant(proto_role="Agent", entity=entity_org),
+                Pass1Participant(proto_role="Theme", entity=other),
+            ],
+        ),
+        Pass1Event(
+            relationship_verb="resemble",
+            participants=[
+                Pass1Participant(proto_role="Agent", entity=entity_obj),
+                Pass1Participant(proto_role="Theme", entity=other),
+            ],
+        ),
     ]
 
-    entities = _deduplicate_entities(triples)
+    entities = _deduplicate_entities(events)
     apple_entities = [e for e in entities if e.name == "Apple"]
     assert len(apple_entities) == 2
 
@@ -290,7 +324,7 @@ def test_dedup_preserves_different_types_for_same_name() -> None:
 @pytest.mark.asyncio
 async def test_cost_tracking() -> None:
     """Cost from the LLM result should be captured in the Pass1Result."""
-    api = _make_fake_api(json.dumps({"triples": []}), llm_cost=0.0042)
+    api = _make_fake_api(json.dumps({"events": []}), llm_cost=0.0042)
 
     result = await run_pass1(SAMPLE_TEXT, trace_id="test/pass1/cost", _llm_api=api)
 
@@ -323,19 +357,23 @@ async def test_non_top_level_types_accepted() -> None:
     """Coarse types not in TOP_LEVEL_TYPES should still be accepted (permissive)."""
     custom_type_json = json.dumps(
         {
-            "triples": [
+            "events": [
                 {
-                    "entity_a": {
-                        "name": "Some Entity",
-                        "coarse_type": "ComputerProgram",
-                        "context": "a software program",
-                    },
-                    "entity_b": {
-                        "name": "Another Entity",
-                        "coarse_type": "HumanAdult",
-                        "context": "a person",
-                    },
-                    "relationship_verb": "was created by",
+                    "participants": [
+                        {
+                            "proto_role": "Agent",
+                            "name": "Some Entity",
+                            "coarse_type": "ComputerProgram",
+                            "context": "a software program",
+                        },
+                        {
+                            "proto_role": "Theme",
+                            "name": "Another Entity",
+                            "coarse_type": "HumanAdult",
+                            "context": "a person",
+                        },
+                    ],
+                    "relationship_verb": "create",
                     "confidence": 0.7,
                 }
             ]
@@ -349,9 +387,9 @@ async def test_non_top_level_types_accepted() -> None:
 
     result = await run_pass1(SAMPLE_TEXT, trace_id="test/pass1/permissive", _llm_api=api)
 
-    assert len(result.triples) == 1
-    assert result.triples[0].entity_a.coarse_type == "ComputerProgram"
-    assert result.triples[0].entity_b.coarse_type == "HumanAdult"
+    assert len(result.events) == 1
+    assert result.events[0].participants[0].entity.coarse_type == "ComputerProgram"
+    assert result.events[0].participants[1].entity.coarse_type == "HumanAdult"
 
 
 # ---------------------------------------------------------------------------
@@ -366,7 +404,7 @@ async def test_llm_call_failure_returns_empty_result() -> None:
 
     result = await run_pass1(SAMPLE_TEXT, trace_id="test/pass1/failure", _llm_api=api)
 
-    assert result.triples == []
+    assert result.events == []
     assert result.entities == []
     assert result.cost == 0.0
 
@@ -378,9 +416,9 @@ async def test_llm_call_failure_returns_empty_result() -> None:
 
 def test_parse_strips_markdown_fences() -> None:
     """JSON wrapped in markdown code fences should parse correctly."""
-    fenced = '```json\n{"triples": []}\n```'
-    triples = _parse_llm_response(fenced)
-    assert triples == []  # Valid empty result, not a parse error
+    fenced = '```json\n{"events": []}\n```'
+    events = _parse_llm_response(fenced)
+    assert events == []  # Valid empty result, not a parse error
 
 
 # ---------------------------------------------------------------------------
@@ -391,7 +429,7 @@ def test_parse_strips_markdown_fences() -> None:
 @pytest.mark.asyncio
 async def test_custom_model_is_forwarded() -> None:
     """A custom model parameter should be forwarded to the LLM call."""
-    api = _make_fake_api(json.dumps({"triples": []}))
+    api = _make_fake_api(json.dumps({"events": []}))
 
     result = await run_pass1(
         SAMPLE_TEXT,
@@ -414,7 +452,7 @@ async def test_custom_model_is_forwarded() -> None:
 @pytest.mark.asyncio
 async def test_default_model_used_when_none() -> None:
     """When no model is specified, the default should be used."""
-    api = _make_fake_api(json.dumps({"triples": []}))
+    api = _make_fake_api(json.dumps({"events": []}))
 
     result = await run_pass1(
         SAMPLE_TEXT,

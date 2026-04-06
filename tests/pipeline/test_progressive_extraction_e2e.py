@@ -37,42 +37,50 @@ SAMPLE_TEXT = (
 )
 
 
-def _make_pass1_json(triples: list[dict[str, Any]] | None = None) -> str:
+def _make_pass1_json(events: list[dict[str, Any]] | None = None) -> str:
     """Return a well-formed Pass 1 JSON response."""
-    if triples is None:
-        triples = [
+    if events is None:
+        events = [
             {
-                "entity_a": {
-                    "name": "CIA",
-                    "coarse_type": "Organization",
-                    "context": "US intelligence agency",
-                },
-                "entity_b": {
-                    "name": "agents",
-                    "coarse_type": "Human",
-                    "context": "field operatives",
-                },
-                "relationship_verb": "deployed",
+                "participants": [
+                    {
+                        "proto_role": "Agent",
+                        "name": "CIA",
+                        "coarse_type": "Organization",
+                        "context": "US intelligence agency",
+                    },
+                    {
+                        "proto_role": "Theme",
+                        "name": "agents",
+                        "coarse_type": "Human",
+                        "context": "field operatives",
+                    },
+                ],
+                "relationship_verb": "deploy",
                 "evidence_span": "The CIA deployed agents",
                 "confidence": 0.9,
             },
             {
-                "entity_a": {
-                    "name": "agents",
-                    "coarse_type": "Human",
-                    "context": "field operatives",
-                },
-                "entity_b": {
-                    "name": "threat",
-                    "coarse_type": "Process",
-                    "context": "threat from insurgents",
-                },
-                "relationship_verb": "abated",
+                "participants": [
+                    {
+                        "proto_role": "Agent",
+                        "name": "agents",
+                        "coarse_type": "Human",
+                        "context": "field operatives",
+                    },
+                    {
+                        "proto_role": "Theme",
+                        "name": "threat",
+                        "coarse_type": "Process",
+                        "context": "threat from insurgents",
+                    },
+                ],
+                "relationship_verb": "abate",
                 "evidence_span": "agents abated the threat",
                 "confidence": 0.85,
             },
         ]
-    return json.dumps({"triples": triples})
+    return json.dumps({"events": events})
 
 
 def _make_disambiguation_json(predicate_id: str, role_mapping: dict[str, str]) -> str:
@@ -183,8 +191,8 @@ async def test_full_pipeline_happy_path() -> None:
     assert isinstance(report, ProgressiveExtractionReport)
     assert report.trace_id == "test_e2e_happy"
     assert report.triples_extracted == 2
-    assert report.pass1.triples is not None
-    assert len(report.pass1.triples) == 2
+    assert report.pass1.events is not None
+    assert len(report.pass1.events) == 2
     # Pass 2 should have some mapped + possibly some unresolved.
     assert report.predicates_mapped + report.predicates_unresolved == 2
 
@@ -296,7 +304,7 @@ async def test_empty_extraction() -> None:
     if not SUMO_DB.exists():
         pytest.skip(SKIP_REASON)
 
-    empty_pass1 = json.dumps({"triples": []})
+    empty_pass1 = json.dumps({"events": []})
     mock_api = _make_mock_api(pass1_response=empty_pass1)
 
     report = await run_progressive_extraction(
@@ -312,7 +320,7 @@ async def test_empty_extraction() -> None:
     assert report.entities_refined == 0
     assert report.single_sense_early_exits == 0
     assert report.leaf_type_early_exits == 0
-    assert len(report.pass1.triples) == 0
+    assert len(report.pass1.events) == 0
     assert len(report.pass2.mapped) == 0
     assert len(report.pass3.typed_assertions) == 0
 
@@ -331,7 +339,7 @@ async def test_budget_splitting() -> None:
         pass1_cost=0.0,
         pass2_cost=0.0,
         pass3_cost=0.0,
-        pass1_response=json.dumps({"triples": []}),
+        pass1_response=json.dumps({"events": []}),
     )
 
     report = await run_progressive_extraction(
@@ -376,7 +384,7 @@ async def test_report_summary_stats_match_pass_results() -> None:
     )
 
     # Summary stats should match the pass results.
-    assert report.triples_extracted == len(report.pass1.triples)
+    assert report.triples_extracted == len(report.pass1.events)
     assert report.predicates_mapped == len(report.pass2.mapped)
     assert report.predicates_unresolved == len(report.pass2.unresolved)
     assert report.single_sense_early_exits == report.pass2.single_sense_count
@@ -398,7 +406,7 @@ async def test_model_flows_through() -> None:
         pytest.skip(SKIP_REASON)
 
     mock_api = _make_mock_api(
-        pass1_response=json.dumps({"triples": []}),
+        pass1_response=json.dumps({"events": []}),
     )
 
     report = await run_progressive_extraction(

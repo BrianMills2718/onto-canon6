@@ -18,8 +18,9 @@ from onto_canon6.pipeline import ReviewService
 from onto_canon6.pipeline.progressive_types import (
     EntityRefinement,
     Pass1Entity,
+    Pass1Event,
+    Pass1Participant,
     Pass1Result,
-    Pass1Triple,
     Pass2MappedAssertion,
     Pass2Result,
     Pass3Result,
@@ -39,25 +40,27 @@ def _make_entity(name: str, coarse_type: str, context: str = "") -> Pass1Entity:
     return Pass1Entity(name=name, coarse_type=coarse_type, context=context)
 
 
-def _make_triple(
+def _make_event(
     entity_a: Pass1Entity,
     entity_b: Pass1Entity,
     verb: str,
     evidence: str = "",
     confidence: float = 0.8,
-) -> Pass1Triple:
-    """Build a minimal Pass1Triple for testing."""
-    return Pass1Triple(
-        entity_a=entity_a,
-        entity_b=entity_b,
+) -> Pass1Event:
+    """Build a minimal Pass1Event for testing (Agent + Theme participants)."""
+    return Pass1Event(
         relationship_verb=verb,
+        participants=[
+            Pass1Participant(proto_role="Agent", entity=entity_a),
+            Pass1Participant(proto_role="Theme", entity=entity_b),
+        ],
         evidence_span=evidence,
         confidence=confidence,
     )
 
 
 def _make_mapped_assertion(
-    triple: Pass1Triple,
+    event: Pass1Event,
     predicate_id: str = "develop_create",
     propbank_sense: str = "develop-02",
     process_type: str = "Making",
@@ -65,11 +68,14 @@ def _make_mapped_assertion(
 ) -> Pass2MappedAssertion:
     """Build a minimal Pass2MappedAssertion for testing."""
     return Pass2MappedAssertion(
-        triple=triple,
+        event=event,
         predicate_id=predicate_id,
         propbank_sense_id=propbank_sense,
         process_type=process_type,
-        mapped_roles={"ARG0": triple.entity_a.name, "ARG1": triple.entity_b.name},
+        mapped_roles={
+            "ARG0": event.participants[0].entity.name,
+            "ARG1": event.participants[1].entity.name if len(event.participants) > 1 else "",
+        },
         disambiguation_method=method,
         mapping_confidence=0.9,
     )
@@ -91,29 +97,29 @@ def _make_refinement(
 
 def _make_report(
     typed_assertions: list[Pass3TypedAssertion] | None = None,
-    unresolved_triples: list[Pass1Triple] | None = None,
+    unresolved_events: list[Pass1Event] | None = None,
 ) -> ProgressiveExtractionReport:
     """Build a minimal ProgressiveExtractionReport for testing.
 
     Creates the full pass1/pass2/pass3 chain from the provided typed assertions
-    and unresolved triples.
+    and unresolved events.
     """
     entity_a = _make_entity("Shield AI", "Corporation")
     entity_b = _make_entity("autonomous drones", "Device")
     entity_c = _make_entity("investors", "Human")
 
-    triple1 = _make_triple(
+    event1 = _make_event(
         entity_a, entity_b, "develops",
         evidence="Shield AI develops autonomous drones",
         confidence=0.9,
     )
-    triple2 = _make_triple(
-        entity_a, entity_c, "raised funding from",
+    event2 = _make_event(
+        entity_a, entity_c, "raise",
         evidence="The company raised $200M in Series E funding from investors",
         confidence=0.7,
     )
 
-    mapped1 = _make_mapped_assertion(triple1)
+    mapped1 = _make_mapped_assertion(event1)
     refinement_a = _make_refinement("Shield AI", "Corporation", "MilitaryOrganization")
     refinement_b = _make_refinement("autonomous drones", "Device", "UnmannedAerialVehicle")
 
@@ -123,20 +129,20 @@ def _make_report(
             entity_refinements=[refinement_a, refinement_b],
         ),
     ]
-    default_unresolved = [triple2]
+    default_unresolved = [event2]
 
     effective_typed = typed_assertions if typed_assertions is not None else default_typed
-    effective_unresolved = unresolved_triples if unresolved_triples is not None else default_unresolved
+    effective_unresolved = unresolved_events if unresolved_events is not None else default_unresolved
 
-    all_triples = [ta.assertion.triple for ta in effective_typed] + list(effective_unresolved)
+    all_events = [ta.assertion.event for ta in effective_typed] + list(effective_unresolved)
     all_entities_dict: dict[str, Pass1Entity] = {}
-    for t in all_triples:
-        all_entities_dict[t.entity_a.name] = t.entity_a
-        all_entities_dict[t.entity_b.name] = t.entity_b
+    for ev in all_events:
+        for p in ev.participants:
+            all_entities_dict[p.entity.name] = p.entity
     all_entities = list(all_entities_dict.values())
 
     pass1 = Pass1Result(
-        triples=all_triples,
+        events=all_events,
         entities=all_entities,
         source_text_hash="sha256:abc123",
         model="test-model",
@@ -171,7 +177,7 @@ def _make_report(
         total_cost=0.03,
         trace_id="test-trace-001",
         model="test-model",
-        triples_extracted=len(all_triples),
+        triples_extracted=len(all_events),
         predicates_mapped=len(effective_typed),
         predicates_unresolved=len(effective_unresolved),
         entities_refined=sum(len(ta.entity_refinements) for ta in effective_typed),
@@ -210,8 +216,8 @@ def test_typed_assertion_converts_to_candidate_import() -> None:
     assert "Shield AI" in all_names or "autonomous drones" in all_names
 
 
-def test_unresolved_triple_converts_to_candidate_import() -> None:
-    """An unresolved triple should produce a CandidateAssertionImport with predicate='unresolved'."""
+def test_unresolved_event_converts_to_candidate_import() -> None:
+    """An unresolved event should produce a CandidateAssertionImport with predicate='unresolved'."""
     report = _make_report()
     imports = convert_to_candidate_imports(
         report, source_text=_SOURCE_TEXT, source_ref="test://shield-ai",
@@ -222,7 +228,7 @@ def test_unresolved_triple_converts_to_candidate_import() -> None:
     assert payload["predicate"] == "unresolved"
     assert payload["pass_provenance"] == "pass1"
     assert payload["disambiguation_method"] == "unresolved"
-    # Role-based entity structure for unresolved triples
+    # Role-based entity structure for unresolved events uses proto_role keys + legacy aliases
     roles = payload["roles"]
     assert "source_entity" in roles
     assert "target_entity" in roles
@@ -252,16 +258,16 @@ def test_evidence_span_not_found_gives_empty() -> None:
     """When the evidence text is not in the source, evidence_spans should be empty, not crash."""
     entity_a = _make_entity("FooOrg", "Organization")
     entity_b = _make_entity("BarThing", "Artifact")
-    triple = _make_triple(
-        entity_a, entity_b, "uses",
+    event = _make_event(
+        entity_a, entity_b, "use",
         evidence="This text does not appear in the source at all",
         confidence=0.5,
     )
-    mapped = _make_mapped_assertion(triple)
+    mapped = _make_mapped_assertion(event)
     refinement_a = _make_refinement("FooOrg", "Organization", "GovernmentOrganization")
     refinement_b = _make_refinement("BarThing", "Artifact", "Weapon")
     typed = Pass3TypedAssertion(assertion=mapped, entity_refinements=[refinement_a, refinement_b])
-    report = _make_report(typed_assertions=[typed], unresolved_triples=[])
+    report = _make_report(typed_assertions=[typed], unresolved_events=[])
 
     imports = convert_to_candidate_imports(
         report, source_text=_SOURCE_TEXT, source_ref="test://shield-ai",
@@ -314,14 +320,14 @@ def test_claim_text_for_typed_assertion() -> None:
     assert typed_import.claim_text == "Shield AI [develop-02] autonomous drones"
 
 
-def test_claim_text_for_unresolved_triple() -> None:
-    """Unresolved triple claim text should use: entity_a relationship_verb entity_b."""
+def test_claim_text_for_unresolved_event() -> None:
+    """Unresolved event claim text should use Agent + relationship_verb + Theme."""
     report = _make_report()
     imports = convert_to_candidate_imports(
         report, source_text=_SOURCE_TEXT, source_ref="test://shield-ai",
     )
     unresolved_import = imports[1]
-    assert unresolved_import.claim_text == "Shield AI raised funding from investors"
+    assert unresolved_import.claim_text == "Shield AI raise investors"
 
 
 def test_source_artifact_fields() -> None:
