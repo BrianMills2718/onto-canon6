@@ -250,6 +250,15 @@ ifndef INPUT
 endif
 	@$(PYTHON) scripts/full_pipeline_e2e.py --handoff $(INPUT) --output-dir var/pipeline_gr_run --strategy $(or $(STRATEGY),exact)
 
+provenance:  ## Trace entity provenance through DIGIMON graph (ENTITY= or --list-entities or --report)
+	@$(PYTHON) scripts/provenance_report.py $(if $(ENTITY),--entity "$(ENTITY)",$(if $(REPORT),--report,--list-entities)) $(if $(HOPS),--hops $(HOPS),)
+
+query:  ## Query DIGIMON Iran graph with keyword+PPR retrieval (QUERY= required)
+ifndef QUERY
+	$(error QUERY is required: make query QUERY="Iran influence operations on social media")
+endif
+	@$(PYTHON) scripts/digimon_query.py --query "$(QUERY)"
+
 # >>> META-PROCESS WORKTREE TARGETS >>>
 WORKTREE_CREATE_SCRIPT := scripts/meta/worktree-coordination/create_worktree.py
 WORKTREE_REMOVE_SCRIPT := scripts/meta/worktree-coordination/safe_worktree_remove.py
