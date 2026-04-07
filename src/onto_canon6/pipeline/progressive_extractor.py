@@ -1361,15 +1361,22 @@ _PROCESS_TYPE_FAMILIES: frozenset[str] = frozenset(
 )
 
 
-def _is_anaphor(name: str) -> tuple[bool, str]:
-    """Return (is_anaphor, reason) for an entity name.
+def _is_anaphor(name: str) -> tuple[bool, bool, str]:
+    """Return (is_anaphor, is_certain, reason) for an entity name.
 
-    Checks for:
+    ``is_certain`` is True for rules whose pattern is deterministic — the
+    entity is definitively not a real named entity and should be dropped
+    without LLM confirmation.  ``is_certain`` is False for heuristic rules
+    that may have edge cases; those candidates go to the LLM for review.
+
+    Certain rules (bypass LLM):
     1. Bare pronouns ("it", "they", "this", etc.)
     2. Bare generic nouns ("group", "Groups", "activities")
     3. Demonstrative prefix: "This step", "these actors"
     4. Possessive construction: "their X", "its X", "APT42's operators",
        "the group's portfolio"
+
+    LLM-reviewed rules:
     5. Article + generic noun: "the group", "a campaign"
     6. Long descriptive phrases (> 50 chars) with no capitalized proper noun
        after the first word.
@@ -1378,36 +1385,36 @@ def _is_anaphor(name: str) -> tuple[bool, str]:
     stripped = name.strip()
     lower = stripped.lower()
 
-    # 1. Bare pronouns
+    # 1. Bare pronouns — certain
     if lower in _PRONOUNS:
-        return True, f"pronoun: '{name}'"
+        return True, True, f"pronoun: '{name}'"
 
-    # 2. Bare generic nouns (no article prefix — "group", "Groups", "activities")
+    # 2. Bare generic nouns — certain
     bare = lower.rstrip("s")
     if lower in _GENERIC_NOUNS or bare in _GENERIC_NOUNS:
-        return True, f"bare generic noun: '{name}'"
+        return True, True, f"bare generic noun: '{name}'"
 
-    # 3. Demonstrative prefix: "This step", "these campaigns", "those actors"
+    # 3. Demonstrative prefix — certain
     for prefix in ("this ", "these ", "those "):
         if lower.startswith(prefix):
-            return True, f"demonstrative phrase: '{name}'"
+            return True, True, f"demonstrative phrase: '{name}'"
 
-    # 4. Possessive construction
+    # 4. Possessive construction — certain
     # 4a. Pronoun possessives: "their X", "its X"
     for prefix in ("their ", "its "):
         if lower.startswith(prefix):
-            return True, f"possessive anaphor prefix: '{name}'"
+            return True, True, f"possessive anaphor prefix: '{name}'"
     # 4b. "the X's Y" — article + noun + possessive
     if lower.startswith("the ") and "'s" in lower:
-        return True, f"possessive anaphor: '{name}'"
+        return True, True, f"possessive anaphor: '{name}'"
     # 4c. Proper-noun possessive: "APT42's operators" — X's <lowercase-start word>
     apos_idx = stripped.find("'s ")
     if apos_idx != -1:
         after = stripped[apos_idx + 3:]
         if after and after[0].islower():
-            return True, f"possessive construction: '{name}'"
+            return True, True, f"possessive construction: '{name}'"
 
-    # 5. Article + generic noun pattern
+    # 5. Article + generic noun — LLM-reviewed (edge cases: "the Organization")
     for article in ("the ", "a ", "an "):
         if lower.startswith(article):
             remainder = lower[len(article):]
@@ -1416,15 +1423,14 @@ def _is_anaphor(name: str) -> tuple[bool, str]:
                 continue
             first_word = words[0].rstrip("s")
             if first_word in _GENERIC_NOUNS or words[0] in _GENERIC_NOUNS:
-                return True, f"article + generic noun: '{name}'"
+                return True, False, f"article + generic noun: '{name}'"
             last_word = words[-1].rstrip("s")
             if last_word in _GENERIC_NOUNS or words[-1] in _GENERIC_NOUNS:
-                return True, f"article + generic noun phrase: '{name}'"
+                return True, False, f"article + generic noun phrase: '{name}'"
             if remainder.rstrip() in _GENERIC_NOUNS:
-                return True, f"article + generic noun: '{name}'"
+                return True, False, f"article + generic noun: '{name}'"
 
-    # 6. Long descriptive phrase: > 50 chars, starts with article/lowercase,
-    #    and no capitalized proper noun after the first word.
+    # 6. Long descriptive phrase — LLM-reviewed
     if len(stripped) > 50:
         words = stripped.split()
         first_lower = words[0][0].islower() if words else False
@@ -1435,13 +1441,13 @@ def _is_anaphor(name: str) -> tuple[bool, str]:
                 for w in words[1:]
             )
             if not has_proper_noun:
-                return True, f"long descriptive phrase ({len(stripped)} chars): '{name[:60]}...'"
+                return True, False, f"long descriptive phrase ({len(stripped)} chars): '{name[:60]}...'"
 
-    # 7. Verb-containing phrase (> 30 chars): finite verb implies sentence fragment.
+    # 7. Verb-containing phrase — LLM-reviewed
     if len(stripped) > 30 and _FINITE_VERB_RE.search(stripped):
-        return True, f"verb-containing phrase: '{name[:60]}'"
+        return True, False, f"verb-containing phrase: '{name[:60]}'"
 
-    return False, ""
+    return False, False, ""
 
 
 def _are_types_compatible(type_a: str, type_b: str) -> bool:
@@ -2116,12 +2122,22 @@ async def run_pass4_normalization(
                 trace_id,
             )
 
-    # Step 1: Detect anaphors / descriptive phrases
+    # Step 1: Detect anaphors / descriptive phrases.
+    # Certain anaphors (pronouns, bare generics, possessives, demonstratives)
+    # are dropped immediately without an LLM call.  Uncertain anaphors
+    # (article+generic, long phrases, verb phrases) go to the LLM for review.
     flagged: list[dict[str, str]] = []
     canonical_names: list[str] = []
+    anaphor_resolutions: list[AnaphorResolution] = []
+    merge_decisions: list[MergeDecision] = []
     for info in entity_infos:
-        is_anaphoric, reason = _is_anaphor(info["name"])
-        if is_anaphoric:
+        is_anaphoric, is_certain, reason = _is_anaphor(info["name"])
+        if is_anaphoric and is_certain:
+            # Deterministic drop — no LLM needed
+            anaphor_resolutions.append(
+                AnaphorResolution(original_name=info["name"], resolved_to=None)
+            )
+        elif is_anaphoric:
             flagged.append({
                 "name": info["name"],
                 "flag_reason": reason,
@@ -2188,8 +2204,6 @@ async def run_pass4_normalization(
                 alias_hints_map[name] = []
             alias_hints_map[name].append(f"{ap.short_form} ↔ {ap.long_form}")
 
-    anaphor_resolutions: list[AnaphorResolution] = []
-    merge_decisions: list[MergeDecision] = []
     flagged_names_set: set[str] = {item["name"] for item in flagged}
 
     # Step 3: LLM anaphor resolution (single batched call)

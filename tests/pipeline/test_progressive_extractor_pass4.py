@@ -216,47 +216,47 @@ class TestIsAnaphor:
     """Tests for the _is_anaphor rule-based detector."""
 
     def test_pronoun_it_is_anaphor(self) -> None:
-        is_anaphoric, reason = _is_anaphor("it")
+        is_anaphoric, _, reason = _is_anaphor("it")
         assert is_anaphoric
         assert "pronoun" in reason.lower()
 
     def test_pronoun_they_is_anaphor(self) -> None:
-        is_anaphoric, _ = _is_anaphor("they")
+        is_anaphoric, _cert, _ = _is_anaphor("they")
         assert is_anaphoric
 
     def test_pronoun_this_is_anaphor(self) -> None:
-        is_anaphoric, _ = _is_anaphor("This")
+        is_anaphoric, _cert, _ = _is_anaphor("This")
         assert is_anaphoric
 
     def test_pronoun_these_is_anaphor(self) -> None:
-        is_anaphoric, _ = _is_anaphor("these")
+        is_anaphoric, _cert, _ = _is_anaphor("these")
         assert is_anaphoric
 
     def test_article_generic_noun_the_group(self) -> None:
-        is_anaphoric, reason = _is_anaphor("The group")
+        is_anaphoric, _, reason = _is_anaphor("The group")
         assert is_anaphoric
         assert "generic" in reason.lower() or "article" in reason.lower()
 
     def test_article_generic_noun_the_actors(self) -> None:
-        is_anaphoric, _ = _is_anaphor("the actors")
+        is_anaphoric, _cert, _ = _is_anaphor("the actors")
         assert is_anaphoric
 
     def test_article_generic_noun_the_attackers(self) -> None:
-        is_anaphoric, _ = _is_anaphor("the attackers")
+        is_anaphoric, _cert, _ = _is_anaphor("the attackers")
         assert is_anaphoric
 
     def test_article_generic_noun_the_targets(self) -> None:
-        is_anaphoric, _ = _is_anaphor("the targets")
+        is_anaphoric, _cert, _ = _is_anaphor("the targets")
         assert is_anaphoric
 
     def test_article_generic_noun_a_campaign(self) -> None:
         """'a documented phishing campaign' should be flagged."""
-        is_anaphoric, _ = _is_anaphor("a documented phishing campaign")
+        is_anaphoric, _cert, _ = _is_anaphor("a documented phishing campaign")
         assert is_anaphoric
 
     def test_long_descriptive_phrase_no_proper_nouns(self) -> None:
         """Long phrase with no proper noun after first word is flagged."""
-        is_anaphoric, _ = _is_anaphor(
+        is_anaphoric, _cert, _ = _is_anaphor(
             "a strategic convergence of state intelligence objectives and cyber operations"
         )
         assert is_anaphoric
@@ -264,7 +264,7 @@ class TestIsAnaphor:
     def test_long_descriptive_phrase_with_proper_noun_not_flagged(self) -> None:
         """Long phrase containing a proper noun should NOT be flagged."""
         # This has "Iranian" as a proper noun signal
-        is_anaphoric, _ = _is_anaphor(
+        is_anaphoric, _cert, _ = _is_anaphor(
             "a documented phishing campaign attributed to Iranian intelligence"
         )
         # May or may not flag — the key test is the pure-generic one above.
@@ -272,82 +272,82 @@ class TestIsAnaphor:
         assert isinstance(is_anaphoric, bool)
 
     def test_apt42_is_not_anaphor(self) -> None:
-        is_anaphoric, _ = _is_anaphor("APT42")
+        is_anaphoric, _cert, _ = _is_anaphor("APT42")
         assert not is_anaphoric
 
     def test_irgc_io_is_not_anaphor(self) -> None:
-        is_anaphoric, _ = _is_anaphor("IRGC-IO")
+        is_anaphoric, _cert, _ = _is_anaphor("IRGC-IO")
         assert not is_anaphoric
 
     def test_islamic_revolutionary_guard_is_not_anaphor(self) -> None:
-        is_anaphoric, _ = _is_anaphor(
+        is_anaphoric, _cert, _ = _is_anaphor(
             "Islamic Revolutionary Guard Corps Intelligence Organization (IRGC-IO)"
         )
         assert not is_anaphoric
 
     def test_iranian_ministry_of_intelligence_is_not_anaphor(self) -> None:
-        is_anaphoric, _ = _is_anaphor("Iranian Ministry of Intelligence")
+        is_anaphoric, _cert, _ = _is_anaphor("Iranian Ministry of Intelligence")
         assert not is_anaphoric
 
     def test_possessive_their_is_anaphor(self) -> None:
-        is_anaphoric, _ = _is_anaphor("their infrastructure")
+        is_anaphoric, _cert, _ = _is_anaphor("their infrastructure")
         assert is_anaphoric
 
     def test_possessive_the_groups_is_anaphor(self) -> None:
-        is_anaphoric, _ = _is_anaphor("the group's operations")
+        is_anaphoric, _cert, _ = _is_anaphor("the group's operations")
         assert is_anaphoric
 
     def test_hack_and_leak_format_is_anaphor(self) -> None:
         """'the hack-and-leak format' should be flagged as article+generic-ish phrase."""
-        is_anaphoric, _ = _is_anaphor("the hack-and-leak format")
+        is_anaphoric, _cert, _ = _is_anaphor("the hack-and-leak format")
         assert is_anaphoric
 
     def test_an_insider_threat_dimension_is_anaphor(self) -> None:
-        is_anaphoric, _ = _is_anaphor("An insider threat dimension")
+        is_anaphoric, _cert, _ = _is_anaphor("An insider threat dimension")
         assert is_anaphoric
 
     # --- new checks (quality-review fixes) ---
 
     def test_bare_generic_noun_group(self) -> None:
-        is_anaphoric, reason = _is_anaphor("group")
+        is_anaphoric, _, reason = _is_anaphor("group")
         assert is_anaphoric
         assert "generic" in reason.lower()
 
     def test_bare_generic_noun_groups_plural(self) -> None:
-        is_anaphoric, _ = _is_anaphor("Groups")
+        is_anaphoric, _cert, _ = _is_anaphor("Groups")
         assert is_anaphoric
 
     def test_bare_generic_noun_activities(self) -> None:
-        is_anaphoric, _ = _is_anaphor("activities")
+        is_anaphoric, _cert, _ = _is_anaphor("activities")
         assert is_anaphoric
 
     def test_demonstrative_this_step(self) -> None:
-        is_anaphoric, reason = _is_anaphor("This step")
+        is_anaphoric, _, reason = _is_anaphor("This step")
         assert is_anaphoric
         assert "demonstrative" in reason.lower()
 
     def test_demonstrative_these_actors(self) -> None:
-        is_anaphoric, _ = _is_anaphor("these actors")
+        is_anaphoric, _cert, _ = _is_anaphor("these actors")
         assert is_anaphoric
 
     def test_proper_noun_possessive_apt42_operators(self) -> None:
         """'APT42's operators' — proper noun possessive with lowercase continuation."""
-        is_anaphoric, reason = _is_anaphor("APT42's operators")
+        is_anaphoric, _, reason = _is_anaphor("APT42's operators")
         assert is_anaphoric
         assert "possessive" in reason.lower()
 
     def test_proper_noun_possessive_apt42_methodology(self) -> None:
-        is_anaphoric, _ = _is_anaphor("APT42's established methodology")
+        is_anaphoric, _cert, _ = _is_anaphor("APT42's established methodology")
         assert is_anaphoric
 
     def test_proper_noun_possessive_uppercase_continuation_not_flagged(self) -> None:
         """'McDonald's Restaurant' — proper name after 's should NOT be flagged."""
-        is_anaphoric, _ = _is_anaphor("McDonald's Restaurant")
+        is_anaphoric, _cert, _ = _is_anaphor("McDonald's Restaurant")
         assert not is_anaphoric
 
     def test_verb_containing_phrase_flagged(self) -> None:
         """Long phrase with finite verb is a sentence fragment, not an entity."""
-        is_anaphoric, reason = _is_anaphor(
+        is_anaphoric, _, reason = _is_anaphor(
             "APT42 uses multiple spear-phishing campaigns to target government systems"
         )
         assert is_anaphoric
@@ -356,7 +356,7 @@ class TestIsAnaphor:
     def test_verb_short_phrase_not_flagged(self) -> None:
         """Short names with verb-like words are not flagged (< 30 chars)."""
         # "Targets" alone is short and might be a legit entity label in some contexts
-        is_anaphoric, _ = _is_anaphor("Targets")
+        is_anaphoric, _cert, _ = _is_anaphor("Targets")
         # Don't assert either way — "Targets" is in _GENERIC_NOUNS, so it IS flagged
         # by the bare-generic check. This just verifies no crash.
         assert isinstance(is_anaphoric, bool)
