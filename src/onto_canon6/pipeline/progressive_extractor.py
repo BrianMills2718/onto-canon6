@@ -2135,7 +2135,12 @@ async def run_pass4_normalization(
         if is_anaphoric and is_certain:
             # Deterministic drop — no LLM needed
             anaphor_resolutions.append(
-                AnaphorResolution(original_name=info["name"], resolved_to=None)
+                AnaphorResolution(
+                    original_name=info["name"],
+                    resolved_to=None,
+                    confidence=1.0,
+                    evidence=f"Deterministic rule: {reason}",
+                )
             )
         elif is_anaphoric:
             flagged.append({
