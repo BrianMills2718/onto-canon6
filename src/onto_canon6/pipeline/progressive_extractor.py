@@ -2023,15 +2023,19 @@ def _apply_normalization_to_pass3(
             )
             continue
 
-        # Rebuild the assertion with the normalized event
+        # Rebuild the assertion with the normalized event.
+        # Entries where norm_map maps to None (dropped) are excluded from
+        # mapped_roles entirely — the `or entity_name` fallback would
+        # re-insert dropped names, so we filter explicitly.
         new_assertion = Pass2MappedAssertion(
             event=new_event,
             predicate_id=assertion.predicate_id,
             propbank_sense_id=assertion.propbank_sense_id,
             process_type=assertion.process_type,
             mapped_roles={
-                role: norm_map.get(entity_name, entity_name) or entity_name
+                role: cast(str, resolved)
                 for role, entity_name in assertion.mapped_roles.items()
+                if (resolved := norm_map.get(entity_name, entity_name)) is not None
             },
             disambiguation_method=assertion.disambiguation_method,
             mapping_confidence=assertion.mapping_confidence,
