@@ -1311,8 +1311,8 @@ _PRONOUNS: frozenset[str] = frozenset(
     }
 )
 
-# Generic nouns that, when following an article, mark a descriptive phrase
-# rather than a named entity.
+# Generic nouns that, when bare or following an article, mark a descriptive
+# phrase rather than a named entity.
 _GENERIC_NOUNS: frozenset[str] = frozenset(
     {
         "group", "groups", "actor", "actors", "attacker", "attackers",
@@ -1324,7 +1324,20 @@ _GENERIC_NOUNS: frozenset[str] = frozenset(
         "strategies", "convergence", "dimension", "format", "method",
         "mechanism", "vector", "technique", "infrastructure",
         "assessment", "report", "source", "sources",
+        # Additional generics found in quality review
+        "step", "steps", "procedure", "procedures", "process", "processes",
+        "pattern", "patterns", "behavior", "behaviors", "portfolio",
+        "training", "material", "materials", "capability", "capabilities",
+        "tactic", "tactics", "tool", "tools", "resource", "resources",
     }
+)
+
+# Finite verb forms that indicate a phrase is a sentence fragment, not an entity.
+_FINITE_VERB_RE = re.compile(
+    r"\b(is|are|was|were|has|have|had|uses|used|provides|allows|includes?|"
+    r"conducts?|performs?|operates?|involves?|enables?|relies?|deploys?|"
+    r"targets?|employs?)\b",
+    re.IGNORECASE,
 )
 
 # SUMO type families that represent real-world agents/organizations.
@@ -1353,10 +1366,14 @@ def _is_anaphor(name: str) -> tuple[bool, str]:
 
     Checks for:
     1. Bare pronouns ("it", "they", "this", etc.)
-    2. Article + generic noun: "the group", "the actors", "a campaign"
-    3. Long descriptive phrases (> 50 chars) with no capitalized proper noun
+    2. Bare generic nouns ("group", "Groups", "activities")
+    3. Demonstrative prefix: "This step", "these actors"
+    4. Possessive construction: "their X", "its X", "APT42's operators",
+       "the group's portfolio"
+    5. Article + generic noun: "the group", "a campaign"
+    6. Long descriptive phrases (> 50 chars) with no capitalized proper noun
        after the first word.
-    4. Possessive anaphor prefix: "the group's ...", "their ..."
+    7. Verb-containing phrase (> 30 chars): finite verb indicates sentence fragment.
     """
     stripped = name.strip()
     lower = stripped.lower()
@@ -1365,50 +1382,64 @@ def _is_anaphor(name: str) -> tuple[bool, str]:
     if lower in _PRONOUNS:
         return True, f"pronoun: '{name}'"
 
-    # 2. Possessive anaphor prefix: "their X", "the group's X"
-    possessive_prefixes = ("their ", "its ")
-    for prefix in possessive_prefixes:
+    # 2. Bare generic nouns (no article prefix — "group", "Groups", "activities")
+    bare = lower.rstrip("s")
+    if lower in _GENERIC_NOUNS or bare in _GENERIC_NOUNS:
+        return True, f"bare generic noun: '{name}'"
+
+    # 3. Demonstrative prefix: "This step", "these campaigns", "those actors"
+    for prefix in ("this ", "these ", "those "):
+        if lower.startswith(prefix):
+            return True, f"demonstrative phrase: '{name}'"
+
+    # 4. Possessive construction
+    # 4a. Pronoun possessives: "their X", "its X"
+    for prefix in ("their ", "its "):
         if lower.startswith(prefix):
             return True, f"possessive anaphor prefix: '{name}'"
+    # 4b. "the X's Y" — article + noun + possessive
     if lower.startswith("the ") and "'s" in lower:
-        # "the group's operations" etc.
         return True, f"possessive anaphor: '{name}'"
+    # 4c. Proper-noun possessive: "APT42's operators" — X's <lowercase-start word>
+    apos_idx = stripped.find("'s ")
+    if apos_idx != -1:
+        after = stripped[apos_idx + 3:]
+        if after and after[0].islower():
+            return True, f"possessive construction: '{name}'"
 
-    # 3. Article + generic noun pattern: article followed by any phrase that ends
-    #    with (or is) a generic noun, or whose first word is a generic noun.
+    # 5. Article + generic noun pattern
     for article in ("the ", "a ", "an "):
         if lower.startswith(article):
             remainder = lower[len(article):]
             words = remainder.split()
             if not words:
                 continue
-            # Check first word (singular/plural)
             first_word = words[0].rstrip("s")
             if first_word in _GENERIC_NOUNS or words[0] in _GENERIC_NOUNS:
                 return True, f"article + generic noun: '{name}'"
-            # Check last word (the head noun in a noun phrase typically comes last)
             last_word = words[-1].rstrip("s")
             if last_word in _GENERIC_NOUNS or words[-1] in _GENERIC_NOUNS:
                 return True, f"article + generic noun phrase: '{name}'"
-            # Check the exact remainder as a single generic noun
             if remainder.rstrip() in _GENERIC_NOUNS:
                 return True, f"article + generic noun: '{name}'"
 
-    # 4. Long descriptive phrase: > 50 chars, starts with article/lowercase,
+    # 6. Long descriptive phrase: > 50 chars, starts with article/lowercase,
     #    and no capitalized proper noun after the first word.
     if len(stripped) > 50:
         words = stripped.split()
-        # First word starts lowercase or is an article
         first_lower = words[0][0].islower() if words else False
         starts_with_article = words[0].lower() in ("a", "an", "the") if words else False
         if first_lower or starts_with_article:
-            # Check if any word after the first is capitalized (proper noun signal)
             has_proper_noun = any(
                 w[0].isupper() and len(w) > 2 and not w.isupper()
                 for w in words[1:]
             )
             if not has_proper_noun:
                 return True, f"long descriptive phrase ({len(stripped)} chars): '{name[:60]}...'"
+
+    # 7. Verb-containing phrase (> 30 chars): finite verb implies sentence fragment.
+    if len(stripped) > 30 and _FINITE_VERB_RE.search(stripped):
+        return True, f"verb-containing phrase: '{name[:60]}'"
 
     return False, ""
 
