@@ -1,6 +1,6 @@
 # Plan 0074 — Enhanced Entity Deduplication: Alias Extraction, Structural Fingerprinting, and Profile-Aware Merge Verification
 
-**Status:** Draft
+**Status:** Complete — 2026-04-06
 **Type:** implementation
 **Priority:** High — closes recall gap in Pass 4b that misses semantic-equivalence duplicates with no string overlap
 **Blocked By:** #0072 complete (Pass 4 entity normalization — done)
