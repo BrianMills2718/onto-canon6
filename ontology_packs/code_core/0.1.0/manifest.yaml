@@ -1,0 +1,28 @@
+pack:
+  id: code_core
+  version: "0.1.0"
+  name: "code_core"
+  description: >
+    Predicate vocabulary for ML/software codebases. Covers model architecture
+    (inherit, implement_pattern, define), training lifecycle (train_model,
+    compute_loss, optimize, load_checkpoint), inference (generate, sample_from,
+    attend, embed), and evaluation (benchmark_performance, evaluate_on).
+    Designed for semantic extraction from code documentation and docstrings —
+    the layer of knowledge that AST-only tools cannot reach.
+
+build:
+  compiler_version: "0.1.0"
+  built_at: "2026-04-07T00:00:00Z"
+  source_inputs:
+    - system: hand_authored
+      version: "2026-04-07"
+      path: "ontology_packs/code_core/0.1.0/"
+
+capabilities:
+  assertion_type: n-ary
+  type_system: open
+
+content:
+  predicate_types: predicate_types.jsonl
+  role_types: role_types.jsonl
+  source_mappings: source_mappings.jsonl

@@ -29,6 +29,11 @@ extraction:
   max_budget_usd: 0.25
   enable_judge_filter: true
   judge_filter_min_label: partially_supported
+  # enforcement: predicate IDs for domain-specific guards (defaults shown).
+  # Override when extracting against a non-oc: vocabulary (e.g., code_core).
+  # enforcement:
+  #   limit_capability_predicate: "oc:limit_capability"
+  #   membership_predicate: "oc:belongs_to_organization"
 chunking:
   target_max_chars: 4000
   min_chunk_chars: 1200

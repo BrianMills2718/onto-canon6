@@ -1,0 +1,23 @@
+profile:
+  id: code_core_permissive
+  version: "0.1.0"
+  name: "code_core Permissive"
+  ontology_version: "code_core@0.1.0"
+  rule_version: "code_core_permissive_rules@0.1.0"
+
+ontology:
+  source: custom
+  mode: open
+  normalization_policy: conservative
+  proposal_policy: allow
+  pack_id: code_core
+  pack_version: "0.1.0"
+
+validation:
+  type_adapter: ontology_pack
+  type_check_policy: skip
+  allowed_predicates: []
+  predicate_rules: {}
+
+ingestion:
+  allow_heuristic_default: true

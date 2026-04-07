@@ -1079,7 +1079,7 @@ def _requires_limit_capability_enforcement(candidate: CandidateAssertionRecord) 
 
     raw_payload = candidate.normalized_payload
     predicate_obj = raw_payload.get("predicate")
-    if predicate_obj != "oc:limit_capability":
+    if predicate_obj != get_config().extraction.enforcement.limit_capability_predicate:
         return False
     roles_obj = raw_payload.get("roles")
     if not isinstance(roles_obj, dict):
@@ -1115,7 +1115,7 @@ def _requires_staffing_membership_enforcement(candidate: CandidateAssertionRecor
     """
 
     raw_payload = candidate.normalized_payload
-    if raw_payload.get("predicate") != "oc:belongs_to_organization":
+    if raw_payload.get("predicate") != get_config().extraction.enforcement.membership_predicate:
         return False
     roles_obj = raw_payload.get("roles")
     if not isinstance(roles_obj, dict):

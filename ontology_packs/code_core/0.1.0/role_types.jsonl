@@ -1,0 +1,22 @@
+{"role_id":"cc.role.definer","runtime_name":"definer","preferred_label":"Definer","status":"active"}
+{"role_id":"cc.role.defined","runtime_name":"defined","preferred_label":"Defined","status":"active"}
+{"role_id":"cc.role.caller","runtime_name":"caller","preferred_label":"Caller","status":"active"}
+{"role_id":"cc.role.callee","runtime_name":"callee","preferred_label":"Callee","status":"active"}
+{"role_id":"cc.role.parent_class","runtime_name":"parent_class","preferred_label":"Parent Class","status":"active"}
+{"role_id":"cc.role.child_class","runtime_name":"child_class","preferred_label":"Child Class","status":"active"}
+{"role_id":"cc.role.pattern","runtime_name":"pattern","preferred_label":"Pattern","status":"active"}
+{"role_id":"cc.role.implementer","runtime_name":"implementer","preferred_label":"Implementer","status":"active"}
+{"role_id":"cc.role.model","runtime_name":"model","preferred_label":"Model","status":"active"}
+{"role_id":"cc.role.dataset","runtime_name":"dataset","preferred_label":"Dataset","status":"active"}
+{"role_id":"cc.role.benchmark","runtime_name":"benchmark","preferred_label":"Benchmark","status":"active"}
+{"role_id":"cc.role.metric","runtime_name":"metric","preferred_label":"Metric","status":"active"}
+{"role_id":"cc.role.score","runtime_name":"score","preferred_label":"Score","status":"active"}
+{"role_id":"cc.role.checkpoint_path","runtime_name":"checkpoint_path","preferred_label":"Checkpoint Path","status":"active"}
+{"role_id":"cc.role.loss_function","runtime_name":"loss_function","preferred_label":"Loss Function","status":"active"}
+{"role_id":"cc.role.optimizer","runtime_name":"optimizer","preferred_label":"Optimizer","status":"active"}
+{"role_id":"cc.role.config","runtime_name":"config","preferred_label":"Config","status":"active"}
+{"role_id":"cc.role.module","runtime_name":"module","preferred_label":"Module","status":"active"}
+{"role_id":"cc.role.input","runtime_name":"input","preferred_label":"Input","status":"active"}
+{"role_id":"cc.role.output","runtime_name":"output","preferred_label":"Output","status":"active"}
+{"role_id":"cc.role.importer","runtime_name":"importer","preferred_label":"Importer","status":"active"}
+{"role_id":"cc.role.imported","runtime_name":"imported","preferred_label":"Imported","status":"active"}

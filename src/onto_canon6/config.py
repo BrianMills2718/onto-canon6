@@ -111,6 +111,36 @@ class ResolutionConfig(BaseModel):
     )
 
 
+class ExtractionEnforcementConfig(BaseModel):
+    """Configurable predicate IDs for extraction enforcement guards.
+
+    The guards in text_extraction.py enforce domain-specific omit rules for
+    two predicates: limit_capability (abstract value filter) and membership
+    (staffing-summary filter). These were originally hardcoded to the oc:
+    namespace. This model makes them configurable so non-oc: vocabularies
+    (e.g., code_core) work correctly without triggering false-positive guards.
+    """
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    limit_capability_predicate: str = Field(
+        default="oc:limit_capability",
+        description=(
+            "Predicate ID for the limit_capability enforcement guard. "
+            "Default: 'oc:limit_capability'. Override when extracting against "
+            "a non-oc: vocabulary."
+        ),
+    )
+    membership_predicate: str = Field(
+        default="oc:belongs_to_organization",
+        description=(
+            "Predicate ID for the staffing-membership enforcement guard. "
+            "Default: 'oc:belongs_to_organization'. Override when extracting "
+            "against a non-oc: vocabulary."
+        ),
+    )
+
+
 class ExtractionConfig(BaseModel):
     """Text-extraction defaults for the first llm_client-backed Phase 4 path.
 
@@ -188,6 +218,14 @@ class ExtractionConfig(BaseModel):
             "When set, predicates are ranked by keyword relevance to the "
             "source text and only the top N are rendered (ODKE+ snippet pattern). "
             "None means render all predicates (default)."
+        ),
+    )
+    enforcement: ExtractionEnforcementConfig = Field(
+        default_factory=ExtractionEnforcementConfig,
+        description=(
+            "Predicate IDs for domain-specific enforcement guards. "
+            "Defaults preserve existing oc: namespace behavior. Override when "
+            "extracting against a non-oc: vocabulary (e.g., code_core)."
         ),
     )
 

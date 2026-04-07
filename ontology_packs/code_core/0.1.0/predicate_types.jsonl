@@ -1,0 +1,27 @@
+{"predicate_id":"cc:define","family":"state","preferred_label":"define","description":"A module or file defines a class, function, or interface.","status":"active"}
+{"predicate_id":"cc:inherit","family":"state","preferred_label":"inherit","description":"A class inherits from a parent class or base class.","status":"active"}
+{"predicate_id":"cc:implement_pattern","family":"state","preferred_label":"implement pattern","description":"A component implements a named design pattern or architectural pattern.","status":"active"}
+{"predicate_id":"cc:import","family":"state","preferred_label":"import","description":"A module or file imports another module or package.","status":"active"}
+{"predicate_id":"cc:call","family":"event","preferred_label":"call","description":"A function or method calls another function or method.","status":"active"}
+{"predicate_id":"cc:override","family":"state","preferred_label":"override","description":"A subclass overrides a method from its parent class.","status":"active"}
+{"predicate_id":"cc:train_model","family":"event","preferred_label":"train model","description":"A training script or process trains a machine learning model on a dataset.","status":"active"}
+{"predicate_id":"cc:compute_loss","family":"event","preferred_label":"compute loss","description":"A model or training step computes a loss value using a loss function.","status":"active"}
+{"predicate_id":"cc:optimize","family":"event","preferred_label":"optimize","description":"An optimizer updates model parameters to minimize a loss.","status":"active"}
+{"predicate_id":"cc:load_checkpoint","family":"event","preferred_label":"load checkpoint","description":"Code loads model weights or state from a checkpoint file.","status":"active"}
+{"predicate_id":"cc:save_checkpoint","family":"event","preferred_label":"save checkpoint","description":"Code saves model weights or state to a checkpoint file.","status":"active"}
+{"predicate_id":"cc:sample_from","family":"event","preferred_label":"sample from","description":"Code draws samples from a model or probability distribution.","status":"active"}
+{"predicate_id":"cc:generate","family":"event","preferred_label":"generate","description":"A model generates output tokens, sequences, or predictions.","status":"active"}
+{"predicate_id":"cc:encode","family":"event","preferred_label":"encode","description":"A component encodes input data into a representation.","status":"active"}
+{"predicate_id":"cc:decode","family":"event","preferred_label":"decode","description":"A component decodes a representation back to output.","status":"active"}
+{"predicate_id":"cc:tokenize","family":"event","preferred_label":"tokenize","description":"A tokenizer converts text into tokens or token IDs.","status":"active"}
+{"predicate_id":"cc:embed","family":"event","preferred_label":"embed","description":"An embedding layer maps discrete tokens to dense vector representations.","status":"active"}
+{"predicate_id":"cc:attend","family":"event","preferred_label":"attend","description":"An attention mechanism attends over a sequence of keys and values.","status":"active"}
+{"predicate_id":"cc:normalize","family":"event","preferred_label":"normalize","description":"A normalization layer normalizes activations (e.g., LayerNorm, BatchNorm).","status":"active"}
+{"predicate_id":"cc:project","family":"event","preferred_label":"project","description":"A linear or projection layer transforms a representation to a new space.","status":"active"}
+{"predicate_id":"cc:forward_pass","family":"event","preferred_label":"forward pass","description":"A network module executes a forward computation pass.","status":"active"}
+{"predicate_id":"cc:backward_pass","family":"event","preferred_label":"backward pass","description":"Autograd or manual gradient computation executes a backward pass.","status":"active"}
+{"predicate_id":"cc:benchmark_performance","family":"state","preferred_label":"benchmark performance","description":"A model or system achieves a measured performance score on a benchmark dataset.","status":"active"}
+{"predicate_id":"cc:evaluate_on","family":"event","preferred_label":"evaluate on","description":"A model is evaluated on a dataset or benchmark to measure performance.","status":"active"}
+{"predicate_id":"cc:configure","family":"state","preferred_label":"configure","description":"A configuration or hyperparameter setting is applied to a component.","status":"active"}
+{"predicate_id":"cc:test","family":"event","preferred_label":"test","description":"A test verifies the behavior or output of a component.","status":"active"}
+{"predicate_id":"cc:depend_on","family":"state","preferred_label":"depend on","description":"A component has a dependency on another component or library.","status":"active"}
