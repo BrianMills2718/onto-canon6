@@ -30,10 +30,14 @@ from onto_canon6.pipeline.progressive_extractor import (
     _is_anaphor,
     _parse_anaphor_response,
     _parse_merge_response,
+    compute_entity_profiles,
     detect_near_duplicate_pairs,
+    detect_structural_duplicate_pairs,
+    extract_alias_pairs,
     run_pass4_normalization,
 )
 from onto_canon6.pipeline.progressive_types import (
+    AliasPair,
     AnaphorResolution,
     EntityRefinement,
     MergeDecision,
@@ -782,3 +786,339 @@ async def test_pass4_normalization_cost_tracked() -> None:
     )
 
     assert pass4_result.cost_usd > 0.0
+
+
+# ---------------------------------------------------------------------------
+# 8. Alias extraction (Plan 0074 — Capability 1)
+# ---------------------------------------------------------------------------
+
+
+def _typed_assertion_with_pred_roles(
+    predicate_id: str,
+    roles: dict[str, str],
+    evidence: str = "",
+    entity_type: str = "Organization",
+) -> Pass3TypedAssertion:
+    """Build a typed assertion with explicit predicate_id and role→entity mapping."""
+    participants = [
+        Pass1Participant(proto_role=role, entity=_entity(name, entity_type))
+        for role, name in roles.items()
+    ]
+    ev = Pass1Event(
+        relationship_verb="test_verb",
+        participants=participants,
+        evidence_span=evidence,
+        confidence=0.8,
+    )
+    assertion = Pass2MappedAssertion(
+        event=ev,
+        predicate_id=predicate_id,
+        propbank_sense_id="test-01",
+        process_type="IntentionalProcess",
+        mapped_roles=dict(roles),
+        disambiguation_method="single_sense",
+        mapping_confidence=0.9,
+    )
+    refinements = [_refinement(name, entity_type) for name in roles.values()]
+    return Pass3TypedAssertion(assertion=assertion, entity_refinements=refinements)
+
+
+class TestExtractAliasPairs:
+    """Tests for extract_alias_pairs — text-declared parenthetical alias detection."""
+
+    def test_paren_define_pattern(self) -> None:
+        """Pattern A detected: 'Long Name (ABBREV)' when both names in entity set."""
+        text = "The Islamic Revolutionary Guard Corps (IRGC) conducted operations."
+        entity_names = {"Islamic Revolutionary Guard Corps", "IRGC"}
+        pairs = extract_alias_pairs(text, entity_names)
+        assert len(pairs) == 1
+        pair = pairs[0]
+        assert pair.short_form == "IRGC"
+        assert pair.long_form == "Islamic Revolutionary Guard Corps"
+        assert "IRGC" in pair.source_pattern
+
+    def test_paren_expand_pattern(self) -> None:
+        """Pattern B detected: 'ABBREV (Long Name)' when both names in entity set."""
+        text = "IRGC (Islamic Revolutionary Guard Corps) is an Iranian agency."
+        entity_names = {"Islamic Revolutionary Guard Corps", "IRGC"}
+        pairs = extract_alias_pairs(text, entity_names)
+        assert len(pairs) == 1
+        pair = pairs[0]
+        assert pair.short_form == "IRGC"
+        assert pair.long_form == "Islamic Revolutionary Guard Corps"
+
+    def test_entity_presence_guard(self) -> None:
+        """No AliasPair when either form is not in entity_names."""
+        text = "The National Security Agency (NSA) is active."
+        # NSA is in entity set but "National Security Agency" is not
+        entity_names = {"NSA"}
+        pairs = extract_alias_pairs(text, entity_names)
+        assert pairs == []
+
+    def test_longer_form_is_canonical(self) -> None:
+        """The long_form is always longer than the short_form."""
+        text = "APT42 (Advanced Persistent Threat 42) operates in Iran."
+        entity_names = {"APT42", "Advanced Persistent Threat 42"}
+        pairs = extract_alias_pairs(text, entity_names)
+        assert len(pairs) == 1
+        assert len(pairs[0].long_form) > len(pairs[0].short_form)
+        assert pairs[0].short_form == "APT42"
+
+    def test_empty_source_text(self) -> None:
+        """Empty source text returns empty list."""
+        pairs = extract_alias_pairs("", {"IRGC", "Islamic Revolutionary Guard Corps"})
+        assert pairs == []
+
+    def test_no_entity_match_produces_nothing(self) -> None:
+        """Regex match with no corresponding entities returns empty list."""
+        text = "Central Intelligence Agency (CIA) released a report."
+        entity_names = {"NSA", "FBI"}  # CIA not in set
+        pairs = extract_alias_pairs(text, entity_names)
+        assert pairs == []
+
+
+# ---------------------------------------------------------------------------
+# 9. Structural fingerprint deduplication (Plan 0074 — Capability 2)
+# ---------------------------------------------------------------------------
+
+
+class TestComputeEntityProfiles:
+    """Tests for compute_entity_profiles."""
+
+    def test_profile_built_from_assertions(self) -> None:
+        """Correct (predicate_id, role_label) pairs extracted from typed assertions."""
+        ta = _typed_assertion_with_pred_roles(
+            "target_attack",
+            {"Agent": "EntityA", "Theme": "EntityB"},
+        )
+        p3 = _pass3_result([ta])
+        profiles = compute_entity_profiles(p3, {"EntityA", "EntityB"})
+        assert ("target_attack", "Agent") in profiles["EntityA"]
+        assert ("target_attack", "Theme") in profiles["EntityB"]
+
+    def test_entity_not_in_assertions_empty_profile(self) -> None:
+        """Entity not referenced in any assertion gets an empty frozenset."""
+        ta = _typed_assertion_with_pred_roles(
+            "target_attack", {"Agent": "EntityA", "Theme": "EntityB"}
+        )
+        p3 = _pass3_result([ta])
+        profiles = compute_entity_profiles(p3, {"EntityA", "EntityB", "EntityC"})
+        assert profiles["EntityC"] == frozenset()
+
+    def test_multiple_assertions_accumulate(self) -> None:
+        """Entity in multiple assertions accumulates all (predicate, role) pairs."""
+        ta1 = _typed_assertion_with_pred_roles("pred1", {"Agent": "EntityA", "Theme": "EntityB"})
+        ta2 = _typed_assertion_with_pred_roles("pred2", {"Agent": "EntityA", "Theme": "EntityC"})
+        p3 = _pass3_result([ta1, ta2])
+        profiles = compute_entity_profiles(p3, {"EntityA"})
+        assert ("pred1", "Agent") in profiles["EntityA"]
+        assert ("pred2", "Agent") in profiles["EntityA"]
+        assert len(profiles["EntityA"]) == 2
+
+
+class TestDetectStructuralPairs:
+    """Tests for detect_structural_duplicate_pairs."""
+
+    def test_jaccard_above_threshold(self) -> None:
+        """Pair detected when Jaccard ≥ 0.35 (3 shared out of 5 total)."""
+        # A: (p1,ARG0),(p2,ARG0),(p3,ARG0),(p4,ARG0) B: (p1,ARG0),(p2,ARG0),(p3,ARG0),(p5,ARG0)
+        # Jaccard = 3/5 = 0.6 ≥ 0.35
+        profiles = {
+            "EntityA": frozenset({("p1", "ARG0"), ("p2", "ARG0"), ("p3", "ARG0"), ("p4", "ARG0")}),
+            "EntityB": frozenset({("p1", "ARG0"), ("p2", "ARG0"), ("p3", "ARG0"), ("p5", "ARG0")}),
+        }
+        infos = [
+            {"name": "EntityA", "sumo_type": "Organization", "evidence_span": ""},
+            {"name": "EntityB", "sumo_type": "Organization", "evidence_span": ""},
+        ]
+        pairs = detect_structural_duplicate_pairs(infos, profiles)
+        names = [(a["name"], b["name"]) for a, b in pairs]
+        assert ("EntityA", "EntityB") in names
+
+    def test_jaccard_below_threshold(self) -> None:
+        """Pair NOT detected when Jaccard < 0.35 (2 shared out of 6 total)."""
+        # Jaccard = 2/6 = 0.333 < 0.35
+        profiles = {
+            "EntityA": frozenset({("p1", "ARG0"), ("p2", "ARG0"), ("p3", "ARG0"), ("p4", "ARG0")}),
+            "EntityB": frozenset({("p1", "ARG0"), ("p2", "ARG0"), ("p5", "ARG0"), ("p6", "ARG0")}),
+        }
+        infos = [
+            {"name": "EntityA", "sumo_type": "Organization", "evidence_span": ""},
+            {"name": "EntityB", "sumo_type": "Organization", "evidence_span": ""},
+        ]
+        pairs = detect_structural_duplicate_pairs(infos, profiles)
+        assert pairs == []
+
+    def test_min_profile_size_excluded(self) -> None:
+        """Entity with only 1 assertion is excluded from structural comparison."""
+        profiles = {
+            "EntityA": frozenset({("p1", "ARG0")}),  # size=1, excluded
+            "EntityB": frozenset({("p1", "ARG0"), ("p2", "ARG0"), ("p3", "ARG0")}),
+        }
+        infos = [
+            {"name": "EntityA", "sumo_type": "Organization", "evidence_span": ""},
+            {"name": "EntityB", "sumo_type": "Organization", "evidence_span": ""},
+        ]
+        pairs = detect_structural_duplicate_pairs(infos, profiles, min_profile_size=2)
+        assert pairs == []
+
+    def test_type_guard_still_applies(self) -> None:
+        """Incompatible SUMO types rejected even when Jaccard ≥ 0.35."""
+        # Both have high Jaccard but incompatible types
+        profiles = {
+            "EntityA": frozenset({("p1", "ARG0"), ("p2", "ARG0"), ("p3", "ARG0")}),
+            "EntityB": frozenset({("p1", "ARG0"), ("p2", "ARG0"), ("p3", "ARG0")}),
+        }
+        infos = [
+            {"name": "EntityA", "sumo_type": "Organization", "evidence_span": ""},
+            {"name": "EntityB", "sumo_type": "IntentionalProcess", "evidence_span": ""},
+        ]
+        pairs = detect_structural_duplicate_pairs(infos, profiles)
+        assert pairs == []
+
+    def test_union_no_duplicates(self) -> None:
+        """String + structural union contains no duplicate (A, B) pairs."""
+        # Build a pass3 where EntityA and EntityB share enough predicate-roles
+        # (Jaccard ≥ 0.35) AND their names are similar enough for string heuristic
+        ta1 = _typed_assertion_with_pred_roles("pred1", {"Agent": "EntityA", "Theme": "EntityX"})
+        ta2 = _typed_assertion_with_pred_roles("pred2", {"Agent": "EntityA", "Theme": "EntityY"})
+        ta3 = _typed_assertion_with_pred_roles("pred1", {"Agent": "EntityAA", "Theme": "EntityX"})
+        ta4 = _typed_assertion_with_pred_roles("pred2", {"Agent": "EntityAA", "Theme": "EntityY"})
+        p3 = _pass3_result([ta1, ta2, ta3, ta4])
+
+        entity_infos = [
+            {"name": "EntityA", "sumo_type": "Organization", "evidence_span": ""},
+            {"name": "EntityAA", "sumo_type": "Organization", "evidence_span": ""},
+        ]
+        profiles = compute_entity_profiles(p3, {"EntityA", "EntityAA"})
+
+        # EntityA and EntityAA should appear in string pairs (substring match)
+        string_pairs = detect_near_duplicate_pairs(entity_infos)
+        structural_pairs = detect_structural_duplicate_pairs(entity_infos, profiles)
+
+        # Union with dedup
+        seen: set[frozenset[str]] = set()
+        combined: list[tuple[dict, dict]] = []
+        for a, b in string_pairs:
+            key: frozenset[str] = frozenset({a["name"], b["name"]})
+            if key not in seen:
+                seen.add(key)
+                combined.append((a, b))
+        for a, b in structural_pairs:
+            key = frozenset({a["name"], b["name"]})
+            if key not in seen:
+                seen.add(key)
+                combined.append((a, b))
+
+        # No duplicate (EntityA, EntityAA) pair
+        name_pairs = [frozenset({a["name"], b["name"]}) for a, b in combined]
+        assert len(name_pairs) == len(set(map(frozenset, [frozenset(p) for p in name_pairs])))
+
+
+# ---------------------------------------------------------------------------
+# 10. run_pass4_normalization with alias extraction (Plan 0074 — Capability 3)
+# ---------------------------------------------------------------------------
+
+
+class TestRunPass4WithAlias:
+    """Integration tests for alias extraction wired into run_pass4_normalization."""
+
+    @pytest.mark.asyncio
+    async def test_alias_registered_without_llm_cost(self) -> None:
+        """Alias pairs are registered in normalization_map with zero LLM cost increase."""
+        # Two entities: "IRGC" and "Islamic Revolutionary Guard Corps"
+        # Source text declares them as aliases
+        ta = _typed_assertion_with_pred_roles(
+            "target_attack",
+            {"Agent": "IRGC", "Theme": "US Senate"},
+        )
+        ta2 = _typed_assertion_with_pred_roles(
+            "fund_sponsor",
+            {"Agent": "Islamic Revolutionary Guard Corps", "Theme": "Hezbollah"},
+        )
+        p3 = _pass3_result([ta, ta2])
+
+        source_text = (
+            "The Islamic Revolutionary Guard Corps (IRGC) conducted operations. "
+            "IRGC also targeted the US Senate."
+        )
+
+        call_count = 0
+
+        async def counting_acall(model: str, messages: list[dict[str, Any]], **kwargs: Any) -> Any:
+            nonlocal call_count
+            call_count += 1
+            return _make_llm_result("{}", cost=0.001)
+
+        api = _LLMClientAPI(
+            render_prompt=lambda template_path, **context: [{"role": "user", "content": ""}],
+            acall_llm=counting_acall,  # type: ignore[arg-type]
+        )
+
+        pass4_result, _ = await run_pass4_normalization(
+            p3,
+            source_text=source_text,
+            trace_id="test-alias-001",
+            max_budget=0.05,
+            _llm_api=api,
+        )
+
+        # Alias pair should be detected
+        assert len(pass4_result.alias_pairs) == 1
+        ap = pass4_result.alias_pairs[0]
+        assert ap.short_form == "IRGC"
+        assert ap.long_form == "Islamic Revolutionary Guard Corps"
+        # IRGC should be in normalization_map pointing to long form
+        assert pass4_result.normalization_map.get("IRGC") == "Islamic Revolutionary Guard Corps"
+        # No extra LLM cost for the alias detection itself
+        # (there may be LLM calls for anaphors/merges, but alias detection is free)
+        assert pass4_result.alias_pairs[0].short_form in pass4_result.normalization_map
+
+    @pytest.mark.asyncio
+    async def test_alias_form_excluded_from_near_dup_detection(self) -> None:
+        """Non-canonical alias form (short_form) is not sent to LLM merge verifier."""
+        # "IRGC" and "Islamic Revolutionary Guard Corps" declared as aliases.
+        # "IRGC" should NOT appear as a candidate pair for LLM merge — it's already resolved.
+        ta = _typed_assertion_with_pred_roles(
+            "target_attack",
+            {"Agent": "IRGC", "Theme": "US Senate"},
+        )
+        ta2 = _typed_assertion_with_pred_roles(
+            "target_attack",
+            {"Agent": "Islamic Revolutionary Guard Corps", "Theme": "US Senate"},
+        )
+        p3 = _pass3_result([ta, ta2])
+
+        source_text = "The Islamic Revolutionary Guard Corps (IRGC) targeted the US Senate."
+
+        merge_prompt_entities: list[str] = []
+
+        async def capturing_acall(
+            model: str, messages: list[dict[str, Any]], **kwargs: Any
+        ) -> Any:
+            return _make_llm_result("[]", cost=0.0)
+
+        def capturing_render(template_path: str, **context: Any) -> list[dict[str, str]]:
+            if "merge" in template_path:
+                # Capture entity names seen in merge candidate groups
+                groups = context.get("candidate_groups", [])
+                for group in groups:
+                    for entity in group.get("entities", []):
+                        merge_prompt_entities.append(entity["name"])
+            return [{"role": "user", "content": "prompt"}]
+
+        api = _LLMClientAPI(
+            render_prompt=capturing_render,
+            acall_llm=capturing_acall,  # type: ignore[arg-type]
+        )
+
+        await run_pass4_normalization(
+            p3,
+            source_text=source_text,
+            trace_id="test-alias-002",
+            max_budget=0.05,
+            _llm_api=api,
+        )
+
+        # "IRGC" should NOT appear in merge prompt entities (it's an alias non-canonical)
+        assert "IRGC" not in merge_prompt_entities

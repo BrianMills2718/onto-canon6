@@ -374,6 +374,23 @@ class AnaphorResolution(BaseModel):
     )
 
 
+class AliasPair(BaseModel):
+    """A text-declared alias relationship between two entity name forms.
+
+    Extracted from parenthetical patterns in source text ("Full Name (ABBREV)").
+    No LLM verification is required — text-declared equivalences are accepted
+    deterministically.
+    """
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    short_form: str = Field(description="The abbreviated or acronym form.")
+    long_form: str = Field(description="The expanded or full form (canonical).")
+    source_pattern: str = Field(
+        description="The raw text span that contained the alias declaration."
+    )
+
+
 class MergeDecision(BaseModel):
     """Decision to merge near-duplicate entity names into one canonical form.
 
@@ -414,6 +431,13 @@ class Pass4NormalizationResult(BaseModel):
     )
     merge_decisions: list[MergeDecision] = Field(
         description="Merge decisions for near-duplicate entity name pairs.",
+    )
+    alias_pairs: list[AliasPair] = Field(
+        default_factory=list,
+        description=(
+            "Alias pairs extracted deterministically from source text parenthetical patterns. "
+            "Short forms are rewritten to long forms in the normalization_map without LLM verification."
+        ),
     )
     normalization_map: dict[str, str | None] = Field(
         description=(

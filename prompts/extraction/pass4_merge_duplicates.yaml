@@ -1,9 +1,11 @@
 name: onto_canon6_pass4_merge_duplicates
-version: "1.0"
+version: "2.0"
 description: >
   Pass 4 near-duplicate entity merge prompt.  Given a batch of candidate
   entity pairs (or small groups) that may refer to the same real-world
   entity, the LLM decides whether to merge them and picks a canonical form.
+  Enhanced with detection_method label, per-entity assertions, alias hints,
+  and co-participant overlap for profile-aware decisions.
 messages:
   - role: system
     content: |
@@ -20,6 +22,12 @@ messages:
       expanded ("Islamic Revolutionary Guard Corps Intelligence Organization
       (IRGC-IO)").  We want to merge these into a single canonical name so
       downstream consumers see consistent entity identifiers.
+
+      **Detection methods:**
+      - "string_heuristic": names were flagged by substring/acronym/edit-distance matching.
+      - "structural_fingerprint": entities share a high fraction of predicate-role pairs
+        in the assertion graph (Jaccard ≥ 0.35). Names may have zero string similarity —
+        this is intentional. Weight the assertion evidence heavily for these pairs.
 
       **Output format:**
       Return a JSON array, one object per candidate group, in the same order
@@ -49,16 +57,31 @@ messages:
         similarity.
       - Prefer longer, more descriptive canonical forms when merging.
       - Only merge when confidence is high (> 0.80).
+      - For structural_fingerprint pairs: the entities appeared in identical
+        predicate roles across assertions, which is strong evidence of identity
+        even with zero name overlap.
 
   - role: user
     content: |
       **Candidate groups to evaluate:**
       {% for group in candidate_groups %}
-      Group {{ loop.index }}:
+      Group {{ loop.index }} [detection: {{ group.detection_method }}]:
+      {% if group.co_participants %}
+      Co-participants (appear with BOTH entities): {{ group.co_participants | join(", ") }}
+      {% endif %}
       {% for entity in group.entities %}
-        - Name: "{{ entity.name }}"
+        Entity: "{{ entity.name }}"
           SUMO type: {{ entity.sumo_type }}
           Sample evidence: {{ entity.evidence_span }}
+      {% if entity.alias_hints %}
+          Known aliases: {{ entity.alias_hints | join("; ") }}
+      {% endif %}
+      {% if entity.assertions %}
+          Top assertions:
+      {% for a in entity.assertions %}
+            - {{ a.predicate_id }} (participants: {{ a.participants | join(", ") }}) — {{ a.evidence_span }}
+      {% endfor %}
+      {% endif %}
       {% endfor %}
       {% endfor %}
 

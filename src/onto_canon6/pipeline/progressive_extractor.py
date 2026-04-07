@@ -30,6 +30,7 @@ import asyncio
 import hashlib
 import json
 import logging
+import re
 import uuid as _uuid
 from dataclasses import dataclass
 from importlib import import_module
@@ -44,6 +45,7 @@ from onto_canon6.evaluation.predicate_canon import PredicateCanon, PredicateMatc
 from onto_canon6.evaluation.sumo_hierarchy import SUMOHierarchy
 
 from .progressive_types import (
+    AliasPair,
     AnaphorResolution,
     EntityRefinement,
     MergeDecision,
@@ -1462,6 +1464,191 @@ def _extract_acronym(name: str) -> str:
     return "".join(w[0].upper() for w in words if w and w[0].isalpha())
 
 
+# ---------------------------------------------------------------------------
+# Alias extraction from text-declared parenthetical patterns (Plan 0074)
+# ---------------------------------------------------------------------------
+
+# Pattern A: "Full Name (ACRONYM)" — long form declared, abbreviation in parens.
+_ALIAS_PAREN_DEFINE = re.compile(
+    r"\b([A-Z][^\(\)\n]{4,80}?)\s+\(([A-Z][A-Z0-9\-]{1,15})\)",
+    re.UNICODE,
+)
+
+# Pattern B: "ACRONYM (Full Name)" — abbreviation declared first, expansion in parens.
+_ALIAS_PAREN_EXPAND = re.compile(
+    r"\b([A-Z][A-Z0-9\-]{1,15})\s+\(([A-Z][^\(\)\n]{4,80}?)\)",
+    re.UNICODE,
+)
+
+
+def extract_alias_pairs(
+    source_text: str,
+    entity_names: set[str],
+) -> list[AliasPair]:
+    """Extract text-declared alias pairs from parenthetical patterns in source text.
+
+    Detects two patterns:
+    - Pattern A "Full Name (ACRONYM)": long form declared, abbreviation in parens.
+    - Pattern B "ACRONYM (Full Name)": abbreviation declared first, expansion in parens.
+
+    Only registers a pair when **both** the short form and long form appear as entity
+    names in *entity_names*.  The longer form is always canonical.  No LLM verification
+    is required — text-declared equivalences are accepted deterministically.
+
+    Article stripping: when the captured long form starts with a leading article
+    ("The ", "A ", "An "), the article-stripped form is tried as a fallback.  This
+    handles "The Islamic Revolutionary Guard Corps (IRGC)" where the regex matches at
+    "The" but the entity name in the corpus is "Islamic Revolutionary Guard Corps".
+    """
+    if not source_text or not entity_names:
+        return []
+
+    found: list[AliasPair] = []
+    seen: set[tuple[str, str]] = set()  # (short_form, long_form) dedup key
+
+    _LEADING_ARTICLES = ("The ", "A ", "An ")
+
+    def _try_register(long: str, short: str, raw_span: str) -> bool:
+        key = (short, long)
+        if key in seen:
+            return False
+        if short not in entity_names or long not in entity_names:
+            return False
+        seen.add(key)
+        found.append(AliasPair(short_form=short, long_form=long, source_pattern=raw_span))
+        return True
+
+    def _register(long_form: str, short_form: str, raw_span: str) -> None:
+        short = short_form.strip()
+        long = long_form.strip()
+        if _try_register(long, short, raw_span):
+            return
+        # Fallback: strip leading article ("The ", "A ", "An ") and retry.
+        # This handles "The Islamic Revolutionary Guard Corps (IRGC)" where the regex
+        # anchors on the capital "T" but the entity name omits the leading article.
+        for article in _LEADING_ARTICLES:
+            if long.startswith(article):
+                _try_register(long[len(article):], short, raw_span)
+                break
+
+    for m in _ALIAS_PAREN_DEFINE.finditer(source_text):
+        _register(long_form=m.group(1), short_form=m.group(2), raw_span=m.group(0))
+
+    for m in _ALIAS_PAREN_EXPAND.finditer(source_text):
+        _register(long_form=m.group(2), short_form=m.group(1), raw_span=m.group(0))
+
+    return found
+
+
+# ---------------------------------------------------------------------------
+# Structural fingerprint deduplication (Plan 0074)
+# ---------------------------------------------------------------------------
+
+
+def compute_entity_profiles(
+    pass3_result: Pass3Result,
+    entity_names: set[str],
+) -> dict[str, frozenset[tuple[str, str]]]:
+    """Return mapping from entity name → (predicate_id, role_label) profile.
+
+    For each entity, the profile is the frozenset of ``(predicate_id, role_label)``
+    pairs from all assertions the entity participates in.  This is the determinative
+    predicate fingerprint from the Grale entity deduplication pipeline (Google KDD 2020).
+
+    Parameters
+    ----------
+    pass3_result:
+        The Pass 3 result containing typed assertions with mapped roles.
+    entity_names:
+        The set of entity names to compute profiles for.
+    """
+    profiles: dict[str, set[tuple[str, str]]] = {name: set() for name in entity_names}
+
+    for typed_assertion in pass3_result.typed_assertions:
+        assertion = typed_assertion.assertion
+        predicate_id = assertion.predicate_id
+        for role_label, entity_name in assertion.mapped_roles.items():
+            if entity_name in profiles:
+                profiles[entity_name].add((predicate_id, role_label))
+
+    return {name: frozenset(pairs) for name, pairs in profiles.items()}
+
+
+def detect_structural_duplicate_pairs(
+    entity_infos: list[dict[str, str]],
+    profiles: dict[str, frozenset[tuple[str, str]]],
+    *,
+    jaccard_threshold: float = 0.35,
+    min_profile_size: int = 2,
+) -> list[tuple[dict[str, str], dict[str, str]]]:
+    """Return entity pairs with high Jaccard similarity on their predicate-role profiles.
+
+    Entities with fewer than *min_profile_size* predicate-role pairs are excluded
+    (insufficient signal — a single shared pair is noise).  Pairs with incompatible
+    SUMO types are rejected by :func:`_are_types_compatible`.
+
+    Parameters
+    ----------
+    entity_infos:
+        List of entity info dicts with keys: ``name``, ``sumo_type``, ``evidence_span``.
+    profiles:
+        Mapping from entity name → ``frozenset[(predicate_id, role_label)]`` profile.
+    jaccard_threshold:
+        Minimum Jaccard similarity to flag a pair as a candidate.
+    min_profile_size:
+        Minimum profile size required to participate in comparison.
+    """
+    pairs: list[tuple[dict[str, str], dict[str, str]]] = []
+    seen: set[tuple[int, int]] = set()
+
+    for i, info_a in enumerate(entity_infos):
+        profile_a = profiles.get(info_a["name"], frozenset())
+        if len(profile_a) < min_profile_size:
+            continue
+        for j, info_b in enumerate(entity_infos):
+            if j <= i:
+                continue
+            if (i, j) in seen:
+                continue
+            profile_b = profiles.get(info_b["name"], frozenset())
+            if len(profile_b) < min_profile_size:
+                continue
+            if not _are_types_compatible(info_a["sumo_type"], info_b["sumo_type"]):
+                continue
+            intersection = len(profile_a & profile_b)
+            if intersection == 0:
+                continue
+            union = len(profile_a | profile_b)
+            jaccard = intersection / union
+            if jaccard >= jaccard_threshold:
+                pairs.append((info_a, info_b))
+                seen.add((i, j))
+
+    return pairs
+
+
+def _compute_co_participants(
+    name_a: str,
+    name_b: str,
+    assertion_index: dict[str, list[dict[str, Any]]],
+    *,
+    max_count: int = 5,
+) -> list[str]:
+    """Return entity names that co-appear with BOTH name_a and name_b across assertions."""
+    set_a: set[str] = set()
+    for entry in assertion_index.get(name_a, []):
+        set_a.update(entry["participants"])
+    set_a.discard(name_a)
+
+    set_b: set[str] = set()
+    for entry in assertion_index.get(name_b, []):
+        set_b.update(entry["participants"])
+    set_b.discard(name_b)
+
+    common = (set_a & set_b) - {name_a, name_b}
+    return sorted(common)[:max_count]
+
+
 def detect_near_duplicate_pairs(
     entity_infos: list[dict[str, str]],
 ) -> list[tuple[dict[str, str], dict[str, str]]]:
@@ -1835,6 +2022,7 @@ def _apply_normalization_to_pass3(
 async def run_pass4_normalization(
     pass3_result: Pass3Result,
     *,
+    source_text: str = "",
     model: str | None = None,
     task: str = "progressive_extraction",
     trace_id: str,
@@ -1843,19 +2031,23 @@ async def run_pass4_normalization(
 ) -> tuple[Pass4NormalizationResult, Pass3Result]:
     """Run Pass 4: entity normalization (anaphor resolution + near-duplicate merging).
 
-    Detects and resolves three categories of problematic entity names:
+    Detects and resolves four categories of problematic entity names:
     1. Anaphors and pronouns ("the group", "it", "they") → resolve to named entity or drop.
     2. Descriptive noun phrases (not real entities) → drop.
-    3. Near-duplicates ("IRGC" / "IRGC-IO") → merge to canonical form.
+    3. Text-declared alias pairs ("Islamic Revolutionary Guard Corps (IRGC)") →
+       deterministic merge without LLM, zero cost.
+    4. Near-duplicates by string heuristics or structural fingerprint → LLM merge verifier.
 
-    All detection is rule-based.  LLM is called only for resolution decisions.
-    If budget is exhausted, remaining flagged names are marked "uncertain" and
-    kept as-is.
+    The LLM merge verifier uses a profile-aware prompt that includes per-entity top-3
+    assertions, alias hints, co-participant overlap, and detection method label.
 
     Parameters
     ----------
     pass3_result:
         The Pass 3 typed assertion result to normalize.
+    source_text:
+        Optional raw source text used for alias extraction.  When non-empty, parenthetical
+        alias patterns ("Full Name (ACRONYM)") are detected deterministically.
     model:
         LLM model identifier.  Defaults to ``gemini/gemini-2.5-flash-lite``.
     task:
@@ -1863,8 +2055,7 @@ async def run_pass4_normalization(
     trace_id:
         Trace ID for ``llm_client`` observability.
     max_budget:
-        Maximum spend in USD for all Pass 4 LLM calls.  When exhausted,
-        remaining items are kept as-is (marked "uncertain").
+        Maximum spend in USD for all Pass 4 LLM calls.
     _llm_api:
         Override for the llm_client API handle (testing only).
 
@@ -1878,6 +2069,21 @@ async def run_pass4_normalization(
 
     # Collect entity infos from Pass 3
     entity_infos = _collect_entity_infos(pass3_result)
+    entity_names_set = {info["name"] for info in entity_infos}
+
+    # Step 0: Extract text-declared alias pairs (deterministic, no LLM cost)
+    alias_pairs: list[AliasPair] = []
+    alias_non_canonicals: set[str] = set()
+    if source_text:
+        alias_pairs = extract_alias_pairs(source_text, entity_names_set)
+        for ap in alias_pairs:
+            alias_non_canonicals.add(ap.short_form)
+        if alias_pairs:
+            logger.info(
+                "Pass 4: %d text-declared alias pairs detected (trace_id=%s)",
+                len(alias_pairs),
+                trace_id,
+            )
 
     # Step 1: Detect anaphors / descriptive phrases
     flagged: list[dict[str, str]] = []
@@ -1893,17 +2099,63 @@ async def run_pass4_normalization(
         else:
             canonical_names.append(info["name"])
 
-    # Step 2: Detect near-duplicate pairs (only among canonical names)
-    canonical_infos = [info for info in entity_infos if info["name"] in canonical_names]
-    dup_pairs = detect_near_duplicate_pairs(canonical_infos)
+    # Step 2: String heuristic near-dup detection.
+    # Exclude alias non-canonicals (short forms) — they're already resolved.
+    canonical_infos = [
+        info for info in entity_infos
+        if info["name"] in canonical_names and info["name"] not in alias_non_canonicals
+    ]
+    string_dup_pairs = detect_near_duplicate_pairs(canonical_infos)
+
+    # Step 2b: Structural fingerprint deduplication (predicate-role Jaccard ≥ 0.35).
+    profiles = compute_entity_profiles(pass3_result, {info["name"] for info in canonical_infos})
+    structural_pairs = detect_structural_duplicate_pairs(canonical_infos, profiles)
+
+    # Union string + structural pairs, dedup by entity-name frozenset, annotate detection_method.
+    seen_pair_keys: set[frozenset[str]] = set()
+    annotated_pairs: list[tuple[dict[str, str], dict[str, str], str]] = []
+    for pair_a, pair_b in string_dup_pairs:
+        key: frozenset[str] = frozenset({pair_a["name"], pair_b["name"]})
+        if key not in seen_pair_keys:
+            seen_pair_keys.add(key)
+            annotated_pairs.append((pair_a, pair_b, "string_heuristic"))
+    for pair_a, pair_b in structural_pairs:
+        key = frozenset({pair_a["name"], pair_b["name"]})
+        if key not in seen_pair_keys:
+            seen_pair_keys.add(key)
+            annotated_pairs.append((pair_a, pair_b, "structural_fingerprint"))
 
     logger.info(
-        "Pass 4: %d flagged anaphors/phrases, %d near-duplicate pairs "
-        "(trace_id=%s)",
+        "Pass 4: %d flagged anaphors, %d string pairs, %d structural pairs, "
+        "%d total dup pairs (trace_id=%s)",
         len(flagged),
-        len(dup_pairs),
+        len(string_dup_pairs),
+        len(structural_pairs),
+        len(annotated_pairs),
         trace_id,
     )
+
+    # Build assertion index for profile-aware merge prompt (top-3 per entity).
+    assertion_index: dict[str, list[dict[str, Any]]] = {}
+    for ta in pass3_result.typed_assertions:
+        a = ta.assertion
+        for entity_name in a.mapped_roles.values():
+            if entity_name not in assertion_index:
+                assertion_index[entity_name] = []
+            if len(assertion_index[entity_name]) < 3:
+                assertion_index[entity_name].append({
+                    "predicate_id": a.predicate_id,
+                    "participants": list(a.mapped_roles.values()),
+                    "evidence_span": a.event.evidence_span[:100],
+                })
+
+    # Build alias hints map: entity_name -> list of "short ↔ long" strings.
+    alias_hints_map: dict[str, list[str]] = {}
+    for ap in alias_pairs:
+        for name in (ap.short_form, ap.long_form):
+            if name not in alias_hints_map:
+                alias_hints_map[name] = []
+            alias_hints_map[name].append(f"{ap.short_form} ↔ {ap.long_form}")
 
     anaphor_resolutions: list[AnaphorResolution] = []
     merge_decisions: list[MergeDecision] = []
@@ -1911,7 +2163,6 @@ async def run_pass4_normalization(
 
     # Step 3: LLM anaphor resolution (single batched call)
     if flagged and total_cost < max_budget:
-        # Build a short source text excerpt from evidence spans
         evidence_spans = [item["evidence_span"] for item in flagged if item["evidence_span"]]
         source_excerpt = " ... ".join(evidence_spans[:5])[:500]
 
@@ -1950,11 +2201,11 @@ async def run_pass4_normalization(
                 exc_info=True,
             )
 
-    # Step 4: LLM near-duplicate merging (batch in groups of up to 10 pairs)
+    # Step 4: LLM near-duplicate merging (batch in groups of up to 10 pairs).
     _MERGE_BATCH_SIZE = 10
-    pair_batches: list[list[list[dict[str, str]]]] = []
-    batch: list[list[dict[str, str]]] = []
-    for pair in dup_pairs:
+    pair_batches: list[list[tuple[list[dict[str, str]], str]]] = []
+    batch: list[tuple[list[dict[str, str]], str]] = []
+    for pair_a, pair_b, detection_method in annotated_pairs:
         if total_cost >= max_budget:
             logger.info(
                 "Pass 4: budget exhausted before merge step (cost=$%.4f, budget=$%.4f)",
@@ -1962,29 +2213,37 @@ async def run_pass4_normalization(
                 max_budget,
             )
             break
-        batch.append(list(pair))
+        batch.append(([pair_a, pair_b], detection_method))
         if len(batch) >= _MERGE_BATCH_SIZE:
             pair_batches.append(batch)
             batch = []
     if batch:
         pair_batches.append(batch)
 
-    for batch_groups in pair_batches:
+    for batch_items in pair_batches:
         if total_cost >= max_budget:
             break
+        # batch_items: list[tuple[list[dict], str]]  (group_entities, detection_method)
+        batch_groups = [group for group, _ in batch_items]  # for _parse_merge_response compat
         template_vars_merge: dict[str, Any] = {
             "candidate_groups": [
                 {
+                    "detection_method": dm,
+                    "co_participants": _compute_co_participants(
+                        group[0]["name"], group[1]["name"], assertion_index
+                    ),
                     "entities": [
                         {
                             "name": e["name"],
                             "sumo_type": e["sumo_type"],
                             "evidence_span": e["evidence_span"][:150],
+                            "assertions": assertion_index.get(e["name"], [])[:3],
+                            "alias_hints": alias_hints_map.get(e["name"], []),
                         }
                         for e in group
-                    ]
+                    ],
                 }
-                for group in batch_groups
+                for group, dm in batch_items
             ],
         }
         messages_merge = api.render_prompt(_PASS4_MERGE_PROMPT, **template_vars_merge)
@@ -2011,14 +2270,19 @@ async def run_pass4_normalization(
                 exc_info=True,
             )
 
-    # Step 5: Build consolidated normalization map
+    # Step 5: Build consolidated normalization map.
     norm_map = _build_normalization_map(anaphor_resolutions, merge_decisions, flagged_names_set)
+    # Apply alias pairs at lowest priority (don't overwrite anaphor/merge decisions).
+    for ap in alias_pairs:
+        if ap.short_form not in norm_map:
+            norm_map[ap.short_form] = ap.long_form
 
     logger.info(
-        "Pass 4 complete: %d anaphor resolutions, %d merge decisions, "
+        "Pass 4 complete: %d anaphor resolutions, %d merge decisions, %d alias pairs, "
         "%d normalization entries (trace_id=%s, cost=$%.4f)",
         len(anaphor_resolutions),
         len(merge_decisions),
+        len(alias_pairs),
         len(norm_map),
         trace_id,
         total_cost,
@@ -2027,12 +2291,13 @@ async def run_pass4_normalization(
     pass4_result = Pass4NormalizationResult(
         anaphor_resolutions=anaphor_resolutions,
         merge_decisions=merge_decisions,
+        alias_pairs=alias_pairs,
         normalization_map=norm_map,
         cost_usd=total_cost,
         model=effective_model,
     )
 
-    # Step 6: Apply normalization map to Pass 3 result
+    # Step 6: Apply normalization map to Pass 3 result.
     normalized_pass3 = _apply_normalization_to_pass3(pass3_result, norm_map)
 
     return pass4_result, normalized_pass3
@@ -2302,6 +2567,7 @@ async def run_progressive_extraction(
     try:
         pass4_result, pass3_result = await run_pass4_normalization(
             pass3_result,
+            source_text=text,
             model=effective_model,
             task=task,
             trace_id=pass4_trace_id,
