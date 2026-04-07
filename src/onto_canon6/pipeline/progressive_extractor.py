@@ -2060,6 +2060,73 @@ def _apply_normalization_to_pass3(
     )
 
 
+def _normalize_pass2_unresolved(
+    pass2_result: Pass2Result,
+    norm_map: dict[str, str | None],
+) -> Pass2Result:
+    """Apply normalization (plus anaphor detection) to Pass 2 unresolved events.
+
+    Entities in unresolved events are not seen by Pass 4's main normalization
+    loop (which only processes Pass 3 typed assertions).  This function:
+    1. Collects entity names from unresolved events that are not already in the
+       norm_map.
+    2. Runs ``_is_anaphor`` on each and adds certain anaphors (resolved_to=None)
+       to an extended copy of the norm_map.
+    3. Applies the extended map to filter participants from each unresolved
+       event; events with zero participants remaining are dropped.
+    4. Returns a new Pass2Result with the filtered unresolved list.
+    """
+    # Step 1: find names in unresolved events not already covered by norm_map
+    extended_map = dict(norm_map)
+    seen: set[str] = set()
+    for event in pass2_result.unresolved:
+        for participant in event.participants:
+            name = participant.entity.name
+            if name in seen or name in extended_map:
+                continue
+            seen.add(name)
+            is_anaphor, is_certain, _reason = _is_anaphor(name)
+            if is_anaphor and is_certain:
+                extended_map[name] = None
+                logger.info(
+                    "Pass 4 (unresolved): deterministic drop '%s' (%s)",
+                    name,
+                    _reason,
+                )
+
+    if not extended_map:
+        return pass2_result
+
+    # Step 2: apply map to unresolved events
+    normalized_unresolved: list[Pass1Event] = []
+    for event in pass2_result.unresolved:
+        new_event = _apply_normalization_to_event(event, extended_map)
+        if new_event is not None:
+            normalized_unresolved.append(new_event)
+
+    if len(normalized_unresolved) == len(pass2_result.unresolved):
+        return pass2_result  # nothing changed
+
+    dropped = len(pass2_result.unresolved) - len(normalized_unresolved)
+    logger.info(
+        "Pass 4 (unresolved): dropped %d/%d unresolved events after normalization",
+        dropped,
+        len(pass2_result.unresolved),
+    )
+
+    return Pass2Result(
+        mapped=pass2_result.mapped,
+        unresolved=normalized_unresolved,
+        source_pass1=pass2_result.source_pass1,
+        model=pass2_result.model,
+        cost=pass2_result.cost,
+        trace_id=pass2_result.trace_id,
+        single_sense_count=pass2_result.single_sense_count,
+        llm_disambiguated_count=pass2_result.llm_disambiguated_count,
+        unresolved_count=len(normalized_unresolved),
+    )
+
+
 async def run_pass4_normalization(
     pass3_result: Pass3Result,
     *,
@@ -2633,6 +2700,13 @@ async def run_progressive_extraction(
             "Pass 4 normalization failed (trace_id=%s) — continuing without normalization",
             effective_trace_id,
             exc_info=True,
+        )
+
+    # Also normalize pass2 unresolved events — entities there bypass Pass 4's
+    # entity collection (which only reads pass3 typed assertions).
+    if pass4_result is not None:
+        pass2_result = _normalize_pass2_unresolved(
+            pass2_result, pass4_result.normalization_map
         )
 
     # --- Aggregate ---
