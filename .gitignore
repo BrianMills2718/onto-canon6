@@ -7,6 +7,9 @@ __pycache__/
 *.egg-info/
 .ipynb_checkpoints/
 var/
+json/
+sumo_plus.db
+HANDOFF_*.tmp.md
 data/*.db-shm
 data/*.db-wal
 pyrightconfig.json

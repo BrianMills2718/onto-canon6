@@ -9,7 +9,7 @@ ontology:
   source: custom
   mode: open
   normalization_policy: conservative
-  proposal_policy: allow
+  proposal_policy: reject
   pack_id: code_core
   pack_version: "0.1.0"
 
